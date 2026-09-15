@@ -403,7 +403,7 @@ class Catalog(NamedTuple):
     patterns: tuple[CompiledTemplate, ...]
 
     def translate(self, message: str) -> str:
-        exact = self.exact.get(message)
+        exact: Final = self.exact.get(message)
         if exact is not None:
             return exact
         for template in self.patterns:
@@ -426,8 +426,8 @@ def build_pattern(template: str) -> re.Pattern[str]:
 
 
 def _validate_placeholders(template: str, translation: str) -> None:
-    source_placeholders = _placeholders(template)
-    translation_placeholders = _placeholders(translation)
+    source_placeholders: Final = _placeholders(template)
+    translation_placeholders: Final = _placeholders(translation)
     if sorted(source_placeholders) != sorted(translation_placeholders):
         raise CatalogError(
             f"placeholder mismatch for template {template!r}: source has "
@@ -746,7 +746,7 @@ def catalog_for(locale: str | None) -> Catalog | None:
 
 
 def translate_message(message: str, locale: str | None) -> str:
-    catalog = catalog_for(locale)
+    catalog: Final = catalog_for(locale)
     if catalog is None:
         return message
     return catalog.translate(message)
