@@ -16,7 +16,7 @@ Design reference: `docs/superpowers/specs/2026-09-14-litellm-i18n-design.md`
 - Do not write comments unless absolutely necessary for complex logic, or as a tool directive (TODO with a reason, lint suppression with a reason)
 - Every lint or type suppression must name the exact rule in brackets and carry a reason, e.g. `# pyright: ignore[reportArgumentType]  # stubs lack async overload`. `# type: ignore` is banned (LIT009)
 - Annotate every variable with `: Final` (LIT010); do not rebind or mutate parameters (LIT011)
-- No mutation and no mutable globals: prefer `tuple`, `frozenset`, `MappingProxyType`
+- No mutation and no mutable globals. LIT001 bans a mutable collection in any annotation, including a local's; LIT002 bans constructing one, meaning a list/dict/set literal, a comprehension producing one, or a call to `list`/`dict`/`set`/`deque`/`defaultdict`/`OrderedDict`/`Counter`/`ChainMap`. Build each value in one shot as a `tuple(...)`, `frozenset(...)`, or `MappingProxyType(...)` wrapper around a generator, comprehension, or dict literal, and compare against the input for equality to decide whether to return the original object
 - Qualify every TypedDict field with `ReadOnly[...]` (LIT012)
 - Fully typed, no `Any` and no coarse types like `dict[str, object]` as a parameter type; use `Mapping[str, object]`
 - Do not throw for expected control flow; model failures as values
@@ -208,27 +208,31 @@ _TAG: Final = re.compile(r"^[A-Za-z]{1,8}(?:-[A-Za-z0-9]{1,8})*$")
 def _quality(params: str) -> float:
     for param in params.split(";"):
         name, _, value = param.partition("=")
-        if name.strip().lower() == "q":
-            try:
-                return float(value.strip())
-            except ValueError:
-                return 0.0
+        if name.strip().lower() != "q":
+            continue
+        try:
+            return float(value.strip())
+        except ValueError:
+            return 0.0
     return 1.0
 
 
+def _preference(index: int, part: str) -> tuple[float, int, str] | None:
+    raw_tag, _, params = part.strip().partition(";")
+    tag: Final = raw_tag.strip()
+    quality: Final = _quality(params)
+    if not tag or not _TAG.match(tag) or quality <= 0.0:
+        return None
+    return (quality, -index, tag)
+
+
 def _ranked_tags(header: str) -> tuple[str, ...]:
-    ranked: list[tuple[float, int, str]] = []
-    for index, part in enumerate(header.split(",")):
-        tag, _, params = part.strip().partition(";")
-        tag = tag.strip()
-        if not tag or not _TAG.match(tag):
-            continue
-        quality = _quality(params)
-        if quality <= 0.0:
-            continue
-        ranked.append((quality, -index, tag))
-    ranked.sort(reverse=True)
-    return tuple(tag for _, _, tag in ranked)
+    preferences: Final = (
+        preference
+        for preference in (_preference(index, part) for index, part in enumerate(header.split(",")))
+        if preference is not None
+    )
+    return tuple(tag for _, _, tag in sorted(preferences, reverse=True))
 
 
 def negotiate_locale(accept_language: str | None) -> str | None:
@@ -242,6 +246,8 @@ def negotiate_locale(accept_language: str | None) -> str | None:
         return ZH if primary == ZH else None
     return None
 ```
+
+The ranking is built in one shot as a generator fed to `tuple(...)`. An earlier draft seeded an empty `list` and appended to it, which LIT001 and LIT002 both reject; do not reintroduce that shape.
 
 A tag the proxy does not serve (`fr`, `*`, an unparseable token) is skipped rather than treated as a match, so an unsupported language falls through to the next preference and ultimately to the English source.
 
@@ -719,7 +725,7 @@ same object it was given, so the untranslated path serializes exactly as it did 
 
 from __future__ import annotations
 
-from typing import Final, Mapping, Sequence
+from typing import Final, Mapping, MappingProxyType, Sequence
 
 from litellm.proxy.i18n.catalog import CATALOGS
 from litellm.proxy.i18n.matcher import Catalog
@@ -751,17 +757,13 @@ def _translate_mapping(
     fields: tuple[str, ...],
     locale: str | None,
 ) -> Mapping[str, object]:
-    translated: dict[str, object] = {}
-    changed = False
-    for key, value in mapping.items():
-        if key in fields and isinstance(value, str):
-            new_value = translate_message(value, locale)
-            if new_value != value:
-                changed = True
-            translated[key] = new_value
-        else:
-            translated[key] = value
-    return translated if changed else mapping
+    translated: Final = MappingProxyType(
+        {
+            key: translate_message(value, locale) if key in fields and isinstance(value, str) else value
+            for key, value in mapping.items()
+        }
+    )
+    return translated if translated != mapping else mapping
 
 
 def translate_error_dict(error_dict: Mapping[str, object], locale: str | None) -> Mapping[str, object]:
@@ -795,14 +797,9 @@ def _translate_sequence(
     fields: tuple[str, ...],
     locale: str | None,
 ) -> Sequence[object]:
-    translated: list[object] = []
-    changed = False
-    for item in items:
-        new_item = _translate_item(item, fields, locale)
-        if new_item is not item:
-            changed = True
-        translated.append(new_item)
-    return tuple(translated) if changed else items
+    translated: Final = tuple(_translate_item(item, fields, locale) for item in items)
+    changed: Final = any(new_item is not original for new_item, original in zip(translated, items))
+    return translated if changed else items
 
 
 def translate_validation_errors(errors: Sequence[object], locale: str | None) -> Sequence[object]:
@@ -814,12 +811,14 @@ def translate_validation_errors(errors: Sequence[object], locale: str | None) ->
 def translate_problem(problem: ProblemDetail, locale: str | None) -> ProblemDetail:
     if locale is None:
         return problem
-    dumped = problem.model_dump()
-    translated = _translate_mapping(dumped, _PROBLEM_FIELDS, locale)
+    dumped: Final = problem.model_dump()
+    translated: Final = _translate_mapping(dumped, _PROBLEM_FIELDS, locale)
     if translated is dumped:
         return problem
-    return problem.model_copy(update=dict(translated))
+    return problem.model_copy(update=translated)
 ```
+
+`model_copy` accepts a `Mapping`, so the frozen `MappingProxyType` is passed through without copying it into a mutable dict.
 
 `translate_problem` compares against the single `dumped` mapping it passed in, so an unmatched problem returns the original object rather than a rebuilt copy.
 
