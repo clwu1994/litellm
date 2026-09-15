@@ -840,7 +840,7 @@ def translate_problem(problem: ProblemDetail, locale: str | None) -> ProblemDeta
 - [ ] **Step 6: Run the tests to verify they pass**
 
 Run: `python3 -m pytest tests/test_litellm/proxy/i18n/test_translator.py tests/test_litellm/proxy/i18n/test_catalog_structure.py -v`
-Expected: PASS, 19 passed
+Expected: PASS, 22 passed
 
 - [ ] **Step 7: Commit**
 
