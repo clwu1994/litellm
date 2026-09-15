@@ -500,7 +500,31 @@ describe("createLocaleFetch", () => {
     const captured: CapturedRequest[] = [];
     const localized = createLocaleFetch(recordingFetch(captured), () => "zh");
     await localized("http://x", { headers: [["Accept-Language", "en"]] });
-    expect(captured[0]?.headers["accept-language"]).toBe("en");
+    expect(captured[0]?.headers["Accept-Language"]).toBe("en");
+  });
+
+  it("keeps a Request input's own headers while adding the locale", async () => {
+    let seen: HeadersInit | undefined;
+    const spy = (async (_input: RequestInfo | URL, init?: RequestInit) => {
+      seen = init?.headers;
+      return new Response("{}", { status: 200 });
+    }) as typeof fetch;
+    const localized = createLocaleFetch(spy, () => "zh");
+    await localized(new Request("http://x", { headers: { Authorization: "Bearer t" } }));
+    const merged = new Headers(seen);
+    expect(merged.get("Authorization")).toBe("Bearer t");
+    expect(merged.get("Accept-Language")).toBe("zh");
+  });
+
+  it("does not override a Request input's own Accept-Language", async () => {
+    let seen: HeadersInit | undefined;
+    const spy = (async (_input: RequestInfo | URL, init?: RequestInit) => {
+      seen = init?.headers;
+      return new Response("{}", { status: 200 });
+    }) as typeof fetch;
+    const localized = createLocaleFetch(spy, () => "zh");
+    await localized(new Request("http://x", { headers: { "Accept-Language": "en" } }));
+    expect(new Headers(seen).get("Accept-Language")).toBe("en");
   });
 
   it("reads the locale at call time so a language switch takes effect immediately", async () => {
@@ -577,10 +601,13 @@ const withLocaleHeader = (headers: HeadersInit | undefined, value: string): Head
   return { ...(headers ?? {}), [LOCALE_HEADER]: value };
 };
 
+`createLocaleFetch` must seed the header set from `init.headers` **or**, when there is no init, from a `Request` input's own headers. The typed client at `src/lib/http/api.ts` calls `globalThis.fetch(request)` with a single `Request` and no init, and passing only `{ Accept-Language }` as the init headers would replace that request's headers wholesale, dropping its `Authorization`. That was verified directly: constructing a `Request` from another with just `{ headers: { "Accept-Language": "zh" } }` yields headers containing only `accept-language`, while seeding from the original request's headers keeps `authorization` and the rest. Getting this wrong silently breaks every authenticated typed-client call once the wrapper is installed.
+
 export const createLocaleFetch = (originalFetch: typeof fetch, getLocale: () => string): typeof fetch => {
   return (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
-    if (headerPresent(init?.headers, LOCALE_HEADER)) return originalFetch(input, init);
-    return originalFetch(input, { ...init, headers: withLocaleHeader(init?.headers, getLocale()) });
+    const inherited = init?.headers ?? (input instanceof Request ? input.headers : undefined);
+    if (headerPresent(inherited, LOCALE_HEADER)) return originalFetch(input, init);
+    return originalFetch(input, { ...init, headers: withLocaleHeader(inherited, getLocale()) });
   };
 };
 
@@ -597,7 +624,7 @@ The marker is what makes a second install a no-op, so a later caller cannot sile
 - [ ] **Step 4: Run the tests to verify they pass**
 
 Run: `npx vitest run --project unit src/lib/http/localeFetch.test.ts`
-Expected: PASS, 8 passed
+Expected: PASS, 10 passed
 
 - [ ] **Step 5: Install the wrapper at i18n module load**
 
