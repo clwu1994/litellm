@@ -18,7 +18,6 @@ TRANSLATABLE_FIELDS: Final[frozenset[str]] = frozenset({"message", "detail", "ti
 
 _ERROR_DICT_FIELDS: Final[tuple[str, ...]] = ("message",)
 _VALIDATION_FIELDS: Final[tuple[str, ...]] = ("msg",)
-_DETAIL_FIELDS: Final[tuple[str, ...]] = ("message", "detail", "title", "msg")
 _PROBLEM_FIELDS: Final[tuple[str, ...]] = ("title", "detail")
 
 
@@ -68,18 +67,6 @@ def translate_detail(detail: object, locale: str | None) -> object:
         return detail
     if isinstance(detail, str):
         return translate_message(detail, locale)
-    if isinstance(detail, Mapping):
-        return _translate_mapping(
-            detail,  # pyright: ignore[reportUnknownArgumentType]  # isinstance loses the mapping's key and value types
-            _DETAIL_FIELDS,
-            locale,
-        )
-    if isinstance(detail, (list, tuple)):
-        return _translate_sequence(
-            detail,  # pyright: ignore[reportUnknownArgumentType]  # isinstance loses the sequence's element type
-            _DETAIL_FIELDS,
-            locale,
-        )
     return detail
 
 

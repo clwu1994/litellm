@@ -100,17 +100,11 @@ def test_translate_detail_non_str_is_returned_unchanged() -> None:
     assert translate_detail(None, "zh") is None
 
 
-def test_translate_detail_dict_message_key_is_translated() -> None:
-    assert translate_detail({"message": "No models configured on proxy"}, "zh") == {"message": "proxy 上未配置任何模型"}
-
-
-def test_translate_detail_list_of_strings_is_translated_elementwise() -> None:
-    assert translate_detail(["No models configured on proxy"], "zh") == ("proxy 上未配置任何模型",)
-
-
-def test_translate_detail_list_of_numbers_is_returned_unchanged() -> None:
-    payload = [1, 2]
-    assert translate_detail(payload, "zh") is payload
+def test_translate_detail_preserves_non_str_details_that_hold_translatable_keys() -> None:
+    mapping = {"code": 7, "message": "No models configured on proxy"}
+    assert translate_detail(mapping, "zh") is mapping
+    sequence = ["No models configured on proxy"]
+    assert translate_detail(sequence, "zh") is sequence
 
 
 def test_translate_validation_errors_no_locale_returns_same_object() -> None:
@@ -137,11 +131,6 @@ def test_translate_error_dict_changed_path_is_json_serializable() -> None:
     payload = {"message": "No models configured on proxy", "type": "no_llm_router", "code": "500"}
     translated = translate_error_dict(payload, "zh")
     assert json.loads(json.dumps({"error": translated}))["error"]["message"] == "proxy 上未配置任何模型"
-
-
-def test_translate_detail_changed_mapping_is_json_serializable() -> None:
-    translated = translate_detail({"message": "No models configured on proxy"}, "zh")
-    assert json.loads(json.dumps(translated)) == {"message": "proxy 上未配置任何模型"}
 
 
 def test_translate_validation_errors_changed_entries_are_json_serializable() -> None:

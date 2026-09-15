@@ -66,19 +66,20 @@ async def test_handle_http_exception_en_locale_matches_default_handler() -> None
 
 
 @pytest.mark.asyncio
-async def test_handle_http_exception_dict_detail_with_no_translatable_key_is_preserved() -> None:
+async def test_handle_http_exception_dict_detail_is_preserved_even_with_a_translatable_key() -> None:
     from fastapi.exception_handlers import http_exception_handler
 
-    exc = StarletteHTTPException(status_code=400, detail={"code": 7, "reason": "upstream detail"})
+    exc = StarletteHTTPException(status_code=400, detail={"code": 7, "message": "No models configured on proxy"})
     ours = await handle_http_exception(_request("zh"), exc)
     default = await http_exception_handler(_request("zh"), exc)
     assert ours.body == default.body
 
 
 @pytest.mark.asyncio
-async def test_handle_http_exception_dict_detail_with_a_whitelisted_key_is_translated() -> None:
-    exc = StarletteHTTPException(status_code=400, detail={"code": 7, "message": "No models configured on proxy"})
+async def test_handle_http_exception_sequence_detail_is_preserved() -> None:
+    from fastapi.exception_handlers import http_exception_handler
+
+    exc = StarletteHTTPException(status_code=400, detail=["No models configured on proxy"])
     ours = await handle_http_exception(_request("zh"), exc)
-    body = json.loads(ours.body)
-    assert body["detail"]["message"] == "proxy 上未配置任何模型"
-    assert body["detail"]["code"] == 7
+    default = await http_exception_handler(_request("zh"), exc)
+    assert ours.body == default.body
