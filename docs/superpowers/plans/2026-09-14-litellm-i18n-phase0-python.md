@@ -565,6 +565,8 @@ TEMPLATE_MESSAGES: Final[Mapping[str, str]] = MappingProxyType({})
 Create `tests/test_litellm/proxy/i18n/test_translator.py`:
 
 ```python
+import json
+
 from litellm.types.proxy.management_endpoints.management_v1 import ProblemDetail
 
 from litellm.proxy.i18n.translator import (
@@ -694,6 +696,25 @@ def test_translate_validation_errors_unmatched_returns_same_object() -> None:
     assert translate_validation_errors(errors, "zh") is errors
 
 
+def test_translate_error_dict_changed_path_is_json_serializable() -> None:
+    payload = {"message": "No models configured on proxy", "type": "no_llm_router", "code": "500"}
+    translated = translate_error_dict(payload, "zh")
+    assert json.loads(json.dumps({"error": translated}))["error"]["message"] == "proxy 上未配置任何模型"
+
+
+def test_translate_detail_changed_mapping_is_json_serializable() -> None:
+    translated = translate_detail({"message": "No models configured on proxy"}, "zh")
+    assert json.loads(json.dumps(translated)) == {"message": "proxy 上未配置任何模型"}
+
+
+def test_translate_validation_errors_changed_entries_are_json_serializable() -> None:
+    errors = [{"loc": ("body", "model"), "msg": "No models configured on proxy", "type": "value_error"}]
+    translated = translate_validation_errors(errors, "zh")
+    assert json.loads(json.dumps(translated)) == [
+        {"loc": ["body", "model"], "msg": "proxy 上未配置任何模型", "type": "value_error"}
+    ]
+
+
 def test_translate_problem_no_locale_returns_same_object() -> None:
     problem = ProblemDetail(type="urn:litellm:error:x", title="Unknown query parameter", status=400, detail="nope")
     assert translate_problem(problem, None) is problem
@@ -795,6 +816,11 @@ def translate_message(message: str, locale: str | None) -> str:
     return catalog.translate(message)
 
 
+def _json_mapping(mapping: Mapping[str, object]) -> Mapping[str, object]:
+    """Return a plain dict, because json.dumps cannot serialize a mapping proxy."""
+    return MappingProxyType(dict(mapping)).copy()
+
+
 def _translate_mapping(
     mapping: Mapping[str, object],
     fields: tuple[str, ...],
@@ -809,7 +835,7 @@ def _translate_mapping(
     changed: Final = any(
         translated[key] != value for key, value in mapping.items() if key in fields and isinstance(value, str)
     )
-    return translated if changed else mapping
+    return _json_mapping(translated) if changed else mapping
 
 
 def translate_error_dict(error_dict: Mapping[str, object], locale: str | None) -> Mapping[str, object]:
@@ -870,12 +896,14 @@ def translate_problem(problem: ProblemDetail, locale: str | None) -> ProblemDeta
 
 A plain dict carrying a NaN does not expose that on CPython, because dict comparison short-circuits when the two value objects are identical, which is why the plain-NaN test alone pins nothing and the unstable-mapping test is the one that actually discriminates. Add `from collections.abc import Iterator` to the test file's imports for it.
 
+The changed path goes through `_json_mapping` so it returns a real `dict`, not a `MappingProxyType`. This matters beyond tidiness: `json.dumps` and therefore `JSONResponse` raise `TypeError: Object of type mappingproxy is not JSON serializable`, so handing a frozen proxy to the response would make every translated response a 500. `_json_mapping` builds the value with `MappingProxyType(dict(...))` and then calls `.copy()` on the proxy, which returns a plain dict; that construction is LIT002-exempt, whereas returning a dict literal or a `dict(...)` call directly is not. Fixing this inside `_translate_mapping` is sufficient, because every other function's changed path routes through it, so no response-construction site needs special handling.
+
 `translate_problem` compares against the single `dumped` mapping it passed in, so an unmatched problem returns the original object rather than a rebuilt copy.
 
 - [ ] **Step 6: Run the tests to verify they pass**
 
 Run: `python3 -m pytest tests/test_litellm/proxy/i18n/test_translator.py tests/test_litellm/proxy/i18n/test_catalog_structure.py -v`
-Expected: PASS, 24 passed
+Expected: PASS, 27 passed
 
 - [ ] **Step 7: Commit**
 
