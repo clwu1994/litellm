@@ -665,17 +665,11 @@ def test_translate_detail_non_str_is_returned_unchanged() -> None:
     assert translate_detail(None, "zh") is None
 
 
-def test_translate_detail_dict_message_key_is_translated() -> None:
-    assert translate_detail({"message": "No models configured on proxy"}, "zh") == {"message": "proxy 上未配置任何模型"}
-
-
-def test_translate_detail_list_of_strings_is_translated_elementwise() -> None:
-    assert translate_detail(["No models configured on proxy"], "zh") == ("proxy 上未配置任何模型",)
-
-
-def test_translate_detail_list_of_numbers_is_returned_unchanged() -> None:
-    payload = [1, 2]
-    assert translate_detail(payload, "zh") is payload
+def test_translate_detail_preserves_non_str_details_that_hold_translatable_keys() -> None:
+    mapping = {"code": 7, "message": "No models configured on proxy"}
+    assert translate_detail(mapping, "zh") is mapping
+    sequence = ["No models configured on proxy"]
+    assert translate_detail(sequence, "zh") is sequence
 
 
 def test_translate_validation_errors_no_locale_returns_same_object() -> None:
@@ -700,11 +694,6 @@ def test_translate_error_dict_changed_path_is_json_serializable() -> None:
     payload = {"message": "No models configured on proxy", "type": "no_llm_router", "code": "500"}
     translated = translate_error_dict(payload, "zh")
     assert json.loads(json.dumps({"error": translated}))["error"]["message"] == "proxy 上未配置任何模型"
-
-
-def test_translate_detail_changed_mapping_is_json_serializable() -> None:
-    translated = translate_detail({"message": "No models configured on proxy"}, "zh")
-    assert json.loads(json.dumps(translated)) == {"message": "proxy 上未配置任何模型"}
 
 
 def test_translate_validation_errors_changed_entries_are_json_serializable() -> None:
@@ -799,7 +788,6 @@ TRANSLATABLE_FIELDS: Final[frozenset[str]] = frozenset({"message", "detail", "ti
 
 _ERROR_DICT_FIELDS: Final[tuple[str, ...]] = ("message",)
 _VALIDATION_FIELDS: Final[tuple[str, ...]] = ("msg",)
-_DETAIL_FIELDS: Final[tuple[str, ...]] = ("message", "detail", "title", "msg")
 _PROBLEM_FIELDS: Final[tuple[str, ...]] = ("title", "detail")
 
 
@@ -849,18 +837,6 @@ def translate_detail(detail: object, locale: str | None) -> object:
         return detail
     if isinstance(detail, str):
         return translate_message(detail, locale)
-    if isinstance(detail, Mapping):
-        return _translate_mapping(
-            detail,  # pyright: ignore[reportUnknownArgumentType]  # isinstance loses the mapping's key and value types
-            _DETAIL_FIELDS,
-            locale,
-        )
-    if isinstance(detail, (list, tuple)):
-        return _translate_sequence(
-            detail,  # pyright: ignore[reportUnknownArgumentType]  # isinstance loses the sequence's element type
-            _DETAIL_FIELDS,
-            locale,
-        )
     return detail
 
 
@@ -910,16 +886,18 @@ A plain dict carrying a NaN does not expose that on CPython, because dict compar
 
 The changed path goes through `_json_mapping` so it returns a real `dict`, not a `MappingProxyType`. This matters beyond tidiness: `json.dumps` and therefore `JSONResponse` raise `TypeError: Object of type mappingproxy is not JSON serializable`, so handing a frozen proxy to the response would make every translated response a 500. `_json_mapping` builds the value with `MappingProxyType(dict(...))` and then calls `.copy()` on the proxy, which returns a plain dict; that construction is LIT002-exempt, whereas returning a dict literal or a `dict(...)` call directly is not. Fixing this inside `_translate_mapping` is sufficient, because every other function's changed path routes through it, so no response-construction site needs special handling.
 
-Three `# pyright: ignore[reportUnknownArgumentType]` suppressions sit on the `isinstance(..., Mapping)` and `isinstance(..., (list, tuple))` call sites. Narrowing an `object` to a generic `Mapping` yields unknown key and value types, and re-typing the callee's parameter as `Mapping[object, object]` does not silence it (verified). This module must not grow the tree-wide `reportUnknownArgumentType` budget, so each suppression names the exact rule and carries a reason instead of adding to the count.
+One `# pyright: ignore[reportUnknownArgumentType]` suppression sits on `_translate_item`'s `isinstance(item, Mapping)` call site. Narrowing an `object` to a generic `Mapping` yields unknown key and value types, and re-typing the callee's parameter as `Mapping[object, object]` does not silence it (verified). This module must not grow the tree-wide `reportUnknownArgumentType` budget, so the suppression names the exact rule and carries a reason instead of adding to the count.
 
-Each suppressed call is written across multiple lines so the directive lands on the short line that carries the argument, which is where pyright reports the diagnostic. The trailing comma after the last argument is load-bearing: it is the magic trailing comma that stops `ruff format` from collapsing the call back onto one line and pushing the directive past the 120-column limit. Do not remove it.
+That suppressed call is written across multiple lines so the directive lands on the short line that carries the argument, which is where pyright reports the diagnostic. The trailing comma after the last argument is load-bearing: it is the magic trailing comma that stops `ruff format` from collapsing the call back onto one line and pushing the directive past the 120-column limit. Do not remove it.
+
+`translate_detail` translates a `str` detail and nothing else. Design section 7.6 requires a dict, list, or None detail to be preserved untouched, so the function deliberately has no mapping or sequence branch, and `_translate_sequence` is reached only through `translate_validation_errors`.
 
 `translate_problem` compares against the single `dumped` mapping it passed in, so an unmatched problem returns the original object rather than a rebuilt copy.
 
 - [ ] **Step 6: Run the tests to verify they pass**
 
 Run: `python3 -m pytest tests/test_litellm/proxy/i18n/test_translator.py tests/test_litellm/proxy/i18n/test_catalog_structure.py -v`
-Expected: PASS, 27 passed
+Expected: PASS, 24 passed
 
 - [ ] **Step 7: Commit**
 
@@ -1089,23 +1067,24 @@ async def test_handle_http_exception_en_locale_matches_default_handler() -> None
 
 
 @pytest.mark.asyncio
-async def test_handle_http_exception_dict_detail_with_no_translatable_key_is_preserved() -> None:
+async def test_handle_http_exception_dict_detail_is_preserved_even_with_a_translatable_key() -> None:
     from fastapi.exception_handlers import http_exception_handler
 
-    exc = StarletteHTTPException(status_code=400, detail={"code": 7, "reason": "upstream detail"})
+    exc = StarletteHTTPException(
+        status_code=400, detail={"code": 7, "message": "No models configured on proxy"}
+    )
     ours = await handle_http_exception(_request("zh"), exc)
     default = await http_exception_handler(_request("zh"), exc)
     assert ours.body == default.body
 
 
-async def test_handle_http_exception_dict_detail_with_a_whitelisted_key_is_translated() -> None:
-    exc = StarletteHTTPException(
-        status_code=400, detail={"code": 7, "message": "No models configured on proxy"}
-    )
+async def test_handle_http_exception_sequence_detail_is_preserved() -> None:
+    from fastapi.exception_handlers import http_exception_handler
+
+    exc = StarletteHTTPException(status_code=400, detail=["No models configured on proxy"])
     ours = await handle_http_exception(_request("zh"), exc)
-    body = json.loads(ours.body)
-    assert body["detail"]["message"] == "proxy 上未配置任何模型"
-    assert body["detail"]["code"] == 7
+    default = await http_exception_handler(_request("zh"), exc)
+    assert ours.body == default.body
 ```
 
 - [ ] **Step 2: Write the failing wiring test**
