@@ -69,15 +69,27 @@ def translate_detail(detail: object, locale: str | None) -> object:
     if isinstance(detail, str):
         return translate_message(detail, locale)
     if isinstance(detail, Mapping):
-        return _translate_mapping(detail, _DETAIL_FIELDS, locale)  # pyright: ignore[reportUnknownArgumentType]  # isinstance narrows a generic Mapping to unknown key and value types
+        return _translate_mapping(
+            detail,  # pyright: ignore[reportUnknownArgumentType]  # isinstance loses the mapping's key and value types
+            _DETAIL_FIELDS,
+            locale,
+        )
     if isinstance(detail, (list, tuple)):
-        return _translate_sequence(detail, _DETAIL_FIELDS, locale)  # pyright: ignore[reportUnknownArgumentType]  # isinstance narrows a generic sequence to an unknown element type
+        return _translate_sequence(
+            detail,  # pyright: ignore[reportUnknownArgumentType]  # isinstance loses the sequence's element type
+            _DETAIL_FIELDS,
+            locale,
+        )
     return detail
 
 
 def _translate_item(item: object, fields: tuple[str, ...], locale: str | None) -> object:
     if isinstance(item, Mapping):
-        return _translate_mapping(item, fields, locale)  # pyright: ignore[reportUnknownArgumentType]  # isinstance narrows a generic Mapping to unknown key and value types
+        return _translate_mapping(
+            item,  # pyright: ignore[reportUnknownArgumentType]  # isinstance loses the mapping's key and value types
+            fields,
+            locale,
+        )
     if isinstance(item, str):
         return translate_message(item, locale)
     return item
