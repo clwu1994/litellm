@@ -6,6 +6,7 @@ import openai from "openai";
 import React, { useEffect, useState } from "react";
 import DeleteResourceModal from "../../../common_components/DeleteResourceModal";
 import { ProviderLogo } from "../../../molecules/models/ProviderLogo";
+import { deferToGlobalFetch } from "@/lib/http/globalFetch";
 import { toast } from "@/lib/toast";
 import { getCallbacksCall, setCallbacksCall } from "../../../networking";
 import { isProxyAdminRole } from "@/utils/roles";
@@ -80,11 +81,13 @@ async function testFallbackModelResponse(selectedModel: string, accessToken: str
     console.log = function () {};
   }
   const proxyBaseUrl = isLocal ? "http://localhost:4000" : window.location.origin;
-  const client = new openai.OpenAI({
+  const clientOptions = {
     apiKey: accessToken,
     baseURL: proxyBaseUrl,
     dangerouslyAllowBrowser: true,
-  });
+    fetch: deferToGlobalFetch,
+  };
+  const client = new openai.OpenAI(clientOptions);
 
   try {
     toast.info("Testing fallback model response...");

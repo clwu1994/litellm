@@ -2,6 +2,7 @@ import openai from "openai";
 import { MessageType } from "../chat_ui/types";
 import { TokenUsage } from "../chat_ui/ResponseMetrics";
 import { getProxyBaseUrl } from "@/components/networking";
+import { deferToGlobalFetch } from "@/lib/http/globalFetch";
 import { toast } from "@/lib/toast";
 import { extractPromptCacheTokens } from "@/utils/promptCacheUsage";
 import { parseUsageCost } from "./usage_cost";
@@ -112,6 +113,7 @@ export async function makeOpenAIResponsesRequest(
     baseURL: proxyBaseUrl,
     dangerouslyAllowBrowser: true,
     defaultHeaders: headers,
+    fetch: deferToGlobalFetch,
   });
 
   try {

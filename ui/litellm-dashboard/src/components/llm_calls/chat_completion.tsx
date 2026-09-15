@@ -3,6 +3,7 @@ import { ChatCompletion, ChatCompletionChunk, ChatCompletionMessageParam } from 
 import { TokenUsage } from "../chat_ui/ResponseMetrics";
 import { VectorStoreSearchResponse } from "../chat_ui/types";
 import { getProxyBaseUrl } from "@/components/networking";
+import { deferToGlobalFetch } from "@/lib/http/globalFetch";
 import { MCPServer, MCPToolset, type MCPEvent } from "@/components/mcp_tools/types";
 import { extractPromptCacheTokens } from "@/utils/promptCacheUsage";
 import { parseUsageCost } from "./usage_cost";
@@ -68,6 +69,7 @@ export async function makeOpenAIChatCompletionRequest(
     baseURL: proxyBaseUrl,
     dangerouslyAllowBrowser: true,
     defaultHeaders: headers,
+    fetch: deferToGlobalFetch,
   });
 
   try {

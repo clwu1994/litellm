@@ -1,5 +1,6 @@
 import openai from "openai";
 import { getProxyBaseUrl } from "@/components/networking";
+import { deferToGlobalFetch } from "@/lib/http/globalFetch";
 import { toast } from "@/lib/toast";
 
 export async function makeOpenAIAudioTranscriptionRequest(
@@ -27,6 +28,7 @@ export async function makeOpenAIAudioTranscriptionRequest(
     baseURL: proxyBaseUrl,
     dangerouslyAllowBrowser: true,
     defaultHeaders: tags && tags.length > 0 ? { "x-litellm-tags": tags.join(",") } : undefined,
+    fetch: deferToGlobalFetch,
   });
 
   try {
