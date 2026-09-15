@@ -46,7 +46,10 @@ def _translate_mapping(
             for key, value in mapping.items()
         }
     )
-    return translated if translated != mapping else mapping
+    changed: Final = any(
+        translated[key] != value for key, value in mapping.items() if key in fields and isinstance(value, str)
+    )
+    return translated if changed else mapping
 
 
 def translate_error_dict(error_dict: Mapping[str, object], locale: str | None) -> Mapping[str, object]:

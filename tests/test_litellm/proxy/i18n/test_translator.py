@@ -1,3 +1,7 @@
+from collections.abc import Iterator, Mapping
+from types import MappingProxyType
+from typing import Final
+
 from litellm.proxy.i18n.translator import (
     TRANSLATABLE_FIELDS,
     translate_detail,
@@ -48,6 +52,34 @@ def test_translate_error_dict_zh_changes_only_message() -> None:
 
 def test_translate_error_dict_unmatched_returns_same_object() -> None:
     payload = {"message": "brand new upstream message", "type": "x", "code": "500"}
+    assert translate_error_dict(payload, "zh") is payload
+
+
+def test_translate_error_dict_preserves_identity_when_untranslated_fields_hold_odd_values() -> None:
+    payload = {
+        "message": "brand new upstream message",
+        "code": "500",
+        "provider_specific_fields": {"score": float("nan")},
+    }
+    assert translate_error_dict(payload, "zh") is payload
+
+
+def test_translate_error_dict_ignores_untranslated_field_values_that_are_not_referentially_stable() -> None:
+    known: Final = MappingProxyType({"message": "brand new upstream message", "code": "500"})
+
+    class UnstableMapping(Mapping[str, object]):
+        def __getitem__(self, key: str) -> object:
+            if key in known:
+                return known[key]
+            return float("nan")
+
+        def __iter__(self) -> Iterator[str]:
+            return iter((*known, "provider_specific_fields"))
+
+        def __len__(self) -> int:
+            return len(known) + 1
+
+    payload = UnstableMapping()
     assert translate_error_dict(payload, "zh") is payload
 
 
