@@ -58,6 +58,31 @@ const eslintConfig = [
           message:
             "Raw fetch() is only allowed in src/lib/http/. Use the shared client (createApiClient / apiClient) from @/lib/http/client instead.",
         },
+        {
+          selector: "AssignmentExpression[left.name='fetch']",
+          message:
+            "Raw fetch() is only allowed in src/lib/http/. Use the shared client (createApiClient / apiClient) from @/lib/http/client instead.",
+        },
+        {
+          selector: "AssignmentExpression[left.object.name='window'][left.property.name='fetch']",
+          message:
+            "Raw fetch() is only allowed in src/lib/http/. Use the shared client (createApiClient / apiClient) from @/lib/http/client instead.",
+        },
+        {
+          selector: "AssignmentExpression[left.object.name='globalThis'][left.property.name='fetch']",
+          message:
+            "Raw fetch() is only allowed in src/lib/http/. Use the shared client (createApiClient / apiClient) from @/lib/http/client instead.",
+        },
+        {
+          selector: "MemberExpression[object.name='window'][property.name='fetch']",
+          message:
+            "Raw fetch() is only allowed in src/lib/http/. Use the shared client (createApiClient / apiClient) from @/lib/http/client instead.",
+        },
+        {
+          selector: "MemberExpression[object.name='globalThis'][property.name='fetch']",
+          message:
+            "Raw fetch() is only allowed in src/lib/http/. Use the shared client (createApiClient / apiClient) from @/lib/http/client instead.",
+        },
       ],
       "no-restricted-imports": [
         "error",
