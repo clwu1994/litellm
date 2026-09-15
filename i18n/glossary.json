@@ -1,0 +1,19 @@
+{
+  "LiteLLM": ["轻量级LLM"],
+  "OpenAI": [],
+  "Anthropic": [],
+  "Azure": [],
+  "Bedrock": [],
+  "Vertex": [],
+  "API Key": ["接口密钥", "API密钥", "应用编程接口密钥"],
+  "Virtual Key": ["虚拟密钥"],
+  "Token": ["令牌"],
+  "Endpoint": ["端点", "终结点"],
+  "Base URL": ["基础地址", "基地址", "基础URL"],
+  "Webhook": ["网络钩子", "网页钩子"],
+  "SDK": ["软件开发工具包"],
+  "JWT": ["JSON网络令牌"],
+  "SSO": ["单点登录"],
+  "OAuth": ["开放授权"],
+  "MCP": ["模型上下文协议"]
+}
