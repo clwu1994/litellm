@@ -19,6 +19,9 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import CopyButton from "@/components/shared/CopyButton";
 import { cn } from "@/lib/cva.config";
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+
+import LanguageSwitcher from "./LanguageSwitcher";
 
 function hueFromString(seed: string): number {
   let h = 0;
@@ -67,6 +70,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onLogout, variant = "navbar
   const disableShowPrompts = useDisableShowPrompts();
   const disableBlogPosts = useDisableBlogPosts();
   const disableBouncingIcon = useDisableBouncingIcon();
+  const { t } = useTranslation();
   const [disableShowNewBadge, setDisableShowNewBadge] = useState(false);
 
   useEffect(() => {
@@ -258,13 +262,14 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onLogout, variant = "navbar
       >
         {renderUserInfoSection()}
         <Separator />
+        <LanguageSwitcher />
         <button
           type="button"
           onClick={onLogout}
           className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent"
         >
           <LogOut className="size-4" />
-          Logout
+          {t("logout")}
         </button>
       </PopoverContent>
     </Popover>
