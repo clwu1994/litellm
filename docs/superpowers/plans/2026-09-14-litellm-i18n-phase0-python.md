@@ -954,6 +954,15 @@ Extend `EXACT_MESSAGES` and `TEMPLATE_MESSAGES` in `litellm/proxy/i18n/catalog/z
 
 Every added entry must respect `i18n/glossary.json`: `Token`, `API Key`, `Endpoint` and the other listed terms stay in English.
 
+Do not add a template whose placeholder can hold an empty string or span a newline. `build_pattern` compiles each `{name}` to `.+?` without `re.DOTALL`, so a placeholder value that is empty fails the one-character minimum and a value containing a newline cannot cross it, and the entry silently never fires. The credentials message at `litellm/proxy/auth/login_utils.py:365-371` is the worked example: its hint is either `"\nCheck 'UI_USERNAME', 'UI_PASSWORD' in .env file"` or `""`, so author it as two exact entries covering those two real shapes rather than one template:
+
+```python
+"Invalid credentials used to access UI.": "访问 UI 的凭据无效。",
+"Invalid credentials used to access UI.\nCheck 'UI_USERNAME', 'UI_PASSWORD' in .env file": "访问 UI 的凭据无效。\n请检查 .env 文件中的 'UI_USERNAME' 和 'UI_PASSWORD'",
+```
+
+Before adding any template, confirm its placeholder can never be empty and never contain a newline at its real raise site.
+
 - [ ] **Step 3: Add a drift-detection test**
 
 Append to `tests/test_litellm/proxy/i18n/test_catalog_structure.py`. This pins the real upstream message strings so a future upstream rewording surfaces as a failure instead of a silent fallback to English:
