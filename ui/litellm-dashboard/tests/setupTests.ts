@@ -1,6 +1,8 @@
 import "@testing-library/jest-dom";
 import { cleanup } from "@testing-library/react";
-import { afterEach, vi } from "vitest";
+import { afterEach, beforeAll, vi } from "vitest";
+
+import i18n from "@/i18n";
 
 const ensureTestLocalStorage = () => {
   if (typeof window === "undefined" || typeof window.Storage === "undefined") {
@@ -128,6 +130,10 @@ const releaseBaseUiScrollLock = () => {
     document.body.style.removeProperty(property);
   }
 };
+
+beforeAll(async () => {
+  await i18n.changeLanguage("en");
+});
 
 afterEach(() => {
   cleanup();
