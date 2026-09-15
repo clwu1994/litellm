@@ -471,6 +471,14 @@ from litellm.proxy.hooks.prompt_injection_detection import (
     _OPTIONAL_PromptInjectionDetection,
 )
 from litellm.proxy.hooks.proxy_track_cost_callback import _ProxyDBLogger, run_spend_event
+from litellm.proxy.i18n import (
+    install_i18n,
+    locale_for_request,
+    translate_error_dict,
+    translate_message,
+    translate_problem,
+    translate_validation_errors,
+)
 from litellm.proxy.image_endpoints.endpoints import router as image_router
 from litellm.proxy.list_api.common import (
     PROBLEM_TYPE_BASE,
@@ -1660,11 +1668,17 @@ class UserAPIKeyCacheTTLEnum(enum.Enum):
     in_memory_cache_ttl = 60  # 1 min ttl ## configure via `general_settings::user_api_key_cache_ttl: <your-value>`
 
 
+install_i18n(app)
+
+
 @app.exception_handler(ProxyException)
 async def openai_exception_handler(request: Request, exc: ProxyException):
     # NOTE: DO NOT MODIFY THIS, its crucial to map to Openai exceptions
     headers: Final = exc.headers
-    error_dict: Final = exc.to_dict()
+    error_dict: Final = translate_error_dict(
+        cast("Mapping[str, object]", exc.to_dict()),  # cast-ok: ProxyException.to_dict is annotated as a bare dict
+        locale_for_request(request),
+    )
     status_code: Final = int(exc.code) if exc.code else status.HTTP_500_INTERNAL_SERVER_ERROR
     _close_dangling_otel_server_span(request, status_code, exc=exc)
     return JSONResponse(
@@ -1715,7 +1729,7 @@ def _close_dangling_otel_server_span(request: Request, status_code: int, exc: Ex
 @app.exception_handler(ManagementProblem)
 async def management_problem_exception_handler(request: Request, exc: ManagementProblem):
     _close_dangling_otel_server_span(request, exc.problem.status, exc=exc)
-    return problem_response(exc.problem)
+    return problem_response(translate_problem(exc.problem, locale_for_request(request)))
 
 
 class _ConfigParamRow(Protocol):
@@ -1791,24 +1805,31 @@ class _ValidationErrorDetail(TypedDict):
 
 @app.exception_handler(RequestValidationError)
 async def otel_request_validation_exception_handler(request: Request, exc: RequestValidationError):
+    locale: Final = locale_for_request(request)
+    validation_errors: Final = cast(  # cast-ok: translation preserves the pydantic error mapping shape
+        "Sequence[_ValidationErrorDetail]", translate_validation_errors(exc.errors(), locale)
+    )
     if request.url.path.startswith(MANAGEMENT_V1_PREFIX):
         _close_dangling_otel_server_span(request, 400, exc=exc)
-        validation_errors: Final[Sequence[_ValidationErrorDetail]] = exc.errors()
         return problem_response(
-            ProblemDetail(
-                type=f"{PROBLEM_TYPE_BASE}invalid-query-parameter",
-                title="Invalid query parameter",
-                status=400,
-                detail="; ".join(
-                    f"{'.'.join(str(part) for part in error['loc'][1:])}: {error['msg']}" for error in validation_errors
-                )
-                or "The request query parameters are invalid.",
+            translate_problem(
+                ProblemDetail(
+                    type=f"{PROBLEM_TYPE_BASE}invalid-query-parameter",
+                    title="Invalid query parameter",
+                    status=400,
+                    detail="; ".join(
+                        f"{'.'.join(str(part) for part in error['loc'][1:])}: {error['msg']}"
+                        for error in validation_errors
+                    )
+                    or "The request query parameters are invalid.",
+                ),
+                locale,
             )
         )
     _close_dangling_otel_server_span(request, 422, exc=exc)
     return JSONResponse(
         status_code=422,
-        content={"detail": jsonable_encoder(exc.errors())},
+        content={"detail": jsonable_encoder(validation_errors)},
     )
 
 
@@ -1822,7 +1843,7 @@ async def otel_unhandled_exception_handler(request: Request, exc: Exception):
         status_code=500,
         content={
             "error": {
-                "message": "Internal server error",
+                "message": translate_message("Internal server error", locale_for_request(request)),
                 "type": "internal_server_error",
             }
         },

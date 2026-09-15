@@ -29,10 +29,10 @@ from .conftest import normalize
 
 
 def _make_request(parent_otel_span=None, path="/chat/completions"):
-    """A real Request always carries a url; the validation handler reads its path to
-    decide whether the caller is on a surface with its own error contract."""
+    """A real Request always carries a url and headers; the validation handler reads
+    the path and every handler negotiates a locale from Accept-Language."""
     state = SimpleNamespace(parent_otel_span=parent_otel_span)
-    return SimpleNamespace(state=state, url=SimpleNamespace(path=path))
+    return SimpleNamespace(state=state, url=SimpleNamespace(path=path), headers={})
 
 
 # ---------------------------------------------------------------------------

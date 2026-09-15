@@ -24,12 +24,12 @@ from ._helpers import assert_server_span_attrs, get_server_span
 
 
 def _fake_request(parent_otel_span=None, path="/key/generate"):
-    """A real Request always carries a url; the validation handler reads its path to
-    decide whether the caller is on a surface with its own error contract."""
+    """A real Request always carries a url and headers; the validation handler reads
+    the path and every handler negotiates a locale from Accept-Language."""
     state = types.SimpleNamespace()
     if parent_otel_span is not None:
         state.parent_otel_span = parent_otel_span
-    return types.SimpleNamespace(state=state, url=types.SimpleNamespace(path=path))
+    return types.SimpleNamespace(state=state, url=types.SimpleNamespace(path=path), headers={})
 
 
 @pytest.fixture
