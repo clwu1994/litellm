@@ -13,7 +13,58 @@ EXACT_MESSAGES: Final[Mapping[str, str]] = MappingProxyType(
         "The request query parameters are invalid.": "请求的查询参数无效。",
         "Unknown query parameter": "未知的查询参数",
         "Crossed TPM / RPM / Max Parallel Request Limit": "已超出 TPM / RPM / 最大并发请求限制",
+        "Invalid API key": "无效的 API Key",
+        "Invalid Authorization header format": "Authorization 请求头格式无效",
+        "No API key provided": "未提供 API Key",
+        "No connected db.": "未连接数据库。",
+        "Invalid JWT token": "无效的 JWT Token",
+        "Token Expired": "Token 已过期",
+        (
+            "DB not connected. This endpoint needs a database; set DATABASE_URL to a PostgreSQL connection string "
+            "(postgresql://...) to enable it. See https://docs.litellm.ai/docs/proxy/virtual_keys"
+        ): (
+            "数据库未连接。该 endpoint 需要数据库；请将 DATABASE_URL 设置为 PostgreSQL 连接字符串"
+            "（postgresql://...）以启用。参见 https://docs.litellm.ai/docs/proxy/virtual_keys"
+        ),
+        "This uses the enterprise folder - only available on the Docker image.": "此功能使用 enterprise 目录，仅在 Docker 镜像中可用。",
+        "Key not found.": "未找到 Key。",
+        "Invalid key format.": "Key 格式无效。",
+        "Key Hash not found.": "未找到 Key Hash。",
+        "Key not found in database": "数据库中未找到该 Key",
+        "Invalid key_alias": "无效的 key_alias",
+        "You are not authorized to check another user's keys": "你无权查看其他用户的 Key",
+        "either key or key_alias must be provided": "必须提供 key 或 key_alias",
+        "Prisma Client is not initialized": "Prisma Client 未初始化",
+        "Database not connected": "数据库未连接",
+        "Please provide start_date and end_date": "请提供 start_date 和 end_date",
+        "Start date and end date are required": "必须提供开始日期和结束日期",
+        "Cannot edit config-based model. Store model in DB via /model/new first.": (
+            "无法编辑基于 config 的模型。请先通过 /model/new 将模型存入数据库。"
+        ),
+        "Model updates only supported for DB-stored models": "仅支持更新存储在数据库中的模型",
+        "Only proxy admins can change a model's blocked flag.": "只有 proxy 管理员才能修改模型的 blocked 标记。",
     }
 )
 
-TEMPLATE_MESSAGES: Final[Mapping[str, str]] = MappingProxyType({})
+TEMPLATE_MESSAGES: Final[Mapping[str, str]] = MappingProxyType(
+    {
+        (
+            "Authentication Error, Invalid proxy server token passed. Received API Key = {api_key}, "
+            "Key Hash (Token) ={token}. Unable to find token in cache or `LiteLLM_VerificationTokenTable`"
+        ): (
+            "认证错误，无效的 proxy server Token。收到的 API Key = {api_key}，Key Hash (Token) ={token}。"
+            "无法在缓存或 `LiteLLM_VerificationTokenTable` 中找到该 Token"
+        ),
+        "Invalid credentials used to access UI.{env_credentials_hint}": "访问 UI 的凭据无效。{env_credentials_hint}",
+        "Access forbidden: Route {route} not allowed": "禁止访问：不允许访问 route {route}",
+        (
+            "Authentication Error - Expired Key. Key Expiry time {expiry_time} and current time {current_time}"
+        ): "认证错误 - Key 已过期。Key 过期时间 {expiry_time}，当前时间 {current_time}",
+        (
+            "Key with alias '{key_alias}' already exists. Unique key aliases across all keys are required."
+        ): "别名 '{key_alias}' 的 Key 已存在。所有 Key 的别名必须唯一。",
+        "Required param {param} not in data": "请求数据中缺少必填参数 {param}",
+        "Invalid sort_order: {sort_order}. Must be one of: asc, desc": "无效的 sort_order: {sort_order}。必须是以下之一：asc、desc",
+        "Model {model_id} not found on proxy.": "proxy 上未找到模型 {model_id}。",
+    }
+)

@@ -70,13 +70,13 @@ These are the messages Task 4 seeds and Task 5 grows and pins in its drift test.
 
 These 7 messages are reachable from many dashboard surfaces and are prime catalog candidates. They live in `litellm/proxy/_types.py` and are referenced by enum member, so no grep for a literal will find them. Four members are listed here; the other three, `no_llm_router`, `not_allowed_access`, and `max_parallel_request_limit_reached`, are pinned in the Task 5 subset above, where their message text lives.
 
-- [ ] `DB not connected. This endpoint needs a database; set DATABASE_URL to a PostgreSQL connection string (postgresql://...) to enable it. See https://docs.litellm.ai/docs/proxy/virtual_keys`
+- [x] `DB not connected. This endpoint needs a database; set DATABASE_URL to a PostgreSQL connection string (postgresql://...) to enable it. See https://docs.litellm.ai/docs/proxy/virtual_keys`
   - source: `litellm/proxy/_types.py`, `CommonProxyErrors.db_not_connected_error`
 - [ ] `` You must be a LiteLLM Enterprise user to use this feature. If you have a license please set `LITELLM_LICENSE` in your env. Get a 7 day trial key here: https://www.litellm.ai/enterprise#trial. \nPricing: https://www.litellm.ai/#pricing ``
   - source: `litellm/proxy/_types.py`, `CommonProxyErrors.not_premium_user`
 - [ ] `` Missing litellm-enterprise package. Please install it to use this feature. Run `pip install litellm-enterprise` ``
   - source: `litellm/proxy/_types.py`, `CommonProxyErrors.missing_enterprise_package`
-- [ ] `This uses the enterprise folder - only available on the Docker image.`
+- [x] `This uses the enterprise folder - only available on the Docker image.`
   - source: `litellm/proxy/_types.py`, `CommonProxyErrors.missing_enterprise_package_docker`
 
 ## Message groups by dashboard reachability
@@ -147,16 +147,16 @@ Every message extracted for the Wave 1 groups is listed below. `{...}` marks an 
 `litellm/proxy/auth/auth_utils.py`
 
 - [ ] `Access forbidden: IP address {passed_in_ip} not allowed.`
-- [ ] `Access forbidden: Route {route} not allowed`
+- [x] `Access forbidden: Route {route} not allowed`
 - [ ] `Request size is too large. Request size is {header_size_mb} MB. Max size is {max_request_size_mb} MB`
 - [ ] `Request size is too large. Request size is {request_size_mb} MB. Max size is {max_request_size_mb} MB`
 - [ ] `Response size is too large. Response size is {response_size_mb} MB. Max size is {max_response_size_mb} MB`
 
 `litellm/proxy/auth/handle_jwt.py`
 
-- [ ] `Token Expired`  (x2)
+- [x] `Token Expired`  (x2)
 - [ ] `Email domain not allowed. User email: {user_email}. Allowed domain: {jwt_handler.litellm_jwtauth.user_allowed_email_domain}`
-- [ ] `Invalid JWT token`
+- [x] `Invalid JWT token`
 - [ ] `` No team has access to the requested model: {requested_model}. Checked teams={team_ids}. Check `/models` to see all available models. ``
 - [ ] `` No teams found in token. `enforce_team_based_model_access` is set to True. Token must belong to a team. ``
 - [ ] `No user or team id found in token. enforce_rbac is set to True. Token must belong to a proxy admin, team, or user.`
@@ -169,7 +169,7 @@ Every message extracted for the Wave 1 groups is listed below. `{...}` marks an 
 
 - [ ] `` No Database connected. Set DATABASE_URL in .env. If set, use `--detailed_debug` to debug issue. ``  (x2)
 - [ ] `Invalid credentials used to access UI.\nNot valid credentials for {username}`
-- [ ] `Invalid credentials used to access UI.{env_credentials_hint}`
+- [x] `Invalid credentials used to access UI.{env_credentials_hint}`
 - [ ] `` Master Key not set for Proxy. Please set Master Key to use Admin UI. Set `LITELLM_MASTER_KEY` in .env or set general_settings:master_key in config.yaml.  https://docs.litellm.ai/docs/proxy/virtual_keys. If set, use `--detailed_debug` to debug issue. ``
 - [ ] `` User has no password set. Please set a password for the user via `/user/update`. ``
 - [ ] `` set Proxy master key to use UI. https://docs.litellm.ai/docs/proxy/virtual_keys. If set, use `--detailed_debug` to debug issue. ``
@@ -194,15 +194,15 @@ Every message extracted for the Wave 1 groups is listed below. `{...}` marks an 
 
 `litellm/proxy/auth/user_api_key_auth.py`
 
-- [ ] `Authentication Error - Expired Key. Key Expiry time {expiry_time} and current time {current_time}`  (x3)
+- [x] `Authentication Error - Expired Key. Key Expiry time {expiry_time} and current time {current_time}`  (x3)
 - [ ] `JWT Key Mapping: No registered mapping for {virtual_key_claim_field}='{claim_value}'. Access denied.`  (x2)
 - [ ] `'allow_user_auth' not set or set to False`
-- [ ] `Invalid API key`
+- [x] `Invalid API key`
 - [ ] `Invalid API key, no token associated`
-- [ ] `Invalid Authorization header format`
+- [x] `Invalid Authorization header format`
 - [ ] `JWT Auth is an enterprise only feature. {CommonProxyErrors.not_premium_user.value}`
-- [ ] `No API key provided`
-- [ ] `No connected db.`
+- [x] `No API key provided`
+- [x] `No connected db.`
 - [ ] `Oauth2 token validation is only available for premium users. `
 
 `litellm/proxy/management_helpers/team_member_permission_checks.py`
@@ -279,10 +279,10 @@ Every message extracted for the Wave 1 groups is listed below. `{...}` marks an 
 
 `litellm/proxy/management_endpoints/key_management_endpoints.py`
 
-- [ ] `Key not found.`  (x4)
+- [x] `Key not found.`  (x4)
 - [ ] `Authentication Error, `  (x3)
-- [ ] `Invalid key format.`  (x2)
-- [ ] `Key Hash not found.`  (x2)
+- [x] `Invalid key format.`  (x2)
+- [x] `Key Hash not found.`  (x2)
 - [ ] `Unable to find team object in database. Team ID: {data.team_id}`  (x2)
 - [ ] `You are not allowed to access this key's info. Your role={user_api_key_dict.user_role}`  (x2)
 - [ ] `You are not authorized to access this endpoint. No 'user_id' is associated with your API key.`  (x2)
@@ -296,12 +296,12 @@ Every message extracted for the Wave 1 groups is listed below. `{...}` marks an 
 - [ ] `Caller is not a member of organization_id={organization_id}`
 - [ ] `Cannot assign a key to an organization without a user_id on the caller's token`
 - [ ] `Failed to delete keys got None response from delete_verification_token`
-- [ ] `Invalid key_alias`
+- [x] `Invalid key_alias`
 - [ ] `Invalid key_alias format. Must be 2-255 characters, start/end with alphanumeric, and only contain a-zA-Z0-9_-/.@.`
 - [ ] `Key health check failed: {e}`
-- [ ] `Key not found in database`
+- [x] `Key not found in database`
 - [ ] `Key not found. No key with key_alias='{key_alias}'.`
-- [ ] `Key with alias '{key_alias}' already exists. Unique key aliases across all keys are required.`
+- [x] `Key with alias '{key_alias}' already exists. Unique key aliases across all keys are required.`
 - [ ] `Key={key.token} has a rpm_limit={key.rpm_limit} which is greater than the team's rpm_limit={team.rpm_limit}.`
 - [ ] `Key={key.token} has a tpm_limit={key.tpm_limit} which is greater than the team's tpm_limit={team.tpm_limit}.`
 - [ ] `Multiple keys share key_alias='{key_alias}', so it cannot be used as an identifier.`
@@ -310,7 +310,7 @@ Every message extracted for the Wave 1 groups is listed below. `{...}` marks an 
 - [ ] `Organization not found for organization_id={data.organization_id}`
 - [ ] `Personal key creation has been restricted by admin. Allowed roles={personal_key_generation['allowed_user_roles']}. Your role={user_api_key_dict.user_role}`
 - [ ] `Project reassignment is not supported. Use null to detach the key.`
-- [ ] `Required param {param} not in data`
+- [x] `Required param {param} not in data`
 - [ ] `Team member role {team_member_object.role} not in allowed_team_member_roles={team_key_generation['allowed_team_member_roles']}`
 - [ ] `Team not found for team_id={data.team_id}. Non-admin users cannot create keys for non-existent teams.`
 - [ ] `Team not found for team_id={data.team_id}. Non-admin users cannot set keys to non-existent teams.`
@@ -318,10 +318,10 @@ Every message extracted for the Wave 1 groups is listed below. `{...}` marks an 
 - [ ] `User={change_initiated_by.user_id} is not a Proxy Admin or Team Admin for team={team.team_id}. Please ask your Proxy Admin to allow this action under 'Member Permissions' for this team.`
 - [ ] `` User={key.user_id} is not a member of the team={team.team_id}. Check team members via `/team/info`. ``
 - [ ] `User={user_api_key_dict.user_id} not assigned to team={team_table.team_id}`
-- [ ] `You are not authorized to check another user's keys`
+- [x] `You are not authorized to check another user's keys`
 - [ ] `You are not authorized to check this organization's keys`
 - [ ] `You are not authorized to check this team's keys`
-- [ ] `either key or key_alias must be provided`
+- [x] `either key or key_alias must be provided`
 - [ ] `key_alias is required when auto_rotate=True and store_virtual_keys is enabled. This ensures stable secret naming during rotation.`
 - [ ] `` prisma_client is required for service account keys. Please specify `prisma_client` in the request body. ``
 - [ ] `` team_id does not exist in the database. Please specify a valid `team_id` in the request body. ``
@@ -344,9 +344,9 @@ Every message extracted for the Wave 1 groups is listed below. `{...}` marks an 
 
 `litellm/proxy/spend_tracking/spend_management_endpoints.py`
 
-- [ ] `Prisma Client is not initialized`  (x5)
+- [x] `Prisma Client is not initialized`  (x5)
 - [ ] `/spend/tags Error`  (x2)
-- [ ] `Please provide start_date and end_date`  (x2)
+- [x] `Please provide start_date and end_date`  (x2)
 - [ ] `/global/spend Error`
 - [ ] `/global/spend/logs Error`
 - [ ] `/spend/all_tag_names Error`
@@ -354,16 +354,16 @@ Every message extracted for the Wave 1 groups is listed below. `{...}` marks an 
 - [ ] `/spend/report endpoint `
 - [ ] `Bad Request - Either 'model' or 'completion_response' must be provided`
 - [ ] `Bad Request - messages must be provided if 'model' is provided`
-- [ ] `Database not connected`
+- [x] `Database not connected`
 - [ ] `Date range too large; maximum is {_SPEND_REPORT_MAX_RANGE_DAYS} days`
 - [ ] `Invalid cache_hit_filter: {cache_hit_filter}. Must be one of: hit, miss`
 - [ ] `Invalid date format: {date_str}. Expected: {expected}`
 - [ ] `Invalid sort_by: {sort_by}. Must be one of: {', '.join(sorted(valid_sort_fields))}`
-- [ ] `Invalid sort_order: {sort_order}. Must be one of: asc, desc`
+- [x] `Invalid sort_order: {sort_order}. Must be one of: asc, desc`
 - [ ] `No organization_id associated with this API key; pass an organization_id query param`
 - [ ] `No {scope_name} associated with this API key; pass a {scope_name} query param`
 - [ ] `Not authorized to view spend for a {scope_name} other than your own`
-- [ ] `Start date and end date are required`
+- [x] `Start date and end date are required`
 - [ ] `start_date and end_date must be in YYYY-MM-DD format`
 - [ ] `start_date must be on or before end_date`
 
@@ -373,7 +373,7 @@ Every message extracted for the Wave 1 groups is listed below. `{...}` marks an 
 
 `litellm/proxy/management_endpoints/jwt_key_mapping_endpoints.py`
 
-- [ ] `Database not connected`  (x5)
+- [x] `Database not connected`  (x5)
 - [ ] `Mapping not found`  (x4)
 - [ ] `The provided key does not match an existing virtual key.`  (x2)
 - [ ] `A mapping for claim '{data.jwt_claim_name}' = '{data.jwt_claim_value}' already exists.`
@@ -396,11 +396,11 @@ Every message extracted for the Wave 1 groups is listed below. `{...}` marks an 
 `litellm/proxy/management_endpoints/model_management_endpoints.py`
 
 - [ ] `Authentication Error, `  (x3)
-- [ ] `Cannot edit config-based model. Store model in DB via /model/new first.`  (x2)
+- [x] `Cannot edit config-based model. Store model in DB via /model/new first.`  (x2)
 - [ ] `Error updating public model groups: {e}`  (x2)
-- [ ] `Model updates only supported for DB-stored models`  (x2)
-- [ ] `Model {model_id} not found on proxy.`  (x2)
-- [ ] `Only proxy admins can change a model's blocked flag.`  (x2)
+- [x] `Model updates only supported for DB-stored models`  (x2)
+- [x] `Model {model_id} not found on proxy.`  (x2)
+- [x] `Only proxy admins can change a model's blocked flag.`  (x2)
 - [ ] `tier_labels must be a JSON object of tier name to display name: {e}`  (x2)
 - [ ] `{violation} {AUTO_ROUTER_LICENSE_REMEDY}`  (x2)
 - [ ] `Error updating model blocked status: {e}`
@@ -611,7 +611,7 @@ python3 scripts/i18n/inventory_python_messages.py
 
 `litellm/proxy/management_endpoints/tag_management_endpoints.py`
 
-- [ ] `Database not connected`  (x6)
+- [x] `Database not connected`  (x6)
 - [ ] `Invalid date format, expected YYYY-MM-DD: {e}`
 - [ ] `Model {deployment.model_info.id} not found in database`
 - [ ] `Tag {data.name} not found`
@@ -655,7 +655,7 @@ python3 scripts/i18n/inventory_python_messages.py
 
 `litellm/proxy/policy_engine/policy_endpoints.py`
 
-- [ ] `Database not connected`  (x13)
+- [x] `Database not connected`  (x13)
 - [ ] `Policy with ID {policy_id} not found`  (x4)
 - [ ] `Attachment with ID {attachment_id} not found`  (x2)
 - [ ] ` | `
@@ -666,7 +666,7 @@ python3 scripts/i18n/inventory_python_messages.py
 
 `litellm/proxy/policy_engine/policy_resolve_endpoints.py`
 
-- [ ] `Database not connected`  (x2)
+- [x] `Database not connected`  (x2)
 
 ### Files and batches
 
@@ -819,7 +819,7 @@ python3 scripts/i18n/inventory_python_messages.py
 
 `litellm/proxy/vector_store_endpoints/management_endpoints.py`
 
-- [ ] `Database not connected`  (x4)
+- [x] `Database not connected`  (x4)
 - [ ] `Access denied: You do not have permission to access this vector store`  (x2)
 - [ ] `Vector store with ID {vector_store_id} not found`  (x2)
 - [ ] `Access denied: You do not have permission to delete this vector store`
@@ -911,7 +911,7 @@ python3 scripts/i18n/inventory_python_messages.py
 
 `litellm/proxy/custom_auth_auto.py`
 
-- [ ] `Invalid API key`
+- [x] `Invalid API key`
 
 `litellm/proxy/health_endpoints/_health_endpoints.py`
 
@@ -934,7 +934,7 @@ python3 scripts/i18n/inventory_python_messages.py
 - [ ] `Access denied. Admin role required. Current role: {user_api_key_dict.user_role}`  (x9)
 - [ ] `Database connection not available`  (x6)
 - [ ] `Authentication Error, `  (x3)
-- [ ] `Prisma Client is not initialized`  (x3)
+- [x] `Prisma Client is not initialized`  (x3)
 - [ ] `Hours must be greater than 0`  (x2)
 - [ ] `Internal server error`  (x2)
 - [ ] `` Master Key not set for Proxy. Please set Master Key to use Admin UI. Set `LITELLM_MASTER_KEY` in .env or set general_settings:master_key in config.yaml.  https://docs.litellm.ai/docs/proxy/virtual_keys. If set, use `--detailed_debug` to debug issue. ``  (x2)

@@ -1,7 +1,11 @@
 import json
 from pathlib import Path
+from typing import Final
+
+import pytest
 
 from litellm.proxy.i18n.catalog.zh import EXACT_MESSAGES, TEMPLATE_MESSAGES
+from litellm.proxy.i18n.translator import translate_message
 
 GLOSSARY_PATH = Path(__file__).resolve().parents[4] / "i18n" / "glossary.json"
 
@@ -26,3 +30,16 @@ def test_zh_catalog_does_not_use_banned_technical_term_translations() -> None:
             assert squeeze(banned) not in normalized_translation, (
                 f"term {term!r} must stay in English, but {translation!r} contains {banned!r}"
             )
+
+
+REAL_MESSAGES_THAT_MUST_STAY_COVERED: Final[tuple[str, ...]] = (
+    "No models configured on proxy",
+    "Admin-only endpoint. Not allowed to access this.",
+    "Internal server error",
+    "Unknown query parameter",
+)
+
+
+@pytest.mark.parametrize("message", REAL_MESSAGES_THAT_MUST_STAY_COVERED)
+def test_real_upstream_messages_still_translate(message: str) -> None:
+    assert translate_message(message, "zh") != message
