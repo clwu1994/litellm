@@ -315,6 +315,7 @@ describe("i18next initialization", () => {
   it("falls back to Chinese for an unsupported language", async () => {
     await i18n.changeLanguage("fr");
     expect(currentLocale()).toBe("zh");
+    expect(i18n.t("logout")).toBe("退出登录");
     await i18n.changeLanguage("zh");
   });
 
@@ -369,12 +370,11 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
 import { DEFAULT_LOCALE, normalizeLocale, type Locale } from "./config";
-import { readStoredLocale } from "./localeStorage";
 import { resources } from "./resources";
 
 void i18n.use(initReactI18next).init({
   resources,
-  lng: readStoredLocale(),
+  lng: DEFAULT_LOCALE,
   fallbackLng: DEFAULT_LOCALE,
   defaultNS: "common",
   interpolation: { escapeValue: false },
@@ -387,6 +387,8 @@ export const currentLocale = (): Locale => normalizeLocale(i18n.language) ?? DEF
 
 export default i18n;
 ```
+
+`bootstrapI18n.ts` deliberately initializes with `DEFAULT_LOCALE` and never reads storage at module load. Reading storage there would break the static export's first paint: the prerendered HTML is Chinese, so a client that initializes with a stored `en` would render English on hydration against Chinese server markup and produce a hydration mismatch. The stored preference is applied after mount by `LocaleProvider`'s effect instead, which is exactly the sequencing design section 6.3 requires: the first client render matches the server, and the language flips afterwards.
 
 Create `src/i18n/index.ts`:
 
@@ -711,7 +713,6 @@ describe("LocaleProvider", () => {
 
   it("honours a stored preference on mount", async () => {
     window.localStorage.setItem(LOCALE_STORAGE_KEY, "en");
-    await i18n.changeLanguage("en");
     renderProbe();
     expect(await screen.findByTestId("logout")).toHaveTextContent("Logout");
     expect(document.documentElement.lang).toBe("en");
@@ -764,22 +765,34 @@ Create `src/contexts/LocaleProvider.tsx`:
 "use client";
 
 import { useEffect, type ReactNode } from "react";
-import { I18nextProvider } from "react-i18next";
+import { I18nextProvider, useTranslation } from "react-i18next";
 
 import i18n from "@/i18n";
+import { normalizeLocale } from "@/i18n/config";
+import { readStoredLocale } from "@/i18n/localeStorage";
 import { useLocale } from "@/i18n/useLocale";
 
-const HtmlLangSync = () => {
+const LocaleEffects = () => {
+  const { i18n: instance } = useTranslation();
   const { locale } = useLocale();
+
+  useEffect(() => {
+    const stored = readStoredLocale();
+    if (stored !== normalizeLocale(instance.language)) {
+      void instance.changeLanguage(stored);
+    }
+  }, [instance]);
+
   useEffect(() => {
     document.documentElement.lang = locale;
   }, [locale]);
+
   return null;
 };
 
 export const LocaleProvider = ({ children }: { children: ReactNode }) => (
   <I18nextProvider i18n={i18n}>
-    <HtmlLangSync />
+    <LocaleEffects />
     {children}
   </I18nextProvider>
 );
