@@ -6,10 +6,13 @@
 
 **Architecture:** react-i18next, client-side only, with no route changes. This is forced by `output: "export"` in `next.config.mjs`: there is no Next.js server or middleware, so a `/[locale]` route segment would require restructuring 48 `page.tsx` files and the proxy's static hosting path logic. i18next initializes synchronously at module load so the prerendered HTML is already Chinese and default-locale users see no flash. A single global `fetch` wrapper injects the locale header, because the repo's "single HTTP client" invariant does not hold in practice.
 
-**Tech Stack:** Next.js 16 (static export), React 19, TypeScript 5.9, i18next 26.4.2, react-i18next 17.0.14, vitest 4.
+**Tech Stack:** Next.js 16 (static export), React 19, TypeScript 5.9, i18next 26.4.2, react-i18next 17.0.13, vitest 4.
 
 Design reference: `docs/superpowers/specs/2026-09-14-litellm-i18n-design.md`
 Depends on: `i18n/glossary.json` from Task 1 of the Python plan.
+
+
+`react-i18next` is pinned to `17.0.13` rather than the newest `17.0.14` because the repo's `.npmrc` sets `min-release-age=3` as a supply-chain guard against freshly published packages, and `17.0.14` was published two days before this work. CI's `npm ci` ignores that setting, so the pin is a deliberate choice to respect the local guard rather than a CI requirement. Re-check the window when bumping.
 
 ## Global Constraints
 
@@ -54,7 +57,7 @@ Depends on: `i18n/glossary.json` from Task 1 of the Python plan.
 Run:
 
 ```bash
-cd ui/litellm-dashboard && npm install --save-exact i18next@26.4.2 react-i18next@17.0.14
+cd ui/litellm-dashboard && npm install --save-exact i18next@26.4.2 react-i18next@17.0.13
 ```
 
 Expected: both packages appear in `package.json` dependencies with exact versions and `package-lock.json` is updated. If npm reports a cache permission error, rerun with `--cache /tmp/npm-cache`.
