@@ -55,6 +55,8 @@ def build_pattern(template: str) -> re.Pattern[str]:
 def _validate_placeholders(template: str, translation: str) -> None:
     source_placeholders: Final = _placeholders(template)
     translation_placeholders: Final = _placeholders(translation)
+    if len(frozenset(source_placeholders)) != len(source_placeholders):
+        raise CatalogError(f"duplicate placeholder name in template {template!r}: {source_placeholders!r}")
     if sorted(source_placeholders) != sorted(translation_placeholders):
         raise CatalogError(
             f"placeholder mismatch for template {template!r}: source has "

@@ -45,6 +45,11 @@ def test_build_catalog_rejects_duplicate_placeholder_count() -> None:
         build_catalog({}, {"Key {key} and key {key}": "key {key}"})
 
 
+def test_build_catalog_rejects_duplicate_placeholder_name() -> None:
+    with pytest.raises(CatalogError, match="duplicate"):
+        build_catalog({}, {"Key {key} and key {key}": "key {key} and key {key}"})
+
+
 def test_build_catalog_rejects_template_that_matches_another_template() -> None:
     with pytest.raises(CatalogError, match="ambiguous"):
         build_catalog(
