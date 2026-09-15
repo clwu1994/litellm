@@ -948,11 +948,12 @@ Append to `tests/test_litellm/proxy/i18n/test_catalog_structure.py`. This pins t
 ```python
 import pytest
 
+from litellm.proxy._types import CommonProxyErrors
 from litellm.proxy.i18n.translator import translate_message
 
 REAL_MESSAGES_THAT_MUST_STAY_COVERED: tuple[str, ...] = (
-    "No models configured on proxy",
-    "Admin-only endpoint. Not allowed to access this.",
+    CommonProxyErrors.no_llm_router.value,
+    CommonProxyErrors.not_allowed_access.value,
     "Internal server error",
     "Unknown query parameter",
 )
@@ -962,6 +963,8 @@ REAL_MESSAGES_THAT_MUST_STAY_COVERED: tuple[str, ...] = (
 def test_real_upstream_messages_still_translate(message: str) -> None:
     assert translate_message(message, "zh") != message
 ```
+
+Two of the four pinned messages must be read from `CommonProxyErrors` rather than hardcoded. Binding them to the enum is what makes the test detect the drift it exists to detect: an upstream rewording of the enum member then fails this test instead of silently falling back to English, which design section 8.2 names as the primary mitigation for the top risk in the design's risk table. Hardcoded literals only prove the catalog still contains those strings, not that production still raises them.
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
@@ -1384,6 +1387,13 @@ git commit -m "feat(proxy): cover the auth error surfaced by the dashboard"
 ```
 
 ---
+
+## Final whole-branch review additions
+
+The final review required one more test-hardening wave, recorded here so the plan matches what shipped:
+
+- `tests/test_litellm/proxy/i18n/test_proxy_server_wiring.py` gains handler-level zh coverage for the three wiring points that had none, as design section 8.2 requires: `management_problem_exception_handler`, `otel_request_validation_exception_handler`, and `otel_unhandled_exception_handler`. Each asserts the translated field under `Accept-Language: zh`, the untouched `type`/`loc`/`status`, and an identity response with no header. The validation handler is the only composed path (translate each `msg`, join into `detail`, then `translate_problem` for `title` and `detail`), so it is where a regression would otherwise hide.
+- The drift test binds two of its four pinned messages to `CommonProxyErrors` enum members instead of hardcoded literals, so an upstream rewording fails the test.
 
 ## Self-Review Notes
 
