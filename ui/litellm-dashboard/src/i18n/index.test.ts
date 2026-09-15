@@ -18,6 +18,7 @@ describe("i18next initialization", () => {
   it("falls back to Chinese for an unsupported language", async () => {
     await i18n.changeLanguage("fr");
     expect(currentLocale()).toBe("zh");
+    expect(i18n.t("logout")).toBe("退出登录");
     await i18n.changeLanguage("zh");
   });
 

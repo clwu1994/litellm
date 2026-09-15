@@ -2,12 +2,11 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
 import { DEFAULT_LOCALE, normalizeLocale, type Locale } from "./config";
-import { readStoredLocale } from "./localeStorage";
 import { resources } from "./resources";
 
 const initOptions = {
   resources,
-  lng: readStoredLocale(),
+  lng: DEFAULT_LOCALE,
   fallbackLng: DEFAULT_LOCALE,
   defaultNS: "common",
   interpolation: { escapeValue: false },
