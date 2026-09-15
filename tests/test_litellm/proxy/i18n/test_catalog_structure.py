@@ -1,9 +1,9 @@
 import json
 from pathlib import Path
-from typing import Final
 
 import pytest
 
+from litellm.proxy._types import CommonProxyErrors
 from litellm.proxy.i18n.catalog.zh import EXACT_MESSAGES, TEMPLATE_MESSAGES
 from litellm.proxy.i18n.translator import translate_message
 
@@ -32,9 +32,9 @@ def test_zh_catalog_does_not_use_banned_technical_term_translations() -> None:
             )
 
 
-REAL_MESSAGES_THAT_MUST_STAY_COVERED: Final[tuple[str, ...]] = (
-    "No models configured on proxy",
-    "Admin-only endpoint. Not allowed to access this.",
+REAL_MESSAGES_THAT_MUST_STAY_COVERED: tuple[str, ...] = (
+    CommonProxyErrors.no_llm_router.value,
+    CommonProxyErrors.not_allowed_access.value,
     "Internal server error",
     "Unknown query parameter",
 )
