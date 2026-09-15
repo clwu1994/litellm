@@ -16,9 +16,13 @@ EXACT_MESSAGES: Final[Mapping[str, str]] = MappingProxyType(
         "Invalid API key": "无效的 API Key",
         "Invalid Authorization header format": "Authorization 请求头格式无效",
         "No API key provided": "未提供 API Key",
-        "No connected db.": "未连接数据库。",
+        "Invalid credentials used to access UI.": "访问 UI 的凭据无效。",
+        (
+            "Invalid credentials used to access UI.\nCheck 'UI_USERNAME', 'UI_PASSWORD' in .env file"
+        ): "访问 UI 的凭据无效。\n请检查 .env 文件中的 'UI_USERNAME' 和 'UI_PASSWORD'",
+        "No connected db.": "没有已连接的数据库。",
         "Invalid JWT token": "无效的 JWT Token",
-        "Token Expired": "Token 已过期",
+        "Token Expired": "该 Token 已过期",
         (
             "DB not connected. This endpoint needs a database; set DATABASE_URL to a PostgreSQL connection string "
             "(postgresql://...) to enable it. See https://docs.litellm.ai/docs/proxy/virtual_keys"
@@ -35,7 +39,7 @@ EXACT_MESSAGES: Final[Mapping[str, str]] = MappingProxyType(
         "You are not authorized to check another user's keys": "你无权查看其他用户的 Key",
         "either key or key_alias must be provided": "必须提供 key 或 key_alias",
         "Prisma Client is not initialized": "Prisma Client 未初始化",
-        "Database not connected": "数据库未连接",
+        "Database not connected": "数据库处于未连接状态。",
         "Please provide start_date and end_date": "请提供 start_date 和 end_date",
         "Start date and end date are required": "必须提供开始日期和结束日期",
         "Cannot edit config-based model. Store model in DB via /model/new first.": (
@@ -55,8 +59,7 @@ TEMPLATE_MESSAGES: Final[Mapping[str, str]] = MappingProxyType(
             "认证错误，无效的 proxy server Token。收到的 API Key = {api_key}，Key Hash (Token) ={token}。"
             "无法在缓存或 `LiteLLM_VerificationTokenTable` 中找到该 Token"
         ),
-        "Invalid credentials used to access UI.{env_credentials_hint}": "访问 UI 的凭据无效。{env_credentials_hint}",
-        "Access forbidden: Route {route} not allowed": "禁止访问：不允许访问 route {route}",
+        "Access forbidden: Route {route} not allowed": "访问被拒绝：route {route} 不在允许范围内",
         (
             "Authentication Error - Expired Key. Key Expiry time {expiry_time} and current time {current_time}"
         ): "认证错误 - Key 已过期。Key 过期时间 {expiry_time}，当前时间 {current_time}",
