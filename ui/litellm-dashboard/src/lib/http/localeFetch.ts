@@ -27,8 +27,9 @@ const withLocaleHeader = (headers: HeadersInit | undefined, value: string): Head
 
 export const createLocaleFetch = (originalFetch: typeof fetch, getLocale: () => string): typeof fetch => {
   return (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
-    if (headerPresent(init?.headers, LOCALE_HEADER)) return originalFetch(input, init);
-    return originalFetch(input, { ...init, headers: withLocaleHeader(init?.headers, getLocale()) });
+    const inherited = init?.headers ?? (input instanceof Request ? input.headers : undefined);
+    if (headerPresent(inherited, LOCALE_HEADER)) return originalFetch(input, init);
+    return originalFetch(input, { ...init, headers: withLocaleHeader(inherited, getLocale()) });
   };
 };
 

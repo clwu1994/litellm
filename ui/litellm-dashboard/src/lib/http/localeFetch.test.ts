@@ -54,7 +54,31 @@ describe("createLocaleFetch", () => {
     const captured: CapturedRequest[] = [];
     const localized = createLocaleFetch(recordingFetch(captured), () => "zh");
     await localized("http://x", { headers: [["Accept-Language", "en"]] });
-    expect(captured[0]?.headers).toEqual({ "Accept-Language": "en" });
+    expect(captured[0]?.headers["Accept-Language"]).toBe("en");
+  });
+
+  it("keeps a Request input's own headers while adding the locale", async () => {
+    let seen: HeadersInit | undefined;
+    const spy = (async (_input: RequestInfo | URL, init?: RequestInit) => {
+      seen = init?.headers;
+      return new Response("{}", { status: 200 });
+    }) as typeof fetch;
+    const localized = createLocaleFetch(spy, () => "zh");
+    await localized(new Request("http://x", { headers: { Authorization: "Bearer t" } }));
+    const merged = new Headers(seen);
+    expect(merged.get("Authorization")).toBe("Bearer t");
+    expect(merged.get("Accept-Language")).toBe("zh");
+  });
+
+  it("does not override a Request input's own Accept-Language", async () => {
+    let seen: HeadersInit | undefined;
+    const spy = (async (input: RequestInfo | URL, init?: RequestInit) => {
+      seen = init?.headers ?? (input instanceof Request ? input.headers : undefined);
+      return new Response("{}", { status: 200 });
+    }) as typeof fetch;
+    const localized = createLocaleFetch(spy, () => "zh");
+    await localized(new Request("http://x", { headers: { "Accept-Language": "en" } }));
+    expect(new Headers(seen).get("Accept-Language")).toBe("en");
   });
 
   it("reads the locale at call time so a language switch takes effect immediately", async () => {
