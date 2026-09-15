@@ -1104,7 +1104,7 @@ type Glossary = Record<string, string[]>;
 const glossaryPath = resolve(process.cwd(), "../../i18n/glossary.json");
 const glossary: Glossary = JSON.parse(readFileSync(glossaryPath, "utf-8"));
 
-const squeeze = (value: string): string => value.replace(/\s+/g, "");
+const squeeze = (value: string): string => value.replace(/\s+/g, "").toLowerCase();
 
 const leafPairs = (): Array<{ key: string; zh: string; en: string }> => {
   const collect = (value: unknown, prefix: string): Array<{ key: string; value: string }> => {

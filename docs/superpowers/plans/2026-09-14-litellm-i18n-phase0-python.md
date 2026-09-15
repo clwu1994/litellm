@@ -359,7 +359,7 @@ instead of being resolved by list order.
 from __future__ import annotations
 
 import re
-from typing import Final, Mapping, NamedTuple
+from typing import Final, Mapping, MappingProxyType, NamedTuple
 
 _PLACEHOLDER: Final = re.compile(r"\{([a-z_][a-z0-9_]*)\}")
 
@@ -395,33 +395,24 @@ def _placeholders(text: str) -> tuple[str, ...]:
 
 def build_pattern(template: str) -> re.Pattern[str]:
     """Turn a message template with `{name}` slots into an anchored regex with named groups."""
-    parts: list[str] = []
-    cursor: Final = 0
-    end: Final = len(template)
-    position = 0
-    while position < end:
-        match = _PLACEHOLDER.search(template, position)
-        if match is None:
-            break
-        parts.append(re.escape(template[cursor : match.start()]))
-        parts.append(f"(?P<{match.group(1)}>.+?)")
-        cursor = match.end()
-        position = match.end()
-    parts.append(re.escape(template[cursor:]))
-    return re.compile("".join(parts))
-
-
-def _example(template: str) -> str:
-    return _PLACEHOLDER.sub("X", template)
+    chunks: Final = _PLACEHOLDER.split(template)
+    return re.compile(
+        "".join(re.escape(chunk) if index % 2 == 0 else f"(?P<{chunk}>.+?)" for index, chunk in enumerate(chunks))
+    )
 
 
 def _validate_placeholders(template: str, translation: str) -> None:
     source_placeholders = _placeholders(template)
-    if sorted(source_placeholders) != sorted(_placeholders(translation)):
+    translation_placeholders = _placeholders(translation)
+    if sorted(source_placeholders) != sorted(translation_placeholders):
         raise CatalogError(
             f"placeholder mismatch for template {template!r}: source has "
-            f"{source_placeholders!r}, translation has {_placeholders(translation)!r}"
+            f"{source_placeholders!r}, translation has {translation_placeholders!r}"
         )
+    try:
+        translation.format(**dict.fromkeys(source_placeholders, "X"))
+    except (KeyError, IndexError, ValueError) as error:
+        raise CatalogError(f"translation for template {template!r} cannot be formatted: {error}") from error
 
 
 def _validate_no_ambiguity(
@@ -431,20 +422,16 @@ def _validate_no_ambiguity(
     for exact_source in exact:
         for pattern in patterns:
             if pattern.regex.fullmatch(exact_source) is not None:
-                raise CatalogError(f"ambiguous catalog: exact message {exact_source!r} also matches template {pattern.source!r}")
-    sources = tuple(pattern.source for pattern in patterns)
-    for pattern in patterns:
-        for other in sources:
-            if other == pattern.source:
-                continue
-            if pattern.regex.fullmatch(other) is not None:
-                raise CatalogError(f"ambiguous catalog: template {pattern.source!r} also matches template {other!r}")
-        for candidate in patterns:
-            if candidate.source == pattern.source or candidate.regex.fullmatch(_example(pattern.source)) is None:
-                continue
-            if pattern.regex.fullmatch(_example(candidate.source)) is not None and candidate.source != pattern.source:
                 raise CatalogError(
-                    f"ambiguous catalog: templates {pattern.source!r} and {candidate.source!r} overlap on examples"
+                    f"ambiguous catalog: exact message {exact_source!r} also matches template {pattern.source!r}"
+                )
+    for pattern in patterns:
+        for other in patterns:
+            if other.source == pattern.source:
+                continue
+            if pattern.regex.fullmatch(other.source) is not None:
+                raise CatalogError(
+                    f"ambiguous catalog: template {pattern.source!r} also matches template {other.source!r}"
                 )
 
 
@@ -457,7 +444,7 @@ def build_catalog(exact: Mapping[str, str], templates: Mapping[str, str]) -> Cat
         for template, translation in templates.items()
     )
     _validate_no_ambiguity(exact, patterns)
-    return Catalog(exact=dict(exact), patterns=patterns)
+    return Catalog(exact=MappingProxyType(dict(exact)), patterns=patterns)
 ```
 
 - [ ] **Step 4: Run the tests to verify they pass**
@@ -492,7 +479,7 @@ git commit -m "feat(proxy): add validated message catalog matcher"
   - `translate_message(message: str, locale: str | None) -> str`
   - `translate_detail(detail: object, locale: str | None) -> object`
   - `translate_error_dict(error_dict: Mapping[str, object], locale: str | None) -> Mapping[str, object]`
-  - `translate_validation_errors(errors: Sequence[Mapping[str, object]], locale: str | None) -> Sequence[Mapping[str, object]]`
+  - `translate_validation_errors(errors: Sequence[object], locale: str | None) -> Sequence[object]`
   - `translate_problem(problem: ProblemDetail, locale: str | None) -> ProblemDetail`
 
 The catalog is created in this task with a small real seed so the translator tests have something to translate. Task 5 grows it.
@@ -529,14 +516,11 @@ EXACT_MESSAGES: Final[Mapping[str, str]] = MappingProxyType(
         "Invalid query parameter": "无效的查询参数",
         "The request query parameters are invalid.": "请求的查询参数无效。",
         "Unknown query parameter": "未知的查询参数",
-    }
-)
-
-TEMPLATE_MESSAGES: Final[Mapping[str, str]] = MappingProxyType(
-    {
         "Crossed TPM / RPM / Max Parallel Request Limit": "已超出 TPM / RPM / 最大并发请求限制",
     }
 )
+
+TEMPLATE_MESSAGES: Final[Mapping[str, str]] = MappingProxyType({})
 ```
 
 - [ ] **Step 2: Write the failing translator tests**
@@ -618,6 +602,15 @@ def test_translate_detail_dict_message_key_is_translated() -> None:
     assert translate_detail({"message": "No models configured on proxy"}, "zh") == {"message": "proxy 上未配置任何模型"}
 
 
+def test_translate_detail_list_of_strings_is_translated_elementwise() -> None:
+    assert translate_detail(["No models configured on proxy"], "zh") == ("proxy 上未配置任何模型",)
+
+
+def test_translate_detail_list_of_numbers_is_returned_unchanged() -> None:
+    payload = [1, 2]
+    assert translate_detail(payload, "zh") is payload
+
+
 def test_translate_validation_errors_no_locale_returns_same_object() -> None:
     errors = [{"loc": ("body", "model"), "msg": "Field required", "type": "missing"}]
     assert translate_validation_errors(errors, None) is errors
@@ -626,9 +619,9 @@ def test_translate_validation_errors_no_locale_returns_same_object() -> None:
 def test_translate_validation_errors_preserves_loc_and_type() -> None:
     errors = [{"loc": ("body", "model"), "msg": "Admin-only endpoint. Not allowed to access this.", "type": "value_error"}]
     translated = translate_validation_errors(errors, "zh")
-    assert translated == [
-        {"loc": ("body", "model"), "msg": "仅管理员可访问的 endpoint，无权访问。", "type": "value_error"}
-    ]
+    assert translated == (
+        {"loc": ("body", "model"), "msg": "仅管理员可访问的 endpoint，无权访问。", "type": "value_error"},
+    )
 
 
 def test_translate_validation_errors_unmatched_returns_same_object() -> None:
@@ -668,6 +661,10 @@ from litellm.proxy.i18n.catalog.zh import EXACT_MESSAGES, TEMPLATE_MESSAGES
 GLOSSARY_PATH = Path(__file__).resolve().parents[4] / "i18n" / "glossary.json"
 
 
+def squeeze(value: str) -> str:
+    return value.replace(" ", "").lower()
+
+
 def test_glossary_is_readable_from_the_repo_root() -> None:
     assert GLOSSARY_PATH.is_file()
 
@@ -676,12 +673,12 @@ def test_zh_catalog_does_not_use_banned_technical_term_translations() -> None:
     glossary: dict[str, list[str]] = json.loads(GLOSSARY_PATH.read_text(encoding="utf-8"))
     forbidden = tuple((banned, term) for term, banned_list in glossary.items() for banned in banned_list)
     for source, translation in (*EXACT_MESSAGES.items(), *TEMPLATE_MESSAGES.items()):
-        normalized_source = source.replace(" ", "")
-        normalized_translation = translation.replace(" ", "")
+        normalized_source = squeeze(source)
+        normalized_translation = squeeze(translation)
         for banned, term in forbidden:
-            if term.replace(" ", "") not in normalized_source:
+            if squeeze(term) not in normalized_source:
                 continue
-            assert banned.replace(" ", "") not in normalized_translation, (
+            assert squeeze(banned) not in normalized_translation, (
                 f"term {term!r} must stay in English, but {translation!r} contains {banned!r}"
             )
 ```
@@ -763,24 +760,37 @@ def translate_detail(detail: object, locale: str | None) -> object:
     if isinstance(detail, Mapping):
         return _translate_mapping(detail, _DETAIL_FIELDS, locale)
     if isinstance(detail, (list, tuple)):
-        return translate_validation_errors(detail, locale)
+        return _translate_sequence(detail, _DETAIL_FIELDS, locale)
     return detail
 
 
-def translate_validation_errors(
-    errors: Sequence[Mapping[str, object]],
+def _translate_item(item: object, fields: tuple[str, ...], locale: str | None) -> object:
+    if isinstance(item, Mapping):
+        return _translate_mapping(item, fields, locale)
+    if isinstance(item, str):
+        return translate_message(item, locale)
+    return item
+
+
+def _translate_sequence(
+    items: Sequence[object],
+    fields: tuple[str, ...],
     locale: str | None,
-) -> Sequence[Mapping[str, object]]:
+) -> Sequence[object]:
+    translated: list[object] = []
+    changed = False
+    for item in items:
+        new_item = _translate_item(item, fields, locale)
+        if new_item is not item:
+            changed = True
+        translated.append(new_item)
+    return tuple(translated) if changed else items
+
+
+def translate_validation_errors(errors: Sequence[object], locale: str | None) -> Sequence[object]:
     if locale is None:
         return errors
-    translated: list[Mapping[str, object]] = []
-    changed = False
-    for error in errors:
-        new_error = _translate_mapping(error, _VALIDATION_FIELDS, locale)
-        if new_error is not error:
-            changed = True
-        translated.append(new_error)
-    return tuple(translated) if changed else errors
+    return _translate_sequence(errors, _VALIDATION_FIELDS, locale)
 
 
 def translate_problem(problem: ProblemDetail, locale: str | None) -> ProblemDetail:
