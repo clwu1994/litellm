@@ -1,3 +1,4 @@
+import json
 from collections.abc import Iterator, Mapping
 from types import MappingProxyType
 from typing import Final
@@ -130,6 +131,25 @@ def test_translate_validation_errors_preserves_loc_and_type() -> None:
 def test_translate_validation_errors_unmatched_returns_same_object() -> None:
     errors = [{"loc": ("body", "model"), "msg": "Field required", "type": "missing"}]
     assert translate_validation_errors(errors, "zh") is errors
+
+
+def test_translate_error_dict_changed_path_is_json_serializable() -> None:
+    payload = {"message": "No models configured on proxy", "type": "no_llm_router", "code": "500"}
+    translated = translate_error_dict(payload, "zh")
+    assert json.loads(json.dumps({"error": translated}))["error"]["message"] == "proxy 上未配置任何模型"
+
+
+def test_translate_detail_changed_mapping_is_json_serializable() -> None:
+    translated = translate_detail({"message": "No models configured on proxy"}, "zh")
+    assert json.loads(json.dumps(translated)) == {"message": "proxy 上未配置任何模型"}
+
+
+def test_translate_validation_errors_changed_entries_are_json_serializable() -> None:
+    errors = [{"loc": ("body", "model"), "msg": "No models configured on proxy", "type": "value_error"}]
+    translated = translate_validation_errors(errors, "zh")
+    assert json.loads(json.dumps(translated)) == [
+        {"loc": ["body", "model"], "msg": "proxy 上未配置任何模型", "type": "value_error"}
+    ]
 
 
 def test_translate_problem_no_locale_returns_same_object() -> None:

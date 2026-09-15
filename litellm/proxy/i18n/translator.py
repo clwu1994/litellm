@@ -35,6 +35,11 @@ def translate_message(message: str, locale: str | None) -> str:
     return catalog.translate(message)
 
 
+def _json_mapping(mapping: Mapping[str, object]) -> Mapping[str, object]:
+    """Return a plain dict, because json.dumps cannot serialize a mapping proxy."""
+    return MappingProxyType(dict(mapping)).copy()
+
+
 def _translate_mapping(
     mapping: Mapping[str, object],
     fields: tuple[str, ...],
@@ -49,7 +54,7 @@ def _translate_mapping(
     changed: Final = any(
         translated[key] != value for key, value in mapping.items() if key in fields and isinstance(value, str)
     )
-    return translated if changed else mapping
+    return _json_mapping(translated) if changed else mapping
 
 
 def translate_error_dict(error_dict: Mapping[str, object], locale: str | None) -> Mapping[str, object]:
