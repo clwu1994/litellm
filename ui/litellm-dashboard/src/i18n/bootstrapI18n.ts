@@ -1,10 +1,10 @@
-import i18n from "i18next";
+import i18n, { type InitOptions } from "i18next";
 import { initReactI18next } from "react-i18next";
 
 import { DEFAULT_LOCALE, normalizeLocale, type Locale } from "./config";
 import { resources } from "./resources";
 
-const initOptions = {
+const initOptions: InitOptions = {
   resources,
   lng: DEFAULT_LOCALE,
   fallbackLng: DEFAULT_LOCALE,
