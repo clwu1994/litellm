@@ -850,15 +850,27 @@ def translate_detail(detail: object, locale: str | None) -> object:
     if isinstance(detail, str):
         return translate_message(detail, locale)
     if isinstance(detail, Mapping):
-        return _translate_mapping(detail, _DETAIL_FIELDS, locale)  # pyright: ignore[reportUnknownArgumentType]  # isinstance narrows a generic Mapping to unknown key and value types
+        return _translate_mapping(
+            detail,  # pyright: ignore[reportUnknownArgumentType]  # isinstance loses the mapping's key and value types
+            _DETAIL_FIELDS,
+            locale,
+        )
     if isinstance(detail, (list, tuple)):
-        return _translate_sequence(detail, _DETAIL_FIELDS, locale)  # pyright: ignore[reportUnknownArgumentType]  # isinstance narrows a generic sequence to an unknown element type
+        return _translate_sequence(
+            detail,  # pyright: ignore[reportUnknownArgumentType]  # isinstance loses the sequence's element type
+            _DETAIL_FIELDS,
+            locale,
+        )
     return detail
 
 
 def _translate_item(item: object, fields: tuple[str, ...], locale: str | None) -> object:
     if isinstance(item, Mapping):
-        return _translate_mapping(item, fields, locale)  # pyright: ignore[reportUnknownArgumentType]  # isinstance narrows a generic Mapping to unknown key and value types
+        return _translate_mapping(
+            item,  # pyright: ignore[reportUnknownArgumentType]  # isinstance loses the mapping's key and value types
+            fields,
+            locale,
+        )
     if isinstance(item, str):
         return translate_message(item, locale)
     return item
@@ -899,6 +911,8 @@ A plain dict carrying a NaN does not expose that on CPython, because dict compar
 The changed path goes through `_json_mapping` so it returns a real `dict`, not a `MappingProxyType`. This matters beyond tidiness: `json.dumps` and therefore `JSONResponse` raise `TypeError: Object of type mappingproxy is not JSON serializable`, so handing a frozen proxy to the response would make every translated response a 500. `_json_mapping` builds the value with `MappingProxyType(dict(...))` and then calls `.copy()` on the proxy, which returns a plain dict; that construction is LIT002-exempt, whereas returning a dict literal or a `dict(...)` call directly is not. Fixing this inside `_translate_mapping` is sufficient, because every other function's changed path routes through it, so no response-construction site needs special handling.
 
 Three `# pyright: ignore[reportUnknownArgumentType]` suppressions sit on the `isinstance(..., Mapping)` and `isinstance(..., (list, tuple))` call sites. Narrowing an `object` to a generic `Mapping` yields unknown key and value types, and re-typing the callee's parameter as `Mapping[object, object]` does not silence it (verified). This module must not grow the tree-wide `reportUnknownArgumentType` budget, so each suppression names the exact rule and carries a reason instead of adding to the count.
+
+Each suppressed call is written across multiple lines so the directive lands on the short line that carries the argument, which is where pyright reports the diagnostic. The trailing comma after the last argument is load-bearing: it is the magic trailing comma that stops `ruff format` from collapsing the call back onto one line and pushing the directive past the 120-column limit. Do not remove it.
 
 `translate_problem` compares against the single `dumped` mapping it passed in, so an unmatched problem returns the original object rather than a rebuilt copy.
 
