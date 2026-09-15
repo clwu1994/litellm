@@ -333,6 +333,11 @@ def test_build_catalog_rejects_duplicate_placeholder_count() -> None:
         build_catalog({}, {"Key {key} and key {key}": "key {key}"})
 
 
+def test_build_catalog_rejects_duplicate_placeholder_name() -> None:
+    with pytest.raises(CatalogError, match="duplicate"):
+        build_catalog({}, {"Key {key} and key {key}": "key {key} and key {key}"})
+
+
 def test_build_catalog_rejects_template_that_matches_another_template() -> None:
     with pytest.raises(CatalogError, match="ambiguous"):
         build_catalog(
@@ -383,7 +388,9 @@ instead of being resolved by list order.
 from __future__ import annotations
 
 import re
-from typing import Final, Mapping, MappingProxyType, NamedTuple
+from collections.abc import Mapping
+from types import MappingProxyType
+from typing import Final, NamedTuple
 
 _PLACEHOLDER: Final = re.compile(r"\{([a-z_][a-z0-9_]*)\}")
 
@@ -428,6 +435,8 @@ def build_pattern(template: str) -> re.Pattern[str]:
 def _validate_placeholders(template: str, translation: str) -> None:
     source_placeholders: Final = _placeholders(template)
     translation_placeholders: Final = _placeholders(translation)
+    if len(frozenset(source_placeholders)) != len(source_placeholders):
+        raise CatalogError(f"duplicate placeholder name in template {template!r}: {source_placeholders!r}")
     if sorted(source_placeholders) != sorted(translation_placeholders):
         raise CatalogError(
             f"placeholder mismatch for template {template!r}: source has "
@@ -474,7 +483,7 @@ def build_catalog(exact: Mapping[str, str], templates: Mapping[str, str]) -> Cat
 - [ ] **Step 4: Run the tests to verify they pass**
 
 Run: `python3 -m pytest tests/test_litellm/proxy/i18n/test_matcher.py -v`
-Expected: PASS, 10 passed
+Expected: PASS, 11 passed
 
 - [ ] **Step 5: Commit**
 
@@ -515,7 +524,9 @@ Create `litellm/proxy/i18n/catalog/__init__.py`:
 ```python
 """Message catalogs. English is the source language and has no catalog."""
 
-from typing import Final, Mapping, MappingProxyType
+from collections.abc import Mapping
+from types import MappingProxyType
+from typing import Final
 
 from litellm.proxy.i18n.catalog.zh import EXACT_MESSAGES, TEMPLATE_MESSAGES
 from litellm.proxy.i18n.matcher import Catalog, build_catalog
@@ -530,7 +541,9 @@ Create `litellm/proxy/i18n/catalog/zh.py`:
 ```python
 """Chinese messages. Technical terms stay in English per i18n/glossary.json."""
 
-from typing import Final, Mapping, MappingProxyType
+from collections.abc import Mapping
+from types import MappingProxyType
+from typing import Final
 
 EXACT_MESSAGES: Final[Mapping[str, str]] = MappingProxyType(
     {
@@ -725,7 +738,9 @@ same object it was given, so the untranslated path serializes exactly as it did 
 
 from __future__ import annotations
 
-from typing import Final, Mapping, MappingProxyType, Sequence
+from collections.abc import Mapping, Sequence
+from types import MappingProxyType
+from typing import Final
 
 from litellm.proxy.i18n.catalog import CATALOGS
 from litellm.proxy.i18n.matcher import Catalog
