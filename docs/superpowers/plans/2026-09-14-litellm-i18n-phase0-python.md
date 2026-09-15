@@ -897,7 +897,7 @@ That suppressed call is written across multiple lines so the directive lands on 
 - [ ] **Step 6: Run the tests to verify they pass**
 
 Run: `python3 -m pytest tests/test_litellm/proxy/i18n/test_translator.py tests/test_litellm/proxy/i18n/test_catalog_structure.py -v`
-Expected: PASS, 24 passed
+Expected: PASS, 28 passed (includes the drift tests Task 5 adds to the catalog file)
 
 - [ ] **Step 7: Commit**
 
