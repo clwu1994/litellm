@@ -16,6 +16,7 @@ EXACT_MESSAGES: Final[Mapping[str, str]] = MappingProxyType(
         "Invalid API key": "无效的 API Key",
         "Invalid Authorization header format": "Authorization 请求头格式无效",
         "No API key provided": "未提供 API Key",
+        "Authentication Error, No api key passed in.": "认证错误，未传入 api key。",
         "Invalid credentials used to access UI.": "访问 UI 的凭据无效。",
         (
             "Invalid credentials used to access UI.\nCheck 'UI_USERNAME', 'UI_PASSWORD' in .env file"
