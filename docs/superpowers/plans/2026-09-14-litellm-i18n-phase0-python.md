@@ -628,6 +628,25 @@ def test_translate_error_dict_preserves_identity_when_untranslated_fields_hold_o
     assert translate_error_dict(payload, "zh") is payload
 
 
+def test_translate_error_dict_ignores_untranslated_field_values_that_are_not_referentially_stable() -> None:
+    known: Final = MappingProxyType({"message": "brand new upstream message", "code": "500"})
+
+    class UnstableMapping(Mapping[str, object]):
+        def __getitem__(self, key: str) -> object:
+            if key in known:
+                return known[key]
+            return float("nan")
+
+        def __iter__(self) -> Iterator[str]:
+            return iter((*known, "provider_specific_fields"))
+
+        def __len__(self) -> int:
+            return len(known) + 1
+
+    payload = UnstableMapping()
+    assert translate_error_dict(payload, "zh") is payload
+
+
 def test_translate_error_dict_ignores_non_whitelisted_string_fields() -> None:
     payload = {"message": "No models configured on proxy", "type": "No models configured on proxy", "code": "500"}
     translated = translate_error_dict(payload, "zh")
@@ -847,14 +866,16 @@ def translate_problem(problem: ProblemDetail, locale: str | None) -> ProblemDeta
 
 `model_copy` accepts a `Mapping`, so the frozen `MappingProxyType` is passed through without copying it into a mutable dict.
 
-`_translate_mapping` decides "changed" by comparing only the whitelisted string fields, never the whole mapping. Comparing whole mappings would break identity preservation for any payload holding a value that is not equal to itself, such as a NaN float, and it would also report a change for fields translation never touches.
+`_translate_mapping` decides "changed" by comparing only the whitelisted string fields, never the whole mapping. Comparing whole mappings would report a change for fields translation never touches, and would break identity preservation for a payload that is not referentially stable, such as a Mapping yielding a fresh NaN on every read.
+
+A plain dict carrying a NaN does not expose that on CPython, because dict comparison short-circuits when the two value objects are identical, which is why the plain-NaN test alone pins nothing and the unstable-mapping test is the one that actually discriminates. Add `from collections.abc import Iterator` to the test file's imports for it.
 
 `translate_problem` compares against the single `dumped` mapping it passed in, so an unmatched problem returns the original object rather than a rebuilt copy.
 
 - [ ] **Step 6: Run the tests to verify they pass**
 
 Run: `python3 -m pytest tests/test_litellm/proxy/i18n/test_translator.py tests/test_litellm/proxy/i18n/test_catalog_structure.py -v`
-Expected: PASS, 23 passed
+Expected: PASS, 24 passed
 
 - [ ] **Step 7: Commit**
 
