@@ -121,7 +121,7 @@ git commit -m "docs: add i18n glossary and phase 0 inventories"
 **Interfaces:**
 - Consumes: nothing
 - Produces:
-  - `SUPPORTED_PRIMARY_SUBTAGS: Final[frozenset[str]]` in `litellm/proxy/i18n/negotiation.py`, equal to `frozenset({"zh"})`
+  - `SUPPORTED_PRIMARY_SUBTAGS: Final[frozenset[str]]` in `litellm/proxy/i18n/negotiation.py`, equal to `frozenset({"zh", "en"})`. English is the source language, so a request that prefers English resolves to `None` rather than to a locale
   - `negotiate_locale(accept_language: str | None) -> str | None`, returns `"zh"` or `None`
 
 - [ ] **Step 1: Create the package with an empty init**
@@ -151,22 +151,29 @@ from litellm.proxy.i18n.negotiation import negotiate_locale
         ("", None),
         ("zh", "zh"),
         ("zh-CN", "zh"),
+        ("zh-Hant", "zh"),
+        ("zh-TW", "zh"),
         ("zh-CN,zh;q=0.9,en;q=0.8", "zh"),
+        ("zh,en", "zh"),
+        ("en", None),
         ("en-US,en;q=0.9", None),
+        ("en,zh", None),
+        ("en;q=1.0,zh;q=0.7", None),
+        ("zh;q=0.3,en;q=0.9", None),
         ("fr-FR", None),
         ("*", None),
         ("zh;q=0", None),
-        ("en;q=1.0,zh;q=0.7", None),
-        ("zh;q=0.3,en;q=0.9", "zh"),
         ("ZH-cn", "zh"),
         ("  zh  ", "zh"),
         ("zh;q=notanumber,en", None),
-        ("en,zh", "zh"),
+        ("de,fr;q=0.8", None),
     ],
 )
 def test_negotiate_locale(header: str | None, expected: str | None) -> None:
     assert negotiate_locale(header) == expected
 ```
+
+The mixed-language cases are the point of this table. Negotiation serves the first supported tag in descending preference order, so `en,zh` and `zh;q=0.3,en;q=0.9` both resolve to `None`: a client that prefers English must not be forced into Chinese merely because Chinese is also acceptable. Only when Chinese outranks English does translation apply.
 
 - [ ] **Step 3: Run the tests to verify they fail**
 
@@ -178,14 +185,22 @@ Expected: FAIL with `ModuleNotFoundError: No module named 'litellm.proxy.i18n.ne
 Create `litellm/proxy/i18n/negotiation.py`:
 
 ```python
-"""RFC 9110 Accept-Language negotiation, limited to the primary subtags we translate."""
+"""RFC 9110 Accept-Language negotiation over the locales the proxy can serve.
+
+English is the source language, so serving it is the no-translation outcome and only
+Chinese carries a catalog. The first supported tag in descending preference order
+decides, so a client that prefers English is never forced into Chinese just because
+Chinese is also acceptable.
+"""
 
 from __future__ import annotations
 
 import re
 from typing import Final
 
-SUPPORTED_PRIMARY_SUBTAGS: Final[frozenset[str]] = frozenset({"zh"})
+ZH: Final = "zh"
+EN: Final = "en"
+SUPPORTED_PRIMARY_SUBTAGS: Final[frozenset[str]] = frozenset({ZH, EN})
 
 _TAG: Final = re.compile(r"^[A-Za-z]{1,8}(?:-[A-Za-z0-9]{1,8})*$")
 
@@ -217,20 +232,23 @@ def _ranked_tags(header: str) -> tuple[str, ...]:
 
 
 def negotiate_locale(accept_language: str | None) -> str | None:
-    """Return a supported locale, or None when the request asks for no translation."""
+    """Return the locale to translate into, or None to serve the English source unchanged."""
     if not accept_language:
         return None
     for tag in _ranked_tags(accept_language):
         primary = tag.split("-", 1)[0].lower()
-        if primary in SUPPORTED_PRIMARY_SUBTAGS:
-            return primary
+        if primary not in SUPPORTED_PRIMARY_SUBTAGS:
+            continue
+        return ZH if primary == ZH else None
     return None
 ```
+
+A tag the proxy does not serve (`fr`, `*`, an unparseable token) is skipped rather than treated as a match, so an unsupported language falls through to the next preference and ultimately to the English source.
 
 - [ ] **Step 5: Run the tests to verify they pass**
 
 Run: `python3 -m pytest tests/test_litellm/proxy/i18n/test_negotiation.py -v`
-Expected: PASS, 15 passed
+Expected: PASS, 20 passed
 
 - [ ] **Step 6: Commit**
 
