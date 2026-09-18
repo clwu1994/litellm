@@ -1,6 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import i18n from "@/i18n/bootstrapI18n";
 import LoginPage from "./LoginPage";
 
 const mockPush = vi.fn();
@@ -369,5 +370,86 @@ describe("LoginPage", () => {
       expect(document.cookie).not.toContain("token=attacker.jwt.value");
       expect(mockReplace).not.toHaveBeenCalledWith("/ui/?login=success");
     });
+  });
+});
+
+describe("LoginPage localization", () => {
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  const renderLogin = async ({ ssoConfigured = false }: { ssoConfigured?: boolean } = {}) => {
+    (useUIConfig as ReturnType<typeof vi.fn>).mockReturnValue({
+      data: {
+        auto_redirect_to_sso: false,
+        server_root_path: "/",
+        proxy_base_url: null,
+        sso_configured: ssoConfigured,
+      },
+      isLoading: false,
+    });
+    (getCookieFromDocument as ReturnType<typeof vi.fn>).mockReturnValue(null);
+
+    render(
+      <QueryClientProvider client={createQueryClient()}>
+        <LoginPage />
+      </QueryClientProvider>,
+    );
+
+    await screen.findByRole("heading", { level: 3 });
+  };
+
+  it("renders the Chinese login form and hides its English originals under zh", async () => {
+    await i18n.changeLanguage("zh");
+    await renderLogin();
+
+    expect(screen.getByRole("heading", { level: 3 })).toHaveTextContent("登录");
+    expect(screen.getByLabelText("用户名")).toBeInTheDocument();
+    expect(screen.getByLabelText("密码")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("请输入用户名")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("请输入密码")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "登录" })).toBeInTheDocument();
+    expect(screen.getByText("默认凭据")).toBeInTheDocument();
+    expect(screen.getByText(/默认情况下/)).toHaveTextContent(
+      "默认情况下，用户名为 admin，密码为您设置的 LiteLLM Proxy MASTER_KEY。",
+    );
+
+    expect(screen.queryByText("Login")).not.toBeInTheDocument();
+    expect(screen.queryByText("Username")).not.toBeInTheDocument();
+    expect(screen.queryByText("Password")).not.toBeInTheDocument();
+    expect(screen.queryByText("Default Credentials")).not.toBeInTheDocument();
+  });
+
+  it("renders the English login form under en", async () => {
+    await i18n.changeLanguage("en");
+    await renderLogin();
+
+    expect(screen.getByRole("heading", { level: 3 })).toHaveTextContent("Login");
+    expect(screen.getByLabelText("Username")).toBeInTheDocument();
+    expect(screen.getByLabelText("Password")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Enter your username")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Enter your password")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Login" })).toBeInTheDocument();
+    expect(screen.getByText("Default Credentials")).toBeInTheDocument();
+    expect(screen.getByText(/By default/)).toHaveTextContent(
+      "By default, Username is admin and Password is your set LiteLLM Proxy MASTER_KEY.",
+    );
+
+    expect(screen.queryByText("登录")).not.toBeInTheDocument();
+    expect(screen.queryByText("用户名")).not.toBeInTheDocument();
+  });
+
+  it("renders the SSO notice from the catalog, keeping the env var in its code element, under zh", async () => {
+    await i18n.changeLanguage("zh");
+    await renderLogin({ ssoConfigured: true });
+
+    const notice = screen.getByText(/已启用 SSO/);
+    expect(notice).toHaveTextContent(
+      "已启用 SSO。加载此页面时，LiteLLM 不再自动跳转到 SSO 登录流程。如需重新启用自动跳转到 SSO，请在环境配置中设置 AUTO_REDIRECT_UI_LOGIN_TO_SSO=true。",
+    );
+    expect(screen.getByText("AUTO_REDIRECT_UI_LOGIN_TO_SSO=true")).toHaveClass("bg-muted");
+
+    expect(screen.queryByText(/Single Sign-On/)).not.toBeInTheDocument();
   });
 });
