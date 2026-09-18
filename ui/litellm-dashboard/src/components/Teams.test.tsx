@@ -1,10 +1,11 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { NuqsTestingAdapter, OnUrlUpdateFunction } from "nuqs/adapters/testing";
 import React from "react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useTeamMetadataSchema } from "@/app/(dashboard)/hooks/teams/useTeamMetadataSchema";
+import i18n from "@/i18n/bootstrapI18n";
 import { toast } from "@/lib/toast";
 import { fetchAvailableModelsForTeamOrKey } from "./key_team_helpers/fetch_available_models_team_key";
 import {
@@ -1743,5 +1744,47 @@ describe("Teams - the create form keeps the organization and models picks while 
     await openCreateModal();
     expect(orgField()).toHaveValue("");
     expect(modelsField()).toHaveValue("");
+  });
+});
+
+describe("Teams localization", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockUseOrganizations.mockReturnValue({ data: [] });
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  it("renders the Chinese teams page labels and hides their English originals under zh", async () => {
+    await i18n.changeLanguage("zh");
+    renderWithQueryClient(<Teams accessToken="test-token" userID="user-123" userRole="Admin" />);
+
+    expect(screen.getByRole("heading", { name: "团队" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "你的团队" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "可加入的团队" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "默认团队设置" })).toBeInTheDocument();
+    expect(screen.getByTestId("create-team-button")).toHaveTextContent("创建团队");
+
+    expect(screen.queryByRole("heading", { name: "Teams" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: "Your Teams" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: "Available Teams" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: "Default Team Settings" })).not.toBeInTheDocument();
+  });
+
+  it("renders the English teams page labels under en", async () => {
+    await i18n.changeLanguage("en");
+    renderWithQueryClient(<Teams accessToken="test-token" userID="user-123" userRole="Admin" />);
+
+    expect(screen.getByRole("heading", { name: "Teams" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Your Teams" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Available Teams" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Default Team Settings" })).toBeInTheDocument();
+
+    expect(screen.queryByRole("heading", { name: "团队" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: "你的团队" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: "可加入的团队" })).not.toBeInTheDocument();
   });
 });

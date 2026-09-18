@@ -1,8 +1,9 @@
 import { useTeamMetadataSchema } from "@/app/(dashboard)/hooks/teams/useTeamMetadataSchema";
 import * as networking from "@/components/networking";
-import { fireEvent, screen, waitFor, within } from "@testing-library/react";
+import { cleanup, fireEvent, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import i18n from "@/i18n/bootstrapI18n";
 import { chooseSelectOption, renderWithProviders, testQueryClient } from "../../../tests/test-utils";
 import { toast } from "@/lib/toast";
 import type { EffectiveMcpServer } from "../mcp_server_management/effectiveMcpServers";
@@ -2516,14 +2517,14 @@ describe("TeamInfo MCP permission retention", () => {
       }),
     ).toEqual({
       kind: "unresolvable",
-      reason: expect.stringMatching(/access groups could not be loaded/),
+      reason: "mcp.reason.accessGroupsLoadFailed",
     });
   });
 
   it("is unresolvable when the team reload fails", async () => {
     expect(await resolveGrants({ loadTeamGroups: vi.fn().mockRejectedValue(new Error("boom")) })).toEqual({
       kind: "unresolvable",
-      reason: expect.stringMatching(/access groups could not be reloaded/),
+      reason: "mcp.reason.accessGroupsReloadFailed",
     });
   });
 
@@ -2535,7 +2536,7 @@ describe("TeamInfo MCP permission retention", () => {
       }),
     ).toEqual({
       kind: "unresolvable",
-      reason: expect.stringMatching(/access groups could not be loaded/),
+      reason: "mcp.reason.accessGroupsLoadFailed",
     });
   });
 
@@ -2756,5 +2757,58 @@ describe("TeamInfo MCP permission retention", () => {
     );
     expect(networking.teamUpdateCall).not.toHaveBeenCalled();
     errorToast.mockRestore();
+  });
+});
+
+describe("TeamInfo localization", () => {
+  const props = {
+    teamId: "123",
+    onUpdate: vi.fn(),
+    onClose: vi.fn(),
+    accessToken: "test-token",
+    is_team_admin: true,
+    is_proxy_admin: true,
+    userModels: ["gpt-4"],
+    editTeam: false,
+    premiumUser: false,
+  };
+
+  beforeEach(() => {
+    seedDefaultMocks();
+    vi.mocked(networking.teamInfoCall).mockResolvedValue(createMockTeamData());
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  it("renders the Chinese team detail labels and hides their English originals under zh", async () => {
+    await i18n.changeLanguage("zh");
+    renderWithProviders(<TeamInfoView {...props} />);
+
+    expect(await screen.findByText("概览")).toBeInTheDocument();
+    expect(screen.getByText("预算状态")).toBeInTheDocument();
+    expect(screen.getByText("速率限制")).toBeInTheDocument();
+    expect(screen.getByText("设置")).toBeInTheDocument();
+
+    expect(screen.queryByText("Overview")).not.toBeInTheDocument();
+    expect(screen.queryByText("Budget Status")).not.toBeInTheDocument();
+    expect(screen.queryByText("Rate Limits")).not.toBeInTheDocument();
+    expect(screen.queryByText("Settings")).not.toBeInTheDocument();
+  });
+
+  it("renders the English team detail labels under en", async () => {
+    await i18n.changeLanguage("en");
+    renderWithProviders(<TeamInfoView {...props} />);
+
+    expect(await screen.findByText("Overview")).toBeInTheDocument();
+    expect(screen.getByText("Budget Status")).toBeInTheDocument();
+    expect(screen.getByText("Rate Limits")).toBeInTheDocument();
+    expect(screen.getByText("Settings")).toBeInTheDocument();
+
+    expect(screen.queryByText("概览")).not.toBeInTheDocument();
+    expect(screen.queryByText("预算状态")).not.toBeInTheDocument();
+    expect(screen.queryByText("速率限制")).not.toBeInTheDocument();
   });
 });
