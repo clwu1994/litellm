@@ -167,5 +167,110 @@
     "teamAddFailed": "将用户添加到团队失败",
     "teamRemoved": "用户已成功从团队移除",
     "teamRemoveFailed": "将用户从团队移除失败"
+  },
+  "bulk": {
+    "title": {
+      "all": "批量编辑所有用户",
+      "selected": "批量编辑 {{count}} 个用户"
+    },
+    "updateAllUsers": "更新系统中的所有用户",
+    "warningAllUsers": "⚠️ 这会将更改应用到系统中的所有用户，而不仅是所选用户。",
+    "selectedUsers": "已选用户（{{count}}）：",
+    "table": {
+      "userId": "用户 ID",
+      "email": "邮箱",
+      "currentRole": "当前角色",
+      "budget": "预算"
+    },
+    "value": {
+      "noEmail": "无邮箱"
+    },
+    "instructions": "<strong>说明：</strong>在下方字段中填写要应用到所有已选用户的值。可批量编辑：角色、预算、模型和元数据。也可以将用户加入团队。",
+    "teamManagement": "团队管理",
+    "addToTeams": "将所选用户加入团队",
+    "field": {
+      "selectTeams": "选择团队：",
+      "teamBudget": "团队预算（可选）："
+    },
+    "placeholder": {
+      "selectTeams": "选择要加入的团队",
+      "teamBudget": "团队中每个用户的预算上限"
+    },
+    "hint": {
+      "teamBudget": "留空表示在团队限额内不设预算上限",
+      "roleDefault": "用户将默认以“user”角色加入。所有用户都会被添加到每个所选团队。"
+    },
+    "updating": {
+      "all": "正在更新所有用户…",
+      "selected": "正在更新 {{count}} 个用户…"
+    },
+    "toast": {
+      "nothingToUpdate": "请至少修改一个字段或选择要加入的团队",
+      "updatedAll": "已更新所有用户（共 {{count}} 个）",
+      "updatedUsers": "已更新 {{count}} 个用户",
+      "addedToTeams": "已将用户添加到 {{teams}} 个团队（共 {{additions}} 次添加）",
+      "addToTeamsFailed": "未能将用户添加到 {{count}} 个团队",
+      "operationFailed": "批量操作失败"
+    }
+  },
+  "defaults": {
+    "card": {
+      "description": "应用于通过 SSO 或用户管理 API 创建的每个新内部用户。"
+    },
+    "field": {
+      "team": "团队",
+      "defaultTeams": "默认团队",
+      "teamNumber": "团队 {{number}}",
+      "maxBudgetInTeam": "团队内最大预算（USD）",
+      "teamRole": "团队角色",
+      "defaultRole": "默认角色",
+      "maxBudget": "最大预算（USD）",
+      "resetBudget": "重置预算",
+      "defaultModels": "默认模型"
+    },
+    "role": {
+      "user": "用户",
+      "admin": "管理员"
+    },
+    "budgetDuration": {
+      "noReset": "不重置",
+      "hourly": "每小时",
+      "daily": "每天",
+      "weekly": "每周",
+      "monthly": "每月"
+    },
+    "value": {
+      "notSet": "未设置",
+      "none": "无",
+      "maxBudgetInline": "${{amount}} 预算上限"
+    },
+    "placeholder": {
+      "searchTeam": "搜索团队",
+      "noTeams": "未找到团队",
+      "optional": "可选"
+    },
+    "hint": {
+      "defaultTeams": "新用户会自动加入这些团队。只能选择已存在的团队。",
+      "defaultRole": "分配给新用户的角色",
+      "maxBudget": "新用户的默认最大预算",
+      "resetBudget": "默认预算的重置频率",
+      "defaultModels": "新用户可访问的模型"
+    },
+    "action": {
+      "remove": "移除",
+      "saving": "保存中…"
+    },
+    "error": {
+      "loadFailed": "无法加载默认用户设置。"
+    },
+    "toast": {
+      "updated": "默认用户设置更新成功",
+      "updateFailed": "更新默认用户设置失败"
+    },
+    "validation": {
+      "nonNegative": "必须是非负数",
+      "teamRequired": "请选择团队",
+      "teamDuplicate": "该团队已列出"
+    }
   }
 }

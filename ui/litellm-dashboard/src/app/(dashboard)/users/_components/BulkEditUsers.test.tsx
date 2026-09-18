@@ -1,6 +1,7 @@
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi, beforeEach } from "vitest";
-import { renderWithProviders, screen, waitFor } from "../../../../../tests/test-utils";
+import { afterEach, describe, expect, it, vi, beforeEach } from "vitest";
+import i18n from "@/i18n/bootstrapI18n";
+import { cleanup, renderWithProviders, screen, waitFor } from "../../../../../tests/test-utils";
 import BulkEditUserModal from "./BulkEditUsers";
 import { userBulkUpdateUserCall, teamBulkMemberAddCall } from "@/components/networking";
 import { toast } from "@/lib/toast";
@@ -335,5 +336,41 @@ describe("BulkEditUserModal", () => {
 
     expect(screen.getByText("user")).toBeInTheDocument();
     expect(screen.getByText("admin")).toBeInTheDocument();
+  });
+});
+
+describe("BulkEditUserModal localization", () => {
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  it("renders Chinese labels under zh and not their English originals", async () => {
+    await i18n.changeLanguage("zh");
+    renderWithProviders(<BulkEditUserModal {...defaultProps} />);
+
+    expect(screen.getByText("批量编辑 2 个用户")).toBeInTheDocument();
+    expect(screen.getByText("团队管理")).toBeInTheDocument();
+    expect(screen.getByText("已选用户（2）：")).toBeInTheDocument();
+    expect(screen.queryByText("Bulk Edit 2 User(s)")).not.toBeInTheDocument();
+    expect(screen.queryByText("Team Management")).not.toBeInTheDocument();
+    expect(screen.queryByText("Selected Users (2):")).not.toBeInTheDocument();
+  });
+
+  it("renders the English labels under en", async () => {
+    await i18n.changeLanguage("en");
+    renderWithProviders(<BulkEditUserModal {...defaultProps} />);
+
+    expect(screen.getByText("Bulk Edit 2 User(s)")).toBeInTheDocument();
+    expect(screen.getByText("Team Management")).toBeInTheDocument();
+    expect(screen.queryByText("批量编辑 2 个用户")).not.toBeInTheDocument();
+  });
+
+  it("keeps the bolded instruction label inside the translated paragraph", async () => {
+    await i18n.changeLanguage("zh");
+    renderWithProviders(<BulkEditUserModal {...defaultProps} />);
+
+    expect(screen.getByText("说明：")).toBeInTheDocument();
+    expect(screen.getByText(/在下方字段中填写/)).toBeInTheDocument();
   });
 });

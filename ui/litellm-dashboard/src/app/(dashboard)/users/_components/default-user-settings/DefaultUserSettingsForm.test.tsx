@@ -1,8 +1,9 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
-import { beforeEach, describe, expect, it, vi, type Mock } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from "vitest";
+import i18n from "@/i18n/bootstrapI18n";
 
 vi.mock("@/app/(dashboard)/hooks/teams/useTeams", () => ({
   useInfiniteTeams: () => ({
@@ -315,5 +316,48 @@ describe("DefaultUserSettingsForm", () => {
     await enterEditMode(user);
     expect(screen.getByLabelText("Max Budget (USD)")).toHaveValue(100);
     expect(await saveButton()).toBeDisabled();
+  });
+});
+
+describe("DefaultUserSettingsForm localization", () => {
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  it("renders the Chinese summary labels under zh and not the English originals", async () => {
+    await i18n.changeLanguage("zh");
+    renderForm();
+
+    expect(await screen.findByText("默认角色")).toBeInTheDocument();
+    expect(screen.getByText("默认模型")).toBeInTheDocument();
+    expect(screen.getByText("每月")).toBeInTheDocument();
+    expect(screen.queryByText("Default Role")).not.toBeInTheDocument();
+    expect(screen.queryByText("monthly")).not.toBeInTheDocument();
+  });
+
+  it("localizes the model sentinel label in the read-only summary", async () => {
+    await i18n.changeLanguage("zh");
+    renderForm({
+      fetchSettings: vi
+        .fn()
+        .mockResolvedValue({ ...SETTINGS, values: { ...SETTINGS.values, models: ["all-proxy-models"] } }),
+    });
+
+    expect(await screen.findByText("所有 Proxy 模型")).toBeInTheDocument();
+    expect(screen.queryByText("All Proxy Models")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese validation message when a team row has no team selected", async () => {
+    const user = userEvent.setup();
+    await i18n.changeLanguage("zh");
+    renderForm();
+
+    await user.click(await screen.findByRole("button", { name: "编辑设置" }));
+    await user.click(await screen.findByRole("button", { name: "添加团队" }));
+    await user.click(await screen.findByRole("button", { name: "保存更改" }));
+
+    expect(await screen.findByText("请选择团队")).toBeInTheDocument();
+    expect(screen.queryByText("Select a team")).not.toBeInTheDocument();
   });
 });

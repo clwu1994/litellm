@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { defaultUserSettingsSchema, type DefaultUserSettingsFormValues } from "./schema";
+import i18n from "@/i18n/bootstrapI18n";
+
+import { buildDefaultUserSettingsSchema, type DefaultUserSettingsFormValues } from "./schema";
+
+const defaultUserSettingsSchema = buildDefaultUserSettingsSchema(i18n.getFixedT("en", "users"));
 
 const values = (overrides: Partial<DefaultUserSettingsFormValues> = {}): DefaultUserSettingsFormValues => ({
   user_role: "internal_user",
@@ -60,5 +64,13 @@ describe("defaultUserSettingsSchema", () => {
     expect(
       issuesFor(values({ teams: [{ team_id: "team-1", max_budget_in_team: "-5", user_role: "user" }] })),
     ).toStrictEqual([{ path: ["teams", 0, "max_budget_in_team"], message: "Must be a non-negative number" }]);
+  });
+
+  it("resolves validation messages from the catalog the factory was built with", () => {
+    const zhSchema = buildDefaultUserSettingsSchema(i18n.getFixedT("zh", "users"));
+    const result = zhSchema.safeParse(values({ teams: [{ team_id: "", max_budget_in_team: "", user_role: "user" }] }));
+
+    expect(result.success).toBe(false);
+    expect(result.success ? [] : result.error.issues.map((issue) => issue.message)).toStrictEqual(["请选择团队"]);
   });
 });

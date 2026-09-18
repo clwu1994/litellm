@@ -167,5 +167,110 @@
     "teamAddFailed": "Failed to add user to team",
     "teamRemoved": "User removed from team successfully",
     "teamRemoveFailed": "Failed to remove user from team"
+  },
+  "bulk": {
+    "title": {
+      "all": "Bulk Edit All Users",
+      "selected": "Bulk Edit {{count}} User(s)"
+    },
+    "updateAllUsers": "Update ALL users in the system",
+    "warningAllUsers": "⚠️ This will apply changes to ALL users in the system, not just the selected ones.",
+    "selectedUsers": "Selected Users ({{count}}):",
+    "table": {
+      "userId": "User ID",
+      "email": "Email",
+      "currentRole": "Current Role",
+      "budget": "Budget"
+    },
+    "value": {
+      "noEmail": "No email"
+    },
+    "instructions": "<strong>Instructions:</strong> Fill in the fields below with the values you want to apply to all selected users. You can bulk edit: role, budget, models, and metadata. You can also add users to teams.",
+    "teamManagement": "Team Management",
+    "addToTeams": "Add selected users to teams",
+    "field": {
+      "selectTeams": "Select Teams:",
+      "teamBudget": "Team Budget (Optional):"
+    },
+    "placeholder": {
+      "selectTeams": "Select teams to add users to",
+      "teamBudget": "Max budget per user in team"
+    },
+    "hint": {
+      "teamBudget": "Leave empty for unlimited budget within team limits",
+      "roleDefault": "Users will be added with \"user\" role by default. All users will be added to each selected team."
+    },
+    "updating": {
+      "all": "Updating all users...",
+      "selected": "Updating {{count}} user(s)..."
+    },
+    "toast": {
+      "nothingToUpdate": "Please modify at least one field or select teams to add users to",
+      "updatedAll": "Updated all users ({{count}} total)",
+      "updatedUsers": "Updated {{count}} user(s)",
+      "addedToTeams": "Added users to {{teams}} team(s) ({{additions}} total additions)",
+      "addToTeamsFailed": "Failed to add users to {{count}} team(s)",
+      "operationFailed": "Failed to perform bulk operations"
+    }
+  },
+  "defaults": {
+    "card": {
+      "description": "Applied to every new internal user created through SSO or the user management APIs."
+    },
+    "field": {
+      "team": "Team",
+      "defaultTeams": "Default Teams",
+      "teamNumber": "Team {{number}}",
+      "maxBudgetInTeam": "Max Budget in Team (USD)",
+      "teamRole": "Team Role",
+      "defaultRole": "Default Role",
+      "maxBudget": "Max Budget (USD)",
+      "resetBudget": "Reset Budget",
+      "defaultModels": "Default Models"
+    },
+    "role": {
+      "user": "User",
+      "admin": "Admin"
+    },
+    "budgetDuration": {
+      "noReset": "No reset",
+      "hourly": "hourly",
+      "daily": "daily",
+      "weekly": "weekly",
+      "monthly": "monthly"
+    },
+    "value": {
+      "notSet": "Not set",
+      "none": "None",
+      "maxBudgetInline": "${{amount}} max budget"
+    },
+    "placeholder": {
+      "searchTeam": "Search a team",
+      "noTeams": "No teams found",
+      "optional": "Optional"
+    },
+    "hint": {
+      "defaultTeams": "New users are added to these teams. Only teams that already exist can be selected.",
+      "defaultRole": "Role assigned to new users",
+      "maxBudget": "Default maximum budget for new users",
+      "resetBudget": "How often the default budget resets",
+      "defaultModels": "Models new users can access"
+    },
+    "action": {
+      "remove": "Remove",
+      "saving": "Saving..."
+    },
+    "error": {
+      "loadFailed": "Could not load the default user settings."
+    },
+    "toast": {
+      "updated": "Default user settings updated successfully",
+      "updateFailed": "Failed to update default user settings"
+    },
+    "validation": {
+      "nonNegative": "Must be a non-negative number",
+      "teamRequired": "Select a team",
+      "teamDuplicate": "This team is already listed"
+    }
   }
 }
