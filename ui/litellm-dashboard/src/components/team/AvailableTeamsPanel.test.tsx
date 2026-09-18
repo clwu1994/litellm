@@ -1,8 +1,9 @@
 import * as networking from "@/components/networking";
-import { act, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderWithProviders } from "../../../tests/test-utils";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import i18n from "@/i18n/bootstrapI18n";
 import AvailableTeamsPanel from "./AvailableTeamsPanel";
 import type { AvailableTeam } from "./AvailableTeamsTableColumns";
 
@@ -128,6 +129,55 @@ describe("AvailableTeamsPanel", () => {
 
     await waitFor(() => {
       expect(screen.getByText(/No available teams to join/i)).toBeInTheDocument();
+    });
+  });
+
+  describe("localization", () => {
+    afterEach(async () => {
+      cleanup();
+      await i18n.changeLanguage("en");
+    });
+
+    it("renders the Chinese available-team labels under zh", async () => {
+      vi.mocked(networking.availableTeamListCall).mockResolvedValue([team()]);
+      await i18n.changeLanguage("zh");
+
+      renderWithProviders(<AvailableTeamsPanel accessToken="token-123" userID="user-123" />);
+
+      expect(await screen.findByText("Test Team 1")).toBeInTheDocument();
+      expect(screen.getByText("团队名称")).toBeInTheDocument();
+      expect(screen.getByText("描述")).toBeInTheDocument();
+      expect(screen.getByText("成员")).toBeInTheDocument();
+      expect(screen.getByText("1 名成员")).toBeInTheDocument();
+
+      expect(screen.queryByText("Team Name")).not.toBeInTheDocument();
+      expect(screen.queryByText("Description")).not.toBeInTheDocument();
+      expect(screen.queryByText("1 members")).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese empty state under zh", async () => {
+      vi.mocked(networking.availableTeamListCall).mockResolvedValue([]);
+      await i18n.changeLanguage("zh");
+
+      renderWithProviders(<AvailableTeamsPanel accessToken="token-123" userID="user-123" />);
+
+      expect(await screen.findByText("没有可加入的团队")).toBeInTheDocument();
+      expect(screen.queryByText(/No available teams to join/i)).not.toBeInTheDocument();
+    });
+
+    it("renders the English available-team labels under en", async () => {
+      vi.mocked(networking.availableTeamListCall).mockResolvedValue([team()]);
+      await i18n.changeLanguage("en");
+
+      renderWithProviders(<AvailableTeamsPanel accessToken="token-123" userID="user-123" />);
+
+      expect(await screen.findByText("Test Team 1")).toBeInTheDocument();
+      expect(screen.getByText("Team Name")).toBeInTheDocument();
+      expect(screen.getByText("Description")).toBeInTheDocument();
+      expect(screen.getByText("1 members")).toBeInTheDocument();
+
+      expect(screen.queryByText("团队名称")).not.toBeInTheDocument();
+      expect(screen.queryByText("1 名成员")).not.toBeInTheDocument();
     });
   });
 });

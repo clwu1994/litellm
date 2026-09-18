@@ -2811,4 +2811,38 @@ describe("TeamInfo localization", () => {
     expect(screen.queryByText("预算状态")).not.toBeInTheDocument();
     expect(screen.queryByText("速率限制")).not.toBeInTheDocument();
   });
+
+  it("renders the Chinese model-access badge under zh", async () => {
+    vi.mocked(networking.teamInfoCall).mockResolvedValue(createMockTeamData({ models: ["all-proxy-models"] }));
+    await i18n.changeLanguage("zh");
+    renderWithProviders(<TeamInfoView {...props} />);
+
+    expect(await screen.findByText("所有 Proxy 模型")).toBeInTheDocument();
+    expect(screen.queryByText("All proxy models")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese model-access tooltip under zh", async () => {
+    const user = userEvent.setup();
+    vi.mocked(networking.teamInfoCall).mockResolvedValue(
+      createMockTeamData({
+        models: ["haiku"],
+        access_group_details: [{ access_group_id: "ag-1", access_group_name: "shared", models: ["haiku"] }],
+      }),
+    );
+    await i18n.changeLanguage("zh");
+    renderWithProviders(<TeamInfoView {...props} />);
+
+    await user.hover(await screen.findByText("haiku"));
+
+    expect(await screen.findByText("在团队的模型列表中直接授予，同时也通过访问组 shared 授予")).toBeInTheDocument();
+  });
+
+  it("renders the English model-access badge under en", async () => {
+    vi.mocked(networking.teamInfoCall).mockResolvedValue(createMockTeamData({ models: ["all-proxy-models"] }));
+    await i18n.changeLanguage("en");
+    renderWithProviders(<TeamInfoView {...props} />);
+
+    expect(await screen.findByText("All proxy models")).toBeInTheDocument();
+    expect(screen.queryByText("所有 Proxy 模型")).not.toBeInTheDocument();
+  });
 });

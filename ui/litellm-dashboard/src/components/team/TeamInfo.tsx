@@ -125,6 +125,9 @@ const TEAM_MODEL_BADGE_TONES: Record<TeamModelBadgeKind, StatusTone> = {
 const teamModelBadgeHref = (badge: TeamModelBadge): string | undefined =>
   badge.kind === "direct" || badge.kind === "access-group" ? modelGroupHref(badge.label) : undefined;
 
+const teamModelBadgeLabel = (t: TFunction<"teams">, badge: TeamModelBadge): string =>
+  "label" in badge ? badge.label : t(badge.labelKey);
+
 export type McpFailureReason =
   | "mcp.reason.accessGroupsReloadFailed"
   | "mcp.reason.accessGroupsLoadFailed"
@@ -1231,11 +1234,14 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
             <div className="mt-2 flex flex-wrap gap-2">
               {computeTeamModelBadges(info.models, info.access_group_models || [], info.access_group_details).map(
                 (badge, index) => (
-                  <SimpleTooltip key={`${badge.kind}-${badge.label}-${index}`} content={badge.tooltip}>
+                  <SimpleTooltip
+                    key={`${badge.kind}-${teamModelBadgeLabel(t, badge)}-${index}`}
+                    content={t(badge.tooltipKey, { names: badge.groupNames.join(", ") })}
+                  >
                     <span>
                       <StatusBadge
                         tone={TEAM_MODEL_BADGE_TONES[badge.kind]}
-                        label={badge.label}
+                        label={teamModelBadgeLabel(t, badge)}
                         href={teamModelBadgeHref(badge)}
                       />
                     </span>

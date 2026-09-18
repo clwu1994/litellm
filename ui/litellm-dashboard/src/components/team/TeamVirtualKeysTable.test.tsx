@@ -1,6 +1,7 @@
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, vi, MockedFunction } from "vitest";
-import { fireEvent, renderWithProviders, screen, waitFor, within } from "../../../tests/test-utils";
+import { afterEach, beforeEach, describe, expect, it, vi, MockedFunction } from "vitest";
+import { cleanup, fireEvent, renderWithProviders, screen, waitFor, within } from "../../../tests/test-utils";
+import i18n from "@/i18n/bootstrapI18n";
 import { TeamVirtualKeysTable } from "./TeamVirtualKeysTable";
 import { KeysResponse, useKeys } from "@/app/(dashboard)/hooks/keys/useKeys";
 import { KeyResponse } from "../key_team_helpers/key_list";
@@ -446,6 +447,48 @@ describe("TeamVirtualKeysTable", () => {
       expect(within(row).queryByRole("link", { name: "Proxy Admin" })).not.toBeInTheDocument();
       expect(within(row).queryByRole("link", { name: placeholder.user_email })).not.toBeInTheDocument();
       expect(within(row).queryByRole("link", { name: "Default Proxy Admin" })).not.toBeInTheDocument();
+    });
+  });
+
+  describe("localization", () => {
+    beforeEach(() => {
+      mockUseKeys.mockReturnValue({
+        data: { keys: [createMockKey()], total_count: 1, current_page: 1, total_pages: 1 } as KeysResponse,
+        isPending: false,
+        isFetching: false,
+        refetch: vi.fn(),
+      } as unknown as ReturnType<typeof useKeys>);
+    });
+
+    afterEach(async () => {
+      cleanup();
+      await i18n.changeLanguage("en");
+    });
+
+    it("renders the Chinese table labels under zh", async () => {
+      await i18n.changeLanguage("zh");
+      renderWithProviders(<TeamVirtualKeysTable {...defaultProps} />);
+
+      expect(await screen.findByText("密钥别名")).toBeInTheDocument();
+      expect(screen.getByText("用户邮箱")).toBeInTheDocument();
+      expect(screen.getByText("消费（USD）")).toBeInTheDocument();
+      expect(screen.getByText("速率限制")).toBeInTheDocument();
+
+      expect(screen.queryByText("Key Alias")).not.toBeInTheDocument();
+      expect(screen.queryByText("User Email")).not.toBeInTheDocument();
+      expect(screen.queryByText("Spend (USD)")).not.toBeInTheDocument();
+    });
+
+    it("renders the English table labels under en", async () => {
+      await i18n.changeLanguage("en");
+      renderWithProviders(<TeamVirtualKeysTable {...defaultProps} />);
+
+      expect(await screen.findByText("Key Alias")).toBeInTheDocument();
+      expect(screen.getByText("User Email")).toBeInTheDocument();
+      expect(screen.getByText("Spend (USD)")).toBeInTheDocument();
+
+      expect(screen.queryByText("密钥别名")).not.toBeInTheDocument();
+      expect(screen.queryByText("消费（USD）")).not.toBeInTheDocument();
     });
   });
 });

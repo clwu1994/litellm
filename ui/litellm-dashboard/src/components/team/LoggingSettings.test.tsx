@@ -1,9 +1,10 @@
 import { readFileSync } from "fs";
 import { resolve } from "path";
 import React from "react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import userEvent from "@testing-library/user-event";
-import { renderWithProviders, screen, fireEvent } from "../../../tests/test-utils";
+import i18n from "@/i18n/bootstrapI18n";
+import { cleanup, renderWithProviders, screen, fireEvent } from "../../../tests/test-utils";
 import LoggingSettings from "./LoggingSettings";
 
 const SOURCE_PATH = resolve(process.cwd(), "src/components/team/LoggingSettings.tsx");
@@ -241,5 +242,43 @@ describe("LoggingSettings", () => {
       const updatedConfig = lastCall[0];
       expect(updatedConfig[0].callback_vars.langsmith_sampling_rate).toBe(value);
     });
+  });
+});
+
+describe("LoggingSettings localization", () => {
+  const renderEmpty = () => renderWithProviders(<LoggingSettings value={[]} onChange={vi.fn()} />);
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  it("renders the Chinese logging labels under zh", async () => {
+    await i18n.changeLanguage("zh");
+    renderEmpty();
+
+    expect(screen.getByText("日志集成")).toBeInTheDocument();
+    expect(screen.getByText("添加集成")).toBeInTheDocument();
+    expect(screen.getAllByText("已禁用的回调")).toHaveLength(2);
+    expect(screen.getByText("未配置日志集成")).toBeInTheDocument();
+    expect(screen.getByText("点击“添加集成”为此团队配置日志")).toBeInTheDocument();
+
+    expect(screen.queryByText("Logging Integrations")).not.toBeInTheDocument();
+    expect(screen.queryByText("Add Integration")).not.toBeInTheDocument();
+    expect(screen.queryByText("No logging integrations configured")).not.toBeInTheDocument();
+  });
+
+  it("renders the English logging labels under en", async () => {
+    await i18n.changeLanguage("en");
+    renderEmpty();
+
+    expect(screen.getByText("Logging Integrations")).toBeInTheDocument();
+    expect(screen.getByText("Add Integration")).toBeInTheDocument();
+    expect(screen.getAllByText("Disabled Callbacks")).toHaveLength(2);
+    expect(screen.getByText("No logging integrations configured")).toBeInTheDocument();
+    expect(screen.getByText('Click "Add Integration" to configure logging for this team')).toBeInTheDocument();
+
+    expect(screen.queryByText("日志集成")).not.toBeInTheDocument();
+    expect(screen.queryByText("添加集成")).not.toBeInTheDocument();
   });
 });

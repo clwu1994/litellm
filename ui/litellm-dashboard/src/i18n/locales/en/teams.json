@@ -392,5 +392,120 @@
       "spendLogs": "Member can view spend logs for the entire team (not just their own)",
       "fallback": "Access {{endpoint}}"
     }
+  },
+  "logging": {
+    "eventType": "Event Type",
+    "eventTypeOptions": {
+      "successOnly": "Success Only",
+      "failureOnly": "Failure Only",
+      "successAndFailure": "Success & Failure"
+    },
+    "aria": {
+      "showPassword": "Show password",
+      "hidePassword": "Hide password"
+    },
+    "integrationParameters": "Integration Parameters",
+    "sensitive": "Sensitive",
+    "number": "Number",
+    "numberHint": "Value must be between 0 and 1",
+    "disabledCallbacks": "Disabled Callbacks",
+    "disabledCallbacksTooltip": "Select callbacks to disable for this key. Disabled callbacks will not receive any logging data.",
+    "disabledCallbacksPlaceholder": "Select callbacks to disable",
+    "disabledCallbacksHint": "Select callbacks that should be disabled for this key. These callbacks will not receive any logging data.",
+    "integrations": "Logging Integrations",
+    "integrationsTooltip": "Configure callback logging integrations for this team.",
+    "addIntegration": "Add Integration",
+    "newIntegration": "New Integration",
+    "configuration": "{{name}} Configuration",
+    "remove": "Remove",
+    "integrationType": "Integration Type",
+    "selectIntegration": "Select integration",
+    "empty": {
+      "title": "No logging integrations configured",
+      "hint": "Click \"{{action}}\" to configure logging for this team"
+    }
+  },
+  "guardrailsSelect": {
+    "placeholder": "Select guardrails",
+    "empty": "No guardrails found",
+    "group": {
+      "global": "Global",
+      "other": "Other"
+    },
+    "aria": {
+      "global": "Global guardrail"
+    }
+  },
+  "virtualKeys": {
+    "table": {
+      "keyId": "Key ID",
+      "keyAlias": "Key Alias",
+      "secretKey": "Secret Key",
+      "userEmail": "User Email",
+      "createdBy": "Created By",
+      "updatedAt": "Updated At",
+      "lastActive": "Last Active",
+      "expires": "Expires",
+      "spend": "Spend (USD)",
+      "budget": "Budget (USD)",
+      "noModelAccess": "No model access",
+      "allProxyModels": "All Proxy Models",
+      "scopedTooltip": "Scoped to {{scope}} routes; this key cannot call any models",
+      "collapseModels": "Collapse models",
+      "expandModels": "Expand models",
+      "moreModel": "+{{remaining}} more model",
+      "moreModels": "+{{remaining}} more models",
+      "unknown": "Unknown"
+    },
+    "loading": "Loading keys...",
+    "searchPlaceholder": "Search by key alias or ID…",
+    "filters": {
+      "title": "Filters",
+      "description": "Narrow down keys for {{team}}",
+      "thisTeam": "this team",
+      "userIdPlaceholder": "Filter by user ID…",
+      "keyIdPlaceholder": "Enter Key ID…"
+    }
+  },
+  "availableTeams": {
+    "empty": {
+      "title": "No available teams to join",
+      "hint": "See how to set available teams <docsLink>here</docsLink>"
+    },
+    "loading": "Loading available teams…",
+    "aria": {
+      "openActions": "Open team actions"
+    },
+    "action": {
+      "join": "Join team"
+    },
+    "table": {
+      "description": "Description",
+      "noDescription": "No description available",
+      "members": "Members",
+      "memberCount": "{{members}} members",
+      "actions": "Actions"
+    },
+    "toast": {
+      "joined": "Successfully joined team",
+      "joinFailed": "Failed to join team"
+    }
+  },
+  "modelAccess": {
+    "badge": {
+      "allProxy": "All proxy models",
+      "noDefault": "No default models"
+    },
+    "tooltip": {
+      "allProxyFromList": "Granted by the All Proxy Models entry in the team's model list",
+      "allProxyEmptyList": "The team's model list is empty, so it can access every model on the proxy",
+      "noDefault": "No models are granted directly. Access comes only from access groups",
+      "direct": "Granted directly in the team's model list",
+      "directAndGroup": "Granted directly in the team's model list, and also via access group {{names}}",
+      "directAndGroups": "Granted directly in the team's model list, and also via access groups {{names}}",
+      "viaGroup": "Granted via access group {{names}}",
+      "viaGroups": "Granted via access groups {{names}}",
+      "viaAnyGroup": "Granted via an access group"
+    }
   }
 }

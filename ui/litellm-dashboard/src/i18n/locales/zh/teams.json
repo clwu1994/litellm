@@ -392,5 +392,120 @@
       "spendLogs": "成员可以查看整个团队的消费日志（不仅限于自己的）",
       "fallback": "访问 {{endpoint}}"
     }
+  },
+  "logging": {
+    "eventType": "事件类型",
+    "eventTypeOptions": {
+      "successOnly": "仅成功",
+      "failureOnly": "仅失败",
+      "successAndFailure": "成功与失败"
+    },
+    "aria": {
+      "showPassword": "显示密码",
+      "hidePassword": "隐藏密码"
+    },
+    "integrationParameters": "集成参数",
+    "sensitive": "敏感",
+    "number": "数字",
+    "numberHint": "取值必须介于 0 和 1 之间",
+    "disabledCallbacks": "已禁用的回调",
+    "disabledCallbacksTooltip": "选择要为此密钥禁用的回调。已禁用的回调不会收到任何日志数据。",
+    "disabledCallbacksPlaceholder": "选择要禁用的回调",
+    "disabledCallbacksHint": "选择应为此密钥禁用的回调。这些回调不会收到任何日志数据。",
+    "integrations": "日志集成",
+    "integrationsTooltip": "为此团队配置回调日志集成。",
+    "addIntegration": "添加集成",
+    "newIntegration": "新集成",
+    "configuration": "{{name}} 配置",
+    "remove": "移除",
+    "integrationType": "集成类型",
+    "selectIntegration": "选择集成",
+    "empty": {
+      "title": "未配置日志集成",
+      "hint": "点击“{{action}}”为此团队配置日志"
+    }
+  },
+  "guardrailsSelect": {
+    "placeholder": "选择 Guardrails",
+    "empty": "未找到 Guardrails",
+    "group": {
+      "global": "全局",
+      "other": "其他"
+    },
+    "aria": {
+      "global": "全局 Guardrail"
+    }
+  },
+  "virtualKeys": {
+    "table": {
+      "keyId": "Key ID",
+      "keyAlias": "密钥别名",
+      "secretKey": "Secret Key",
+      "userEmail": "用户邮箱",
+      "createdBy": "创建者",
+      "updatedAt": "更新时间",
+      "lastActive": "最近活跃",
+      "expires": "过期时间",
+      "spend": "消费（USD）",
+      "budget": "预算（USD）",
+      "noModelAccess": "无模型访问权限",
+      "allProxyModels": "所有 Proxy 模型",
+      "scopedTooltip": "范围限定为 {{scope}} 路由；该密钥无法调用任何模型",
+      "collapseModels": "收起模型",
+      "expandModels": "展开模型",
+      "moreModel": "+{{remaining}} 个模型",
+      "moreModels": "+{{remaining}} 个模型",
+      "unknown": "未知"
+    },
+    "loading": "正在加载密钥…",
+    "searchPlaceholder": "按密钥别名或 ID 搜索…",
+    "filters": {
+      "title": "筛选",
+      "description": "进一步筛选 {{team}} 的密钥",
+      "thisTeam": "此团队",
+      "userIdPlaceholder": "按用户 ID 筛选…",
+      "keyIdPlaceholder": "输入 Key ID…"
+    }
+  },
+  "availableTeams": {
+    "empty": {
+      "title": "没有可加入的团队",
+      "hint": "了解如何设置可加入的团队，请见<docsLink>此处</docsLink>"
+    },
+    "loading": "正在加载可加入的团队…",
+    "aria": {
+      "openActions": "打开团队操作"
+    },
+    "action": {
+      "join": "加入团队"
+    },
+    "table": {
+      "description": "描述",
+      "noDescription": "暂无描述",
+      "members": "成员",
+      "memberCount": "{{members}} 名成员",
+      "actions": "操作"
+    },
+    "toast": {
+      "joined": "成功加入团队",
+      "joinFailed": "加入团队失败"
+    }
+  },
+  "modelAccess": {
+    "badge": {
+      "allProxy": "所有 Proxy 模型",
+      "noDefault": "无默认模型"
+    },
+    "tooltip": {
+      "allProxyFromList": "由团队模型列表中的 All Proxy Models 条目授予",
+      "allProxyEmptyList": "团队的模型列表为空，因此可以访问 Proxy 上的所有模型",
+      "noDefault": "没有直接授予的模型。访问权限仅来自访问组",
+      "direct": "在团队的模型列表中直接授予",
+      "directAndGroup": "在团队的模型列表中直接授予，同时也通过访问组 {{names}} 授予",
+      "directAndGroups": "在团队的模型列表中直接授予，同时也通过访问组 {{names}} 授予",
+      "viaGroup": "通过访问组 {{names}} 授予",
+      "viaGroups": "通过访问组 {{names}} 授予",
+      "viaAnyGroup": "通过访问组授予"
+    }
   }
 }

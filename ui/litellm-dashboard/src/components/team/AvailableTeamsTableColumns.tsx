@@ -1,6 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+import type { TFunction } from "i18next";
 import { MoreHorizontal, UserPlus } from "lucide-react";
 
 import { DataTableSortHeader } from "@/components/shared/DataTable";
@@ -22,11 +23,19 @@ export interface AvailableTeam {
   members_with_roles: { user_id?: string; user_email?: string; role: string }[];
 }
 
-function AvailableTeamRowActions({ team, onJoinTeam }: { team: AvailableTeam; onJoinTeam: (teamId: string) => void }) {
+function AvailableTeamRowActions({
+  team,
+  onJoinTeam,
+  t,
+}: {
+  team: AvailableTeam;
+  onJoinTeam: (teamId: string) => void;
+  t: TFunction<"teams">;
+}) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        aria-label="Open team actions"
+        aria-label={t("availableTeams.aria.openActions")}
         data-testid={`available-team-actions-${team.team_id}`}
         className={cn(buttonVariants({ variant: "ghost", size: "icon-sm" }), "text-muted-foreground")}
       >
@@ -35,7 +44,7 @@ function AvailableTeamRowActions({ team, onJoinTeam }: { team: AvailableTeam; on
       <DropdownMenuContent align="end" className="w-44">
         <DropdownMenuItem data-testid="available-team-action-join" onClick={() => onJoinTeam(team.team_id)}>
           <UserPlus />
-          Join team
+          {t("availableTeams.action.join")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -44,16 +53,18 @@ function AvailableTeamRowActions({ team, onJoinTeam }: { team: AvailableTeam; on
 
 interface AvailableTeamsTableColumnsDeps {
   onJoinTeam: (teamId: string) => void;
+  t: TFunction<"teams">;
 }
 
 export const getAvailableTeamsTableColumns = ({
   onJoinTeam,
+  t,
 }: AvailableTeamsTableColumnsDeps): ColumnDef<AvailableTeam>[] => [
   {
     id: "team_alias",
     accessorKey: "team_alias",
-    meta: { title: "Team Name" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Team Name" />,
+    meta: { title: t("info.field.teamName") },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("info.field.teamName")} />,
     size: 220,
     enableSorting: true,
     cell: ({ row }) => (
@@ -63,15 +74,15 @@ export const getAvailableTeamsTableColumns = ({
   {
     id: "description",
     accessorKey: "description",
-    meta: { title: "Description" },
-    header: "Description",
+    meta: { title: t("availableTeams.table.description") },
+    header: t("availableTeams.table.description"),
     size: 280,
     enableSorting: false,
     cell: ({ row }) => {
       const description = row.original.description;
       return (
         <span className="block max-w-72 truncate text-sm text-muted-foreground" title={description || undefined}>
-          {description || "No description available"}
+          {description || t("availableTeams.table.noDescription")}
         </span>
       );
     },
@@ -79,18 +90,20 @@ export const getAvailableTeamsTableColumns = ({
   {
     id: "members",
     accessorFn: (team) => team.members_with_roles.length,
-    meta: { title: "Members" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Members" />,
+    meta: { title: t("availableTeams.table.members") },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("availableTeams.table.members")} />,
     size: 120,
     enableSorting: true,
     cell: ({ row }) => (
-      <span className="text-sm text-muted-foreground">{row.original.members_with_roles.length} members</span>
+      <span className="text-sm text-muted-foreground">
+        {t("availableTeams.table.memberCount", { members: row.original.members_with_roles.length })}
+      </span>
     ),
   },
   {
     id: "models",
-    meta: { title: "Models" },
-    header: "Models",
+    meta: { title: t("info.field.models") },
+    header: t("info.field.models"),
     size: 260,
     enableSorting: false,
     cell: ({ row }) => <ModelsCell models={row.original.models} />,
@@ -98,13 +111,13 @@ export const getAvailableTeamsTableColumns = ({
   {
     id: "actions",
     meta: { className: "text-right", headerClassName: "text-right" },
-    header: () => <span className="sr-only">Actions</span>,
+    header: () => <span className="sr-only">{t("availableTeams.table.actions")}</span>,
     size: 64,
     enableSorting: false,
     enableHiding: false,
     cell: ({ row }) => (
       <div className="flex justify-end">
-        <AvailableTeamRowActions team={row.original} onJoinTeam={onJoinTeam} />
+        <AvailableTeamRowActions team={row.original} onJoinTeam={onJoinTeam} t={t} />
       </div>
     ),
   },

@@ -11,11 +11,32 @@ export interface TeamAccessGroupModelGrant {
 
 export type TeamModelBadgeKind = "all-proxy" | "no-default" | "direct" | "access-group";
 
-export interface TeamModelBadge {
-  label: string;
-  kind: TeamModelBadgeKind;
-  tooltip: string;
-}
+export type TeamModelBadgeLabelKey = "modelAccess.badge.allProxy" | "modelAccess.badge.noDefault";
+
+export type TeamModelBadgeTooltipKey =
+  | "modelAccess.tooltip.allProxyFromList"
+  | "modelAccess.tooltip.allProxyEmptyList"
+  | "modelAccess.tooltip.noDefault"
+  | "modelAccess.tooltip.direct"
+  | "modelAccess.tooltip.directAndGroup"
+  | "modelAccess.tooltip.directAndGroups"
+  | "modelAccess.tooltip.viaGroup"
+  | "modelAccess.tooltip.viaGroups"
+  | "modelAccess.tooltip.viaAnyGroup";
+
+export type TeamModelBadge =
+  | {
+      readonly kind: "all-proxy" | "no-default";
+      readonly labelKey: TeamModelBadgeLabelKey;
+      readonly tooltipKey: TeamModelBadgeTooltipKey;
+      readonly groupNames: readonly string[];
+    }
+  | {
+      readonly kind: "direct" | "access-group";
+      readonly label: string;
+      readonly tooltipKey: TeamModelBadgeTooltipKey;
+      readonly groupNames: readonly string[];
+    };
 
 export function normalizeTeamModelSelection(models: string[] | undefined): string[] {
   return models && models.length > 0 ? models : [NO_DEFAULT_MODELS];
@@ -23,6 +44,12 @@ export function normalizeTeamModelSelection(models: string[] | undefined): strin
 
 export const describeGroups = (names: string[]): string =>
   names.length > 1 ? `access groups ${names.join(", ")}` : `access group ${names[0]}`;
+
+const pickTooltipKey = <T extends string>(count: number, none: T, one: T, many: T): T => {
+  if (count === 0) return none;
+  if (count === 1) return one;
+  return many;
+};
 
 export function computeTeamModelBadges(
   models: string[],
@@ -32,10 +59,6 @@ export function computeTeamModelBadges(
   const grants = accessGroupDetails ?? [];
   const groupNamesFor = (model: string): string[] =>
     grants.filter((g) => g.models.includes(model)).map((g) => g.access_group_name);
-  const viaGroups = (model: string): string => {
-    const names = groupNamesFor(model);
-    return names.length > 0 ? describeGroups(names) : "an access group";
-  };
 
   const allProxy = models.length === 0 || models.includes(ALL_PROXY_MODELS);
   const directModels = allProxy ? [] : models.filter((m) => m !== NO_DEFAULT_MODELS);
@@ -44,16 +67,18 @@ export function computeTeamModelBadges(
   );
 
   const allProxyBadge: TeamModelBadge = {
-    label: "All proxy models",
     kind: "all-proxy",
-    tooltip: models.includes(ALL_PROXY_MODELS)
-      ? "Granted by the All Proxy Models entry in the team's model list"
-      : "The team's model list is empty, so it can access every model on the proxy",
+    labelKey: "modelAccess.badge.allProxy",
+    tooltipKey: models.includes(ALL_PROXY_MODELS)
+      ? "modelAccess.tooltip.allProxyFromList"
+      : "modelAccess.tooltip.allProxyEmptyList",
+    groupNames: [],
   };
   const noDefaultBadge: TeamModelBadge = {
-    label: "No default models",
     kind: "no-default",
-    tooltip: "No models are granted directly. Access comes only from access groups",
+    labelKey: "modelAccess.badge.noDefault",
+    tooltipKey: "modelAccess.tooltip.noDefault",
+    groupNames: [],
   };
   const headBadge = (): TeamModelBadge[] => {
     if (allProxy) return [allProxyBadge];
@@ -63,22 +88,33 @@ export function computeTeamModelBadges(
 
   return [
     ...headBadge(),
-    ...directModels.map(
-      (m): TeamModelBadge => ({
-        label: m,
+    ...directModels.map((m): TeamModelBadge => {
+      const names = groupNamesFor(m);
+      return {
         kind: "direct",
-        tooltip:
-          groupNamesFor(m).length > 0
-            ? `Granted directly in the team's model list, and also via ${viaGroups(m)}`
-            : "Granted directly in the team's model list",
-      }),
-    ),
-    ...groupModels.map(
-      (m): TeamModelBadge => ({
         label: m,
+        tooltipKey: pickTooltipKey(
+          names.length,
+          "modelAccess.tooltip.direct",
+          "modelAccess.tooltip.directAndGroup",
+          "modelAccess.tooltip.directAndGroups",
+        ),
+        groupNames: names,
+      };
+    }),
+    ...groupModels.map((m): TeamModelBadge => {
+      const names = groupNamesFor(m);
+      return {
         kind: "access-group",
-        tooltip: `Granted via ${viaGroups(m)}`,
-      }),
-    ),
+        label: m,
+        tooltipKey: pickTooltipKey(
+          names.length,
+          "modelAccess.tooltip.viaAnyGroup",
+          "modelAccess.tooltip.viaGroup",
+          "modelAccess.tooltip.viaGroups",
+        ),
+        groupNames: names,
+      };
+    }),
   ];
 }
