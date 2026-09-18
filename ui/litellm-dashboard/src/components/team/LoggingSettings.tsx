@@ -277,7 +277,7 @@ const LoggingSettings: React.FC<LoggingSettingsProps> = ({
                     />
                   )}
                   <span className="text-sm font-medium">
-                    {t("logging.configuration", { name: callbackDisplayName ?? t("logging.newIntegration") })}
+                    {t("logging.configuration", { name: callbackDisplayName || t("logging.newIntegration") })}
                   </span>
                 </div>
                 <Button

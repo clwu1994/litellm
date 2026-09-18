@@ -337,9 +337,7 @@ export function TeamVirtualKeysTable({ teamId, teamAlias, organization }: TeamVi
         header: t("members.field.budgetReset"),
         size: 130,
         enableSorting: false,
-        cell: (info) => (
-          <DateCell value={info.getValue() as string | null} precision="date" fallback={t("info.value.never")} />
-        ),
+        cell: (info) => <DateCell value={info.getValue() as string | null} fallback={t("info.value.never")} />,
       },
       {
         id: "models",

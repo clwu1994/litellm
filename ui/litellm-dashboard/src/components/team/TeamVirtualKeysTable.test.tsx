@@ -156,6 +156,26 @@ describe("TeamVirtualKeysTable", () => {
     expect(screen.getByText("bob_key_team1")).toBeInTheDocument();
   });
 
+  it("renders the Budget Reset cell with the datetime precision, not date-only", async () => {
+    const budgetResetAt = new Date(2026, 6, 7, 9, 50, 13).toISOString();
+    mockUseKeys.mockReturnValue({
+      data: {
+        keys: [createMockKey({ budget_reset_at: budgetResetAt })],
+        total_count: 1,
+        current_page: 1,
+        total_pages: 1,
+      } as KeysResponse,
+      isPending: false,
+      isFetching: false,
+      refetch: vi.fn(),
+    } as unknown as ReturnType<typeof useKeys>);
+
+    renderWithProviders(<TeamVirtualKeysTable {...defaultProps} />);
+
+    expect(await screen.findByText("Jul 7, 09:50:13")).toBeInTheDocument();
+    expect(screen.queryByText("Jul 7, 2026")).not.toBeInTheDocument();
+  });
+
   it("should show the current range from total_count when multiple pages exist", async () => {
     mockUseKeys.mockReturnValue({
       data: {
