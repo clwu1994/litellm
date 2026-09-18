@@ -1,0 +1,171 @@
+{
+  "table": {
+    "header": {
+      "userId": "User ID",
+      "email": "Email",
+      "status": "Status",
+      "globalProxyRole": "Global Proxy Role",
+      "userAlias": "User Alias",
+      "spend": "Spend (USD)",
+      "budget": "Budget (USD)",
+      "ssoId": "SSO ID",
+      "virtualKeys": "Virtual Keys",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "teamName": "Team Name",
+      "actions": "Actions"
+    },
+    "filters": {
+      "title": "Filters",
+      "description": "Narrow down your users",
+      "userId": "User ID",
+      "ssoId": "SSO ID",
+      "role": "Role",
+      "team": "Team",
+      "userIdPlaceholder": "Enter user ID…",
+      "ssoIdPlaceholder": "Enter SSO ID…",
+      "rolePlaceholder": "Select a role…",
+      "teamPlaceholder": "Select a team…",
+      "noRoles": "No roles found",
+      "noTeams": "No teams found"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "inactiveTooltip": "Deactivated via SCIM (external identity provider). The user's virtual keys are blocked."
+    },
+    "tooltip": {
+      "ssoId": "SSO ID is the ID of the user in the SSO provider. If the user is not using SSO, this will be null.",
+      "ssoIdAria": "About SSO ID"
+    },
+    "value": {
+      "unlimited": "Unlimited",
+      "noKeys": "No Keys",
+      "key": "Key",
+      "keys": "Keys"
+    },
+    "loading": "Loading users…",
+    "searchPlaceholder": "Search by email or ID…",
+    "aria": {
+      "openActions": "Open user actions",
+      "selectRow": "Select {{user}}"
+    },
+    "copyUserId": "User ID copied"
+  },
+  "info": {
+    "loading": "Loading user data...",
+    "notFound": "User not found",
+    "userFallback": "User",
+    "field": {
+      "userId": "User ID",
+      "email": "Email",
+      "userAlias": "User Alias",
+      "globalProxyRole": "Global Proxy Role",
+      "created": "Created",
+      "lastUpdated": "Last Updated",
+      "personalModels": "Personal Models",
+      "maxBudget": "Max Budget (USD)",
+      "maxBudgetShort": "Max Budget",
+      "resetBudget": "Reset Budget",
+      "budgetReset": "Budget Reset",
+      "metadata": "Metadata",
+      "mcpPermissions": "MCP Permissions",
+      "mcpServersAndGroups": "MCP Servers / Access Groups",
+      "memberRole": "Member Role"
+    },
+    "section": {
+      "spend": "Spend",
+      "teams": "Teams",
+      "personalModels": "Personal Models",
+      "userSettings": "User Settings"
+    },
+    "value": {
+      "of": "of {{amount}}",
+      "unlimited": "Unlimited",
+      "notSet": "Not Set",
+      "unknown": "Unknown",
+      "allProxyModels": "All proxy models",
+      "allProxyModelsOption": "All Proxy Models",
+      "noDefaultModels": "No Default Models"
+    },
+    "hint": {
+      "globalProxyRole": "This is the role that the user will globally on the proxy. This role is independent of any team/org specific roles.",
+      "personalModels": "Select which models this user can access outside of team-scope. Choose 'All Proxy Models' to grant access to all models available on the proxy.",
+      "mcpServersAndGroups": "Caps which MCP servers, access groups, and tools this user may reach. Every key the user holds is limited to this set.",
+      "modelMaxBudget": "Cap this user's spend on individual models, each with its own reset window. Applies across every key the user holds.",
+      "memberRoleUser": "Can view team info, but not manage it",
+      "memberRoleAdmin": "Can create team keys, add members, and manage settings"
+    },
+    "placeholder": {
+      "selectModels": "Select models",
+      "numerical": "Enter a numerical value",
+      "metadataJson": "Enter metadata as JSON",
+      "selectMcpServers": "Select MCP servers or access groups (optional)",
+      "selectTeam": "Select a team",
+      "noTeams": "No teams found"
+    },
+    "addTeamTitle": "Add User to Team",
+    "loadingDefaultSettings": "Loading default user settings"
+  },
+  "actions": {
+    "backToUsers": "Back to Users",
+    "resetPassword": "Reset Password",
+    "deleteUser": "Delete User",
+    "editSettings": "Edit Settings",
+    "editUser": "Edit user",
+    "resetPasswordRow": "Reset password",
+    "copyUserId": "Copy user ID",
+    "deleteUserRow": "Delete user",
+    "selectUsers": "Select Users",
+    "cancelSelection": "Cancel Selection",
+    "bulkEdit": "Bulk Edit ({{count}} selected)",
+    "addTeam": "Add Team",
+    "addToTeam": "Add to Team",
+    "adding": "Adding...",
+    "showLess": "Show Less",
+    "showMore": "+{{count}} more",
+    "removeFrom": "Remove from {{team}}",
+    "cancel": "Cancel",
+    "saveChanges": "Save Changes",
+    "unlimitedBudget": "Unlimited Budget"
+  },
+  "empty": {
+    "noUsers": "No users found",
+    "noUsersHint": "Try adjusting your search or filters.",
+    "noTeams": "No teams"
+  },
+  "tabs": {
+    "users": "Users",
+    "defaultUserSettings": "Default User Settings",
+    "overview": "Overview",
+    "details": "Details"
+  },
+  "delete": {
+    "userTitle": "Delete User?",
+    "userMessage": "Are you sure you want to delete this user? This action cannot be undone.",
+    "userInfoTitle": "User Information",
+    "totalSpend": "Total Spend (USD)",
+    "removeTeamTitle": "Remove from Team",
+    "removeTeamAlert": "Removing this user from the team will also delete any keys the user created for this team.",
+    "removeTeamMessage": "Are you sure you want to remove this user from the team? This action cannot be undone.",
+    "teamMembershipTitle": "Team Membership",
+    "team": "Team"
+  },
+  "validation": {
+    "budgetRequired": "Please enter a budget or select Unlimited Budget"
+  },
+  "toast": {
+    "accessTokenMissing": "Access token not found",
+    "generatingResetLink": "Generating password reset link...",
+    "resetLinkFailed": "Failed to generate password reset link",
+    "userDeleted": "User deleted successfully",
+    "userDeleteFailed": "Failed to delete user",
+    "userUpdated": "User updated successfully",
+    "userUpdateFailed": "Failed to update user",
+    "userFetchFailed": "Failed to fetch user data",
+    "teamAdded": "User added to team successfully",
+    "teamAddFailed": "Failed to add user to team",
+    "teamRemoved": "User removed from team successfully",
+    "teamRemoveFailed": "Failed to remove user from team"
+  }
+}

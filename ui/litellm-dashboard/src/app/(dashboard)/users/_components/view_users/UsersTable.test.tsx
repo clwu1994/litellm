@@ -1,10 +1,11 @@
 /* @vitest-environment jsdom */
 import type { PaginationState, RowSelectionState, SortingState } from "@tanstack/react-table";
-import { render, screen, within } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
-import { describe, expect, it, vi, type Mock } from "vitest";
+import { afterEach, describe, expect, it, vi, type Mock } from "vitest";
 
+import i18n from "@/i18n/bootstrapI18n";
 import { UserInfo } from "@/components/networking";
 
 import { UsersTable } from "./UsersTable";
@@ -101,6 +102,11 @@ const openRowMenu = async (user: ReturnType<typeof userEvent.setup>, userId: str
 };
 
 describe("UsersTable", () => {
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
   it("renders every migrated column header", () => {
     render(<Harness />);
 
@@ -274,5 +280,33 @@ describe("UsersTable", () => {
     const rows = screen.getAllByRole("row");
     const dataRow = rows[rows.length - 1];
     expect(within(dataRow).getByTestId("user-actions-user-1")).toBeInTheDocument();
+  });
+
+  it("renders the Chinese headers and empty state and hides their English originals under zh", async () => {
+    await i18n.changeLanguage("zh");
+    render(<Harness data={[]} rowCount={0} />);
+
+    const headerRow = screen.getAllByRole("row")[0];
+    expect(headerRow).toHaveTextContent("用户 ID");
+    expect(headerRow).toHaveTextContent("邮箱");
+    expect(headerRow).toHaveTextContent("全局 Proxy 角色");
+    expect(headerRow).toHaveTextContent("Virtual Keys");
+    expect(headerRow).not.toHaveTextContent("Global Proxy Role");
+
+    expect(await screen.findByText("未找到用户")).toBeInTheDocument();
+    expect(screen.getByText("请尝试调整搜索或筛选条件。")).toBeInTheDocument();
+    expect(screen.queryByText("No users found")).not.toBeInTheDocument();
+  });
+
+  it("renders the English headers and empty state under en", async () => {
+    await i18n.changeLanguage("en");
+    render(<Harness data={[]} rowCount={0} />);
+
+    const headerRow = screen.getAllByRole("row")[0];
+    expect(headerRow).toHaveTextContent("Global Proxy Role");
+    expect(headerRow).not.toHaveTextContent("全局 Proxy 角色");
+
+    expect(await screen.findByText("No users found")).toBeInTheDocument();
+    expect(screen.queryByText("未找到用户")).not.toBeInTheDocument();
   });
 });

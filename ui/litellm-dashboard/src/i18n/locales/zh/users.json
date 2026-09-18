@@ -1,0 +1,171 @@
+{
+  "table": {
+    "header": {
+      "userId": "用户 ID",
+      "email": "邮箱",
+      "status": "状态",
+      "globalProxyRole": "全局 Proxy 角色",
+      "userAlias": "用户别名",
+      "spend": "消费（USD）",
+      "budget": "预算（USD）",
+      "ssoId": "SSO ID",
+      "virtualKeys": "Virtual Keys",
+      "createdAt": "创建时间",
+      "updatedAt": "更新时间",
+      "teamName": "团队名称",
+      "actions": "操作"
+    },
+    "filters": {
+      "title": "筛选",
+      "description": "进一步筛选用户",
+      "userId": "用户 ID",
+      "ssoId": "SSO ID",
+      "role": "角色",
+      "team": "团队",
+      "userIdPlaceholder": "输入用户 ID…",
+      "ssoIdPlaceholder": "输入 SSO ID…",
+      "rolePlaceholder": "选择角色…",
+      "teamPlaceholder": "选择团队…",
+      "noRoles": "未找到角色",
+      "noTeams": "未找到团队"
+    },
+    "status": {
+      "active": "活跃",
+      "inactive": "已停用",
+      "inactiveTooltip": "已通过 SCIM（外部身份提供商）停用。该用户的 Virtual Key 已被封锁。"
+    },
+    "tooltip": {
+      "ssoId": "SSO ID 是用户在 SSO 提供商中的 ID。如果用户未使用 SSO，该值为 null。",
+      "ssoIdAria": "关于 SSO ID"
+    },
+    "value": {
+      "unlimited": "不限",
+      "noKeys": "无密钥",
+      "key": "个密钥",
+      "keys": "个密钥"
+    },
+    "loading": "正在加载用户…",
+    "searchPlaceholder": "按邮箱或 ID 搜索…",
+    "aria": {
+      "openActions": "打开用户操作",
+      "selectRow": "选择 {{user}}"
+    },
+    "copyUserId": "已复制用户 ID"
+  },
+  "info": {
+    "loading": "正在加载用户数据…",
+    "notFound": "未找到用户",
+    "userFallback": "用户",
+    "field": {
+      "userId": "用户 ID",
+      "email": "邮箱",
+      "userAlias": "用户别名",
+      "globalProxyRole": "全局 Proxy 角色",
+      "created": "创建时间",
+      "lastUpdated": "更新时间",
+      "personalModels": "个人模型",
+      "maxBudget": "最大预算（USD）",
+      "maxBudgetShort": "最大预算",
+      "resetBudget": "重置预算",
+      "budgetReset": "预算重置",
+      "metadata": "元数据",
+      "mcpPermissions": "MCP 权限",
+      "mcpServersAndGroups": "MCP 服务 / 访问组",
+      "memberRole": "成员角色"
+    },
+    "section": {
+      "spend": "消费",
+      "teams": "团队",
+      "personalModels": "个人模型",
+      "userSettings": "用户设置"
+    },
+    "value": {
+      "of": "占 {{amount}}",
+      "unlimited": "不限",
+      "notSet": "未设置",
+      "unknown": "未知",
+      "allProxyModels": "所有 Proxy 模型",
+      "allProxyModelsOption": "所有 Proxy 模型",
+      "noDefaultModels": "无默认模型"
+    },
+    "hint": {
+      "globalProxyRole": "这是用户在整个 Proxy 上的全局角色。该角色与任何团队或组织专属角色相互独立。",
+      "personalModels": "选择该用户在团队范围之外可以访问的模型。选择“所有 Proxy 模型”可授予访问 Proxy 上全部模型的权限。",
+      "mcpServersAndGroups": "限制该用户可以访问的 MCP 服务、访问组和工具。该用户持有的每个密钥都受此范围限制。",
+      "modelMaxBudget": "限制该用户在单个模型上的消费，每个模型可设置独立的重置周期。适用于该用户持有的所有密钥。",
+      "memberRoleUser": "可以查看团队信息，但不能管理团队",
+      "memberRoleAdmin": "可以创建团队密钥、添加成员并管理设置"
+    },
+    "placeholder": {
+      "selectModels": "选择模型",
+      "numerical": "请输入数值",
+      "metadataJson": "以 JSON 格式输入元数据",
+      "selectMcpServers": "选择 MCP 服务或访问组（可选）",
+      "selectTeam": "选择团队",
+      "noTeams": "未找到团队"
+    },
+    "addTeamTitle": "将用户添加到团队",
+    "loadingDefaultSettings": "正在加载默认用户设置"
+  },
+  "actions": {
+    "backToUsers": "返回用户列表",
+    "resetPassword": "重置密码",
+    "deleteUser": "删除用户",
+    "editSettings": "编辑设置",
+    "editUser": "编辑用户",
+    "resetPasswordRow": "重置密码",
+    "copyUserId": "复制用户 ID",
+    "deleteUserRow": "删除用户",
+    "selectUsers": "选择用户",
+    "cancelSelection": "取消选择",
+    "bulkEdit": "批量编辑（已选 {{count}} 个）",
+    "addTeam": "添加团队",
+    "addToTeam": "添加到团队",
+    "adding": "正在添加...",
+    "showLess": "收起",
+    "showMore": "还有 {{count}} 个",
+    "removeFrom": "从 {{team}} 中移除",
+    "cancel": "取消",
+    "saveChanges": "保存更改",
+    "unlimitedBudget": "不限预算"
+  },
+  "empty": {
+    "noUsers": "未找到用户",
+    "noUsersHint": "请尝试调整搜索或筛选条件。",
+    "noTeams": "无团队"
+  },
+  "tabs": {
+    "users": "用户",
+    "defaultUserSettings": "默认用户设置",
+    "overview": "概览",
+    "details": "详情"
+  },
+  "delete": {
+    "userTitle": "删除用户？",
+    "userMessage": "确定要删除该用户吗？此操作无法撤销。",
+    "userInfoTitle": "用户信息",
+    "totalSpend": "累计消费（USD）",
+    "removeTeamTitle": "从团队中移除",
+    "removeTeamAlert": "将该用户从团队中移除会同时删除该用户为此团队创建的所有密钥。",
+    "removeTeamMessage": "确定要将该用户从团队中移除吗？此操作无法撤销。",
+    "teamMembershipTitle": "团队成员信息",
+    "team": "团队"
+  },
+  "validation": {
+    "budgetRequired": "请输入预算或选择不限预算"
+  },
+  "toast": {
+    "accessTokenMissing": "未找到 Access Token",
+    "generatingResetLink": "正在生成密码重置链接…",
+    "resetLinkFailed": "生成密码重置链接失败",
+    "userDeleted": "用户删除成功",
+    "userDeleteFailed": "删除用户失败",
+    "userUpdated": "用户更新成功",
+    "userUpdateFailed": "更新用户失败",
+    "userFetchFailed": "获取用户数据失败",
+    "teamAdded": "用户已成功加入团队",
+    "teamAddFailed": "将用户添加到团队失败",
+    "teamRemoved": "用户已成功从团队移除",
+    "teamRemoveFailed": "将用户从团队移除失败"
+  }
+}

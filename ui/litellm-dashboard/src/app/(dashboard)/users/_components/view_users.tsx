@@ -20,6 +20,7 @@ import { DEBOUNCE_WAIT_MS } from "@/utils/debounceConstants";
 import { isAdminRole, isProxyAdminRole } from "@/utils/roles";
 import { useDebouncedValue } from "@tanstack/react-pacer/debouncer";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import {
   ColumnFiltersState,
   OnChangeFn,
@@ -58,6 +59,7 @@ const ViewUserDashboard: React.FC<ViewUserDashboardProps> = ({
   teams,
   orgAdminOrgIds,
 }) => {
+  const { t } = useTranslation("users");
   const isProxyAdmin = userRole ? isProxyAdminRole(userRole) : false;
   const queryClient = useQueryClient();
 
@@ -157,19 +159,19 @@ const ViewUserDashboard: React.FC<ViewUserDashboardProps> = ({
   const handleResetPassword = useCallback(
     async (userId: string) => {
       if (!accessToken) {
-        toast.fromError("Access token not found");
+        toast.fromError(t("toast.accessTokenMissing"));
         return;
       }
       try {
-        toast.success("Generating password reset link...");
+        toast.success(t("toast.generatingResetLink"));
         const data = await invitationCreateCall(accessToken, userId);
         setInvitationLinkData(data);
         setIsInvitationLinkModalVisible(true);
       } catch (error) {
-        toast.fromError("Failed to generate password reset link");
+        toast.fromError(t("toast.resetLinkFailed"));
       }
     },
-    [accessToken],
+    [accessToken, t],
   );
 
   const confirmDelete = async () => {
@@ -185,10 +187,10 @@ const ViewUserDashboard: React.FC<ViewUserDashboardProps> = ({
           return { ...previousData, users: updatedUsers };
         });
 
-        toast.success("User deleted successfully");
+        toast.success(t("toast.userDeleted"));
       } catch (error) {
         console.error("Error deleting user:", error);
-        toast.fromError("Failed to delete user");
+        toast.fromError(t("toast.userDeleteFailed"));
       } finally {
         setIsDeleteModalOpen(false);
         setUserToDelete(null);
@@ -343,7 +345,7 @@ const ViewUserDashboard: React.FC<ViewUserDashboardProps> = ({
                   variant={selectionMode ? "default" : "outline"}
                   data-testid="toggle-user-selection"
                 >
-                  {selectionMode ? "Cancel Selection" : "Select Users"}
+                  {selectionMode ? t("actions.cancelSelection") : t("actions.selectUsers")}
                 </Button>
               )}
 
@@ -354,7 +356,7 @@ const ViewUserDashboard: React.FC<ViewUserDashboardProps> = ({
                   disabled={selectedUsers.length === 0}
                   data-testid="bulk-edit-users"
                 >
-                  Bulk Edit ({selectedUsers.length} selected)
+                  {t("actions.bulkEdit", { count: selectedUsers.length })}
                 </Button>
               )}
             </>
@@ -366,10 +368,10 @@ const ViewUserDashboard: React.FC<ViewUserDashboardProps> = ({
         <Tabs defaultValue="users" className="gap-0">
           <TabsList variant="line" className="mb-4">
             <TabsTrigger value="users" className="flex-none data-active:text-primary after:bg-primary">
-              Users
+              {t("tabs.users")}
             </TabsTrigger>
             <TabsTrigger value="default-settings" className="flex-none data-active:text-primary after:bg-primary">
-              Default User Settings
+              {t("tabs.defaultUserSettings")}
             </TabsTrigger>
           </TabsList>
 
@@ -382,7 +384,7 @@ const ViewUserDashboard: React.FC<ViewUserDashboardProps> = ({
               <div
                 className="flex h-64 items-center justify-center"
                 role="status"
-                aria-label="Loading default user settings"
+                aria-label={t("info.loadingDefaultSettings")}
               >
                 <div className="w-full max-w-lg space-y-3">
                   <Skeleton className="h-5 w-1/3" />
@@ -403,18 +405,18 @@ const ViewUserDashboard: React.FC<ViewUserDashboardProps> = ({
       {/* Existing Modals */}
       <DeleteResourceModal
         isOpen={isDeleteModalOpen}
-        title="Delete User?"
-        message="Are you sure you want to delete this user? This action cannot be undone."
-        resourceInformationTitle="User Information"
+        title={t("delete.userTitle")}
+        message={t("delete.userMessage")}
+        resourceInformationTitle={t("delete.userInfoTitle")}
         resourceInformation={[
-          { label: "Email", value: userToDelete?.user_email },
-          { label: "User ID", value: userToDelete?.user_id, code: true },
+          { label: t("info.field.email"), value: userToDelete?.user_email },
+          { label: t("info.field.userId"), value: userToDelete?.user_id, code: true },
           {
-            label: "Global Proxy Role",
+            label: t("info.field.globalProxyRole"),
             value:
               (userToDelete && possibleUIRoles?.[userToDelete.user_role]?.ui_label) || userToDelete?.user_role || "-",
           },
-          { label: "Total Spend (USD)", value: userToDelete?.spend?.toFixed(2) },
+          { label: t("delete.totalSpend"), value: userToDelete?.spend?.toFixed(2) },
         ]}
         onCancel={cancelDelete}
         onOk={confirmDelete}

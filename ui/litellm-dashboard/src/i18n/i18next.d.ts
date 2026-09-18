@@ -3,6 +3,7 @@ import type zhCommon from "./locales/zh/common.json";
 import type zhKeys from "./locales/zh/keys.json";
 import type zhNav from "./locales/zh/nav.json";
 import type zhTeams from "./locales/zh/teams.json";
+import type zhUsers from "./locales/zh/users.json";
 
 declare module "i18next" {
   interface CustomTypeOptions {
@@ -13,6 +14,7 @@ declare module "i18next" {
       auth: typeof zhAuth;
       keys: typeof zhKeys;
       teams: typeof zhTeams;
+      users: typeof zhUsers;
     };
   }
 }
