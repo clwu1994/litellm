@@ -4,6 +4,7 @@ import OrganizationFilters, { FilterState } from "@/app/(dashboard)/organization
 import { useQueryClient } from "@tanstack/react-query";
 import { parseAsString, useQueryState } from "nuqs";
 import React, { useState } from "react";
+import { Trans, useTranslation } from "react-i18next";
 import DeleteResourceModal from "@/components/common_components/DeleteResourceModal";
 import { toast } from "@/lib/toast";
 import { organizationDeleteCall } from "@/components/networking";
@@ -20,6 +21,7 @@ interface OrganizationsPanelProps {
 }
 
 const OrganizationsPanel: React.FC<OrganizationsPanelProps> = ({ userRole, accessToken, premiumUser }) => {
+  const { t } = useTranslation("organizations");
   const [selectedOrgId, setSelectedOrgId] = useQueryState("org", parseAsString.withOptions({ history: "push" }));
   const [editOrg, setEditOrg] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -61,7 +63,7 @@ const OrganizationsPanel: React.FC<OrganizationsPanelProps> = ({ userRole, acces
     try {
       setIsDeleting(true);
       await organizationDeleteCall(accessToken, orgToDelete);
-      toast.success("Organization deleted successfully");
+      toast.success(t("toast.deleted"));
 
       setIsDeleteModalOpen(false);
       setOrgToDelete(null);
@@ -82,16 +84,20 @@ const OrganizationsPanel: React.FC<OrganizationsPanelProps> = ({ userRole, acces
     return (
       <div className="mx-4 mt-4">
         <p className="text-sm text-muted-foreground">
-          This is a LiteLLM Enterprise feature, and requires a valid key to use. Get a trial key{" "}
-          <a
-            href="https://www.litellm.ai/#pricing"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-primary underline-offset-4 hover:underline"
-          >
-            here
-          </a>
-          .
+          <Trans
+            ns="organizations"
+            i18nKey="premium.notice"
+            components={{
+              link: (
+                <a
+                  href="https://www.litellm.ai/#pricing"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary underline-offset-4 hover:underline"
+                />
+              ),
+            }}
+          />
         </p>
       </div>
     );
@@ -101,7 +107,7 @@ const OrganizationsPanel: React.FC<OrganizationsPanelProps> = ({ userRole, acces
     <div className="mx-4 mt-4 flex flex-col gap-4">
       {(userRole === "Admin" || userRole === "Org Admin") && (
         <Button className="w-fit" onClick={() => setIsOrgModalVisible(true)}>
-          + Create New Organization
+          {t("actions.createOrganization")}
         </Button>
       )}
 
@@ -120,7 +126,7 @@ const OrganizationsPanel: React.FC<OrganizationsPanelProps> = ({ userRole, acces
         />
       ) : (
         <>
-          <p className="text-sm text-muted-foreground">Click on an organization ID to view its details.</p>
+          <p className="text-sm text-muted-foreground">{t("hint.clickToView")}</p>
           <OrganizationFilters
             filters={filters}
             showFilters={showFilters}
@@ -150,10 +156,10 @@ const OrganizationsPanel: React.FC<OrganizationsPanelProps> = ({ userRole, acces
 
       <DeleteResourceModal
         isOpen={isDeleteModalOpen}
-        title="Delete Organization?"
-        message="Are you sure you want to delete this organization? This action cannot be undone."
-        resourceInformationTitle="Organization Information"
-        resourceInformation={[{ label: "Organization ID", value: orgToDelete, code: true }]}
+        title={t("delete.title")}
+        message={t("delete.message")}
+        resourceInformationTitle={t("delete.infoTitle")}
+        resourceInformation={[{ label: t("delete.organizationId"), value: orgToDelete, code: true }]}
         onCancel={cancelDelete}
         onOk={confirmDelete}
         confirmLoading={isDeleting}

@@ -1,0 +1,57 @@
+{
+  "table": {
+    "header": {
+      "organizationId": "组织 ID",
+      "organizationName": "组织名称",
+      "created": "创建时间",
+      "spend": "消费（USD）",
+      "budget": "预算（USD）",
+      "models": "模型",
+      "limits": "TPM / RPM 上限",
+      "members": "成员",
+      "actions": "操作"
+    },
+    "summary": {
+      "tpm": "TPM：{{value}}",
+      "rpm": "RPM：{{value}}",
+      "members": "{{members}} 名成员"
+    },
+    "value": {
+      "unlimited": "不限"
+    },
+    "aria": {
+      "openActions": "打开组织操作"
+    },
+    "loading": "正在加载组织…"
+  },
+  "filters": {
+    "searchByName": "按组织名称搜索",
+    "searchById": "按组织 ID 搜索"
+  },
+  "actions": {
+    "edit": "编辑",
+    "delete": "删除",
+    "createOrganization": "+ 新建组织"
+  },
+  "empty": {
+    "noMatches": "没有匹配的组织",
+    "noMatchesHint": "没有组织符合您的搜索条件。请尝试其他名称或 ID。",
+    "noOrganizations": "暂无组织",
+    "noOrganizationsHint": "创建组织以对团队、模型和预算进行分组。"
+  },
+  "hint": {
+    "clickToView": "点击组织 ID 查看其详情。"
+  },
+  "premium": {
+    "notice": "这是 LiteLLM 企业版功能，需要有效的密钥才能使用。获取试用密钥请点击<link>此处</link>。"
+  },
+  "delete": {
+    "title": "删除组织？",
+    "message": "确定要删除该组织吗？此操作无法撤销。",
+    "infoTitle": "组织信息",
+    "organizationId": "组织 ID"
+  },
+  "toast": {
+    "deleted": "组织删除成功"
+  }
+}

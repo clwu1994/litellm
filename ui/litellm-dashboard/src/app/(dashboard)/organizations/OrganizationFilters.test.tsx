@@ -1,6 +1,7 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import i18n from "@/i18n/bootstrapI18n";
 import OrganizationFilters, { FilterState } from "./OrganizationFilters";
 
 describe("OrganizationFilters", () => {
@@ -8,6 +9,11 @@ describe("OrganizationFilters", () => {
     org_id: "",
     org_alias: "",
   };
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
 
   it("should render", () => {
     const onToggleFilters = vi.fn();
@@ -118,5 +124,38 @@ describe("OrganizationFilters", () => {
 
     expect(screen.getByRole("button", { name: /^filters$/i })).toBeInTheDocument();
     expect(container.querySelector("sup")).toBeInTheDocument();
+  });
+
+  it("renders the Chinese filter placeholders under zh and the English under en", async () => {
+    await i18n.changeLanguage("zh");
+    const { unmount } = render(
+      <OrganizationFilters
+        filters={defaultFilters}
+        showFilters={true}
+        onToggleFilters={vi.fn()}
+        onChange={vi.fn()}
+        onReset={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByPlaceholderText("按组织名称搜索")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("按组织 ID 搜索")).toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("Search by Organization Name")).not.toBeInTheDocument();
+
+    unmount();
+    await i18n.changeLanguage("en");
+    render(
+      <OrganizationFilters
+        filters={defaultFilters}
+        showFilters={true}
+        onToggleFilters={vi.fn()}
+        onChange={vi.fn()}
+        onReset={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByPlaceholderText("Search by Organization Name")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Search by Organization ID")).toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("按组织名称搜索")).not.toBeInTheDocument();
   });
 });

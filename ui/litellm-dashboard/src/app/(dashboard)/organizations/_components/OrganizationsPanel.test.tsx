@@ -1,8 +1,9 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, render, screen, waitFor } from "@testing-library/react";
 import { NuqsTestingAdapter, type UrlUpdateEvent } from "nuqs/adapters/testing";
 import React from "react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import i18n from "@/i18n/bootstrapI18n";
 import type OrganizationsTableComponent from "./OrganizationsTable";
 import type OrganizationInfoViewComponent from "@/components/organization/organization_view";
 
@@ -85,11 +86,38 @@ beforeEach(() => {
   onUrlUpdate.mockClear();
 });
 
+afterEach(async () => {
+  cleanup();
+  await i18n.changeLanguage("en");
+});
+
 describe("OrganizationsPanel", () => {
   it("gates non-premium users behind the enterprise notice", () => {
     renderPanel({ premiumUser: false });
 
     expect(screen.getByText(/LiteLLM Enterprise feature/i)).toBeInTheDocument();
+    expect(screen.queryByText("+ Create New Organization")).not.toBeInTheDocument();
+  });
+
+  it("renders the full enterprise notice copy including the link and trailing period under en", () => {
+    renderPanel({ premiumUser: false });
+
+    expect(screen.getByText(/Get a trial key/)).toHaveTextContent(
+      "This is a LiteLLM Enterprise feature, and requires a valid key to use. Get a trial key here.",
+    );
+  });
+
+  it("renders the create button and enterprise notice in Chinese under zh", async () => {
+    await i18n.changeLanguage("zh");
+    renderPanel({ premiumUser: false });
+
+    expect(screen.getByText(/LiteLLM 企业版功能/)).toBeInTheDocument();
+    expect(screen.queryByText(/LiteLLM Enterprise feature/)).not.toBeInTheDocument();
+
+    cleanup();
+    renderPanel();
+
+    expect(screen.getByText("+ 新建组织")).toBeInTheDocument();
     expect(screen.queryByText("+ Create New Organization")).not.toBeInTheDocument();
   });
 

@@ -1,8 +1,9 @@
-import { render, screen, within } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
+import i18n from "@/i18n/bootstrapI18n";
 import { Organization } from "@/components/networking";
 
 import OrganizationsTable from "./OrganizationsTable";
@@ -36,6 +37,11 @@ const baseProps = {
 };
 
 describe("OrganizationsTable", () => {
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
   it("renders every column header", () => {
     render(<OrganizationsTable {...baseProps} organizations={[]} />);
     for (const header of [
@@ -215,5 +221,48 @@ describe("OrganizationsTable", () => {
 
     rerender(<OrganizationsTable {...baseProps} searchActive={true} organizations={[]} />);
     expect(screen.getByText("No matching organizations")).toBeInTheDocument();
+  });
+
+  it("renders the Chinese headers and empty state and hides their English originals under zh", async () => {
+    await i18n.changeLanguage("zh");
+    render(<OrganizationsTable {...baseProps} organizations={[]} />);
+
+    const headerRow = screen.getAllByRole("row")[0];
+    expect(headerRow).toHaveTextContent("组织 ID");
+    expect(headerRow).toHaveTextContent("组织名称");
+    expect(headerRow).toHaveTextContent("创建时间");
+    expect(headerRow).toHaveTextContent("操作");
+    expect(headerRow).not.toHaveTextContent("Organization ID");
+    expect(headerRow).not.toHaveTextContent("Created");
+
+    expect(screen.getByText("暂无组织")).toBeInTheDocument();
+    expect(screen.getByText("创建组织以对团队、模型和预算进行分组。")).toBeInTheDocument();
+    expect(screen.queryByText("No organizations yet")).not.toBeInTheDocument();
+  });
+
+  it("renders the English headers and empty state under en", async () => {
+    await i18n.changeLanguage("en");
+    render(<OrganizationsTable {...baseProps} organizations={[]} />);
+
+    const headerRow = screen.getAllByRole("row")[0];
+    expect(headerRow).toHaveTextContent("Organization ID");
+    expect(headerRow).not.toHaveTextContent("组织 ID");
+
+    expect(screen.getByText("No organizations yet")).toBeInTheDocument();
+    expect(screen.queryByText("暂无组织")).not.toBeInTheDocument();
+  });
+
+  it("renders the interpolated Chinese TPM/RPM limits under zh", async () => {
+    await i18n.changeLanguage("zh");
+    render(
+      <OrganizationsTable
+        {...baseProps}
+        organizations={[makeOrganization({ litellm_budget_table: { tpm_limit: 1000, rpm_limit: null } })]}
+      />,
+    );
+
+    expect(screen.getByText("TPM：1000")).toBeInTheDocument();
+    expect(screen.getByText("RPM：不限")).toBeInTheDocument();
+    expect(screen.queryByText("TPM: 1000")).not.toBeInTheDocument();
   });
 });
