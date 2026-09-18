@@ -6,6 +6,7 @@ import { useDisableShowNewBadge } from "@/app/(dashboard)/hooks/useDisableShowNe
 import { useDisableShowPrompts } from "@/app/(dashboard)/hooks/useDisableShowPrompts";
 import { emitLocalStorageChange, removeLocalStorageItem, setLocalStorageItem } from "@/utils/localStorageUtils";
 import { navAccountDisplayName } from "@/components/Navbar/navDisplayName";
+import LanguageSwitcher from "@/components/Navbar/UserDropdown/LanguageSwitcher";
 import CopyButton from "@/components/shared/CopyButton";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -15,6 +16,7 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/cva.config";
 import { ChevronsUpDown, Crown, IdCard, LogOut, Mail, ShieldCheck } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import React from "react";
 
 const RELEASE_NOTES_URL = "https://docs.litellm.ai/release_notes";
@@ -82,6 +84,7 @@ interface SidebarAccountMenuProps {
 
 const SidebarAccountMenu: React.FC<SidebarAccountMenuProps> = ({ onLogout, collapsed = false }) => {
   const { userId, userEmail, userRoleLabel: userRole, premiumUser, accessToken } = useAuthorized();
+  const { t } = useTranslation();
   const { data: healthData } = useHealthReadinessDetails(accessToken);
   const version = healthData?.litellm_version;
   const disableShowPrompts = useDisableShowPrompts();
@@ -235,13 +238,15 @@ const SidebarAccountMenu: React.FC<SidebarAccountMenuProps> = ({ onLogout, colla
 
         <Separator />
 
+        <LanguageSwitcher />
+
         <Button
           variant="ghost"
           onClick={onLogout}
           className="h-[42px] w-full justify-start gap-2.5 rounded-none px-3 text-sm font-medium text-foreground"
         >
           <LogOut className="size-[19px] text-muted-foreground" />
-          Logout
+          {t("logout")}
         </Button>
       </PopoverContent>
     </Popover>
