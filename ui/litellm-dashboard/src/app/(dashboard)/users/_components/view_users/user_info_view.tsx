@@ -87,6 +87,10 @@ export default function UserInfoView({
   startInEditMode = false,
 }: UserInfoViewProps) {
   const { t } = useTranslation("users");
+  const tRef = React.useRef(t);
+  React.useEffect(() => {
+    tRef.current = t;
+  }, [t]);
   const { premiumUser } = useAuthorized();
   const [userData, setUserData] = useState<UserInfoV2Response | null>(null);
   const [teamDetails, setTeamDetails] = useState<TeamDisplayInfo[]>([]);
@@ -152,7 +156,7 @@ export default function UserInfoView({
         setUserModels(availableModels);
       } catch (error) {
         console.error("Error fetching user data:", error);
-        toast.fromError(t("toast.userFetchFailed"));
+        toast.fromError(tRef.current("toast.userFetchFailed"));
       } finally {
         setIsLoading(false);
       }
