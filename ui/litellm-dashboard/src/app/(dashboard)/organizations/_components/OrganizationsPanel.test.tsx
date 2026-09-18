@@ -1,9 +1,11 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, cleanup, render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { NuqsTestingAdapter, type UrlUpdateEvent } from "nuqs/adapters/testing";
 import React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import i18n from "@/i18n/bootstrapI18n";
+import { toast } from "@/lib/toast";
 import type OrganizationsTableComponent from "./OrganizationsTable";
 import type OrganizationInfoViewComponent from "@/components/organization/organization_view";
 
@@ -22,6 +24,10 @@ vi.mock("@/app/(dashboard)/hooks/useAuthorized", () => ({
     userRole: null,
   }),
 }));
+vi.mock("@/components/networking", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/components/networking")>();
+  return { ...actual, organizationDeleteCall: vi.fn().mockResolvedValue({}) };
+});
 type OrganizationsTableProps = React.ComponentProps<typeof OrganizationsTableComponent>;
 type OrganizationInfoViewProps = React.ComponentProps<typeof OrganizationInfoViewComponent>;
 
@@ -49,9 +55,10 @@ const onUrlUpdate = vi.fn<(event: UrlUpdateEvent) => void>();
 interface RenderPanelOptions {
   premiumUser?: boolean;
   searchParams?: string;
+  accessToken?: string | null;
 }
 
-const renderPanel = ({ premiumUser = true, searchParams = "" }: RenderPanelOptions = {}) => {
+const renderPanel = ({ premiumUser = true, searchParams = "", accessToken = null }: RenderPanelOptions = {}) => {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   });
@@ -63,7 +70,7 @@ const renderPanel = ({ premiumUser = true, searchParams = "" }: RenderPanelOptio
   const tree = (currentSearchParams: string) => (
     <NuqsTestingAdapter searchParams={currentSearchParams} onUrlUpdate={handleUrlUpdate} hasMemory>
       <QueryClientProvider client={queryClient}>
-        <OrganizationsPanel userRole="Admin" accessToken={null} premiumUser={premiumUser} />
+        <OrganizationsPanel userRole="Admin" accessToken={accessToken} premiumUser={premiumUser} />
       </QueryClientProvider>
     </NuqsTestingAdapter>
   );
@@ -121,12 +128,49 @@ describe("OrganizationsPanel", () => {
     expect(screen.queryByText("+ Create New Organization")).not.toBeInTheDocument();
   });
 
+  it("renders the Chinese click-to-view hint under zh", async () => {
+    await i18n.changeLanguage("zh");
+    renderPanel();
+
+    expect(screen.getByText("点击组织 ID 查看其详情。")).toBeInTheDocument();
+    expect(screen.queryByText("Click on an organization ID to view its details.")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese delete confirmation under zh", async () => {
+    await i18n.changeLanguage("zh");
+    renderPanel();
+
+    act(() => capturedTableProps?.onDeleteClick("org-zh"));
+
+    expect(await screen.findByText("删除组织？")).toBeInTheDocument();
+    expect(screen.getByText("确定要删除该组织吗？此操作无法撤销。")).toBeInTheDocument();
+    expect(screen.getByText("组织信息")).toBeInTheDocument();
+    expect(screen.getByText("组织 ID")).toBeInTheDocument();
+    expect(screen.queryByText("Delete Organization?")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Are you sure you want to delete this organization? This action cannot be undone."),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Organization Information")).not.toBeInTheDocument();
+    expect(screen.queryByText("Organization ID")).not.toBeInTheDocument();
+  });
+
+  it("shows the Chinese delete success toast under zh", async () => {
+    const user = userEvent.setup();
+    await i18n.changeLanguage("zh");
+    renderPanel({ accessToken: "token-zh" });
+
+    act(() => capturedTableProps?.onDeleteClick("org-zh"));
+    await user.click(await screen.findByRole("button", { name: "Delete" }));
+
+    await waitFor(() => expect(toast.success).toHaveBeenCalledWith("组织删除成功"));
+    expect(toast.success).not.toHaveBeenCalledWith("Organization deleted successfully");
+  });
+
   it("shows the create button for a premium admin", () => {
     renderPanel();
 
     expect(screen.getByText("+ Create New Organization")).toBeInTheDocument();
   });
-
   it("resolves the loading skeleton to false when the query is disabled (no token)", () => {
     renderPanel();
 

@@ -228,16 +228,91 @@ describe("OrganizationsTable", () => {
     render(<OrganizationsTable {...baseProps} organizations={[]} />);
 
     const headerRow = screen.getAllByRole("row")[0];
-    expect(headerRow).toHaveTextContent("组织 ID");
-    expect(headerRow).toHaveTextContent("组织名称");
-    expect(headerRow).toHaveTextContent("创建时间");
-    expect(headerRow).toHaveTextContent("操作");
-    expect(headerRow).not.toHaveTextContent("Organization ID");
-    expect(headerRow).not.toHaveTextContent("Created");
+    for (const header of [
+      "组织 ID",
+      "组织名称",
+      "创建时间",
+      "消费（USD）",
+      "预算（USD）",
+      "模型",
+      "TPM / RPM 上限",
+      "成员",
+      "操作",
+    ]) {
+      expect(headerRow).toHaveTextContent(header);
+    }
+    for (const header of [
+      "Organization ID",
+      "Organization Name",
+      "Created",
+      "Spend (USD)",
+      "Budget (USD)",
+      "Models",
+      "TPM / RPM Limits",
+      "Members",
+      "Actions",
+    ]) {
+      expect(headerRow).not.toHaveTextContent(header);
+    }
 
     expect(screen.getByText("暂无组织")).toBeInTheDocument();
     expect(screen.getByText("创建组织以对团队、模型和预算进行分组。")).toBeInTheDocument();
     expect(screen.queryByText("No organizations yet")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese search-aware empty state under zh", async () => {
+    await i18n.changeLanguage("zh");
+    render(<OrganizationsTable {...baseProps} searchActive organizations={[]} />);
+
+    expect(screen.getByText("没有匹配的组织")).toBeInTheDocument();
+    expect(screen.getByText("没有组织符合你的搜索条件。请尝试其他名称或 ID。")).toBeInTheDocument();
+    expect(screen.queryByText("No matching organizations")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("No organizations match your search. Try a different name or ID."),
+    ).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese loading message under zh", async () => {
+    await i18n.changeLanguage("zh");
+    render(<OrganizationsTable {...baseProps} isLoading organizations={[]} />);
+
+    expect(screen.getByText("正在加载组织…")).toBeInTheDocument();
+    expect(screen.queryByText("Loading organizations…")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese row actions menu and aria-label under zh", async () => {
+    const user = userEvent.setup();
+    await i18n.changeLanguage("zh");
+    render(
+      <OrganizationsTable
+        {...baseProps}
+        userRole="Admin"
+        organizations={[makeOrganization({ organization_id: "org-zh" })]}
+      />,
+    );
+
+    const trigger = screen.getByLabelText("打开组织操作");
+    expect(screen.queryByLabelText("Open organization actions")).not.toBeInTheDocument();
+
+    await user.click(trigger);
+
+    expect(await screen.findByText("编辑")).toBeInTheDocument();
+    expect(screen.getByText("删除")).toBeInTheDocument();
+    expect(screen.queryByText("Edit")).not.toBeInTheDocument();
+    expect(screen.queryByText("Delete")).not.toBeInTheDocument();
+  });
+
+  it("renders the interpolated Chinese member count under zh", async () => {
+    await i18n.changeLanguage("zh");
+    render(
+      <OrganizationsTable
+        {...baseProps}
+        organizations={[makeOrganization({ members: [{ user_id: "a" }, { user_id: "b" }] })]}
+      />,
+    );
+
+    expect(screen.getByText("2 名成员")).toBeInTheDocument();
+    expect(screen.queryByText("2 Members")).not.toBeInTheDocument();
   });
 
   it("renders the English headers and empty state under en", async () => {

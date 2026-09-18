@@ -35,7 +35,7 @@
   },
   "empty": {
     "noMatches": "没有匹配的组织",
-    "noMatchesHint": "没有组织符合您的搜索条件。请尝试其他名称或 ID。",
+    "noMatchesHint": "没有组织符合你的搜索条件。请尝试其他名称或 ID。",
     "noOrganizations": "暂无组织",
     "noOrganizationsHint": "创建组织以对团队、模型和预算进行分组。"
   },
