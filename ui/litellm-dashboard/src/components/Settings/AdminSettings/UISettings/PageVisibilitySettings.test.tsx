@@ -1,19 +1,31 @@
-import { describe, it, expect, vi } from "vitest";
+import { afterEach, describe, it, expect, vi } from "vitest";
 import userEvent from "@testing-library/user-event";
+import type { TFunction } from "i18next";
 
-import { renderWithProviders, screen } from "@/../tests/test-utils";
+import { act, cleanup, renderWithProviders, screen } from "@/../tests/test-utils";
+import i18n from "@/i18n/bootstrapI18n";
 
 import PageVisibilitySettings from "./PageVisibilitySettings";
 
 vi.mock("@/components/page_utils", () => ({
-  getAvailablePages: () => [
-    { page: "usage", label: "Usage", description: "View usage stats", group: "Analytics" },
-    { page: "models", label: "Models", description: "Manage models", group: "Analytics" },
-    { page: "keys", label: "API Keys", description: "Manage API keys", group: "Access" },
+  getAvailablePages: (t: TFunction<"nav">) => [
+    { page: "usage", label: t("items.usage"), description: "View usage stats", group: t("section.observability") },
+    {
+      page: "models",
+      label: t("items.modelsAndEndpoints"),
+      description: "Manage models",
+      group: t("section.observability"),
+    },
+    { page: "keys", label: t("items.keys"), description: "Manage API keys", group: t("section.accessControl") },
   ],
 }));
 
 describe("PageVisibilitySettings", () => {
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
   it("should render the not-set tag when enabledPagesInternalUsers is null", () => {
     renderWithProviders(
       <PageVisibilitySettings enabledPagesInternalUsers={null} isUpdating={false} onUpdate={vi.fn()} />,
@@ -61,11 +73,11 @@ describe("PageVisibilitySettings", () => {
 
       await user.click(screen.getByRole("button", { name: /configure page visibility/i }));
 
-      expect(screen.getByRole("group", { name: "Analytics" })).toBeInTheDocument();
-      expect(screen.getByRole("group", { name: "Access" })).toBeInTheDocument();
+      expect(screen.getByRole("group", { name: "OBSERVABILITY" })).toBeInTheDocument();
+      expect(screen.getByRole("group", { name: "ACCESS CONTROL" })).toBeInTheDocument();
       expect(screen.getByRole("checkbox", { name: /usage/i })).toBeInTheDocument();
       expect(screen.getByRole("checkbox", { name: /models/i })).toBeInTheDocument();
-      expect(screen.getByRole("checkbox", { name: /api keys/i })).toBeInTheDocument();
+      expect(screen.getByRole("checkbox", { name: /virtual keys/i })).toBeInTheDocument();
     } finally {
       if (groupByDescriptor) {
         Object.defineProperty(Object, "groupBy", groupByDescriptor);
@@ -85,5 +97,24 @@ describe("PageVisibilitySettings", () => {
       />,
     );
     expect(screen.getByText("Controls which pages are visible")).toBeInTheDocument();
+  });
+
+  it("relabels the pages and group headings on a language change without navigating", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(
+      <PageVisibilitySettings enabledPagesInternalUsers={null} isUpdating={false} onUpdate={vi.fn()} />,
+    );
+
+    await user.click(screen.getByRole("button", { name: /configure page visibility/i }));
+    expect(screen.getByRole("group", { name: "OBSERVABILITY" })).toBeInTheDocument();
+    expect(screen.getByRole("checkbox", { name: /usage/i })).toBeInTheDocument();
+
+    await act(async () => {
+      await i18n.changeLanguage("zh");
+    });
+
+    expect(screen.getByRole("group", { name: "可观测性" })).toBeInTheDocument();
+    expect(screen.getByRole("checkbox", { name: /用量/ })).toBeInTheDocument();
+    expect(screen.queryByRole("group", { name: "OBSERVABILITY" })).not.toBeInTheDocument();
   });
 });

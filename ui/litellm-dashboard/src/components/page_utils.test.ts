@@ -4,6 +4,7 @@
  */
 
 import { describe, it, expect } from "vitest";
+import i18n from "@/i18n/bootstrapI18n";
 import { getAvailablePages } from "./page_utils";
 import { menuGroups } from "./leftnav";
 import { pageDescriptions } from "./page_metadata";
@@ -25,8 +26,10 @@ const isPageAccessibleToInternalUsers = (pageRoles?: string[]): boolean => {
 };
 
 describe("Page Utils - LeftNav Sync", () => {
+  const t = i18n.getFixedT(null, "nav");
+
   it("should return all pages from leftnav configuration", () => {
-    const availablePages = getAvailablePages();
+    const availablePages = getAvailablePages(t);
 
     // Should have pages
     expect(availablePages.length).toBeGreaterThan(0);
@@ -45,7 +48,7 @@ describe("Page Utils - LeftNav Sync", () => {
   });
 
   it("should include all navigable pages from menuGroups", () => {
-    const availablePages = getAvailablePages();
+    const availablePages = getAvailablePages(t);
     const availablePageKeys = availablePages.map((p) => p.page);
 
     // Collect all page keys from menuGroups (excluding parent containers and pages not accessible to internal users)
@@ -78,7 +81,7 @@ describe("Page Utils - LeftNav Sync", () => {
   });
 
   it("should not include parent container pages (tools, experimental, settings)", () => {
-    const availablePages = getAvailablePages();
+    const availablePages = getAvailablePages(t);
     const availablePageKeys = availablePages.map((p) => p.page);
 
     const excludedParents = ["tools", "experimental", "settings"];
@@ -89,7 +92,7 @@ describe("Page Utils - LeftNav Sync", () => {
   });
 
   it("should have descriptions for all pages", () => {
-    const availablePages = getAvailablePages();
+    const availablePages = getAvailablePages(t);
 
     availablePages.forEach((page) => {
       expect(page.description, `Page "${page.page}" should have a description`).toBeTruthy();
@@ -167,7 +170,7 @@ describe("Page Utils - LeftNav Sync", () => {
   });
 
   it("should have proper group hierarchy for nested pages", () => {
-    const availablePages = getAvailablePages();
+    const availablePages = getAvailablePages(t);
 
     // Find pages that should be nested (children of Tools, Experimental, Settings)
     const nestedPages = availablePages.filter((page) => page.group.includes(" > "));
@@ -179,7 +182,7 @@ describe("Page Utils - LeftNav Sync", () => {
 
       // Parent should be one of the group labels
       const parentGroup = parts[0];
-      const groupLabels = menuGroups.map((g) => g.groupLabel);
+      const groupLabels = menuGroups.map((g) => i18n.t(g.groupKey, { ns: "nav" }));
       expect(
         groupLabels,
         `Parent group "${parentGroup}" for page "${page.page}" should be a valid group label`,
@@ -188,7 +191,7 @@ describe("Page Utils - LeftNav Sync", () => {
   });
 
   it("should have unique page keys", () => {
-    const availablePages = getAvailablePages();
+    const availablePages = getAvailablePages(t);
     const pageKeys = availablePages.map((p) => p.page);
     const uniquePageKeys = new Set(pageKeys);
 
@@ -196,7 +199,7 @@ describe("Page Utils - LeftNav Sync", () => {
   });
 
   it("should match the structure expected by PageVisibilitySettings component", () => {
-    const availablePages = getAvailablePages();
+    const availablePages = getAvailablePages(t);
 
     // Group pages by their group (same logic as in PageVisibilitySettings)
     const grouped: Record<string, typeof availablePages> = {};
@@ -214,5 +217,14 @@ describe("Page Utils - LeftNav Sync", () => {
     Object.entries(grouped).forEach(([groupName, pages]) => {
       expect(pages.length, `Group "${groupName}" should have at least one page`).toBeGreaterThan(0);
     });
+  });
+
+  it("localizes page labels and group headings from the nav catalog", () => {
+    const zhPages = getAvailablePages(i18n.getFixedT("zh", "nav"));
+    const usage = zhPages.find((page) => page.page === "new_usage");
+
+    expect(usage?.label).toBe("用量");
+    expect(usage?.group).toBe("可观测性");
+    expect(zhPages.some((page) => page.group === "AI GATEWAY")).toBe(false);
   });
 });

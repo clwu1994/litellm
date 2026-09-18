@@ -1,4 +1,4 @@
-import { act, fireEvent, screen, waitFor, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import i18n from "@/i18n/bootstrapI18n";
 import { renderWithProviders } from "../../tests/test-utils";
@@ -97,9 +97,11 @@ const collectNavKeys = (): string[] =>
 // "GROUP > parentKey" for a child.
 const placementsOf = (page: string): string[] =>
   menuGroups.flatMap((group) => [
-    ...group.items.filter((item) => item.page === page).map(() => group.groupLabel),
+    ...group.items.filter((item) => item.page === page).map(() => i18n.t(group.groupKey, { ns: "nav" })),
     ...group.items.flatMap((item) =>
-      (item.children ?? []).filter((child) => child.page === page).map(() => `${group.groupLabel} > ${item.key}`),
+      (item.children ?? [])
+        .filter((child) => child.page === page)
+        .map(() => `${i18n.t(group.groupKey, { ns: "nav" })} > ${item.key}`),
     ),
   ]);
 
@@ -597,6 +599,7 @@ describe("Sidebar (leftnav)", () => {
 
 describe("Sidebar localization", () => {
   afterEach(async () => {
+    cleanup();
     await i18n.changeLanguage("en");
   });
 
@@ -626,30 +629,42 @@ describe("Sidebar localization", () => {
 });
 
 describe("getBreadcrumb", () => {
+  const t = i18n.getFixedT(null, "nav");
+
   it("resolves a top-level route to its section + title", () => {
-    expect(getBreadcrumb("/ui/api-keys")).toEqual({ section: "AI Gateway", title: "Virtual Keys" });
-    expect(getBreadcrumb("/ui/logs")).toEqual({ section: "Observability", title: "Logs" });
+    expect(getBreadcrumb("/ui/api-keys", t)).toEqual({ section: "AI Gateway", title: "Virtual Keys" });
+    expect(getBreadcrumb("/ui/logs", t)).toEqual({ section: "Observability", title: "Logs" });
   });
 
   it("resolves routes whose segment differs from the sidebar page id", () => {
-    expect(getBreadcrumb("/ui/models-and-endpoints")).toEqual({ section: "AI Gateway", title: "Models + Endpoints" });
-    expect(getBreadcrumb("/ui/usage")).toEqual({ section: "Observability", title: "Usage" });
-    expect(getBreadcrumb("/ui/old-usage")).toEqual({ section: "Developer Tools", title: "Old Usage" });
+    expect(getBreadcrumb("/ui/models-and-endpoints", t)).toEqual({
+      section: "AI Gateway",
+      title: "Models + Endpoints",
+    });
+    expect(getBreadcrumb("/ui/usage", t)).toEqual({ section: "Observability", title: "Usage" });
+    expect(getBreadcrumb("/ui/old-usage", t)).toEqual({ section: "Developer Tools", title: "Old Usage" });
   });
 
   it("titles the dashboard root as Virtual Keys", () => {
-    expect(getBreadcrumb("/ui/")).toEqual({ section: "AI Gateway", title: "Virtual Keys" });
+    expect(getBreadcrumb("/ui/", t)).toEqual({ section: "AI Gateway", title: "Virtual Keys" });
   });
 
   it("resolves a nested child route to its parent section", () => {
-    expect(getBreadcrumb("/ui/search-tools/")).toEqual({ section: "AI Gateway", title: "Search Tools" });
+    expect(getBreadcrumb("/ui/search-tools/", t)).toEqual({ section: "AI Gateway", title: "Search Tools" });
   });
 
   it("resolves router-settings under the Settings section", () => {
-    expect(getBreadcrumb("/ui/router-settings")).toEqual({ section: "Settings", title: "Router Settings" });
+    expect(getBreadcrumb("/ui/router-settings", t)).toEqual({ section: "Settings", title: "Router Settings" });
+  });
+
+  it("resolves the section and title from the locale of the passed t", () => {
+    expect(getBreadcrumb("/ui/logs", i18n.getFixedT("zh", "nav"))).toEqual({
+      section: "可观测性",
+      title: "日志",
+    });
   });
 
   it("falls back to a prettified title with no section for unknown routes", () => {
-    expect(getBreadcrumb("/ui/some-unknown-page")).toEqual({ section: null, title: "Some Unknown Page" });
+    expect(getBreadcrumb("/ui/some-unknown-page", t)).toEqual({ section: null, title: "Some Unknown Page" });
   });
 });

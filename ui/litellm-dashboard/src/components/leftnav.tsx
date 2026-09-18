@@ -65,7 +65,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import i18n from "@/i18n/bootstrapI18n";
+import type { TFunction } from "i18next";
 import type zhNav from "@/i18n/locales/zh/nav.json";
 import { cn } from "@/lib/cva.config";
 import { rolesWithCapability } from "../utils/capabilities";
@@ -114,19 +114,14 @@ interface MenuItem {
 }
 
 interface MenuGroup {
-  groupLabel: string;
   groupKey: NavSectionKey;
   groupTitleKey: NavSectionTitleKey;
   items: MenuItem[];
   roles?: string[];
 }
 
-// Menu groups organized by category - defined outside component for export.
-// Shape (key/page/label/roles/children) is consumed by page_utils.ts; only the
-// icons changed to lucide as part of the sidebar redesign.
 const menuGroups: MenuGroup[] = [
   {
-    groupLabel: "AI GATEWAY",
     groupKey: "section.aiGateway",
     groupTitleKey: "sectionTitle.aiGateway",
     items: [
@@ -206,7 +201,6 @@ const menuGroups: MenuGroup[] = [
     ],
   },
   {
-    groupLabel: "OBSERVABILITY",
     groupKey: "section.observability",
     groupTitleKey: "sectionTitle.observability",
     items: [
@@ -237,7 +231,6 @@ const menuGroups: MenuGroup[] = [
     ],
   },
   {
-    groupLabel: "ACCESS CONTROL",
     groupKey: "section.accessControl",
     groupTitleKey: "sectionTitle.accessControl",
     items: [
@@ -269,7 +262,6 @@ const menuGroups: MenuGroup[] = [
     ],
   },
   {
-    groupLabel: "DEVELOPER TOOLS",
     groupKey: "section.developerTools",
     groupTitleKey: "sectionTitle.developerTools",
     items: [
@@ -335,7 +327,6 @@ const menuGroups: MenuGroup[] = [
     ],
   },
   {
-    groupLabel: "SETTINGS",
     groupKey: "section.settings",
     groupTitleKey: "sectionTitle.settings",
     roles: all_admin_roles,
@@ -420,17 +411,15 @@ const prettify = (key: string): string =>
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join(" ");
 
-const labelText = (item: MenuItem): string => i18n.t(item.label, { ns: "nav" });
-
 // Breadcrumb ("Section" / "Page") for the top bar, derived from the same nav config.
-export const getBreadcrumb = (pathname: string): { section: string | null; title: string } => {
+export const getBreadcrumb = (pathname: string, t: TFunction<"nav">): { section: string | null; title: string } => {
   const route = routeForPathname(pathname);
   for (const group of menuGroups) {
     for (const item of group.items) {
-      const section = i18n.t(group.groupTitleKey, { ns: "nav" });
-      if (routeOf(item) === route) return { section, title: labelText(item) };
+      const section = t(group.groupTitleKey);
+      if (routeOf(item) === route) return { section, title: t(item.label) };
       const child = item.children?.find((c) => routeOf(c) === route);
-      if (child) return { section, title: labelText(child) };
+      if (child) return { section, title: t(child.label) };
     }
   }
   return { section: null, title: prettify(route) };
@@ -523,7 +512,7 @@ const Sidebar_: React.FC<SidebarProps> = ({
 
   const visibleGroups = menuGroups
     .filter((group) => !group.roles || group.roles.includes(userRole))
-    .map((group) => ({ groupLabel: group.groupLabel, groupKey: group.groupKey, items: filterItemsByRole(group.items) }))
+    .map((group) => ({ groupKey: group.groupKey, items: filterItemsByRole(group.items) }))
     .filter((group) => group.items.length > 0);
 
   const toggleGroup = (key: string) => {
@@ -565,7 +554,7 @@ const Sidebar_: React.FC<SidebarProps> = ({
           href={item.external_url}
           target="_blank"
           rel="noopener noreferrer"
-          title={collapsed ? labelText(item) : undefined}
+          title={collapsed ? t(item.label) : undefined}
           data-active={active || undefined}
           className={cn(sidebarMenuButtonVariants({ isActive: active, size }))}
         >
@@ -580,7 +569,7 @@ const Sidebar_: React.FC<SidebarProps> = ({
       <Link
         key={item.key}
         href={uiHref(routeOf(item))}
-        title={collapsed ? labelText(item) : undefined}
+        title={collapsed ? t(item.label) : undefined}
         data-active={active || undefined}
         className={cn(sidebarMenuButtonVariants({ isActive: active, size }))}
       >
@@ -604,7 +593,7 @@ const Sidebar_: React.FC<SidebarProps> = ({
           isActive={active}
           aria-expanded={open}
           onClick={() => toggleGroup(item.key)}
-          title={collapsed ? labelText(item) : undefined}
+          title={collapsed ? t(item.label) : undefined}
         >
           {item.icon}
           {renderLabel(item)}
@@ -672,7 +661,7 @@ const Sidebar_: React.FC<SidebarProps> = ({
       <ScrollArea className="min-h-0 flex-1">
         <nav className="flex flex-col gap-0.5 px-3 pb-3">
           {visibleGroups.map((group, gi) => (
-            <SidebarGroup key={group.groupLabel}>
+            <SidebarGroup key={group.groupKey}>
               {gi > 0 && <SidebarSeparator className="hidden group-data-[collapsed=true]/sidebar:block" />}
               <SidebarGroupLabel>{t(group.groupKey)}</SidebarGroupLabel>
               <SidebarMenu>{group.items.map((item) => renderItem(item))}</SidebarMenu>

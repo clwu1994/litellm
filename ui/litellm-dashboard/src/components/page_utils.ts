@@ -2,7 +2,7 @@
  * Utility functions for working with navigation pages
  */
 
-import i18n from "@/i18n/bootstrapI18n";
+import type { TFunction } from "i18next";
 import { menuGroups } from "./leftnav";
 import { pageDescriptions, PageMetadata } from "./page_metadata";
 import { internalUserRoles } from "@/utils/roles";
@@ -30,7 +30,7 @@ const isPageAccessibleToInternalUsers = (pageRoles?: string[]): boolean => {
  * Pages restricted to admin-only roles are excluded because internal users
  * cannot see them regardless of the UI visibility setting.
  */
-export const getAvailablePages = (): PageMetadata[] => {
+export const getAvailablePages = (t: TFunction<"nav">): PageMetadata[] => {
   const pages: PageMetadata[] = [];
 
   menuGroups.forEach((group) => {
@@ -44,26 +44,26 @@ export const getAvailablePages = (): PageMetadata[] => {
         item.page !== "settings" &&
         isPageAccessibleToInternalUsers(item.roles)
       ) {
-        const label = i18n.t(item.label, { ns: "nav" });
+        const label = t(item.label);
         pages.push({
           page: item.page,
           label: label,
-          group: group.groupLabel,
+          group: t(group.groupKey),
           description: pageDescriptions[item.page] || "No description available",
         });
       }
 
       // Add children items (also skip those internal users cannot access)
       if (item.children) {
-        const parentLabel = i18n.t(item.label, { ns: "nav" });
+        const parentLabel = t(item.label);
         item.children.forEach((child) => {
           // Include if internal users can access
           if (isPageAccessibleToInternalUsers(child.roles)) {
-            const childLabel = i18n.t(child.label, { ns: "nav" });
+            const childLabel = t(child.label);
             pages.push({
               page: child.page,
               label: childLabel,
-              group: `${group.groupLabel} > ${parentLabel}`,
+              group: `${t(group.groupKey)} > ${parentLabel}`,
               description: pageDescriptions[child.page] || "No description available",
             });
           }

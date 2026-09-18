@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import i18n from "@/i18n/bootstrapI18n";
 import { DashboardHeader } from "./DashboardHeader";
 import { NAV_PRODUCT_LINK_CLASS } from "@/components/Navbar/navProductLinkClass";
 
@@ -29,7 +30,9 @@ vi.mock("@/components/Navbar/NotificationsBell/NotificationsBell", () => ({ Noti
 vi.mock("@/components/Navbar/WorkerDropdown/WorkerDropdown", () => ({ default: () => null }));
 
 describe("DashboardHeader breadcrumb", () => {
-  afterEach(() => {
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
     state.plugins = [];
     state.enableChatUI = false;
     state.pathname = "/ui/logs";
@@ -40,6 +43,18 @@ describe("DashboardHeader breadcrumb", () => {
     render(<DashboardHeader />);
 
     expect(screen.getByText("Models + Endpoints")).toBeInTheDocument();
+  });
+
+  it("relabels the breadcrumb on a language change without navigating", async () => {
+    render(<DashboardHeader />);
+    expect(screen.getByText("Logs")).toBeInTheDocument();
+
+    await act(async () => {
+      await i18n.changeLanguage("zh");
+    });
+
+    expect(screen.getByText("日志")).toBeInTheDocument();
+    expect(screen.queryByText("Logs")).not.toBeInTheDocument();
   });
 
   it("titles the dashboard root as Virtual Keys", () => {

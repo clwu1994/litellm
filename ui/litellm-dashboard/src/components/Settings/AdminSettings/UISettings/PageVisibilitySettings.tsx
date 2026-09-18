@@ -2,6 +2,7 @@
 
 import { ChevronDown } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { getAvailablePages } from "@/components/page_utils";
 import { Badge } from "@/components/ui/badge";
@@ -23,7 +24,8 @@ export default function PageVisibilitySettings({
   onUpdate,
 }: PageVisibilitySettingsProps) {
   const isPageVisibilitySet = enabledPagesInternalUsers !== null && enabledPagesInternalUsers !== undefined;
-  const availablePages = useMemo(() => getAvailablePages(), []);
+  const { t } = useTranslation("nav");
+  const availablePages = useMemo(() => getAvailablePages(t), [t]);
   const pagesByGroup = useMemo(() => {
     const grouped: Record<string, typeof availablePages> = {};
     availablePages.forEach((page) => {
