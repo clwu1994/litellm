@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import i18n from "@/i18n/bootstrapI18n";
 import ViewSwitcher from "./ViewSwitcher";
 
 const { mockUsePluginMode, mockUseUISettings, mockUsePathname, state } = vi.hoisted(() => {
@@ -151,5 +152,42 @@ describe("ViewSwitcher", () => {
       fireEvent.click(screen.getByText("Chat"));
     });
     expect(assignSpy).not.toHaveBeenCalled();
+  });
+
+  describe("localization", () => {
+    afterEach(async () => {
+      cleanup();
+      await i18n.changeLanguage("en");
+    });
+
+    it("renders the selector and the disabled Chat hint in Chinese under zh", async () => {
+      await i18n.changeLanguage("zh");
+      render(<ViewSwitcher />);
+
+      const button = screen.getByRole("button");
+      expect(button).toHaveTextContent("AI 网关");
+
+      act(() => {
+        fireEvent.click(button);
+      });
+      expect(await screen.findByText("对话")).toBeInTheDocument();
+      expect(screen.getByText("管理员可在设置中启用")).toBeInTheDocument();
+      expect(screen.queryByText("AI Gateway")).not.toBeInTheDocument();
+      expect(screen.queryByText(/Admins can enable in Settings/i)).not.toBeInTheDocument();
+    });
+
+    it("renders the selector and the disabled Chat hint in English under en", async () => {
+      await i18n.changeLanguage("en");
+      render(<ViewSwitcher />);
+
+      expect(screen.getByRole("button")).toHaveTextContent("AI Gateway");
+
+      act(() => {
+        fireEvent.click(screen.getByRole("button"));
+      });
+      expect(await screen.findByText("Chat")).toBeInTheDocument();
+      expect(screen.getByText(/Admins can enable in Settings/i)).toBeInTheDocument();
+      expect(screen.queryByText("AI 网关")).not.toBeInTheDocument();
+    });
   });
 });

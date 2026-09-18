@@ -1,6 +1,7 @@
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { renderWithProviders, screen, waitFor } from "../../../../tests/test-utils";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import i18n from "@/i18n/bootstrapI18n";
+import { cleanup, renderWithProviders, screen, waitFor } from "../../../../tests/test-utils";
 import UserDropdown from "./UserDropdown";
 
 let mockUseAuthorizedImpl = () => ({
@@ -299,5 +300,46 @@ describe("UserDropdown", () => {
 
     const toggle = screen.getByLabelText("Toggle hide new feature indicators");
     expect(toggle).toBeChecked();
+  });
+});
+
+describe("UserDropdown localization", () => {
+  const onLogout = vi.fn();
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  it("renders the account menu in Chinese and hides its English originals under zh", async () => {
+    await i18n.changeLanguage("zh");
+    const user = userEvent.setup();
+    renderWithProviders(<UserDropdown onLogout={onLogout} />);
+
+    await user.click(screen.getByRole("button", { name: /账户菜单/ }));
+
+    expect(screen.getByText("标准版")).toBeInTheDocument();
+    expect(screen.getByText("用户 ID")).toBeInTheDocument();
+    expect(screen.getByText("角色")).toBeInTheDocument();
+    expect(screen.getByText("隐藏新功能提示")).toBeInTheDocument();
+    expect(screen.getByLabelText("切换隐藏所有提示词")).toBeInTheDocument();
+    expect(screen.getByText("退出登录")).toBeInTheDocument();
+
+    expect(screen.queryByText("Standard")).not.toBeInTheDocument();
+    expect(screen.queryByText("User ID")).not.toBeInTheDocument();
+    expect(screen.queryByText("Logout")).not.toBeInTheDocument();
+  });
+
+  it("renders the account menu in English under en", async () => {
+    await i18n.changeLanguage("en");
+    const user = userEvent.setup();
+    renderWithProviders(<UserDropdown onLogout={onLogout} />);
+
+    await user.click(screen.getByRole("button", { name: /account menu/i }));
+
+    expect(screen.getByText("Standard")).toBeInTheDocument();
+    expect(screen.getByText("User ID")).toBeInTheDocument();
+    expect(screen.getByText("Logout")).toBeInTheDocument();
+    expect(screen.queryByText("标准版")).not.toBeInTheDocument();
   });
 });

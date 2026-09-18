@@ -7,6 +7,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Check, ChevronsUpDown, LayoutGrid } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { usePluginMode } from "@/contexts/PluginModeContext";
 import { useUISettings } from "@/app/(dashboard)/hooks/uiSettings/useUISettings";
 import { uiHref } from "@/utils/uiHref";
@@ -25,6 +26,7 @@ export default function ViewSwitcher() {
   const { mode, setMode, plugins } = usePluginMode();
   const { data: uiSettings } = useUISettings();
   const pathname = usePathname();
+  const { t } = useTranslation("nav");
 
   const chatEnabled = Boolean(uiSettings?.values?.enable_chat_ui);
 
@@ -32,10 +34,12 @@ export default function ViewSwitcher() {
   const normalizedPathname = (pathname ?? "").replace(/\/+$/, "");
   const isChatRoute = chatEnabled && (normalizedPathname === chatHref || normalizedPathname.startsWith(`${chatHref}/`));
 
-  const activeLabel = isChatRoute ? "Chat" : plugins.find((p) => p.name === mode)?.display_name ?? "AI Gateway";
+  const activeLabel = isChatRoute
+    ? t("topbar.chat")
+    : plugins.find((p) => p.name === mode)?.display_name ?? t("topbar.aiGateway");
 
   const modeEntries = [
-    { key: GATEWAY, label: "AI Gateway" },
+    { key: GATEWAY, label: t("topbar.aiGateway") },
     ...plugins.map((p) => ({ key: p.name, label: p.display_name })),
   ];
 
@@ -53,7 +57,7 @@ export default function ViewSwitcher() {
         key: CHAT,
         label: (
           <div className="flex items-center justify-between gap-6 py-0.5">
-            <span className="font-medium">Chat</span>
+            <span className="font-medium">{t("topbar.chat")}</span>
             {isChatRoute && <Check className="size-4 text-info" />}
           </div>
         ),
@@ -64,9 +68,9 @@ export default function ViewSwitcher() {
         disabled: true,
         label: (
           <div className="flex max-w-[220px] flex-col py-0.5">
-            <span className="font-medium">Chat</span>
+            <span className="font-medium">{t("topbar.chat")}</span>
             <span className="whitespace-normal text-xs leading-snug text-muted-foreground">
-              Admins can enable in Settings
+              {t("topbar.chatDisabledHint")}
             </span>
           </div>
         ),

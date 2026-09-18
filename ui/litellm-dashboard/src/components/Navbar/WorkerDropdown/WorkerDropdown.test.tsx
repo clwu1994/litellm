@@ -1,6 +1,7 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
+import i18n from "@/i18n/bootstrapI18n";
 
 const mockUseWorker = vi.fn();
 vi.mock("@/hooks/useWorker", () => ({
@@ -162,5 +163,54 @@ describe("WorkerDropdown", () => {
       expect(screen.queryByText("Worker 1")).not.toBeInTheDocument();
     });
     expect(screen.getByText("Worker 3")).toBeInTheDocument();
+  });
+
+  describe("localization", () => {
+    afterEach(async () => {
+      cleanup();
+      await i18n.changeLanguage("en");
+    });
+
+    it("renders the empty state in Chinese under zh", async () => {
+      await i18n.changeLanguage("zh");
+      mockUseWorker.mockReturnValue({
+        isControlPlane: true,
+        selectedWorker: workers[1],
+        workers,
+      });
+      const user = userEvent.setup();
+
+      render(<WorkerDropdown onWorkerSwitch={mockOnWorkerSwitch} />);
+      await openWorkerList(user);
+      await waitFor(() => {
+        expect(screen.getByText("Worker 1")).toBeInTheDocument();
+      });
+
+      fireEvent.change(screen.getByRole("combobox"), { target: { value: "zzz" } });
+
+      expect(await screen.findByText("没有匹配的 Worker")).toBeInTheDocument();
+      expect(screen.queryByText("No matching workers")).not.toBeInTheDocument();
+    });
+
+    it("renders the empty state in English under en", async () => {
+      await i18n.changeLanguage("en");
+      mockUseWorker.mockReturnValue({
+        isControlPlane: true,
+        selectedWorker: workers[1],
+        workers,
+      });
+      const user = userEvent.setup();
+
+      render(<WorkerDropdown onWorkerSwitch={mockOnWorkerSwitch} />);
+      await openWorkerList(user);
+      await waitFor(() => {
+        expect(screen.getByText("Worker 1")).toBeInTheDocument();
+      });
+
+      fireEvent.change(screen.getByRole("combobox"), { target: { value: "zzz" } });
+
+      expect(await screen.findByText("No matching workers")).toBeInTheDocument();
+      expect(screen.queryByText("没有匹配的 Worker")).not.toBeInTheDocument();
+    });
   });
 });

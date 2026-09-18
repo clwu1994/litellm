@@ -1,6 +1,7 @@
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { renderWithProviders, screen, waitFor } from "../../../../tests/test-utils";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import i18n from "@/i18n/bootstrapI18n";
+import { cleanup, renderWithProviders, screen, waitFor } from "../../../../tests/test-utils";
 import { BlogDropdown } from "./BlogDropdown";
 
 let mockDisableBlogPosts = false;
@@ -251,6 +252,47 @@ describe("BlogDropdown", () => {
           expect(screen.getByText("Post Five")).toBeInTheDocument();
           expect(screen.queryByText("Post Six")).not.toBeInTheDocument();
         });
+      });
+    });
+
+    describe("localization", () => {
+      afterEach(async () => {
+        cleanup();
+        await i18n.changeLanguage("en");
+      });
+
+      it("renders the trigger and empty state in Chinese under zh", async () => {
+        await i18n.changeLanguage("zh");
+        mockUseBlogPostsResult = { ...mockUseBlogPostsResult, data: null };
+        renderWithProviders(<BlogDropdown />);
+
+        await userEvent.hover(screen.getByRole("button", { name: /博客/ }));
+
+        expect(await screen.findByText("暂无文章")).toBeInTheDocument();
+        expect(screen.queryByText("No posts available")).not.toBeInTheDocument();
+        expect(screen.queryByRole("button", { name: /blog/i })).not.toBeInTheDocument();
+      });
+
+      it("renders the error state in Chinese under zh", async () => {
+        await i18n.changeLanguage("zh");
+        mockUseBlogPostsResult = { ...mockUseBlogPostsResult, isError: true };
+        renderWithProviders(<BlogDropdown />);
+
+        await userEvent.hover(screen.getByRole("button", { name: /博客/ }));
+
+        expect(await screen.findByText("加载文章失败")).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "重试" })).toBeInTheDocument();
+      });
+
+      it("renders the trigger and empty state in English under en", async () => {
+        await i18n.changeLanguage("en");
+        mockUseBlogPostsResult = { ...mockUseBlogPostsResult, data: null };
+        renderWithProviders(<BlogDropdown />);
+
+        await userEvent.hover(screen.getByRole("button", { name: /blog/i }));
+
+        expect(await screen.findByText("No posts available")).toBeInTheDocument();
+        expect(screen.queryByText("暂无文章")).not.toBeInTheDocument();
       });
     });
   });

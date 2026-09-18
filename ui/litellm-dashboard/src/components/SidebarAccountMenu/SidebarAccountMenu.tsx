@@ -85,6 +85,7 @@ interface SidebarAccountMenuProps {
 const SidebarAccountMenu: React.FC<SidebarAccountMenuProps> = ({ onLogout, collapsed = false }) => {
   const { userId, userEmail, userRoleLabel: userRole, premiumUser, accessToken } = useAuthorized();
   const { t } = useTranslation();
+  const { t: tNav } = useTranslation("nav");
   const { data: healthData } = useHealthReadinessDetails(accessToken);
   const version = healthData?.litellm_version;
   const disableShowPrompts = useDisableShowPrompts();
@@ -135,7 +136,7 @@ const SidebarAccountMenu: React.FC<SidebarAccountMenuProps> = ({ onLogout, colla
   const seed = userEmail || userId || "user";
   const initials = initialsFromIdentity(userEmail, userId);
   const hue = hueFromString(seed);
-  const displayName = navAccountDisplayName(userEmail, userId);
+  const displayName = navAccountDisplayName(userEmail, userId, tNav);
   const triggerLabel = `Account menu — ${userRole ?? "Unknown role"} — signed in as ${userEmail || userId || "unknown"}`;
 
   return (

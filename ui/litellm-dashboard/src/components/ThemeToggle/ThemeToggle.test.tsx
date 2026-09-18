@@ -1,7 +1,9 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ThemeProvider } from "next-themes";
-import { afterAll, beforeEach, describe, expect, it } from "vitest";
+import { afterAll, afterEach, beforeEach, describe, expect, it } from "vitest";
+import i18n from "@/i18n/bootstrapI18n";
+import { cleanup } from "../../../tests/test-utils";
 import ThemeToggle from "./ThemeToggle";
 
 const renderToggle = () =>
@@ -67,5 +69,28 @@ describe("ThemeToggle", () => {
 
     expect(toggle()).not.toHaveTextContent("Beta");
     expect(toggle()).toHaveAccessibleName("Switch to light mode");
+  });
+});
+
+describe("ThemeToggle localization", () => {
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  it("names the mode it will switch to in Chinese under zh", async () => {
+    await i18n.changeLanguage("zh");
+    renderToggle();
+
+    expect(screen.getByRole("button", { name: "切换到深色模式（测试版）" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Switch to dark mode/ })).not.toBeInTheDocument();
+  });
+
+  it("names the mode it will switch to in English under en", async () => {
+    await i18n.changeLanguage("en");
+    renderToggle();
+
+    expect(screen.getByRole("button", { name: "Switch to dark mode (beta)" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "切换到深色模式（测试版）" })).not.toBeInTheDocument();
   });
 });

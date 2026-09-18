@@ -1,5 +1,7 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
+import i18n from "@/i18n/bootstrapI18n";
+import { cleanup } from "../../../../tests/test-utils";
 import { NAV_PRODUCT_LINK_CLASS } from "@/components/Navbar/navProductLinkClass";
 import { DocsLink } from "./DocsLink";
 
@@ -38,5 +40,28 @@ describe("DocsLink", () => {
 
     expect(screen.getByRole("link", { name: "Docs" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Docs" })).not.toBeInTheDocument();
+  });
+});
+
+describe("DocsLink localization", () => {
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  it("renders the link as 文档 under zh", async () => {
+    await i18n.changeLanguage("zh");
+    render(<DocsLink />);
+
+    expect(screen.getByRole("link", { name: "文档" })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Docs" })).not.toBeInTheDocument();
+  });
+
+  it("renders the link as Docs under en", async () => {
+    await i18n.changeLanguage("en");
+    render(<DocsLink />);
+
+    expect(screen.getByRole("link", { name: "Docs" })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "文档" })).not.toBeInTheDocument();
   });
 });

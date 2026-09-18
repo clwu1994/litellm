@@ -3,13 +3,15 @@
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 
 const ThemeToggle: React.FC = () => {
   const { setTheme, resolvedTheme } = useTheme();
+  const { t } = useTranslation("nav");
   const isDark = resolvedTheme === "dark";
-  const label = isDark ? "Switch to light mode" : "Switch to dark mode (beta)";
+  const label = isDark ? t("topbar.themeLight") : t("topbar.themeDark");
 
   return (
     <Button
