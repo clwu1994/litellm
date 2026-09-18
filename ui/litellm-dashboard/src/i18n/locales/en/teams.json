@@ -298,5 +298,99 @@
       "accessGroupListLoadFailed": "the access group list could not be loaded",
       "inventoryLoading": "the MCP server inventory is still loading"
     }
+  },
+  "members": {
+    "field": {
+      "user": "User",
+      "teamRole": "Team Role",
+      "modelScope": "Model Scope",
+      "currentCycleSpend": "Current Cycle Spend (USD)",
+      "totalSpend": "Total Spend (USD)",
+      "teamMemberBudget": "Team Member Budget (USD)",
+      "budgetReset": "Budget Reset",
+      "teamMemberRateLimits": "Team Member Rate Limits",
+      "rateLimits": "Rate Limits"
+    },
+    "tooltip": {
+      "modelScopeMember": "Models this member can access. Empty means they inherit all team models.",
+      "currentCycleSpendMember": "Spend for the current budget cycle. Resets to $0 when the member's budget window rolls over. This is the value checked against the member's budget.",
+      "totalSpendMember": "Cumulative spend by this member within this team, across all budget cycles. Tracking began 2026-04-21; spend from before that date is not included.",
+      "teamMemberRateLimits": "Rate limits for this member's usage within this team.",
+      "role": "This role applies only to this team and is independent from the user's proxy-level role.",
+      "modelScopeSelf": "Models you can access within this team.",
+      "currentCycleSpendSelf": "Spend for the current budget cycle. Resets to $0 when the budget window rolls over.",
+      "rateLimitsSelf": "Your per-member rate limits within this team.",
+      "totalSpendSelf": "Cumulative spend across all budget cycles within this team."
+    },
+    "aria": {
+      "modelScope": "Model scope information",
+      "currentCycleSpend": "Current cycle spend information",
+      "totalSpend": "Total spend information",
+      "teamMemberRateLimits": "Team member rate limits information",
+      "tooltip": "{{label}} information"
+    },
+    "value": {
+      "allTeamModels": "(all team models)",
+      "allTeamModelsSelf": "All Team Models",
+      "noLimits": "No Limits"
+    },
+    "moreModels": "+{{remaining}} more",
+    "spendOf": "of {{amount}}",
+    "resetsAt": "Resets {{date}}",
+    "loading": "Loading your membership info…",
+    "loadFailed": "Failed to load your membership info for this team.",
+    "noMembership": "No membership info available for the current user in this team.",
+    "action": {
+      "addMember": "Add Member",
+      "adding": "Adding...",
+      "saving": "Saving..."
+    },
+    "edit": {
+      "currentRole": "(Current: {{role}})",
+      "or": "OR",
+      "emailPlaceholder": "user@example.com",
+      "userIdPlaceholder": "user_123",
+      "numericalPlaceholder": "Enter a numerical value",
+      "selectOptionsPlaceholder": "Select options"
+    },
+    "validation": {
+      "roleRequired": "Please select a role!",
+      "emailInvalid": "Please enter a valid email!"
+    }
+  },
+  "permissions": {
+    "title": "Member Permissions",
+    "subtitle": "Control what team members can do when they are not team admins.",
+    "loading": "Loading permissions...",
+    "empty": "No permissions available",
+    "action": {
+      "reset": "Reset"
+    },
+    "table": {
+      "method": "Method",
+      "endpoint": "Endpoint",
+      "description": "Description",
+      "allowAccess": "Allow Access"
+    },
+    "toast": {
+      "loadFailed": "Failed to load permissions",
+      "updated": "Permissions updated successfully",
+      "updateFailed": "Failed to update permissions"
+    },
+    "description": {
+      "generateKey": "Member can generate a virtual key for this team",
+      "generateServiceAccountKey": "Member can generate a service account key (not belonging to any user) for this team",
+      "updateKey": "Member can update a virtual key belonging to this team",
+      "deleteKey": "Member can delete a virtual key belonging to this team",
+      "keyInfo": "Member can get info about a virtual key belonging to this team",
+      "regenerateKey": "Member can regenerate a virtual key belonging to this team",
+      "listKeys": "Member can list virtual keys belonging to this team",
+      "blockKey": "Member can block a virtual key belonging to this team",
+      "unblockKey": "Member can unblock a virtual key belonging to this team",
+      "assignAccessGroups": "Member can assign access groups to virtual keys for this team",
+      "teamActivity": "Member can view all team usage data (not just their own)",
+      "spendLogs": "Member can view spend logs for the entire team (not just their own)",
+      "fallback": "Access {{endpoint}}"
+    }
   }
 }

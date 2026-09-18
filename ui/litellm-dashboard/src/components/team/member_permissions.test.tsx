@@ -1,7 +1,8 @@
 import * as networking from "@/components/networking";
-import { act, fireEvent, screen, waitFor, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, screen, waitFor, within } from "@testing-library/react";
 import { renderWithProviders } from "../../../tests/test-utils";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import i18n from "@/i18n/bootstrapI18n";
 import MemberPermissions from "./member_permissions";
 
 vi.mock("@/components/networking", () => ({
@@ -165,5 +166,49 @@ describe("MemberPermissions", () => {
 
     expect(checkboxFor("/key/list")).not.toBeChecked();
     expect(screen.queryByRole("button", { name: /save changes/i })).not.toBeInTheDocument();
+  });
+});
+
+describe("MemberPermissions localization", () => {
+  const renderPermissions = () =>
+    renderWithProviders(<MemberPermissions teamId="team-123" accessToken="token-123" canEditTeam={true} />);
+
+  beforeEach(() => {
+    vi.mocked(networking.getTeamPermissionsCall).mockResolvedValue({
+      all_available_permissions: ["/key/generate", "/key/list"],
+      team_member_permissions: [],
+    });
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  it("renders the Chinese permission labels and descriptions under zh", async () => {
+    await i18n.changeLanguage("zh");
+    renderPermissions();
+
+    expect(await screen.findByText("成员权限")).toBeInTheDocument();
+    expect(screen.getByText("方法")).toBeInTheDocument();
+    expect(screen.getByText("Endpoint")).toBeInTheDocument();
+    expect(screen.getByText("允许访问")).toBeInTheDocument();
+    expect(screen.getByText("成员可以为该团队生成 Virtual Key")).toBeInTheDocument();
+
+    expect(screen.queryByText("Member Permissions")).not.toBeInTheDocument();
+    expect(screen.queryByText("Method")).not.toBeInTheDocument();
+    expect(screen.queryByText("Member can generate a virtual key for this team")).not.toBeInTheDocument();
+  });
+
+  it("renders the English permission labels and descriptions under en", async () => {
+    await i18n.changeLanguage("en");
+    renderPermissions();
+
+    expect(await screen.findByText("Member Permissions")).toBeInTheDocument();
+    expect(screen.getByText("Method")).toBeInTheDocument();
+    expect(screen.getByText("Member can generate a virtual key for this team")).toBeInTheDocument();
+
+    expect(screen.queryByText("成员权限")).not.toBeInTheDocument();
+    expect(screen.queryByText("成员可以为该团队生成 Virtual Key")).not.toBeInTheDocument();
   });
 });

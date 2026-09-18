@@ -1,28 +1,42 @@
 export interface PermissionInfo {
   method: string;
   endpoint: string;
-  description: string;
+  descriptionKey: PermissionDescriptionKey;
   route: string;
 }
 
+export type PermissionDescriptionKey =
+  | "permissions.description.generateKey"
+  | "permissions.description.generateServiceAccountKey"
+  | "permissions.description.updateKey"
+  | "permissions.description.deleteKey"
+  | "permissions.description.keyInfo"
+  | "permissions.description.regenerateKey"
+  | "permissions.description.listKeys"
+  | "permissions.description.blockKey"
+  | "permissions.description.unblockKey"
+  | "permissions.description.assignAccessGroups"
+  | "permissions.description.teamActivity"
+  | "permissions.description.spendLogs"
+  | "permissions.description.fallback";
+
 /**
- * Map of permission endpoint patterns to their descriptions
+ * Map of permission endpoint patterns to their translation keys
  */
-export const PERMISSION_DESCRIPTIONS: Record<string, string> = {
-  "/key/generate": "Member can generate a virtual key for this team",
-  "/key/service-account/generate":
-    "Member can generate a service account key (not belonging to any user) for this team",
-  "/key/update": "Member can update a virtual key belonging to this team",
-  "/key/delete": "Member can delete a virtual key belonging to this team",
-  "/key/info": "Member can get info about a virtual key belonging to this team",
-  "/key/regenerate": "Member can regenerate a virtual key belonging to this team",
-  "/key/{key_id}/regenerate": "Member can regenerate a virtual key belonging to this team",
-  "/key/list": "Member can list virtual keys belonging to this team",
-  "/key/block": "Member can block a virtual key belonging to this team",
-  "/key/unblock": "Member can unblock a virtual key belonging to this team",
-  "/key/access_group_assignment": "Member can assign access groups to virtual keys for this team",
-  "/team/daily/activity": "Member can view all team usage data (not just their own)",
-  "/spend/logs": "Member can view spend logs for the entire team (not just their own)",
+export const PERMISSION_DESCRIPTION_KEYS: Record<string, PermissionDescriptionKey> = {
+  "/key/generate": "permissions.description.generateKey",
+  "/key/service-account/generate": "permissions.description.generateServiceAccountKey",
+  "/key/update": "permissions.description.updateKey",
+  "/key/delete": "permissions.description.deleteKey",
+  "/key/info": "permissions.description.keyInfo",
+  "/key/regenerate": "permissions.description.regenerateKey",
+  "/key/{key_id}/regenerate": "permissions.description.regenerateKey",
+  "/key/list": "permissions.description.listKeys",
+  "/key/block": "permissions.description.blockKey",
+  "/key/unblock": "permissions.description.unblockKey",
+  "/key/access_group_assignment": "permissions.description.assignAccessGroups",
+  "/team/daily/activity": "permissions.description.teamActivity",
+  "/spend/logs": "permissions.description.spendLogs",
 };
 
 /**
@@ -47,28 +61,23 @@ export const getPermissionInfo = (permission: string): PermissionInfo => {
   const method = getMethodForEndpoint(permission);
   const endpoint = permission;
 
-  // Find exact match or fallback to default description
-  let description = PERMISSION_DESCRIPTIONS[permission];
+  // Find exact match or fallback to the generic description key
+  let descriptionKey = PERMISSION_DESCRIPTION_KEYS[permission];
 
   // If no exact match, try to find a partial match based on patterns
-  if (!description) {
-    for (const [pattern, desc] of Object.entries(PERMISSION_DESCRIPTIONS)) {
+  if (!descriptionKey) {
+    for (const [pattern, key] of Object.entries(PERMISSION_DESCRIPTION_KEYS)) {
       if (permission.includes(pattern)) {
-        description = desc;
+        descriptionKey = key;
         break;
       }
     }
   }
 
-  // Fallback if no match found
-  if (!description) {
-    description = `Access ${permission}`;
-  }
-
   return {
     method,
     endpoint,
-    description,
+    descriptionKey: descriptionKey ?? "permissions.description.fallback",
     route: permission,
   };
 };

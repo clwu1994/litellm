@@ -1,5 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { getMethodForEndpoint, getPermissionInfo, PERMISSION_DESCRIPTIONS } from "./permission_definitions";
+import i18n from "@/i18n/bootstrapI18n";
+import {
+  getMethodForEndpoint,
+  getPermissionInfo,
+  PERMISSION_DESCRIPTION_KEYS,
+  type PermissionInfo,
+} from "./permission_definitions";
+
+const resolveDescription = (info: PermissionInfo): string =>
+  i18n.t(info.descriptionKey, { ns: "teams", endpoint: info.endpoint });
 
 describe("permission_definitions", () => {
   describe("getMethodForEndpoint", () => {
@@ -27,7 +36,7 @@ describe("permission_definitions", () => {
       const result = getPermissionInfo("/key/generate");
       expect(result.method).toBe("POST");
       expect(result.endpoint).toBe("/key/generate");
-      expect(result.description).toBe(PERMISSION_DESCRIPTIONS["/key/generate"]);
+      expect(resolveDescription(result)).toBe("Member can generate a virtual key for this team");
       expect(result.route).toBe("/key/generate");
     });
 
@@ -35,28 +44,30 @@ describe("permission_definitions", () => {
       const result = getPermissionInfo("/key/info");
       expect(result.method).toBe("GET");
       expect(result.endpoint).toBe("/key/info");
-      expect(result.description).toBe(PERMISSION_DESCRIPTIONS["/key/info"]);
+      expect(resolveDescription(result)).toBe("Member can get info about a virtual key belonging to this team");
     });
 
     it("should return GET method for list endpoint", () => {
       const result = getPermissionInfo("/key/list");
       expect(result.method).toBe("GET");
       expect(result.endpoint).toBe("/key/list");
-      expect(result.description).toBe(PERMISSION_DESCRIPTIONS["/key/list"]);
+      expect(resolveDescription(result)).toBe("Member can list virtual keys belonging to this team");
     });
 
     it("should find partial match for permission with pattern", () => {
       const result = getPermissionInfo("/key/service-account/generate");
       expect(result.method).toBe("POST");
       expect(result.endpoint).toBe("/key/service-account/generate");
-      expect(result.description).toBe(PERMISSION_DESCRIPTIONS["/key/service-account/generate"]);
+      expect(resolveDescription(result)).toBe(
+        "Member can generate a service account key (not belonging to any user) for this team",
+      );
     });
 
     it("should return correct info for team daily activity permission", () => {
       const result = getPermissionInfo("/team/daily/activity");
       expect(result.method).toBe("GET");
       expect(result.endpoint).toBe("/team/daily/activity");
-      expect(result.description).toBe(PERMISSION_DESCRIPTIONS["/team/daily/activity"]);
+      expect(resolveDescription(result)).toBe("Member can view all team usage data (not just their own)");
       expect(result.route).toBe("/team/daily/activity");
     });
 
@@ -64,20 +75,26 @@ describe("permission_definitions", () => {
       const result = getPermissionInfo("/unknown/endpoint");
       expect(result.method).toBe("POST");
       expect(result.endpoint).toBe("/unknown/endpoint");
-      expect(result.description).toBe("Access /unknown/endpoint");
+      expect(resolveDescription(result)).toBe("Access /unknown/endpoint");
       expect(result.route).toBe("/unknown/endpoint");
     });
   });
 
-  describe("PERMISSION_DESCRIPTIONS", () => {
+  describe("PERMISSION_DESCRIPTION_KEYS", () => {
+    it("should resolve every endpoint pattern to a catalog string", () => {
+      for (const key of Object.values(PERMISSION_DESCRIPTION_KEYS)) {
+        const resolved = i18n.t(key, { ns: "teams" });
+        expect(resolved).not.toBe(key);
+        expect(resolved.length).toBeGreaterThan(0);
+      }
+    });
+
     it("should include team daily activity permission", () => {
-      expect(PERMISSION_DESCRIPTIONS["/team/daily/activity"]).toBeDefined();
-      expect(PERMISSION_DESCRIPTIONS["/team/daily/activity"]).toContain("team usage");
+      expect(resolveDescription(getPermissionInfo("/team/daily/activity"))).toContain("team usage");
     });
 
     it("should include spend logs permission", () => {
-      expect(PERMISSION_DESCRIPTIONS["/spend/logs"]).toBeDefined();
-      expect(PERMISSION_DESCRIPTIONS["/spend/logs"]).toContain("spend logs");
+      expect(resolveDescription(getPermissionInfo("/spend/logs"))).toContain("spend logs");
     });
   });
 
@@ -90,7 +107,7 @@ describe("permission_definitions", () => {
       const result = getPermissionInfo("/spend/logs");
       expect(result.method).toBe("GET");
       expect(result.endpoint).toBe("/spend/logs");
-      expect(result.description).toBe(PERMISSION_DESCRIPTIONS["/spend/logs"]);
+      expect(resolveDescription(result)).toBe("Member can view spend logs for the entire team (not just their own)");
       expect(result.route).toBe("/spend/logs");
     });
   });

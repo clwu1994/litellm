@@ -1,6 +1,7 @@
-import { fireEvent, screen, within } from "@testing-library/react";
+import { cleanup, fireEvent, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import i18n from "@/i18n/bootstrapI18n";
 import { renderWithProviders } from "../../../tests/test-utils";
 import { TeamData } from "./TeamInfo";
 import TeamMembersComponent from "./TeamMemberTab";
@@ -461,5 +462,50 @@ describe("TeamMembersComponent", () => {
 
     expect(screen.queryByTestId("edit-member")).not.toBeInTheDocument();
     expect(screen.queryByTestId("delete-member")).not.toBeInTheDocument();
+  });
+
+  describe("localization", () => {
+    const renderTab = () =>
+      renderWithProviders(
+        <TeamMembersComponent
+          teamData={createMockTeamData()}
+          canEditTeam={false}
+          handleMemberDelete={mockHandleMemberDelete}
+          setSelectedEditMember={mockSetSelectedEditMember}
+          setIsEditMemberModalVisible={mockSetIsEditMemberModalVisible}
+          setIsAddMemberModalVisible={mockSetIsAddMemberModalVisible}
+        />,
+      );
+
+    afterEach(async () => {
+      cleanup();
+      await i18n.changeLanguage("en");
+    });
+
+    it("renders the Chinese member column labels under zh", async () => {
+      await i18n.changeLanguage("zh");
+      renderTab();
+
+      expect(screen.getByText("模型范围")).toBeInTheDocument();
+      expect(screen.getByText("当前周期消费（USD）")).toBeInTheDocument();
+      expect(screen.getByText("累计消费（USD）")).toBeInTheDocument();
+      expect(screen.getByText("团队成员预算（USD）")).toBeInTheDocument();
+
+      expect(screen.queryByText("Model Scope")).not.toBeInTheDocument();
+      expect(screen.queryByText("Current Cycle Spend (USD)")).not.toBeInTheDocument();
+      expect(screen.queryByText("Total Spend (USD)")).not.toBeInTheDocument();
+    });
+
+    it("renders the English member column labels under en", async () => {
+      await i18n.changeLanguage("en");
+      renderTab();
+
+      expect(screen.getByText("Model Scope")).toBeInTheDocument();
+      expect(screen.getByText("Current Cycle Spend (USD)")).toBeInTheDocument();
+      expect(screen.getByText("Total Spend (USD)")).toBeInTheDocument();
+
+      expect(screen.queryByText("模型范围")).not.toBeInTheDocument();
+      expect(screen.queryByText("当前周期消费（USD）")).not.toBeInTheDocument();
+    });
   });
 });

@@ -298,5 +298,99 @@
       "accessGroupListLoadFailed": "无法加载访问组列表",
       "inventoryLoading": "MCP 服务清单仍在加载中"
     }
+  },
+  "members": {
+    "field": {
+      "user": "用户",
+      "teamRole": "团队角色",
+      "modelScope": "模型范围",
+      "currentCycleSpend": "当前周期消费（USD）",
+      "totalSpend": "累计消费（USD）",
+      "teamMemberBudget": "团队成员预算（USD）",
+      "budgetReset": "预算重置",
+      "teamMemberRateLimits": "团队成员速率限制",
+      "rateLimits": "速率限制"
+    },
+    "tooltip": {
+      "modelScopeMember": "该成员可访问的模型。留空表示继承全部团队模型。",
+      "currentCycleSpendMember": "当前预算周期内的消费。当成员的预算周期滚动时重置为 $0。该值用于与成员的预算进行比较。",
+      "totalSpendMember": "该成员在此团队内的累计消费，涵盖所有预算周期。统计从 2026-04-21 开始；该日期之前的消费不计入。",
+      "teamMemberRateLimits": "该成员在此团队内使用量的速率限制。",
+      "role": "该角色仅适用于此团队，与用户的代理级角色无关。",
+      "modelScopeSelf": "你在该团队内可访问的模型。",
+      "currentCycleSpendSelf": "当前预算周期内的消费。预算周期滚动时重置为 $0。",
+      "rateLimitsSelf": "你在该团队内的成员级速率限制。",
+      "totalSpendSelf": "你在该团队内所有预算周期的累计消费。"
+    },
+    "aria": {
+      "modelScope": "模型范围信息",
+      "currentCycleSpend": "当前周期消费信息",
+      "totalSpend": "累计消费信息",
+      "teamMemberRateLimits": "团队成员速率限制信息",
+      "tooltip": "{{label}}信息"
+    },
+    "value": {
+      "allTeamModels": "（全部团队模型）",
+      "allTeamModelsSelf": "全部团队模型",
+      "noLimits": "不限"
+    },
+    "moreModels": "还有 {{remaining}} 个",
+    "spendOf": "占 {{amount}}",
+    "resetsAt": "重置时间：{{date}}",
+    "loading": "正在加载你的成员信息…",
+    "loadFailed": "加载你在该团队中的成员信息失败。",
+    "noMembership": "当前用户在此团队中没有可用的成员信息。",
+    "action": {
+      "addMember": "添加成员",
+      "adding": "正在添加...",
+      "saving": "正在保存..."
+    },
+    "edit": {
+      "currentRole": "（当前：{{role}}）",
+      "or": "或",
+      "emailPlaceholder": "user@example.com",
+      "userIdPlaceholder": "user_123",
+      "numericalPlaceholder": "请输入数值",
+      "selectOptionsPlaceholder": "选择选项"
+    },
+    "validation": {
+      "roleRequired": "请选择角色！",
+      "emailInvalid": "请输入有效的邮箱地址！"
+    }
+  },
+  "permissions": {
+    "title": "成员权限",
+    "subtitle": "控制团队成员在非团队管理员时的操作权限。",
+    "loading": "正在加载权限...",
+    "empty": "没有可用的权限",
+    "action": {
+      "reset": "重置"
+    },
+    "table": {
+      "method": "方法",
+      "endpoint": "Endpoint",
+      "description": "描述",
+      "allowAccess": "允许访问"
+    },
+    "toast": {
+      "loadFailed": "加载权限失败",
+      "updated": "权限更新成功",
+      "updateFailed": "更新权限失败"
+    },
+    "description": {
+      "generateKey": "成员可以为该团队生成 Virtual Key",
+      "generateServiceAccountKey": "成员可以为该团队生成服务账号密钥（不属于任何用户）",
+      "updateKey": "成员可以更新属于该团队的 Virtual Key",
+      "deleteKey": "成员可以删除属于该团队的 Virtual Key",
+      "keyInfo": "成员可以查看属于该团队的 Virtual Key 信息",
+      "regenerateKey": "成员可以重新生成属于该团队的 Virtual Key",
+      "listKeys": "成员可以列出属于该团队的 Virtual Key",
+      "blockKey": "成员可以封锁属于该团队的 Virtual Key",
+      "unblockKey": "成员可以解封属于该团队的 Virtual Key",
+      "assignAccessGroups": "成员可以为该团队的 Virtual Key 分配访问组",
+      "teamActivity": "成员可以查看全部团队用量数据（不仅限于自己的）",
+      "spendLogs": "成员可以查看整个团队的消费日志（不仅限于自己的）",
+      "fallback": "访问 {{endpoint}}"
+    }
   }
 }
