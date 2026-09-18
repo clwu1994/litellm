@@ -94,7 +94,10 @@
     "unknownRole": "未知角色",
     "unknownIdentity": "未知",
     "themeLight": "切换到浅色模式",
-    "themeDark": "切换到深色模式（测试版）"
+    "themeDark": "切换到深色模式（测试版）",
+    "brandAlt": "LiteLLM 品牌",
+    "thanksForUsing": "感谢使用 LiteLLM！",
+    "productDocumentation": "产品文档"
   },
   "notifications": {
     "label": "通知",

@@ -94,7 +94,10 @@
     "unknownRole": "Unknown role",
     "unknownIdentity": "unknown",
     "themeLight": "Switch to light mode",
-    "themeDark": "Switch to dark mode (beta)"
+    "themeDark": "Switch to dark mode (beta)",
+    "brandAlt": "LiteLLM Brand",
+    "thanksForUsing": "Thanks for using LiteLLM!",
+    "productDocumentation": "Product documentation"
   },
   "notifications": {
     "label": "Notifications",

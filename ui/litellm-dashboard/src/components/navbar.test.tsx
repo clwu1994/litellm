@@ -1,7 +1,8 @@
 import userEvent from "@testing-library/user-event";
 import React from "react";
-import { describe, expect, it, vi } from "vitest";
-import { renderWithProviders, screen, waitFor } from "../../tests/test-utils";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import i18n from "@/i18n/bootstrapI18n";
+import { cleanup, renderWithProviders, screen, waitFor } from "../../tests/test-utils";
 import Navbar from "./navbar";
 
 // Mock the hooks and utilities
@@ -329,5 +330,55 @@ describe("Navbar", () => {
 
     // DO NOT RENDER THIS UNTIL ALL COMPONENTS ARE CONFIRMED TO SUPPORT DARK MODE STYLES. IT IS AN ISSUE IF THIS TEST FAILS.
     expect(screen.queryByTestId("dark-mode-toggle")).not.toBeInTheDocument();
+  });
+});
+
+describe("Navbar localization", () => {
+  const defaultProps = {
+    accessToken: "test-token",
+    isPublicPage: false,
+  };
+
+  afterEach(async () => {
+    cleanup();
+    mockUseHealthReadinessDetailsImpl = () => ({ data: null });
+    await i18n.changeLanguage("en");
+  });
+
+  it("renders the collapse title, brand alt, version tooltip and docs label in Chinese under zh", async () => {
+    await i18n.changeLanguage("zh");
+    mockUseHealthReadinessDetailsImpl = () => ({ data: { litellm_version: "1.0.0" } });
+
+    renderWithProviders(<Navbar {...defaultProps} onToggleSidebar={vi.fn()} />);
+
+    expect(screen.getByTitle("收起侧边栏")).toBeInTheDocument();
+    expect(screen.getByAltText("LiteLLM 品牌")).toBeInTheDocument();
+    expect(screen.getByTitle("感谢使用 LiteLLM！")).toBeInTheDocument();
+    expect(screen.getByRole("navigation", { name: "产品文档" })).toBeInTheDocument();
+    expect(screen.queryByTitle("Collapse sidebar")).not.toBeInTheDocument();
+    expect(screen.queryByAltText("LiteLLM Brand")).not.toBeInTheDocument();
+    expect(screen.queryByRole("navigation", { name: "Product documentation" })).not.toBeInTheDocument();
+  });
+
+  it("renders the expand title in Chinese when the sidebar is collapsed", async () => {
+    await i18n.changeLanguage("zh");
+
+    renderWithProviders(<Navbar {...defaultProps} onToggleSidebar={vi.fn()} sidebarCollapsed />);
+
+    expect(screen.getByTitle("展开侧边栏")).toBeInTheDocument();
+    expect(screen.queryByTitle("收起侧边栏")).not.toBeInTheDocument();
+  });
+
+  it("renders the English titles and docs label again under en", async () => {
+    await i18n.changeLanguage("en");
+    mockUseHealthReadinessDetailsImpl = () => ({ data: { litellm_version: "1.0.0" } });
+
+    renderWithProviders(<Navbar {...defaultProps} onToggleSidebar={vi.fn()} />);
+
+    expect(screen.getByTitle("Collapse sidebar")).toBeInTheDocument();
+    expect(screen.getByAltText("LiteLLM Brand")).toBeInTheDocument();
+    expect(screen.getByTitle("Thanks for using LiteLLM!")).toBeInTheDocument();
+    expect(screen.getByRole("navigation", { name: "Product documentation" })).toBeInTheDocument();
+    expect(screen.queryByTitle("收起侧边栏")).not.toBeInTheDocument();
   });
 });
