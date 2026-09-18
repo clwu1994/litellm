@@ -414,6 +414,10 @@ describe("LoginPage localization", () => {
     expect(screen.getByText(/默认情况下/)).toHaveTextContent(
       "默认情况下，用户名为 admin，密码为您设置的 LiteLLM Proxy MASTER_KEY。",
     );
+    expect(screen.getByRole("link", { name: "查看文档" })).toHaveAttribute(
+      "href",
+      "https://docs.litellm.ai/docs/proxy/ui",
+    );
 
     expect(screen.queryByText("Login")).not.toBeInTheDocument();
     expect(screen.queryByText("Username")).not.toBeInTheDocument();
@@ -434,6 +438,10 @@ describe("LoginPage localization", () => {
     expect(screen.getByText("Default Credentials")).toBeInTheDocument();
     expect(screen.getByText(/By default/)).toHaveTextContent(
       "By default, Username is admin and Password is your set LiteLLM Proxy MASTER_KEY.",
+    );
+    expect(screen.getByRole("link", { name: "Check the documentation" })).toHaveAttribute(
+      "href",
+      "https://docs.litellm.ai/docs/proxy/ui",
     );
 
     expect(screen.queryByText("登录")).not.toBeInTheDocument();
