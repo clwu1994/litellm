@@ -1,7 +1,7 @@
-import { screen, waitFor, within, fireEvent } from "@testing-library/react";
+import { act, cleanup, screen, waitFor, within, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { OnUrlUpdateFunction } from "nuqs/adapters/testing";
-import { vi, it, expect, beforeEach, describe, Mock, MockedFunction } from "vitest";
+import { vi, it, expect, beforeEach, afterEach, describe, Mock, MockedFunction } from "vitest";
 import { chooseSelectOption, renderWithProviders } from "../../../tests/test-utils";
 import { VirtualKeysTable } from "./VirtualKeysTable";
 import { KEY_TABLE_SORT_FIELDS } from "./keyTableColumns";
@@ -9,6 +9,7 @@ import { KeyResponse, Team } from "../key_team_helpers/key_list";
 import { useKeyInfo } from "@/app/(dashboard)/hooks/keys/useKeyInfo";
 import { KeysResponse, useKeys } from "@/app/(dashboard)/hooks/keys/useKeys";
 import useTeams from "@/app/(dashboard)/hooks/useTeams";
+import i18n from "@/i18n/bootstrapI18n";
 import { regenerateKeyCall } from "../networking";
 
 // Resolve debounced values synchronously so an applied filter lands in the useKeys query within the test tick.
@@ -938,5 +939,59 @@ describe("table state lives in the URL so it survives leaving and returning to t
     await waitFor(() => {
       expect(lastSearchParam(onUrlUpdate, "key_search")).toBeNull();
     });
+  });
+});
+
+describe("Virtual Keys localization", () => {
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  it("renders the Chinese table labels and hides their English originals under zh", async () => {
+    await i18n.changeLanguage("zh");
+    renderWithProviders(<VirtualKeysTable />);
+
+    expect(screen.getByText("密钥")).toBeInTheDocument();
+    expect(screen.getByText("团队")).toBeInTheDocument();
+    expect(screen.getByText("模型")).toBeInTheDocument();
+    expect(screen.getByText("创建时间")).toBeInTheDocument();
+    expect(screen.getByText("所有用于向网关认证请求的 Virtual Key。")).toBeInTheDocument();
+    expect(screen.getByTestId(`key-status-${mockKey.token_id}`)).toHaveTextContent("活跃");
+
+    expect(screen.queryByText("Key")).not.toBeInTheDocument();
+    expect(screen.queryByText("Team")).not.toBeInTheDocument();
+    expect(screen.queryByText("Models")).not.toBeInTheDocument();
+    expect(screen.queryByText("Created At")).not.toBeInTheDocument();
+    expect(screen.queryByText("Active")).not.toBeInTheDocument();
+  });
+
+  it("renders the English table labels under en", async () => {
+    await i18n.changeLanguage("en");
+    renderWithProviders(<VirtualKeysTable />);
+
+    expect(screen.getByText("Key")).toBeInTheDocument();
+    expect(screen.getByText("Team")).toBeInTheDocument();
+    expect(screen.getByText("Models")).toBeInTheDocument();
+    expect(screen.getByText("Created At")).toBeInTheDocument();
+    expect(screen.getByTestId(`key-status-${mockKey.token_id}`)).toHaveTextContent("Active");
+
+    expect(screen.queryByText("密钥")).not.toBeInTheDocument();
+    expect(screen.queryByText("团队")).not.toBeInTheDocument();
+    expect(screen.queryByText("模型")).not.toBeInTheDocument();
+  });
+
+  it("relabels the rendered table when the language changes without remounting", async () => {
+    await i18n.changeLanguage("en");
+    renderWithProviders(<VirtualKeysTable />);
+    expect(screen.getByText("Models")).toBeInTheDocument();
+
+    await act(async () => {
+      await i18n.changeLanguage("zh");
+    });
+
+    expect(screen.getByText("模型")).toBeInTheDocument();
+    expect(screen.getByTestId(`key-status-${mockKey.token_id}`)).toHaveTextContent("活跃");
+    expect(screen.queryByText("Models")).not.toBeInTheDocument();
   });
 });

@@ -19,6 +19,7 @@ import { ColumnFiltersState, functionalUpdate, OnChangeFn, PaginationState, Sort
 import { KeyRound } from "lucide-react";
 import { createParser, parseAsInteger, parseAsString, parseAsStringLiteral, useQueryState, useQueryStates } from "nuqs";
 import React, { useCallback, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { KeyResponse, Team } from "../key_team_helpers/key_list";
 import KeyInfoView from "../templates/key_info_view";
@@ -30,13 +31,6 @@ interface VirtualKeysTableProps {
 
 const FILTER_COLUMNS = ["team_id", "org_id", "user_id", "key_hash"] as const;
 type FilterColumn = (typeof FILTER_COLUMNS)[number];
-
-const FILTER_LABELS: Record<FilterColumn, string> = {
-  team_id: "Team",
-  org_id: "Organization",
-  user_id: "User ID",
-  key_hash: "Key ID",
-};
 
 const DEFAULT_SORT_BY = "created_at";
 const DEFAULT_SORT_ORDER = "desc";
@@ -75,6 +69,7 @@ const filterValue = (filters: ColumnFiltersState, column: FilterColumn): string 
 };
 
 export function VirtualKeysTable({ headerActions }: VirtualKeysTableProps) {
+  const { t } = useTranslation("keys");
   const { data: fetchedOrganizations } = useOrganizations();
   const organizations = useMemo(() => fetchedOrganizations ?? [], [fetchedOrganizations]);
   const { data: fetchedTeams } = useAllTeams();
@@ -180,8 +175,8 @@ export function VirtualKeysTable({ headerActions }: VirtualKeysTableProps) {
   );
 
   const columns = useMemo(
-    () => getKeyTableColumns({ allTeams, organizations, onSelectKey: (key) => void setSelectedKeyId(key.token) }),
-    [allTeams, organizations, setSelectedKeyId],
+    () => getKeyTableColumns({ allTeams, organizations, onSelectKey: (key) => void setSelectedKeyId(key.token) }, t),
+    [allTeams, organizations, setSelectedKeyId, t],
   );
 
   const selectedKeyFromList = useMemo(
@@ -240,7 +235,7 @@ export function VirtualKeysTable({ headerActions }: VirtualKeysTableProps) {
 
   if (selectedKeyId) {
     if (!selectedKey && !selectedKeyLoadFailed) {
-      return <div className="p-4 text-sm text-muted-foreground">Loading key...</div>;
+      return <div className="p-4 text-sm text-muted-foreground">{t("detail.loading")}</div>;
     }
     return (
       <div className="w-full h-full overflow-hidden">
@@ -256,14 +251,16 @@ export function VirtualKeysTable({ headerActions }: VirtualKeysTableProps) {
     );
   }
 
+  const filterLabels: Record<FilterColumn, string> = {
+    team_id: t("filters.team"),
+    org_id: t("filters.organization"),
+    user_id: t("filters.userId"),
+    key_hash: t("filters.keyId"),
+  };
+
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-6">
-      <PageHeader
-        icon={<KeyRound />}
-        title="Virtual Keys"
-        subtitle="Every key that authenticates requests to the gateway."
-        primaryAction={headerActions}
-      />
+      <PageHeader icon={<KeyRound />} title={t("title")} subtitle={t("subtitle")} primaryAction={headerActions} />
       <DataTable
         data={keyList}
         columns={columns}
@@ -282,8 +279,8 @@ export function VirtualKeysTable({ headerActions }: VirtualKeysTableProps) {
         enableColumnResizing
         columnResizeMode="onChange"
         isLoading={isPending || isPlaceholderData}
-        loadingMessage="Loading keys..."
-        noDataMessage="No keys found"
+        loadingMessage={t("table.loading")}
+        noDataMessage={t("empty.none")}
         fillHeight
         size="compact"
         toolbar={(table) => (
@@ -292,52 +289,52 @@ export function VirtualKeysTable({ headerActions }: VirtualKeysTableProps) {
               table={table}
               searchValue={searchInput}
               onSearchChange={handleSearchChange}
-              searchPlaceholder="Search by key alias or ID…"
+              searchPlaceholder={t("table.searchPlaceholder")}
               onRefresh={() => refetch?.()}
               isRefreshing={isFetching}
               onOpenFilters={() => setFiltersOpen(true)}
-              filterLabels={FILTER_LABELS}
+              filterLabels={filterLabels}
               formatFilterValue={formatFilterValue}
             />
             <DataTableFilterDrawer
               table={table}
               open={filtersOpen}
               onOpenChange={setFiltersOpen}
-              title="Filters"
-              description="Narrow down virtual keys"
+              title={t("filters.title")}
+              description={t("filters.description")}
             >
               {({ get, set }) => (
                 <>
-                  <DataTableFilterField label="Team">
+                  <DataTableFilterField label={t("filters.team")}>
                     <SearchSelect
                       options={teamOptions}
                       value={(get("team_id") as string) || undefined}
                       onValueChange={(value) => set("team_id", value ?? undefined)}
-                      placeholder="Select a team…"
-                      emptyText="No teams found"
+                      placeholder={t("filters.teamPlaceholder")}
+                      emptyText={t("filters.teamEmpty")}
                     />
                   </DataTableFilterField>
-                  <DataTableFilterField label="Organization">
+                  <DataTableFilterField label={t("filters.organization")}>
                     <SearchSelect
                       options={orgOptions}
                       value={(get("org_id") as string) || undefined}
                       onValueChange={(value) => set("org_id", value ?? undefined)}
-                      placeholder="Select an organization…"
-                      emptyText="No organizations found"
+                      placeholder={t("filters.organizationPlaceholder")}
+                      emptyText={t("filters.organizationEmpty")}
                     />
                   </DataTableFilterField>
-                  <DataTableFilterField label="User ID">
+                  <DataTableFilterField label={t("filters.userId")}>
                     <Input
                       value={(get("user_id") as string) ?? ""}
                       onChange={(event) => set("user_id", event.target.value)}
-                      placeholder="Enter User ID…"
+                      placeholder={t("filters.userIdPlaceholder")}
                     />
                   </DataTableFilterField>
-                  <DataTableFilterField label="Key ID">
+                  <DataTableFilterField label={t("filters.keyId")}>
                     <Input
                       value={(get("key_hash") as string) ?? ""}
                       onChange={(event) => set("key_hash", event.target.value)}
-                      placeholder="Enter Key ID…"
+                      placeholder={t("filters.keyIdPlaceholder")}
                     />
                   </DataTableFilterField>
                 </>

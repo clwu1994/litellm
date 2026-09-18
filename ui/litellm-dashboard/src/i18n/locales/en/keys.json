@@ -1,0 +1,70 @@
+{
+  "title": "Virtual Keys",
+  "subtitle": "Every key that authenticates requests to the gateway.",
+  "table": {
+    "header": {
+      "key": "Key",
+      "keyId": "Key ID",
+      "team": "Team",
+      "organization": "Organization",
+      "user": "User",
+      "createdAt": "Created At",
+      "createdBy": "Created By",
+      "updatedAt": "Updated At",
+      "lastActive": "Last Active",
+      "expires": "Expires",
+      "spend": "Spend",
+      "budget": "Budget",
+      "spendBudget": "Spend / Budget",
+      "budgetReset": "Budget Reset",
+      "models": "Models",
+      "rateLimits": "Rate Limits"
+    },
+    "tooltip": {
+      "user": "Displays the first available value: User Alias, User Email, or User ID.",
+      "lastActive": "This is a new field and is not backfilled. Only new key usage will update this value."
+    },
+    "rateLimit": {
+      "tpm": "TPM",
+      "rpm": "RPM"
+    },
+    "searchPlaceholder": "Search by key alias or ID…",
+    "loading": "Loading keys..."
+  },
+  "filters": {
+    "title": "Filters",
+    "description": "Narrow down virtual keys",
+    "team": "Team",
+    "teamPlaceholder": "Select a team…",
+    "teamEmpty": "No teams found",
+    "organization": "Organization",
+    "organizationPlaceholder": "Select an organization…",
+    "organizationEmpty": "No organizations found",
+    "userId": "User ID",
+    "userIdPlaceholder": "Enter User ID…",
+    "keyId": "Key ID",
+    "keyIdPlaceholder": "Enter Key ID…"
+  },
+  "status": {
+    "active": "Active",
+    "activeTooltip": "This key is not blocked and has not expired.",
+    "blocked": "Blocked",
+    "blockedTooltip": "Blocked. Requests using this key will be rejected with 401.",
+    "blockedScimTooltip": "Blocked by SCIM (external identity provider deactivated or deleted the owning user).",
+    "expired": "Expired",
+    "expiredTooltip": "This key has passed its expiry date."
+  },
+  "values": {
+    "neverUpdated": "Never",
+    "neverExpires": "Never",
+    "neverReset": "Never",
+    "unknown": "Unknown",
+    "unlimited": "Unlimited"
+  },
+  "empty": {
+    "none": "No keys found"
+  },
+  "detail": {
+    "loading": "Loading key..."
+  }
+}
