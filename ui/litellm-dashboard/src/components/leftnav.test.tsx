@@ -1,5 +1,6 @@
-import { act, fireEvent, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import i18n from "@/i18n/bootstrapI18n";
 import { renderWithProviders } from "../../tests/test-utils";
 import Sidebar, { menuGroups, getBreadcrumb } from "./leftnav";
 
@@ -591,6 +592,36 @@ describe("Sidebar (leftnav)", () => {
 
     expect(container.querySelector('a[href*="cost-optimization"]')).toHaveAttribute("title", "Cost Optimization");
     expect(container.querySelector('a[href*="projects"]')).toHaveAttribute("title", "Projects");
+  });
+});
+
+describe("Sidebar localization", () => {
+  afterEach(async () => {
+    await i18n.changeLanguage("en");
+  });
+
+  it("renders Chinese navigation labels and hides their English originals under zh", async () => {
+    await i18n.changeLanguage("zh");
+    renderWithProviders(<Sidebar collapsed={false} />);
+    const nav = within(screen.getByRole("navigation"));
+
+    expect(nav.getByText("用量")).toBeInTheDocument();
+    expect(nav.getByText("日志")).toBeInTheDocument();
+    expect(nav.getByText("团队")).toBeInTheDocument();
+    expect(nav.queryByText("Usage")).not.toBeInTheDocument();
+    expect(nav.queryByText("Logs")).not.toBeInTheDocument();
+    expect(nav.queryByText("Teams")).not.toBeInTheDocument();
+  });
+
+  it("renders the English navigation labels under en", async () => {
+    await i18n.changeLanguage("en");
+    renderWithProviders(<Sidebar collapsed={false} />);
+    const nav = within(screen.getByRole("navigation"));
+
+    expect(nav.getByText("Usage")).toBeInTheDocument();
+    expect(nav.getByText("Logs")).toBeInTheDocument();
+    expect(nav.getByText("Teams")).toBeInTheDocument();
+    expect(nav.queryByText("用量")).not.toBeInTheDocument();
   });
 });
 

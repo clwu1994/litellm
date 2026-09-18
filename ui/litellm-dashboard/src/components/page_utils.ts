@@ -2,6 +2,7 @@
  * Utility functions for working with navigation pages
  */
 
+import i18n from "@/i18n/bootstrapI18n";
 import { menuGroups } from "./leftnav";
 import { pageDescriptions, PageMetadata } from "./page_metadata";
 import { internalUserRoles } from "@/utils/roles";
@@ -43,7 +44,7 @@ export const getAvailablePages = (): PageMetadata[] => {
         item.page !== "settings" &&
         isPageAccessibleToInternalUsers(item.roles)
       ) {
-        const label = typeof item.label === "string" ? item.label : item.key;
+        const label = i18n.t(item.label, { ns: "nav" });
         pages.push({
           page: item.page,
           label: label,
@@ -54,11 +55,11 @@ export const getAvailablePages = (): PageMetadata[] => {
 
       // Add children items (also skip those internal users cannot access)
       if (item.children) {
-        const parentLabel = typeof item.label === "string" ? item.label : item.key;
+        const parentLabel = i18n.t(item.label, { ns: "nav" });
         item.children.forEach((child) => {
           // Include if internal users can access
           if (isPageAccessibleToInternalUsers(child.roles)) {
-            const childLabel = typeof child.label === "string" ? child.label : child.key;
+            const childLabel = i18n.t(child.label, { ns: "nav" });
             pages.push({
               page: child.page,
               label: childLabel,

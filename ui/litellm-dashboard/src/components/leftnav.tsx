@@ -64,6 +64,9 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n/bootstrapI18n";
+import type zhNav from "@/i18n/locales/zh/nav.json";
 import { cn } from "@/lib/cva.config";
 import { rolesWithCapability } from "../utils/capabilities";
 import {
@@ -94,11 +97,16 @@ interface SidebarProps {
   allowVectorStoresForTeamAdmins?: boolean;
 }
 
+type NavItemKey = `items.${keyof typeof zhNav.items}`;
+type NavSectionKey = `section.${keyof typeof zhNav.section}`;
+type NavSectionTitleKey = `sectionTitle.${keyof typeof zhNav.sectionTitle}`;
+
 interface MenuItem {
   key: string;
   page: string;
   route?: string;
-  label: string | React.ReactNode;
+  label: NavItemKey;
+  badge?: boolean;
   roles?: string[];
   children?: MenuItem[];
   icon?: React.ReactNode;
@@ -107,6 +115,8 @@ interface MenuItem {
 
 interface MenuGroup {
   groupLabel: string;
+  groupKey: NavSectionKey;
+  groupTitleKey: NavSectionTitleKey;
   items: MenuItem[];
   roles?: string[];
 }
@@ -117,13 +127,15 @@ interface MenuGroup {
 const menuGroups: MenuGroup[] = [
   {
     groupLabel: "AI GATEWAY",
+    groupKey: "section.aiGateway",
+    groupTitleKey: "sectionTitle.aiGateway",
     items: [
-      { key: "api-keys", page: "api-keys", label: "Virtual Keys", icon: <KeyRound {...ICON} /> },
+      { key: "api-keys", page: "api-keys", label: "items.keys", icon: <KeyRound {...ICON} /> },
       {
         key: "llm-playground",
         page: "llm-playground",
         route: "playground",
-        label: "Playground",
+        label: "items.playground",
         icon: <PlayCircle {...ICON} />,
         roles: rolesWithWriteAccess,
       },
@@ -131,61 +143,61 @@ const menuGroups: MenuGroup[] = [
         key: "models",
         page: "models",
         route: "models-and-endpoints",
-        label: "Models + Endpoints",
+        label: "items.modelsAndEndpoints",
         icon: <Network {...ICON} />,
         roles: rolesAllowedToViewWriteScopedPages,
       },
       {
         key: "agentic",
         page: "agentic",
-        label: "Agentic",
+        label: "items.agentic",
         icon: <Bot {...ICON} />,
         children: [
           {
             key: "agents",
             page: "agents",
-            label: "Agents",
+            label: "items.agents",
             icon: <Bot {...ICON} />,
             roles: rolesAllowedToViewWriteScopedPages,
           },
           {
             key: "workflows",
             page: "workflows",
-            label: "Workflow Runs",
+            label: "items.workflowRuns",
             icon: <Workflow {...ICON} />,
             roles: rolesWithCapability("viewWorkflowRuns"),
           },
           {
             key: "memory",
             page: "memory",
-            label: "Memory",
+            label: "items.memory",
             icon: <Database {...ICON} />,
             roles: rolesWithCapability("viewMemory"),
           },
         ],
       },
-      { key: "mcp-servers", page: "mcp-servers", label: "MCP Servers", icon: <Server {...ICON} /> },
-      { key: "skills", page: "skills", label: "Skills", icon: <Blocks {...ICON} />, roles: all_admin_roles },
-      { key: "guardrails", page: "guardrails", label: "Guardrails", icon: <Shield {...ICON} /> },
+      { key: "mcp-servers", page: "mcp-servers", label: "items.mcpServers", icon: <Server {...ICON} /> },
+      { key: "skills", page: "skills", label: "items.skills", icon: <Blocks {...ICON} />, roles: all_admin_roles },
+      { key: "guardrails", page: "guardrails", label: "items.guardrails", icon: <Shield {...ICON} /> },
       {
         key: "policies",
         page: "policies",
-        label: "Policies",
+        label: "items.policies",
         icon: <ScrollText {...ICON} />,
         roles: rolesWithCapability("viewPolicies"),
       },
       {
         key: "tools",
         page: "tools",
-        label: "Tools",
+        label: "items.tools",
         icon: <Wrench {...ICON} />,
         children: [
-          { key: "search-tools", page: "search-tools", label: "Search Tools", icon: <Search {...ICON} /> },
-          { key: "vector-stores", page: "vector-stores", label: "Vector Stores", icon: <Database {...ICON} /> },
+          { key: "search-tools", page: "search-tools", label: "items.searchTools", icon: <Search {...ICON} /> },
+          { key: "vector-stores", page: "vector-stores", label: "items.vectorStores", icon: <Database {...ICON} /> },
           {
             key: "tool-policies",
             page: "tool-policies",
-            label: "Tool Policies",
+            label: "items.toolPolicies",
             icon: <ShieldCheck {...ICON} />,
             roles: rolesWithCapability("viewToolPolicies"),
           },
@@ -195,6 +207,8 @@ const menuGroups: MenuGroup[] = [
   },
   {
     groupLabel: "OBSERVABILITY",
+    groupKey: "section.observability",
+    groupTitleKey: "sectionTitle.observability",
     items: [
       {
         key: "new_usage",
@@ -202,24 +216,21 @@ const menuGroups: MenuGroup[] = [
         route: "usage",
         icon: <BarChart3 {...ICON} />,
         roles: [...all_admin_roles, ...internalUserRoles],
-        label: "Usage",
+        label: "items.usage",
       },
       {
         key: "cost-optimization",
         page: "cost-optimization",
         icon: <PiggyBank {...ICON} />,
         roles: [...all_admin_roles, ...internalUserRoles],
-        label: (
-          <span className="flex items-center gap-2">
-            Cost Optimization <BetaBadge />
-          </span>
-        ),
+        label: "items.costOptimization",
+        badge: true,
       },
-      { key: "logs", page: "logs", label: "Logs", icon: <Activity {...ICON} /> },
+      { key: "logs", page: "logs", label: "items.logs", icon: <Activity {...ICON} /> },
       {
         key: "guardrails-monitor",
         page: "guardrails-monitor",
-        label: "Guardrails Monitor",
+        label: "items.guardrailsMonitor",
         icon: <HeartPulse {...ICON} />,
         roles: rolesWithCapability("viewGuardrailUsage"),
       },
@@ -227,80 +238,87 @@ const menuGroups: MenuGroup[] = [
   },
   {
     groupLabel: "ACCESS CONTROL",
+    groupKey: "section.accessControl",
+    groupTitleKey: "sectionTitle.accessControl",
     items: [
-      { key: "teams", page: "teams", label: "Teams", icon: <Users {...ICON} /> },
+      { key: "teams", page: "teams", label: "items.teams", icon: <Users {...ICON} /> },
       {
         key: "projects",
         page: "projects",
-        label: (
-          <span className="flex items-center gap-2">
-            Projects <BetaBadge />
-          </span>
-        ),
+        label: "items.projects",
+        badge: true,
         icon: <Folder {...ICON} />,
         roles: all_admin_roles,
       },
-      { key: "users", page: "users", label: "Internal Users", icon: <User {...ICON} />, roles: all_admin_roles },
+      { key: "users", page: "users", label: "items.internalUsers", icon: <User {...ICON} />, roles: all_admin_roles },
       {
         key: "organizations",
         page: "organizations",
-        label: "Organizations",
+        label: "items.organizations",
         icon: <Building2 {...ICON} />,
         roles: all_admin_roles,
       },
       {
         key: "access-groups",
         page: "access-groups",
-        label: "Access Groups",
+        label: "items.accessGroups",
         icon: <Boxes {...ICON} />,
         roles: all_admin_roles,
       },
-      { key: "budgets", page: "budgets", label: "Budgets", icon: <Wallet {...ICON} />, roles: all_admin_roles },
+      { key: "budgets", page: "budgets", label: "items.budgets", icon: <Wallet {...ICON} />, roles: all_admin_roles },
     ],
   },
   {
     groupLabel: "DEVELOPER TOOLS",
+    groupKey: "section.developerTools",
+    groupTitleKey: "sectionTitle.developerTools",
     items: [
-      { key: "api_ref", page: "api_ref", route: "api-reference", label: "API Reference", icon: <Code2 {...ICON} /> },
-      { key: "model-hub-table", page: "model-hub-table", label: "AI Hub", icon: <LayoutGrid {...ICON} /> },
+      {
+        key: "api_ref",
+        page: "api_ref",
+        route: "api-reference",
+        label: "items.apiReference",
+        icon: <Code2 {...ICON} />,
+      },
+      { key: "model-hub-table", page: "model-hub-table", label: "items.aiHub", icon: <LayoutGrid {...ICON} /> },
       {
         key: "learning-resources",
         page: "learning-resources",
-        label: "Learning Resources",
+        label: "items.learningResources",
         icon: <BookOpen {...ICON} />,
         external_url: "https://models.litellm.ai/cookbook",
       },
       {
         key: "caching",
         page: "caching",
-        label: "Response Cache",
+        label: "items.responseCache",
         icon: <Database {...ICON} />,
         roles: all_admin_roles,
       },
       {
         key: "experimental",
         page: "experimental",
-        label: "Experimental",
+        label: "items.experimental",
         icon: <FlaskConical {...ICON} />,
         children: [
           {
             key: "prompts",
             page: "prompts",
-            label: "Prompts",
+            label: "items.prompts",
             icon: <FileText {...ICON} />,
             roles: rolesWithCapability("viewPrompts"),
           },
           {
             key: "transform-request",
             page: "transform-request",
-            label: "API Playground",
+            label: "items.apiPlayground",
             icon: <Terminal {...ICON} />,
             roles: [...all_admin_roles, ...internalUserRoles],
           },
           {
             key: "tag-management",
             page: "tag-management",
-            label: "Tag Management",
+            label: "items.tagManagement",
             icon: <Tags {...ICON} />,
             roles: all_admin_roles,
           },
@@ -308,7 +326,7 @@ const menuGroups: MenuGroup[] = [
             key: "4",
             page: "usage",
             route: "old-usage",
-            label: "Old Usage",
+            label: "items.oldUsage",
             icon: <BarChart3 {...ICON} />,
             roles: rolesWithCapability("viewGlobalSpend"),
           },
@@ -318,44 +336,52 @@ const menuGroups: MenuGroup[] = [
   },
   {
     groupLabel: "SETTINGS",
+    groupKey: "section.settings",
+    groupTitleKey: "sectionTitle.settings",
     roles: all_admin_roles,
     items: [
       {
         key: "settings",
         page: "settings",
-        label: "Settings",
+        label: "items.settings",
         icon: <SettingsIcon {...ICON} />,
         roles: all_admin_roles,
         children: [
           {
             key: "router-settings",
             page: "router-settings",
-            label: "Router Settings",
+            label: "items.routerSettings",
             icon: <Route {...ICON} />,
             roles: all_admin_roles,
           },
           {
             key: "logging-and-alerts",
             page: "logging-and-alerts",
-            label: "Logging & Alerts",
+            label: "items.loggingAndAlerts",
             icon: <Bell {...ICON} />,
             roles: all_admin_roles,
           },
           {
             key: "admin-panel",
             page: "admin-panel",
-            label: "Admin Settings",
+            label: "items.adminSettings",
             icon: <SettingsIcon {...ICON} />,
             roles: all_admin_roles,
           },
           {
             key: "cost-tracking",
             page: "cost-tracking",
-            label: "Cost Tracking",
+            label: "items.costTracking",
             icon: <BarChart3 {...ICON} />,
             roles: all_admin_roles,
           },
-          { key: "ui-theme", page: "ui-theme", label: "UI Theme", icon: <Palette {...ICON} />, roles: all_admin_roles },
+          {
+            key: "ui-theme",
+            page: "ui-theme",
+            label: "items.uiTheme",
+            icon: <Palette {...ICON} />,
+            roles: all_admin_roles,
+          },
         ],
       },
     ],
@@ -388,28 +414,20 @@ const findMenuItemKey = (route: string): string => {
   return HOME_ROUTE;
 };
 
-const SECTION_DISPLAY: Record<string, string> = {
-  "AI GATEWAY": "AI Gateway",
-  OBSERVABILITY: "Observability",
-  "ACCESS CONTROL": "Access Control",
-  "DEVELOPER TOOLS": "Developer Tools",
-  SETTINGS: "Settings",
-};
-
 const prettify = (key: string): string =>
   key
     .split(/[-_]/)
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join(" ");
 
-const labelText = (item: MenuItem): string => (typeof item.label === "string" ? item.label : prettify(item.key));
+const labelText = (item: MenuItem): string => i18n.t(item.label, { ns: "nav" });
 
 // Breadcrumb ("Section" / "Page") for the top bar, derived from the same nav config.
 export const getBreadcrumb = (pathname: string): { section: string | null; title: string } => {
   const route = routeForPathname(pathname);
   for (const group of menuGroups) {
     for (const item of group.items) {
-      const section = SECTION_DISPLAY[group.groupLabel] ?? group.groupLabel;
+      const section = i18n.t(group.groupTitleKey, { ns: "nav" });
       if (routeOf(item) === route) return { section, title: labelText(item) };
       const child = item.children?.find((c) => routeOf(c) === route);
       if (child) return { section, title: labelText(child) };
@@ -429,6 +447,7 @@ const Sidebar_: React.FC<SidebarProps> = ({
   allowVectorStoresForTeamAdmins,
 }) => {
   const { userId, accessToken, userRole, isViewOnly } = useAuthorized();
+  const { t } = useTranslation("nav");
   const isOrgAdmin = useIsOrgAdmin();
   const { data: teams } = useTeams();
   const { logoUrl, logoUrlDark } = useTheme();
@@ -504,7 +523,7 @@ const Sidebar_: React.FC<SidebarProps> = ({
 
   const visibleGroups = menuGroups
     .filter((group) => !group.roles || group.roles.includes(userRole))
-    .map((group) => ({ groupLabel: group.groupLabel, items: filterItemsByRole(group.items) }))
+    .map((group) => ({ groupLabel: group.groupLabel, groupKey: group.groupKey, items: filterItemsByRole(group.items) }))
     .filter((group) => group.items.length > 0);
 
   const toggleGroup = (key: string) => {
@@ -521,10 +540,23 @@ const Sidebar_: React.FC<SidebarProps> = ({
     });
   };
 
+  const renderLabel = (item: MenuItem) => (
+    <span className="flex-1 truncate group-data-[collapsed=true]/sidebar:hidden">
+      {item.badge ? (
+        <span className="flex items-center gap-2">
+          {t(item.label)}
+          <BetaBadge />
+        </span>
+      ) : (
+        t(item.label)
+      )}
+    </span>
+  );
+
   const renderLeaf = (item: MenuItem, isChild: boolean) => {
     const active = selectedKey === item.key;
     const size = isChild ? "sub" : "default";
-    const label = <span className="flex-1 truncate group-data-[collapsed=true]/sidebar:hidden">{item.label}</span>;
+    const label = renderLabel(item);
 
     if (item.external_url) {
       return (
@@ -575,7 +607,7 @@ const Sidebar_: React.FC<SidebarProps> = ({
           title={collapsed ? labelText(item) : undefined}
         >
           {item.icon}
-          <span className="flex-1 truncate group-data-[collapsed=true]/sidebar:hidden">{item.label}</span>
+          {renderLabel(item)}
           <ChevronRight
             className={cn(
               "size-4 shrink-0 transition-transform group-data-[collapsed=true]/sidebar:hidden",
@@ -603,8 +635,8 @@ const Sidebar_: React.FC<SidebarProps> = ({
       <SidebarHeader className="h-14 border-b border-border group-data-[collapsed=true]/sidebar:h-auto">
         <div className="flex items-center justify-between gap-2 group-data-[collapsed=true]/sidebar:flex-col">
           <div className="flex min-w-0 items-center gap-2">
-            <Link href={uiHref("")} className="flex min-w-0 items-center" aria-label="LiteLLM home">
-              <img src={logoSrc} alt="LiteLLM" className={cn(LOGO_CLASS_NAME, "dark:hidden")} />
+            <Link href={uiHref("")} className="flex min-w-0 items-center" aria-label={t("home")}>
+              <img src={logoSrc} alt={t("brand")} className={cn(LOGO_CLASS_NAME, "dark:hidden")} />
               <img
                 src={darkLogoSrc}
                 alt=""
@@ -628,7 +660,7 @@ const Sidebar_: React.FC<SidebarProps> = ({
               variant="ghost"
               size="icon-sm"
               onClick={onToggleCollapsed}
-              aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+              aria-label={collapsed ? t("expandSidebar") : t("collapseSidebar")}
               className="flex-none text-muted-foreground"
             >
               {collapsed ? <PanelLeftOpen /> : <PanelLeftClose />}
@@ -642,7 +674,7 @@ const Sidebar_: React.FC<SidebarProps> = ({
           {visibleGroups.map((group, gi) => (
             <SidebarGroup key={group.groupLabel}>
               {gi > 0 && <SidebarSeparator className="hidden group-data-[collapsed=true]/sidebar:block" />}
-              <SidebarGroupLabel>{group.groupLabel}</SidebarGroupLabel>
+              <SidebarGroupLabel>{t(group.groupKey)}</SidebarGroupLabel>
               <SidebarMenu>{group.items.map((item) => renderItem(item))}</SidebarMenu>
             </SidebarGroup>
           ))}
