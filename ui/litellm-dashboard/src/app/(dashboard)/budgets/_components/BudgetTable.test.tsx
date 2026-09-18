@@ -311,16 +311,27 @@ describe("BudgetTable", () => {
   it("renders the Chinese rate-limit, duration and unlimited values under zh", async () => {
     const user = userEvent.setup();
     await i18n.changeLanguage("zh");
-    const emptyBudgetValues = { max_budget: null, tpm_limit: null, rpm_limit: null, budget_duration: null };
+    const emptyBudgetValues = {
+      budget_id: "budget-empty",
+      max_budget: null,
+      tpm_limit: null,
+      rpm_limit: null,
+      budget_duration: null,
+    };
     const emptyBudget = makeBudget(emptyBudgetValues);
-    renderWithProviders(<BudgetTable {...defaultProps} list={makeList({ rows: [emptyBudget] })} />);
+    const weeklyBudget = makeBudget({ budget_id: "budget-weekly", budget_duration: "7d" });
+    renderWithProviders(
+      <BudgetTable {...defaultProps} list={makeList({ rows: [emptyBudget, weeklyBudget], rowCount: 2 })} />,
+    );
 
     await showColumn(user, "budget_duration");
 
     expect(screen.getAllByText("无")).toHaveLength(2);
     expect(screen.getByText("不限")).toBeInTheDocument();
     expect(screen.getByText("未设置")).toBeInTheDocument();
+    expect(screen.getByText("weekly")).toBeInTheDocument();
     expect(screen.queryByText("n/a")).not.toBeInTheDocument();
+    expect(screen.queryByText("Unlimited")).not.toBeInTheDocument();
     expect(screen.queryByText("Not set")).not.toBeInTheDocument();
   });
 
@@ -392,13 +403,34 @@ describe("BudgetTable", () => {
     expect(screen.queryByText("$10 to $500")).not.toBeInTheDocument();
   });
 
-  it("renders the Chinese duration chip label under zh", async () => {
+  it("renders the Chinese duration filter labels and hides the English ones under zh", async () => {
+    const user = userEvent.setup();
+    await i18n.changeLanguage("zh");
+    renderWithProviders(<BudgetTable {...defaultProps} list={makeList()} />);
+
+    await openFilters(user);
+
+    expect(screen.getByText("每小时")).toBeInTheDocument();
+    expect(screen.getByText("每天")).toBeInTheDocument();
+    expect(screen.getByText("每周")).toBeInTheDocument();
+    expect(screen.getByText("每月")).toBeInTheDocument();
+    expect(screen.getByText("未设置")).toBeInTheDocument();
+    expect(screen.queryByText("hourly")).not.toBeInTheDocument();
+    expect(screen.queryByText("daily")).not.toBeInTheDocument();
+    expect(screen.queryByText("weekly")).not.toBeInTheDocument();
+    expect(screen.queryByText("monthly")).not.toBeInTheDocument();
+    expect(screen.queryByText("Not set")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese duration chip label and value under zh", async () => {
     await i18n.changeLanguage("zh");
     renderWithProviders(
       <BudgetTable {...defaultProps} list={makeList({ columnFilters: [{ id: "budget_duration", value: ["7d"] }] })} />,
     );
 
     expect(screen.getByText("重置:")).toBeInTheDocument();
+    expect(screen.getByText("每周")).toBeInTheDocument();
+    expect(screen.queryByText("weekly")).not.toBeInTheDocument();
   });
 
   it("renders the Chinese any placeholder in a created-at chip under zh", async () => {

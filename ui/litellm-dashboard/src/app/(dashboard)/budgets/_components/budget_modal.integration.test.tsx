@@ -174,6 +174,7 @@ describe("BudgetModal", () => {
     expect(await screen.findByLabelText("最大预算（USD）")).toBeInTheDocument();
     expect(screen.getByLabelText("重置预算")).toBeInTheDocument();
     expect(screen.getByRole("combobox")).toHaveTextContent("无");
+    expect(screen.queryByText("n/a")).not.toBeInTheDocument();
 
     await user.click(screen.getByRole("combobox"));
 

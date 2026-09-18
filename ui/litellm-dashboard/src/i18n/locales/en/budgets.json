@@ -69,6 +69,7 @@
     "durationPlaceholder": "n/a",
     "save": "Save",
     "duration": {
+      "hourly": "hourly",
       "daily": "daily",
       "weekly": "weekly",
       "monthly": "monthly"

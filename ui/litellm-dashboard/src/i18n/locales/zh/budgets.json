@@ -69,6 +69,7 @@
     "durationPlaceholder": "无",
     "save": "保存",
     "duration": {
+      "hourly": "每小时",
       "daily": "每天",
       "weekly": "每周",
       "monthly": "每月"
