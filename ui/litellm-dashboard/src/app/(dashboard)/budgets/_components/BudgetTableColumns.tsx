@@ -1,6 +1,7 @@
 "use client";
 
 import { ColumnDef, FilterFn } from "@tanstack/react-table";
+import type { TFunction } from "i18next";
 import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 
 import { DataTableSortHeader } from "@/components/shared/DataTable";
@@ -26,16 +27,16 @@ import { cn } from "@/lib/cva.config";
 const serverFilter: FilterFn<budgetItem> = () => true;
 serverFilter.autoRemove = () => false;
 
-function RateLimitCell({ value }: { value: number | null | undefined }) {
+function RateLimitCell({ value, t }: { value: number | null | undefined; t: TFunction<"budgets"> }) {
   if (value == null) {
-    return <span className="text-muted-foreground">n/a</span>;
+    return <span className="text-muted-foreground">{t("table.value.notAvailable")}</span>;
   }
   return <span className="tabular-nums">{value}</span>;
 }
 
-function BudgetDurationCell({ value }: { value: string | null | undefined }) {
+function BudgetDurationCell({ value, t }: { value: string | null | undefined; t: TFunction<"budgets"> }) {
   if (!value) {
-    return <span className="text-muted-foreground">Not set</span>;
+    return <span className="text-muted-foreground">{t("table.value.notSet")}</span>;
   }
   return <span className="whitespace-nowrap">{getBudgetDurationLabel(value)}</span>;
 }
@@ -44,13 +45,14 @@ interface BudgetRowActionsProps {
   budget: budgetItem;
   onEditClick: (budget: budgetItem) => void;
   onDeleteClick: (budget: budgetItem) => void;
+  t: TFunction<"budgets">;
 }
 
-function BudgetRowActions({ budget, onEditClick, onDeleteClick }: BudgetRowActionsProps) {
+function BudgetRowActions({ budget, onEditClick, onDeleteClick, t }: BudgetRowActionsProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        aria-label="Open budget actions"
+        aria-label={t("table.aria.openActions")}
         data-testid={`budget-actions-${budget.budget_id}`}
         className={cn(buttonVariants({ variant: "ghost", size: "icon-sm" }), "text-muted-foreground")}
       >
@@ -59,7 +61,7 @@ function BudgetRowActions({ budget, onEditClick, onDeleteClick }: BudgetRowActio
       <DropdownMenuContent align="end" className="w-52">
         <DropdownMenuItem data-testid="budget-action-edit" onClick={() => onEditClick(budget)}>
           <Pencil />
-          Edit budget
+          {t("actions.editBudget")}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
@@ -68,7 +70,7 @@ function BudgetRowActions({ budget, onEditClick, onDeleteClick }: BudgetRowActio
           onClick={() => onDeleteClick(budget)}
         >
           <Trash2 />
-          Delete budget
+          {t("actions.deleteBudget")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -87,16 +89,15 @@ interface BudgetTableColumnsDeps {
   onDeleteClick: (budget: budgetItem) => void;
 }
 
-export const getBudgetTableColumns = ({
-  canModify,
-  onEditClick,
-  onDeleteClick,
-}: BudgetTableColumnsDeps): ColumnDef<budgetItem>[] => [
+export const getBudgetTableColumns = (
+  { canModify, onEditClick, onDeleteClick }: BudgetTableColumnsDeps,
+  t: TFunction<"budgets">,
+): ColumnDef<budgetItem>[] => [
   {
     id: "budget_id",
     accessorKey: "budget_id",
-    meta: { title: "Budget ID" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Budget ID" />,
+    meta: { title: t("table.header.budgetId") },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("table.header.budgetId")} />,
     cell: ({ row }) => (
       <IdCell value={row.original.budget_id} variant="plain" truncate={false} copyable className="whitespace-nowrap" />
     ),
@@ -105,44 +106,46 @@ export const getBudgetTableColumns = ({
     id: "max_budget",
     accessorKey: "max_budget",
     filterFn: serverFilter,
-    meta: { title: "Max Budget", numeric: true },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Max Budget" />,
+    meta: { title: t("table.header.maxBudget"), numeric: true },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("table.header.maxBudget")} />,
     size: 120,
-    cell: ({ row }) => <MoneyCell value={row.original.max_budget} decimals={2} showZero emptyText="Unlimited" />,
+    cell: ({ row }) => (
+      <MoneyCell value={row.original.max_budget} decimals={2} showZero emptyText={t("table.value.unlimited")} />
+    ),
   },
   {
     id: "tpm_limit",
     accessorKey: "tpm_limit",
-    meta: { title: "TPM", numeric: true },
-    header: ({ column }) => <DataTableSortHeader column={column} title="TPM" />,
+    meta: { title: t("table.header.tpm"), numeric: true },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("table.header.tpm")} />,
     size: 100,
-    cell: ({ row }) => <RateLimitCell value={row.original.tpm_limit} />,
+    cell: ({ row }) => <RateLimitCell value={row.original.tpm_limit} t={t} />,
   },
   {
     id: "rpm_limit",
     accessorKey: "rpm_limit",
-    meta: { title: "RPM", numeric: true },
-    header: ({ column }) => <DataTableSortHeader column={column} title="RPM" />,
+    meta: { title: t("table.header.rpm"), numeric: true },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("table.header.rpm")} />,
     size: 100,
-    cell: ({ row }) => <RateLimitCell value={row.original.rpm_limit} />,
+    cell: ({ row }) => <RateLimitCell value={row.original.rpm_limit} t={t} />,
   },
   {
     id: "budget_duration",
     accessorKey: "budget_duration",
     filterFn: serverFilter,
-    meta: { title: "Reset" },
+    meta: { title: t("table.header.reset") },
     // "7d"/"30d" sort lexicographically, not chronologically, so the route does not offer it.
     enableSorting: false,
-    header: ({ column }) => <DataTableSortHeader column={column} title="Reset" />,
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("table.header.reset")} />,
     size: 110,
-    cell: ({ row }) => <BudgetDurationCell value={row.original.budget_duration} />,
+    cell: ({ row }) => <BudgetDurationCell value={row.original.budget_duration} t={t} />,
   },
   {
     id: "created_at",
     accessorKey: "created_at",
     filterFn: serverFilter,
-    meta: { title: "Created" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Created" />,
+    meta: { title: t("table.header.created") },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("table.header.created")} />,
     size: 160,
     cell: ({ row }) => <DateCell value={row.original.created_at} />,
   },
@@ -151,13 +154,13 @@ export const getBudgetTableColumns = ({
         {
           id: "actions",
           meta: { className: "text-right", headerClassName: "text-right" },
-          header: () => <span className="sr-only">Actions</span>,
+          header: () => <span className="sr-only">{t("table.header.actions")}</span>,
           size: 64,
           enableSorting: false,
           enableHiding: false,
           cell: ({ row }) => (
             <div className="flex justify-end">
-              <BudgetRowActions budget={row.original} onEditClick={onEditClick} onDeleteClick={onDeleteClick} />
+              <BudgetRowActions budget={row.original} onEditClick={onEditClick} onDeleteClick={onDeleteClick} t={t} />
             </div>
           ),
         } satisfies ColumnDef<budgetItem>,

@@ -1,7 +1,10 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+import i18n from "@/i18n/bootstrapI18n";
+import { toast } from "@/lib/toast";
 
 import BudgetModal from "./budget_modal";
 import { chooseSelectOption } from "../../../../../tests/test-utils";
@@ -34,6 +37,11 @@ describe("BudgetModal", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     createMock.mockResolvedValue(undefined);
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
   });
 
   it("submits only the mounted fields when Optional Settings stays collapsed", async () => {
@@ -134,5 +142,89 @@ describe("BudgetModal", () => {
 
     await waitFor(() => expect(createMock).toHaveBeenCalledTimes(1));
     expect(createMock.mock.calls[0][0]).toMatchObject({ budget_id: "probe-budget", max_budget: 42.5 });
+  });
+
+  it("renders the Chinese form copy under zh", async () => {
+    await i18n.changeLanguage("zh");
+    renderModal();
+
+    expect(screen.getAllByText("创建预算")).toHaveLength(2);
+    expect(screen.getByRole("button", { name: "创建预算" })).toBeInTheDocument();
+    expect(screen.getByLabelText("预算 ID")).toBeInTheDocument();
+    expect(screen.getByText("便于识别的预算名称")).toBeInTheDocument();
+    expect(screen.getByLabelText("每分钟最大 Token 数")).toBeInTheDocument();
+    expect(screen.getByLabelText("每分钟最大请求数")).toBeInTheDocument();
+    expect(screen.getAllByText("留空表示不设 LiteLLM 上限。模型提供方的速率限制仍然生效。")).toHaveLength(2);
+    expect(screen.getByText("可选设置")).toBeInTheDocument();
+
+    expect(screen.queryByText("Create Budget")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Budget ID")).not.toBeInTheDocument();
+    expect(screen.queryByText("A human-friendly name for the budget")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Max Tokens per minute")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Max Requests per minute")).not.toBeInTheDocument();
+    expect(screen.queryByText("Optional Settings")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese optional settings, duration options and placeholder under zh", async () => {
+    const user = userEvent.setup();
+    await i18n.changeLanguage("zh");
+    renderModal();
+
+    await user.click(screen.getByText("可选设置"));
+    expect(await screen.findByLabelText("最大预算（USD）")).toBeInTheDocument();
+    expect(screen.getByLabelText("重置预算")).toBeInTheDocument();
+    expect(screen.getByRole("combobox")).toHaveTextContent("无");
+
+    await user.click(screen.getByRole("combobox"));
+
+    expect(await screen.findByRole("option", { name: "每天" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "每周" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "每月" })).toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: "daily" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: "weekly" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: "monthly" })).not.toBeInTheDocument();
+
+    expect(screen.queryByLabelText("Max Budget (USD)")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Reset Budget")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese budget ID validation message under zh", async () => {
+    const user = userEvent.setup();
+    await i18n.changeLanguage("zh");
+    renderModal();
+
+    fireEvent.change(screen.getByLabelText("每分钟最大 Token 数"), { target: { value: "5" } });
+    await user.click(screen.getByRole("button", { name: "创建预算" }));
+
+    expect(await screen.findByText("请输入便于识别的预算名称")).toBeInTheDocument();
+    expect(screen.queryByText("Please input a human-friendly name for the budget")).not.toBeInTheDocument();
+    expect(createMock).not.toHaveBeenCalled();
+  });
+
+  it("renders the Chinese create toasts under zh", async () => {
+    const user = userEvent.setup();
+    await i18n.changeLanguage("zh");
+    renderModal();
+
+    fireEvent.change(screen.getByLabelText("预算 ID"), { target: { value: "budget-alpha" } });
+    await user.click(screen.getByRole("button", { name: "创建预算" }));
+
+    await waitFor(() => expect(createMock).toHaveBeenCalledTimes(1));
+    expect(toast.info).toHaveBeenCalledWith("正在发起 API 调用");
+    expect(toast.success).toHaveBeenCalledWith("预算创建成功");
+    expect(toast.success).not.toHaveBeenCalledWith("Budget Created");
+  });
+
+  it("renders the Chinese create failure toast under zh", async () => {
+    const user = userEvent.setup();
+    await i18n.changeLanguage("zh");
+    createMock.mockRejectedValue(new Error("boom"));
+    renderModal();
+
+    fireEvent.change(screen.getByLabelText("预算 ID"), { target: { value: "budget-alpha" } });
+    await user.click(screen.getByRole("button", { name: "创建预算" }));
+
+    await waitFor(() => expect(toast.fromError).toHaveBeenCalledWith("创建预算出错：Error: boom"));
+    expect(toast.fromError).not.toHaveBeenCalledWith("Error creating the budget: Error: boom");
   });
 });

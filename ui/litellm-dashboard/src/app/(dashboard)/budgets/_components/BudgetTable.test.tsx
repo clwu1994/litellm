@@ -1,7 +1,8 @@
-import { screen } from "@testing-library/react";
+import { cleanup, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders, testQueryClient } from "@/../tests/test-utils";
+import i18n from "@/i18n/bootstrapI18n";
 import BudgetTable from "./BudgetTable";
 import type { budgetItem } from "@/app/(dashboard)/hooks/budgets/useBudgets";
 import type { ResourceListResult } from "@/app/(dashboard)/hooks/common/useResourceList";
@@ -57,6 +58,11 @@ const showColumn = async (user: ReturnType<typeof userEvent.setup>, columnId: st
   await user.click(await screen.findByTestId(`view-option-${columnId}`));
 };
 
+const openFilters = async (user: ReturnType<typeof userEvent.setup>) => {
+  await user.click(screen.getByTestId("datatable-filters-trigger"));
+  await screen.findByTestId("filter-drawer-body");
+};
+
 const defaultProps = {
   canModify: true,
   onEditClick: vi.fn(),
@@ -67,6 +73,11 @@ describe("BudgetTable", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     testQueryClient.clear();
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
   });
 
   it("should display budget information", () => {
@@ -212,5 +223,219 @@ describe("BudgetTable", () => {
     renderWithProviders(<BudgetTable {...defaultProps} list={list} />);
     expect(screen.getByText("Could not load budgets")).toBeInTheDocument();
     expect(screen.getByText("budget store unavailable")).toBeInTheDocument();
+  });
+
+  it("renders the Chinese headers and hides the English originals under zh", async () => {
+    await i18n.changeLanguage("zh");
+    renderWithProviders(<BudgetTable {...defaultProps} list={makeList()} />);
+
+    const headers = screen.getAllByRole("columnheader").map((header) => header.textContent);
+    for (const header of ["预算 ID", "最大预算", "TPM", "RPM"]) {
+      expect(headers).toContain(header);
+    }
+    for (const header of ["Budget ID", "Max Budget"]) {
+      expect(headers).not.toContain(header);
+    }
+    expect(screen.getByText("操作")).toBeInTheDocument();
+    expect(screen.queryByText("Actions")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese reset and created headers once the columns are on", async () => {
+    const user = userEvent.setup();
+    await i18n.changeLanguage("zh");
+    renderWithProviders(<BudgetTable {...defaultProps} list={makeList()} />);
+
+    await user.click(screen.getByTestId("view-options-trigger"));
+    await user.click(await screen.findByTestId("view-option-budget_duration"));
+    await user.click(await screen.findByTestId("view-option-created_at"));
+
+    const headers = screen.getAllByRole("columnheader").map((header) => header.textContent);
+    expect(headers).toContain("重置");
+    expect(headers).toContain("创建时间");
+    expect(headers).not.toContain("Reset");
+    expect(headers).not.toContain("Created");
+  });
+
+  it("renders the Chinese empty state and hides the English one under zh", async () => {
+    await i18n.changeLanguage("zh");
+    renderWithProviders(<BudgetTable {...defaultProps} list={makeList({ rows: [], rowCount: 0 })} />);
+
+    expect(screen.getByText("暂无预算")).toBeInTheDocument();
+    expect(screen.getByText("创建预算，为客户设置花费、TPM 和 RPM 上限。")).toBeInTheDocument();
+    expect(screen.queryByText("No budgets yet")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Create a budget to set spend, TPM and RPM limits for customers."),
+    ).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese search-aware empty state under zh", async () => {
+    await i18n.changeLanguage("zh");
+    renderWithProviders(
+      <BudgetTable {...defaultProps} list={makeList({ rows: [], rowCount: 0, searchValue: "nope" })} />,
+    );
+
+    expect(screen.getByText("没有匹配的预算")).toBeInTheDocument();
+    expect(screen.getByText("没有预算符合你的搜索或筛选条件。")).toBeInTheDocument();
+    expect(screen.queryByText("No matching budgets")).not.toBeInTheDocument();
+    expect(screen.queryByText("No budget matches your search or filters.")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese access-denied state under zh", async () => {
+    await i18n.changeLanguage("zh");
+    const error = new ApiError("Only proxy admins can view budgets", 403, FORBIDDEN_PROBLEM);
+    renderWithProviders(<BudgetTable {...defaultProps} list={makeList({ rows: [], rowCount: 0, error })} />);
+
+    expect(screen.getByText("你没有访问预算的权限")).toBeInTheDocument();
+    expect(screen.getByText("请联系代理管理员授予你管理员查看者角色。")).toBeInTheDocument();
+    expect(screen.queryByText("You do not have access to budgets")).not.toBeInTheDocument();
+    expect(screen.queryByText("Ask a proxy admin to grant you the admin viewer role.")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese load-error state under zh", async () => {
+    await i18n.changeLanguage("zh");
+    const error = new ApiError("budget store unavailable", 500, null);
+    renderWithProviders(<BudgetTable {...defaultProps} list={makeList({ rows: [], rowCount: 0, error })} />);
+
+    expect(screen.getByText("无法加载预算")).toBeInTheDocument();
+    expect(screen.queryByText("Could not load budgets")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese loading message under zh", async () => {
+    await i18n.changeLanguage("zh");
+    renderWithProviders(<BudgetTable {...defaultProps} list={makeList({ rows: [], isLoading: true })} />);
+
+    expect(screen.getByText("正在加载预算…")).toBeInTheDocument();
+    expect(screen.queryByText("Loading budgets…")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese rate-limit, duration and unlimited values under zh", async () => {
+    const user = userEvent.setup();
+    await i18n.changeLanguage("zh");
+    const emptyBudgetValues = { max_budget: null, tpm_limit: null, rpm_limit: null, budget_duration: null };
+    const emptyBudget = makeBudget(emptyBudgetValues);
+    renderWithProviders(<BudgetTable {...defaultProps} list={makeList({ rows: [emptyBudget] })} />);
+
+    await showColumn(user, "budget_duration");
+
+    expect(screen.getAllByText("无")).toHaveLength(2);
+    expect(screen.getByText("不限")).toBeInTheDocument();
+    expect(screen.getByText("未设置")).toBeInTheDocument();
+    expect(screen.queryByText("n/a")).not.toBeInTheDocument();
+    expect(screen.queryByText("Not set")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese row actions menu and aria-label under zh", async () => {
+    const user = userEvent.setup();
+    await i18n.changeLanguage("zh");
+    renderWithProviders(<BudgetTable {...defaultProps} list={makeList()} />);
+
+    const trigger = screen.getByLabelText("打开预算操作");
+    expect(screen.queryByLabelText("Open budget actions")).not.toBeInTheDocument();
+
+    await user.click(trigger);
+
+    expect(await screen.findByText("编辑预算")).toBeInTheDocument();
+    expect(screen.getByText("删除预算")).toBeInTheDocument();
+    expect(screen.queryByText("Edit budget")).not.toBeInTheDocument();
+    expect(screen.queryByText("Delete budget")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese toolbar search placeholder under zh", async () => {
+    await i18n.changeLanguage("zh");
+    renderWithProviders(<BudgetTable {...defaultProps} list={makeList()} />);
+
+    expect(screen.getByPlaceholderText("按预算 ID 搜索…")).toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("Search by budget ID…")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese filter drawer copy under zh", async () => {
+    const user = userEvent.setup();
+    await i18n.changeLanguage("zh");
+    renderWithProviders(<BudgetTable {...defaultProps} list={makeList()} />);
+
+    await openFilters(user);
+
+    expect(screen.getByText("筛选")).toBeInTheDocument();
+    expect(screen.getByText("进一步筛选预算")).toBeInTheDocument();
+    expect(screen.getByText("重置")).toBeInTheDocument();
+    expect(screen.getByText("最大预算（USD）")).toBeInTheDocument();
+    expect(screen.getByText("创建时间")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("最小")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("最大")).toBeInTheDocument();
+    expect(screen.getByLabelText("最大预算下限")).toBeInTheDocument();
+    expect(screen.getByLabelText("最大预算上限")).toBeInTheDocument();
+    expect(screen.getByText("仅不限预算")).toBeInTheDocument();
+    expect(screen.getByLabelText("创建时间起始")).toBeInTheDocument();
+    expect(screen.getByLabelText("创建时间截止")).toBeInTheDocument();
+
+    expect(screen.queryByText("Narrow down your budgets")).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("Min")).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("Max")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Minimum max budget")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Maximum max budget")).not.toBeInTheDocument();
+    expect(screen.queryByText("Unlimited only")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Created from")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Created to")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese filter chip labels and range value under zh", async () => {
+    await i18n.changeLanguage("zh");
+    renderWithProviders(
+      <BudgetTable
+        {...defaultProps}
+        list={makeList({ columnFilters: [{ id: "max_budget", value: { min: "10", max: "500" } }] })}
+      />,
+    );
+
+    expect(screen.getByText("最大预算:")).toBeInTheDocument();
+    expect(screen.getByText("$10 至 $500")).toBeInTheDocument();
+    expect(screen.queryByText("$10 to $500")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese duration chip label under zh", async () => {
+    await i18n.changeLanguage("zh");
+    renderWithProviders(
+      <BudgetTable {...defaultProps} list={makeList({ columnFilters: [{ id: "budget_duration", value: ["7d"] }] })} />,
+    );
+
+    expect(screen.getByText("重置:")).toBeInTheDocument();
+  });
+
+  it("renders the Chinese any placeholder in a created-at chip under zh", async () => {
+    await i18n.changeLanguage("zh");
+    renderWithProviders(
+      <BudgetTable
+        {...defaultProps}
+        list={makeList({ columnFilters: [{ id: "created_at", value: { from: "2026-01-05" } }] })}
+      />,
+    );
+
+    expect(screen.getByText("创建时间:")).toBeInTheDocument();
+    expect(screen.getByText("2026-01-05 至 任意")).toBeInTheDocument();
+    expect(screen.queryByText("2026-01-05 to any")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese unlimited-only filter chip under zh", async () => {
+    await i18n.changeLanguage("zh");
+    renderWithProviders(
+      <BudgetTable
+        {...defaultProps}
+        list={makeList({ columnFilters: [{ id: "max_budget", value: { unlimitedOnly: true } }] })}
+      />,
+    );
+
+    expect(screen.getByText("仅不限预算")).toBeInTheDocument();
+    expect(screen.queryByText("Unlimited only")).not.toBeInTheDocument();
+  });
+
+  it("renders the English headers and empty state under en", async () => {
+    await i18n.changeLanguage("en");
+    renderWithProviders(<BudgetTable {...defaultProps} list={makeList({ rows: [], rowCount: 0 })} />);
+
+    const headers = screen.getAllByRole("columnheader").map((header) => header.textContent);
+    expect(headers).toContain("Budget ID");
+    expect(headers).not.toContain("预算 ID");
+    expect(screen.getByText("No budgets yet")).toBeInTheDocument();
+    expect(screen.queryByText("暂无预算")).not.toBeInTheDocument();
   });
 });

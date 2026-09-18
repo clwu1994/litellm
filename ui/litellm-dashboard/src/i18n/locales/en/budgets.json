@@ -1,0 +1,100 @@
+{
+  "title": "Budgets",
+  "subtitle": "Spend, TPM and RPM limits you can assign to customers.",
+  "tabs": {
+    "budgets": "Budgets",
+    "examples": "Examples"
+  },
+  "actions": {
+    "createBudget": "Create Budget",
+    "editBudget": "Edit budget",
+    "deleteBudget": "Delete budget"
+  },
+  "table": {
+    "header": {
+      "budgetId": "Budget ID",
+      "maxBudget": "Max Budget",
+      "tpm": "TPM",
+      "rpm": "RPM",
+      "reset": "Reset",
+      "created": "Created",
+      "actions": "Actions"
+    },
+    "value": {
+      "unlimited": "Unlimited",
+      "notSet": "Not set",
+      "notAvailable": "n/a"
+    },
+    "aria": {
+      "openActions": "Open budget actions"
+    },
+    "loading": "Loading budgets…",
+    "searchPlaceholder": "Search by budget ID…"
+  },
+  "filters": {
+    "title": "Filters",
+    "description": "Narrow down your budgets",
+    "maxBudgetLabel": "Max Budget (USD)",
+    "minPlaceholder": "Min",
+    "maxPlaceholder": "Max",
+    "minAria": "Minimum max budget",
+    "maxAria": "Maximum max budget",
+    "unlimitedOnly": "Unlimited only",
+    "createdFromAria": "Created from",
+    "createdToAria": "Created to",
+    "any": "any",
+    "range": "{{min}} to {{max}}"
+  },
+  "empty": {
+    "noMatches": "No matching budgets",
+    "noMatchesHint": "No budget matches your search or filters.",
+    "noBudgets": "No budgets yet",
+    "noBudgetsHint": "Create a budget to set spend, TPM and RPM limits for customers.",
+    "forbidden": "You do not have access to budgets",
+    "forbiddenHint": "Ask a proxy admin to grant you the admin viewer role.",
+    "error": "Could not load budgets"
+  },
+  "form": {
+    "createTitle": "Create Budget",
+    "editTitle": "Edit Budget",
+    "budgetId": "Budget ID",
+    "budgetIdCreateHint": "A human-friendly name for the budget",
+    "budgetIdEditHint": "Budget ID cannot be changed after creation",
+    "tpmLabel": "Max Tokens per minute",
+    "rpmLabel": "Max Requests per minute",
+    "limitHint": "Leave blank for no LiteLLM limit. Provider rate limits still apply.",
+    "optionalSettings": "Optional Settings",
+    "maxBudget": "Max Budget (USD)",
+    "resetBudget": "Reset Budget",
+    "durationPlaceholder": "n/a",
+    "save": "Save",
+    "duration": {
+      "daily": "daily",
+      "weekly": "weekly",
+      "monthly": "monthly"
+    },
+    "validation": {
+      "budgetIdRequired": "Please input a human-friendly name for the budget"
+    }
+  },
+  "examples": {
+    "heading": "How to use budget id",
+    "assignBudget": "Assign Budget to Customer",
+    "testCurl": "Test it (Curl)",
+    "testOpenAiSdk": "Test it (OpenAI SDK)"
+  },
+  "delete": {
+    "title": "Delete Budget?",
+    "message": "Are you sure you want to delete this budget? This action cannot be undone.",
+    "infoTitle": "Budget Information"
+  },
+  "toast": {
+    "makingApiCall": "Making API Call",
+    "created": "Budget Created",
+    "updated": "Budget Updated",
+    "createError": "Error creating the budget: {{error}}",
+    "updateError": "Error updating the budget: {{error}}",
+    "deleted": "Budget deleted.",
+    "deleteError": "Failed to delete budget"
+  }
+}

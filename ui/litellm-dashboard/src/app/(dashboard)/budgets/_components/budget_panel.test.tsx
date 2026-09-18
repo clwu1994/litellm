@@ -1,10 +1,12 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import i18n from "@/i18n/bootstrapI18n";
 import { ApiError } from "@/lib/http/client";
+import { toast } from "@/lib/toast";
 
 import BudgetPanel from "./budget_panel";
 
@@ -83,6 +85,11 @@ describe("Budget Panel", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     respondWith(DEFAULT_ROWS, 1);
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
   });
 
   it("renders the standard page header with the sidebar's Budgets icon", async () => {
@@ -254,5 +261,77 @@ describe("Budget Panel", () => {
     await user.click(screen.getByRole("button", { name: /^delete$/i }));
 
     await waitFor(() => expect(getMock.mock.calls.length).toBeGreaterThan(before));
+  });
+
+  it("renders the Chinese page header, create button and tabs under zh", async () => {
+    await i18n.changeLanguage("zh");
+    renderPanel();
+
+    expect(await screen.findByRole("heading", { level: 1, name: "预算" })).toBeInTheDocument();
+    expect(screen.getByText("可分配给客户的花费、TPM 和 RPM 上限。")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "创建预算" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "预算" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "示例" })).toBeInTheDocument();
+
+    expect(screen.queryByRole("heading", { level: 1, name: "Budgets" })).not.toBeInTheDocument();
+    expect(screen.queryByText("Spend, TPM and RPM limits you can assign to customers.")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese examples copy under zh", async () => {
+    await i18n.changeLanguage("zh");
+    renderPanel();
+
+    expect(await screen.findByText("如何使用预算 ID")).toBeInTheDocument();
+    expect(screen.getByText("为客户分配预算")).toBeInTheDocument();
+    expect(screen.getByText("测试（Curl）")).toBeInTheDocument();
+    expect(screen.getByText("测试（OpenAI SDK）")).toBeInTheDocument();
+
+    expect(screen.queryByText("How to use budget id")).not.toBeInTheDocument();
+    expect(screen.queryByText("Assign Budget to Customer")).not.toBeInTheDocument();
+    expect(screen.queryByText("Test it (Curl)")).not.toBeInTheDocument();
+    expect(screen.queryByText("Test it (OpenAI SDK)")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese delete modal copy and success toast under zh", async () => {
+    const user = userEvent.setup();
+    await i18n.changeLanguage("zh");
+    budgetDeleteMock.mockResolvedValue(undefined);
+    renderPanel();
+    await screen.findByText("ecc1869c-6231-4380-a56d-1a0be457477d");
+
+    await user.click(screen.getByTestId("budget-actions-ecc1869c-6231-4380-a56d-1a0be457477d"));
+    await user.click(await screen.findByTestId("budget-action-delete"));
+
+    const dialog = await screen.findByRole("dialog");
+    expect(within(dialog).getByText("删除预算？")).toBeInTheDocument();
+    expect(within(dialog).getByText("确定要删除该预算吗？此操作无法撤销。")).toBeInTheDocument();
+    expect(within(dialog).getByText("预算信息")).toBeInTheDocument();
+    expect(within(dialog).getByText("预算 ID")).toBeInTheDocument();
+    expect(within(dialog).getByText("最大预算")).toBeInTheDocument();
+    expect(within(dialog).getByText("TPM")).toBeInTheDocument();
+    expect(within(dialog).getByText("RPM")).toBeInTheDocument();
+    expect(screen.queryByText("Delete Budget?")).not.toBeInTheDocument();
+    expect(screen.queryByText("Budget Information")).not.toBeInTheDocument();
+
+    await user.click(within(dialog).getByRole("button", { name: /^delete$/i }));
+
+    await waitFor(() => expect(toast.success).toHaveBeenCalledWith("预算删除成功"));
+    expect(toast.success).not.toHaveBeenCalledWith("Budget deleted.");
+  });
+
+  it("renders the Chinese delete failure toast under zh", async () => {
+    const user = userEvent.setup();
+    await i18n.changeLanguage("zh");
+    budgetDeleteMock.mockRejectedValue(new Error("nope"));
+    renderPanel();
+    await screen.findByText("ecc1869c-6231-4380-a56d-1a0be457477d");
+
+    await user.click(screen.getByTestId("budget-actions-ecc1869c-6231-4380-a56d-1a0be457477d"));
+    await user.click(await screen.findByTestId("budget-action-delete"));
+    const dialog = await screen.findByRole("dialog");
+    await user.click(within(dialog).getByRole("button", { name: /^delete$/i }));
+
+    await waitFor(() => expect(toast.fromError).toHaveBeenCalledWith("删除预算失败"));
+    expect(toast.fromError).not.toHaveBeenCalledWith("Failed to delete budget");
   });
 });
