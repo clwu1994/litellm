@@ -40,6 +40,20 @@ const emptyInfiniteQuery = {
 
 const LOGS_WINDOW = { start_date: "2026-07-23 00:00:00", end_date: "2026-07-24 00:00:00" };
 
+const ERROR_CODE_LABELS: Readonly<Record<string, { zh: string; en: string }>> = {
+  "400": { zh: "400 - 请求错误", en: "400 - Bad Request" },
+  "401": { zh: "401 - 身份验证无效", en: "401 - Invalid Authentication" },
+  "403": { zh: "403 - 权限被拒绝", en: "403 - Permission Denied" },
+  "404": { zh: "404 - 未找到", en: "404 - Not Found" },
+  "408": { zh: "408 - 请求超时", en: "408 - Request Timeout" },
+  "422": { zh: "422 - 无法处理的实体", en: "422 - Unprocessable Entity" },
+  "429": { zh: "429 - 请求过于频繁", en: "429 - Rate Limited" },
+  "500": { zh: "500 - 内部服务器错误", en: "500 - Internal Server Error" },
+  "502": { zh: "502 - 网关错误", en: "502 - Bad Gateway" },
+  "503": { zh: "503 - 服务不可用", en: "503 - Service Unavailable" },
+  "529": { zh: "529 - 服务过载", en: "529 - Overloaded" },
+};
+
 function renderFilters(filters: Record<string, string> = {}) {
   const set = vi.fn();
   renderWithProviders(
@@ -465,8 +479,11 @@ describe("RequestLogsFilters", () => {
 
       await user.click(await screen.findByPlaceholderText("选择或输入错误码"));
 
-      expect(await screen.findByRole("option", { name: "429 - 请求过于频繁" })).toBeInTheDocument();
-      expect(screen.queryByRole("option", { name: "429 - Rate Limited" })).not.toBeInTheDocument();
+      for (const { value } of ERROR_CODE_OPTIONS) {
+        const { zh, en } = ERROR_CODE_LABELS[value];
+        expect(await screen.findByRole("option", { name: zh })).toBeInTheDocument();
+        expect(screen.queryByRole("option", { name: en })).not.toBeInTheDocument();
+      }
     });
 
     it("renders the Chinese custom error code option", async () => {

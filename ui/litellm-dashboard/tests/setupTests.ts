@@ -135,9 +135,10 @@ beforeAll(async () => {
   await i18n.changeLanguage("en");
 });
 
-afterEach(() => {
+afterEach(async () => {
   cleanup();
   releaseBaseUiScrollLock();
+  await i18n.changeLanguage("en");
 });
 
 // Make toLocaleString deterministic in tests; individual tests can override
