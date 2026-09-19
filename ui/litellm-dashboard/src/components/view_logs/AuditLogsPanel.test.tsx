@@ -1,8 +1,9 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import i18n from "@/i18n/bootstrapI18n";
 import { chooseSelectOption } from "../../../tests/test-utils";
 import AuditLogsPanel from "./AuditLogsPanel";
 
@@ -142,4 +143,42 @@ describe("AuditLogsPanel", () => {
       expect(sentIdParams()).toEqual([paramKey]);
     },
   );
+
+  describe("Chinese copy", () => {
+    beforeEach(async () => {
+      await i18n.changeLanguage("zh");
+    });
+
+    afterEach(async () => {
+      cleanup();
+      await i18n.changeLanguage("en");
+    });
+
+    it("renders the Chinese panel title and hides the English one", async () => {
+      renderPanel();
+
+      expect(await screen.findByRole("heading", { name: "审计日志" })).toBeInTheDocument();
+      expect(screen.queryByRole("heading", { name: "Audit Logs" })).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese enterprise gate and hides the English one", () => {
+      const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+      render(
+        <QueryClientProvider client={queryClient}>
+          <AuditLogsPanel {...defaultProps} premiumUser={false} />
+        </QueryClientProvider>,
+      );
+
+      expect(screen.getByText("✨ 企业版功能。")).toBeInTheDocument();
+      expect(screen.getByText("这是 LiteLLM 企业版功能，需要有效的密钥才能使用。")).toBeInTheDocument();
+      expect(screen.getByText("以下是审计日志功能的预览：")).toBeInTheDocument();
+      expect(screen.getByAltText("审计日志预览")).toBeInTheDocument();
+      expect(screen.queryByText("✨ Enterprise Feature.")).not.toBeInTheDocument();
+      expect(
+        screen.queryByText("This is a LiteLLM Enterprise feature, and requires a valid key to use."),
+      ).not.toBeInTheDocument();
+      expect(screen.queryByText("Here's a preview of what Audit Logs offer:")).not.toBeInTheDocument();
+      expect(screen.queryByAltText("Audit Logs Preview")).not.toBeInTheDocument();
+    });
+  });
 });

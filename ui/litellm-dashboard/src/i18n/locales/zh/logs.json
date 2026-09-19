@@ -145,10 +145,73 @@
       "stop": "停止"
     }
   },
+  "audit": {
+    "panel": {
+      "title": "审计日志",
+      "enterpriseFeature": "✨ 企业版功能。",
+      "enterpriseDescription": "这是 LiteLLM 企业版功能，需要有效的密钥才能使用。",
+      "previewIntro": "以下是审计日志功能的预览：",
+      "previewAlt": "审计日志预览"
+    },
+    "table": {
+      "loading": "正在加载审计日志…",
+      "searchPlaceholder": "按 ID 搜索审计日志…",
+      "header": {
+        "timestamp": "时间戳",
+        "action": "操作",
+        "table": "数据表",
+        "objectId": "对象 ID",
+        "changedBy": "修改者",
+        "apiKeyHash": "API Key（哈希）"
+      },
+      "name": {
+        "keys": "密钥",
+        "teams": "团队",
+        "users": "用户",
+        "organizations": "组织",
+        "models": "模型"
+      }
+    },
+    "filters": {
+      "title": "筛选",
+      "description": "进一步筛选审计日志",
+      "objectId": "对象 ID",
+      "changedBy": "修改者",
+      "teamId": "团队 ID",
+      "keyHash": "密钥哈希",
+      "action": "操作",
+      "table": "数据表",
+      "objectIdPlaceholder": "输入对象 ID…",
+      "changedByPlaceholder": "输入用户 ID…",
+      "teamIdPlaceholder": "输入团队 ID…",
+      "keyHashPlaceholder": "输入密钥哈希…",
+      "allActions": "全部操作",
+      "allTables": "全部数据表"
+    },
+    "drawer": {
+      "title": "审计日志详情",
+      "details": "详情",
+      "table": "数据表",
+      "objectId": "对象 ID",
+      "changedBy": "修改者",
+      "apiKeyHash": "API Key（哈希）",
+      "copyObjectId": "复制对象 ID",
+      "copyApiKeyHash": "复制 API Key 哈希",
+      "copyJson": "复制 JSON",
+      "before": "修改前",
+      "after": "修改后",
+      "notAvailable": "无",
+      "noDifferingFields": "未检测到有差异的字段"
+    }
+  },
   "empty": {
     "noMatches": "没有匹配的请求",
     "noMatchesHint": "此时间范围内没有请求符合你的筛选条件。",
     "noRequests": "暂无请求",
-    "noRequestsHint": "通过 LiteLLM 代理的请求将显示在这里。"
+    "noRequestsHint": "通过 LiteLLM 代理的请求将显示在这里。",
+    "noMatchingAuditLogs": "没有匹配的审计日志",
+    "noAuditLogs": "暂无审计日志",
+    "noMatchingAuditLogsHint": "没有审计日志条目符合你的筛选条件。",
+    "noAuditLogsHint": "对密钥、团队、用户和模型的管理变更将显示在这里。"
   }
 }

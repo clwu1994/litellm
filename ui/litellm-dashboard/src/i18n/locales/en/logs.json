@@ -145,10 +145,73 @@
       "stop": "Stop"
     }
   },
+  "audit": {
+    "panel": {
+      "title": "Audit Logs",
+      "enterpriseFeature": "✨ Enterprise Feature.",
+      "enterpriseDescription": "This is a LiteLLM Enterprise feature, and requires a valid key to use.",
+      "previewIntro": "Here's a preview of what Audit Logs offer:",
+      "previewAlt": "Audit Logs Preview"
+    },
+    "table": {
+      "loading": "Loading audit logs…",
+      "searchPlaceholder": "Search audit logs by ID…",
+      "header": {
+        "timestamp": "Timestamp",
+        "action": "Action",
+        "table": "Table",
+        "objectId": "Object ID",
+        "changedBy": "Changed By",
+        "apiKeyHash": "API Key (Hash)"
+      },
+      "name": {
+        "keys": "Keys",
+        "teams": "Teams",
+        "users": "Users",
+        "organizations": "Organizations",
+        "models": "Models"
+      }
+    },
+    "filters": {
+      "title": "Filters",
+      "description": "Narrow down audit log entries",
+      "objectId": "Object ID",
+      "changedBy": "Changed By",
+      "teamId": "Team ID",
+      "keyHash": "Key Hash",
+      "action": "Action",
+      "table": "Table",
+      "objectIdPlaceholder": "Enter object ID…",
+      "changedByPlaceholder": "Enter user ID…",
+      "teamIdPlaceholder": "Enter team ID…",
+      "keyHashPlaceholder": "Enter key hash…",
+      "allActions": "All Actions",
+      "allTables": "All Tables"
+    },
+    "drawer": {
+      "title": "Audit log details",
+      "details": "Details",
+      "table": "Table",
+      "objectId": "Object ID",
+      "changedBy": "Changed By",
+      "apiKeyHash": "API Key (Hash)",
+      "copyObjectId": "Copy object ID",
+      "copyApiKeyHash": "Copy API key hash",
+      "copyJson": "Copy JSON",
+      "before": "Before",
+      "after": "After",
+      "notAvailable": "N/A",
+      "noDifferingFields": "No differing fields detected"
+    }
+  },
   "empty": {
     "noMatches": "No matching requests",
     "noMatchesHint": "No requests match your filters for this time range.",
     "noRequests": "No requests yet",
-    "noRequestsHint": "Requests proxied through LiteLLM will appear here."
+    "noRequestsHint": "Requests proxied through LiteLLM will appear here.",
+    "noMatchingAuditLogs": "No matching audit logs",
+    "noAuditLogs": "No audit logs yet",
+    "noMatchingAuditLogsHint": "No audit log entries match your filters.",
+    "noAuditLogsHint": "Administrative changes to keys, teams, users, and models will appear here."
   }
 }

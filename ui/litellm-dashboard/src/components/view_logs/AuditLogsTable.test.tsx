@@ -1,8 +1,9 @@
 import type { ColumnFiltersState, PaginationState } from "@tanstack/react-table";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import i18n from "@/i18n/bootstrapI18n";
 import { AuditLogsTable } from "./AuditLogsTable";
 import type { AuditLogEntry } from "./AuditLogsTableColumns";
 
@@ -32,6 +33,39 @@ const ROWS: AuditLogEntry[] = [
 ];
 
 const FIRST_PAGE: PaginationState = { pageIndex: 0, pageSize: 50 };
+
+const AUDIT_COLUMN_HEADERS = [
+  { zh: "时间戳", en: "Timestamp" },
+  { zh: "操作", en: "Action" },
+  { zh: "数据表", en: "Table" },
+  { zh: "对象 ID", en: "Object ID" },
+  { zh: "修改者", en: "Changed By" },
+  { zh: "API Key（哈希）", en: "API Key (Hash)" },
+];
+
+const AUDIT_TABLE_NAMES = [
+  { tableName: "LiteLLM_VerificationToken", zh: "密钥", en: "Keys" },
+  { tableName: "LiteLLM_TeamTable", zh: "团队", en: "Teams" },
+  { tableName: "LiteLLM_UserTable", zh: "用户", en: "Users" },
+  { tableName: "LiteLLM_OrganizationTable", zh: "组织", en: "Organizations" },
+  { tableName: "LiteLLM_ProxyModelTable", zh: "模型", en: "Models" },
+];
+
+const AUDIT_FILTER_LABELS = [
+  { zh: "对象 ID", en: "Object ID" },
+  { zh: "修改者", en: "Changed By" },
+  { zh: "团队 ID", en: "Team ID" },
+  { zh: "密钥哈希", en: "Key Hash" },
+  { zh: "操作", en: "Action" },
+  { zh: "数据表", en: "Table" },
+];
+
+const AUDIT_FILTER_PLACEHOLDERS = [
+  { zh: "输入对象 ID…", en: "Enter object ID…" },
+  { zh: "输入用户 ID…", en: "Enter user ID…" },
+  { zh: "输入团队 ID…", en: "Enter team ID…" },
+  { zh: "输入密钥哈希…", en: "Enter key hash…" },
+];
 
 function renderTable(overrides: Partial<React.ComponentProps<typeof AuditLogsTable>> = {}) {
   const props: React.ComponentProps<typeof AuditLogsTable> = {
@@ -187,5 +221,154 @@ describe("AuditLogsTable", () => {
 
     expect(action).toHaveTextContent("Created");
     expect(table).toHaveTextContent("Teams");
+  });
+
+  describe("Chinese copy", () => {
+    beforeEach(async () => {
+      await i18n.changeLanguage("zh");
+    });
+
+    afterEach(async () => {
+      cleanup();
+      await i18n.changeLanguage("en");
+    });
+
+    it("renders every Chinese column header and hides the English ones", () => {
+      renderTable();
+
+      for (const { zh, en } of AUDIT_COLUMN_HEADERS) {
+        expect(screen.getByText(zh)).toBeInTheDocument();
+        expect(screen.queryByText(en)).not.toBeInTheDocument();
+      }
+    });
+
+    it("renders every Chinese table name in the rows and hides the English ones", () => {
+      renderTable({
+        data: AUDIT_TABLE_NAMES.map(({ tableName }, index) => ({
+          ...ROWS[0],
+          id: `row-${index}`,
+          table_name: tableName,
+        })),
+        rowCount: AUDIT_TABLE_NAMES.length,
+      });
+
+      for (const { zh, en } of AUDIT_TABLE_NAMES) {
+        expect(screen.getByText(zh)).toBeInTheDocument();
+        expect(screen.queryByText(en)).not.toBeInTheDocument();
+      }
+    });
+
+    it("renders the Chinese loading message and hides the English one", async () => {
+      renderTable({ isLoading: true, data: [] });
+
+      expect(await screen.findByText("正在加载审计日志…")).toBeInTheDocument();
+      expect(screen.queryByText("Loading audit logs…")).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese search placeholder and hides the English one", () => {
+      renderTable({ searchValue: "", onSearchChange: vi.fn() });
+
+      expect(screen.getByPlaceholderText("按 ID 搜索审计日志…")).toBeInTheDocument();
+      expect(screen.queryByPlaceholderText("Search audit logs by ID…")).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese empty state and hides the English one", () => {
+      renderTable({ data: [], rowCount: 0 });
+
+      expect(screen.getByText("暂无审计日志")).toBeInTheDocument();
+      expect(screen.getByText("对密钥、团队、用户和模型的管理变更将显示在这里。")).toBeInTheDocument();
+      expect(screen.queryByText("No audit logs yet")).not.toBeInTheDocument();
+      expect(
+        screen.queryByText("Administrative changes to keys, teams, users, and models will appear here."),
+      ).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese filtered empty state and hides the English one", () => {
+      renderTable({ data: [], rowCount: 0, columnFilters: [{ id: "action", value: "created" }] });
+
+      expect(screen.getByText("没有匹配的审计日志")).toBeInTheDocument();
+      expect(screen.getByText("没有审计日志条目符合你的筛选条件。")).toBeInTheDocument();
+      expect(screen.queryByText("No matching audit logs")).not.toBeInTheDocument();
+      expect(screen.queryByText("No audit log entries match your filters.")).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese filter drawer chrome and hides the English one", async () => {
+      const user = userEvent.setup();
+      renderTable();
+
+      await user.click(screen.getByTestId("datatable-filters-trigger"));
+      const drawer = within(await screen.findByTestId("filter-drawer-body"));
+
+      expect(screen.getByText("筛选")).toBeInTheDocument();
+      expect(screen.getByText("进一步筛选审计日志")).toBeInTheDocument();
+      expect(screen.queryByText("Narrow down audit log entries")).not.toBeInTheDocument();
+
+      for (const { zh, en } of AUDIT_FILTER_LABELS) {
+        expect(drawer.getByText(zh)).toBeInTheDocument();
+        expect(drawer.queryByText(en)).not.toBeInTheDocument();
+      }
+      for (const { zh, en } of AUDIT_FILTER_PLACEHOLDERS) {
+        expect(screen.getByPlaceholderText(zh)).toBeInTheDocument();
+        expect(screen.queryByPlaceholderText(en)).not.toBeInTheDocument();
+      }
+    });
+
+    it("renders the Chinese action and table filter triggers and hides the English ones", async () => {
+      const user = userEvent.setup();
+      renderTable();
+
+      await user.click(screen.getByTestId("datatable-filters-trigger"));
+      const [action, table] = await screen.findAllByRole("combobox");
+
+      expect(action).toHaveTextContent("全部操作");
+      expect(table).toHaveTextContent("全部数据表");
+      expect(screen.queryByText("All Actions")).not.toBeInTheDocument();
+      expect(screen.queryByText("All Tables")).not.toBeInTheDocument();
+    });
+
+    it("renders every Chinese table option and hides the English ones", async () => {
+      const user = userEvent.setup();
+      renderTable();
+
+      await user.click(screen.getByTestId("datatable-filters-trigger"));
+      const [, table] = await screen.findAllByRole("combobox");
+      await user.click(table);
+
+      for (const { zh, en } of AUDIT_TABLE_NAMES) {
+        expect(await screen.findByRole("option", { name: zh })).toBeInTheDocument();
+        expect(screen.queryByRole("option", { name: en })).not.toBeInTheDocument();
+      }
+    });
+
+    it("keeps the audit action names in English in the filter options", async () => {
+      const user = userEvent.setup();
+      renderTable();
+
+      await user.click(screen.getByTestId("datatable-filters-trigger"));
+      const [action] = await screen.findAllByRole("combobox");
+      await user.click(action);
+
+      for (const name of ["Created", "Updated", "Deleted", "Rotated"]) {
+        expect(await screen.findByRole("option", { name })).toBeInTheDocument();
+      }
+    });
+
+    it("renders the Chinese filter chip labels while the action and table values stay English", () => {
+      renderTable({
+        columnFilters: [
+          { id: "action", value: "created" },
+          { id: "table_name", value: "LiteLLM_TeamTable" },
+        ],
+      });
+
+      const actionChip = screen.getByTestId("filter-chip-action");
+      expect(actionChip).toHaveTextContent("操作:");
+      expect(actionChip).toHaveTextContent("Created");
+
+      const tableChip = screen.getByTestId("filter-chip-table_name");
+      expect(tableChip).toHaveTextContent("数据表:");
+      expect(tableChip).toHaveTextContent("团队");
+      expect(tableChip).not.toHaveTextContent("Teams");
+    });
   });
 });

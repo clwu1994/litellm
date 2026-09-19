@@ -1,7 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import userEvent from "@testing-library/user-event";
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import moment from "moment";
+import i18n from "@/i18n/bootstrapI18n";
 import { AuditLogDrawer } from "./AuditLogDrawer";
 import { AuditLogEntry } from "../AuditLogsTableColumns";
 
@@ -130,5 +131,83 @@ describe("AuditLogDrawer", () => {
     await user.click(within(blockNamed("Before")).getByTitle("Copy JSON"));
 
     await waitFor(() => expect(writeText).toHaveBeenCalledWith(JSON.stringify({ max_budget: 10 }, null, 2)));
+  });
+
+  describe("Chinese copy", () => {
+    beforeEach(async () => {
+      await i18n.changeLanguage("zh");
+    });
+
+    afterEach(async () => {
+      cleanup();
+      await i18n.changeLanguage("en");
+    });
+
+    it("renders the Chinese metadata chrome and hides the English one", () => {
+      render(<AuditLogDrawer {...defaultProps} />);
+
+      expect(screen.getByText("审计日志详情")).toBeInTheDocument();
+      expect(screen.getByText("详情")).toBeInTheDocument();
+      for (const label of ["数据表", "对象 ID", "修改者", "API Key（哈希）"]) {
+        expect(screen.getByText(label)).toBeInTheDocument();
+      }
+      expect(screen.getByText("团队")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "复制对象 ID" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "复制 API Key 哈希" })).toBeInTheDocument();
+      for (const en of ["Audit log details", "Details", "Table", "Object ID", "Changed By", "API Key (Hash)"]) {
+        expect(screen.queryByText(en)).not.toBeInTheDocument();
+      }
+      expect(screen.queryByRole("button", { name: "Copy object ID" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Copy API key hash" })).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese diff block labels and copy title and hides the English ones", () => {
+      render(<AuditLogDrawer {...defaultProps} />);
+
+      expect(within(blockNamed("修改前")).getByText(/"max_budget": 10/)).toBeInTheDocument();
+      expect(within(blockNamed("修改后")).getByText(/"max_budget": 25/)).toBeInTheDocument();
+      expect(within(blockNamed("修改前")).getByTitle("复制 JSON")).toBeInTheDocument();
+      expect(screen.queryByText("Before")).not.toBeInTheDocument();
+      expect(screen.queryByText("After")).not.toBeInTheDocument();
+      expect(screen.queryByTitle("Copy JSON")).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese not-available placeholder and hides the English one", () => {
+      render(
+        <AuditLogDrawer
+          {...defaultProps}
+          log={{ ...baseLog, action: "created", before_value: {}, updated_values: { team_alias: "new team" } }}
+        />,
+      );
+
+      expect(within(blockNamed("修改前")).getByText("无")).toBeInTheDocument();
+      expect(within(blockNamed("修改前")).queryByText("N/A")).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese no-differing-fields note and hides the English one", () => {
+      render(
+        <AuditLogDrawer {...defaultProps} log={{ ...baseLog, before_value: { a: 1 }, updated_values: { a: 1 } }} />,
+      );
+
+      expect(screen.getAllByText(/未检测到有差异的字段/).length).toBeGreaterThan(0);
+      expect(screen.queryByText(/No differing fields detected/)).not.toBeInTheDocument();
+    });
+
+    it("keeps the changed field names in English", () => {
+      render(
+        <AuditLogDrawer
+          {...defaultProps}
+          log={{
+            ...baseLog,
+            table_name: "LiteLLM_VerificationToken",
+            before_value: { spend: 1, max_budget: 10 },
+            updated_values: { spend: 2, max_budget: 25 },
+          }}
+        />,
+      );
+
+      expect(within(blockNamed("修改前")).getByText("Spend:")).toBeInTheDocument();
+      expect(within(blockNamed("修改前")).getByText("Max Budget:")).toBeInTheDocument();
+    });
   });
 });

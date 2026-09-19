@@ -1,6 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+import type { TFunction } from "i18next";
 
 import { DateCell, IdCell, IdentityCell, StatusBadge, type StatusTone } from "@/components/shared/table_cells";
 
@@ -18,12 +19,24 @@ export type AuditLogEntry = {
   updated_values: Record<string, unknown>;
 };
 
-export const AUDIT_TABLE_NAME_DISPLAY: Record<string, string> = {
-  LiteLLM_VerificationToken: "Keys",
-  LiteLLM_TeamTable: "Teams",
-  LiteLLM_UserTable: "Users",
-  LiteLLM_OrganizationTable: "Organizations",
-  LiteLLM_ProxyModelTable: "Models",
+type AuditTableNameKey =
+  | "audit.table.name.keys"
+  | "audit.table.name.teams"
+  | "audit.table.name.users"
+  | "audit.table.name.organizations"
+  | "audit.table.name.models";
+
+const AUDIT_TABLE_NAME_LABEL_KEYS: Record<string, AuditTableNameKey | undefined> = {
+  LiteLLM_VerificationToken: "audit.table.name.keys",
+  LiteLLM_TeamTable: "audit.table.name.teams",
+  LiteLLM_UserTable: "audit.table.name.users",
+  LiteLLM_OrganizationTable: "audit.table.name.organizations",
+  LiteLLM_ProxyModelTable: "audit.table.name.models",
+};
+
+export const getAuditTableNameDisplay = (tableName: string, t: TFunction<"logs">): string => {
+  const labelKey = AUDIT_TABLE_NAME_LABEL_KEYS[tableName];
+  return labelKey ? t(labelKey) : tableName;
 };
 
 const ACTION_TONE: Record<string, StatusTone> = {
@@ -39,11 +52,14 @@ interface AuditLogsTableColumnsDeps {
   onViewLog: (log: AuditLogEntry) => void;
 }
 
-export const getAuditLogsTableColumns = ({ onViewLog }: AuditLogsTableColumnsDeps): ColumnDef<AuditLogEntry>[] => [
+export const getAuditLogsTableColumns = (
+  { onViewLog }: AuditLogsTableColumnsDeps,
+  t: TFunction<"logs">,
+): ColumnDef<AuditLogEntry>[] => [
   {
     id: "updated_at",
     accessorKey: "updated_at",
-    header: "Timestamp",
+    header: t("audit.table.header.timestamp"),
     size: 200,
     enableSorting: false,
     cell: ({ row }) => <DateCell value={row.original.updated_at} />,
@@ -51,7 +67,7 @@ export const getAuditLogsTableColumns = ({ onViewLog }: AuditLogsTableColumnsDep
   {
     id: "action",
     accessorKey: "action",
-    header: "Action",
+    header: t("audit.table.header.action"),
     size: 110,
     enableSorting: false,
     cell: ({ row }) => (
@@ -61,17 +77,15 @@ export const getAuditLogsTableColumns = ({ onViewLog }: AuditLogsTableColumnsDep
   {
     id: "table_name",
     accessorKey: "table_name",
-    header: "Table",
+    header: t("audit.table.header.table"),
     size: 130,
     enableSorting: false,
-    cell: ({ row }) => (
-      <span className="text-sm">{AUDIT_TABLE_NAME_DISPLAY[row.original.table_name] ?? row.original.table_name}</span>
-    ),
+    cell: ({ row }) => <span className="text-sm">{getAuditTableNameDisplay(row.original.table_name, t)}</span>,
   },
   {
     id: "object_id",
     accessorKey: "object_id",
-    header: "Object ID",
+    header: t("audit.table.header.objectId"),
     minSize: 220,
     enableSorting: false,
     cell: ({ row }) => (
@@ -86,7 +100,7 @@ export const getAuditLogsTableColumns = ({ onViewLog }: AuditLogsTableColumnsDep
   {
     id: "changed_by",
     accessorKey: "changed_by",
-    header: "Changed By",
+    header: t("audit.table.header.changedBy"),
     size: 200,
     enableSorting: false,
     cell: ({ row }) => <DefaultProxyAdminTag userId={row.original.changed_by} />,
@@ -94,7 +108,7 @@ export const getAuditLogsTableColumns = ({ onViewLog }: AuditLogsTableColumnsDep
   {
     id: "changed_by_api_key",
     accessorKey: "changed_by_api_key",
-    header: "API Key (Hash)",
+    header: t("audit.table.header.apiKeyHash"),
     size: 160,
     enableSorting: false,
     cell: ({ row }) => <IdCell value={row.original.changed_by_api_key} variant="plain" />,
