@@ -1,7 +1,10 @@
 import React from "react";
-import { render, screen, waitFor, fireEvent, act } from "@testing-library/react";
+import { cleanup, render, screen, waitFor, fireEvent, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { afterEach, beforeEach, describe, it, expect, vi } from "vitest";
+
+import i18n from "@/i18n/bootstrapI18n";
+import { toast } from "@/lib/toast";
 import { OutputCard } from "./OutputCard";
 import { ParsedMessage } from "./prettyMessagesTypes";
 
@@ -151,5 +154,33 @@ describe("OutputCard", () => {
         expect(noDataText).not.toBeVisible();
       });
     }
+  });
+
+  describe("Chinese copy", () => {
+    beforeEach(async () => {
+      await i18n.changeLanguage("zh");
+    });
+
+    afterEach(async () => {
+      cleanup();
+      await i18n.changeLanguage("en");
+    });
+
+    it("renders the Chinese empty response state and hides the English one", () => {
+      render(<OutputCard message={null} />);
+
+      expect(screen.getByText("没有可用的响应数据")).toBeInTheDocument();
+      expect(screen.queryByText("No response data available")).not.toBeInTheDocument();
+    });
+
+    it("reports the copy action in Chinese and hides the English one", async () => {
+      const user = userEvent.setup();
+      render(<OutputCard message={mockMessage} />);
+
+      await user.click(screen.getByRole("button", { name: "复制输出" }));
+
+      expect(toast.success).toHaveBeenCalledWith("已复制输出");
+      expect(toast.success).not.toHaveBeenCalledWith("Output copied");
+    });
   });
 });

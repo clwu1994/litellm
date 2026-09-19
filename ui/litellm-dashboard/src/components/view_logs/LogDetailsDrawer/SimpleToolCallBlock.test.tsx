@@ -1,6 +1,8 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
+import { cleanup, render, screen } from "@testing-library/react";
+import { afterEach, beforeEach, describe, it, expect } from "vitest";
+
+import i18n from "@/i18n/bootstrapI18n";
 import { SimpleToolCallBlock } from "./SimpleToolCallBlock";
 
 describe("SimpleToolCallBlock", () => {
@@ -35,5 +37,23 @@ describe("SimpleToolCallBlock", () => {
     // The tool name and "function" badge should be there, but no key: value pairs
     expect(screen.getByText("get_weather")).toBeInTheDocument();
     expect(screen.queryByText(/:$/)).not.toBeInTheDocument();
+  });
+
+  describe("Chinese copy", () => {
+    beforeEach(async () => {
+      await i18n.changeLanguage("zh");
+    });
+
+    afterEach(async () => {
+      cleanup();
+      await i18n.changeLanguage("en");
+    });
+
+    it("renders the Chinese function badge and hides the English one", () => {
+      render(<SimpleToolCallBlock tool={{ id: "1", name: "get_weather", arguments: {} }} />);
+
+      expect(screen.getByText("函数")).toBeInTheDocument();
+      expect(screen.queryByText("function")).not.toBeInTheDocument();
+    });
   });
 });

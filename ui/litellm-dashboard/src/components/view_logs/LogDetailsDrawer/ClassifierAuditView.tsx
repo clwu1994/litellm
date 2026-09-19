@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import CopyButton from "@/components/shared/CopyButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { ReactNode } from "react";
@@ -9,22 +10,25 @@ interface ClassifierAuditViewProps {
 }
 
 export function ClassifierAuditView({ request, response }: ClassifierAuditViewProps) {
+  const { t } = useTranslation("logs");
+
   return (
     <div className="mb-6 space-y-4">
-      <AuditField title="Classifier input" value={request.classifier_input}>
-        Provider request payload. A cached call or disabled message logging may have no capture.
+      <AuditField title={t("detail.classifier.inputTitle")} value={request.classifier_input}>
+        {t("detail.classifier.inputDescription")}
       </AuditField>
-      <AuditField title="Originating request, credentials masked" value={request.originating_request_masked}>
-        Comparison only. This source request was not appended to the classifier input.
+      <AuditField title={t("detail.classifier.originatingTitle")} value={request.originating_request_masked}>
+        {t("detail.classifier.originatingDescription")}
       </AuditField>
-      <AuditField title="Classifier response" value={response}>
-        The returned verdict and any explanation supplied by the classifier. Later routing rules may change the tier.
+      <AuditField title={t("detail.classifier.responseTitle")} value={response}>
+        {t("detail.classifier.responseDescription")}
       </AuditField>
     </div>
   );
 }
 
 function AuditField({ title, value, children }: { title: string; value: unknown; children: ReactNode }) {
+  const { t } = useTranslation("logs");
   const serialized = JSON.stringify(value);
   const truncated = serialized?.includes("litellm_truncated") ?? false;
 
@@ -32,17 +36,19 @@ function AuditField({ title, value, children }: { title: string; value: unknown;
     <Card size="sm" role="region" aria-label={title}>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
-        {value != null && <CopyButton value={JSON.stringify(value, null, 2)} label={`Copy ${title}`} />}
+        {value != null && (
+          <CopyButton value={JSON.stringify(value, null, 2)} label={t("detail.classifier.copyTitle", { title })} />
+        )}
       </CardHeader>
       <CardContent>
         <p className="mb-3 text-sm text-muted-foreground">{children}</p>
         {truncated && (
           <p role="status" className="mb-3 text-sm text-warning">
-            This stored copy is truncated. The complete payload is unavailable from the configured log storage.
+            {t("detail.classifier.truncated")}
           </p>
         )}
         {value == null ? (
-          <p className="text-sm text-muted-foreground">Not captured or message logging disabled</p>
+          <p className="text-sm text-muted-foreground">{t("detail.classifier.notCaptured")}</p>
         ) : (
           <JsonViewer data={value} mode="formatted" />
         )}

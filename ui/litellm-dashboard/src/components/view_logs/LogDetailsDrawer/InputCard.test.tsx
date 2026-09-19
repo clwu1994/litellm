@@ -1,7 +1,10 @@
 import React from "react";
-import { render, screen, waitFor, fireEvent, act } from "@testing-library/react";
+import { cleanup, render, screen, waitFor, fireEvent, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { afterEach, beforeEach, describe, it, expect, vi } from "vitest";
+
+import i18n from "@/i18n/bootstrapI18n";
+import { toast } from "@/lib/toast";
 import { InputCard } from "./InputCard";
 import { ParsedMessage } from "./prettyMessagesTypes";
 
@@ -197,5 +200,26 @@ describe("InputCard", () => {
     render(<InputCard messages={messages} />);
     const copyButton = screen.getByRole("button", { name: /copy/i });
     expect(copyButton).toBeInTheDocument();
+  });
+
+  describe("Chinese copy", () => {
+    beforeEach(async () => {
+      await i18n.changeLanguage("zh");
+    });
+
+    afterEach(async () => {
+      cleanup();
+      await i18n.changeLanguage("en");
+    });
+
+    it("reports the copy action in Chinese and hides the English one", async () => {
+      const user = userEvent.setup();
+      render(<InputCard messages={mockMessages} />);
+
+      await user.click(screen.getByRole("button", { name: "复制输入" }));
+
+      expect(toast.success).toHaveBeenCalledWith("已复制输入");
+      expect(toast.success).not.toHaveBeenCalledWith("Input copied");
+    });
   });
 });

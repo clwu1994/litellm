@@ -1,6 +1,8 @@
-import { render, screen, within } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+import i18n from "@/i18n/bootstrapI18n";
 import { GuardrailJumpLink, LogDetailContent } from "./LogDetailContent";
 import type { LogEntry } from "../columns";
 
@@ -634,5 +636,339 @@ describe("GuardrailJumpLink", () => {
     const pill = screen.getByText(/2 guardrails evaluated/);
     expect(pill).toHaveClass(expectedClass);
     expect(pill).toHaveTextContent(glyph);
+  });
+});
+
+describe("LogDetailContent Chinese copy", () => {
+  beforeEach(async () => {
+    await i18n.changeLanguage("zh");
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  it("renders the Chinese request details chrome and hides the English one", () => {
+    render(
+      <LogDetailContent
+        logEntry={createLogEntry({
+          requester_ip_address: "192.168.1.1",
+          metadata: {
+            status: "success",
+            guardrail_information: { guardrail_name: "PII Filter", masked_entity_count: { PERSON: 2 } },
+          },
+        })}
+      />,
+    );
+
+    expect(screen.getByText("请求详情")).toBeInTheDocument();
+    expect(screen.getByText("模型")).toBeInTheDocument();
+    expect(screen.getByText("提供商")).toBeInTheDocument();
+    expect(screen.getByText("调用类型")).toBeInTheDocument();
+    expect(screen.getByText("模型 ID")).toBeInTheDocument();
+    expect(screen.getByText("API 基础地址")).toBeInTheDocument();
+    expect(screen.getByText("IP 地址")).toBeInTheDocument();
+    expect(screen.getByText("护栏")).toBeInTheDocument();
+    expect(screen.getByText("已遮蔽 2 项")).toBeInTheDocument();
+    expect(screen.queryByText("Request Details")).not.toBeInTheDocument();
+    expect(screen.queryByText("Call Type")).not.toBeInTheDocument();
+    expect(screen.queryByText("Model ID")).not.toBeInTheDocument();
+    expect(screen.queryByText("API Base")).not.toBeInTheDocument();
+    expect(screen.queryByText("IP Address")).not.toBeInTheDocument();
+    expect(screen.queryByText("2 masked")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese classifier audit copy and truncation labels and hides the English ones", () => {
+    render(
+      <LogDetailContent
+        logEntry={createLogEntry({
+          call_type: "acompletion",
+          proxy_server_request: JSON.stringify({
+            classifier_input: { system: "rubric...litellm_truncated" },
+            originating_request_masked: { input: "captured prompt" },
+          }),
+          metadata: { status: "success", internal_call_origin: "autorouter_classifier" },
+        })}
+      />,
+    );
+
+    const classifier = within(screen.getByRole("region", { name: "分类器输入" }));
+    expect(classifier.getByRole("button", { name: "复制分类器输入" })).toBeInTheDocument();
+    expect(classifier.queryByRole("button", { name: "Copy Classifier input" })).not.toBeInTheDocument();
+    expect(classifier.getByRole("status")).toHaveTextContent(
+      "此存储副本已被截断。完整载荷无法从已配置的日志存储中获取。",
+    );
+    expect(classifier.queryByText(/This stored copy is truncated/)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        "The returned verdict and any explanation supplied by the classifier. Later routing rules may change the tier.",
+      ),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Comparison only. This source request was not appended to the classifier input."),
+    ).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese guardrail count label and hides the English one", () => {
+    render(
+      <LogDetailContent
+        logEntry={createLogEntry({
+          metadata: {
+            status: "success",
+            guardrail_information: [
+              { guardrail_name: "PII Filter", masked_entity_count: { PERSON: 2 } },
+              { guardrail_name: "Toxicity", masked_entity_count: { TOXIC: 1 } },
+            ],
+          },
+        })}
+      />,
+    );
+
+    expect(screen.getByText("2 个护栏")).toBeInTheDocument();
+    expect(screen.queryByText("2 guardrails")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese error alert chrome and hides the English one", () => {
+    render(
+      <LogDetailContent
+        logEntry={createLogEntry({
+          metadata: {
+            status: "failure",
+            error_information: {
+              error_code: "rate_limit",
+              error_message: "Too many requests",
+              error_class: "RateLimitError",
+            },
+          },
+        })}
+      />,
+    );
+
+    expect(screen.getByText("请求失败")).toBeInTheDocument();
+    expect(screen.getByText("错误码：")).toBeInTheDocument();
+    expect(screen.getByText("消息：")).toBeInTheDocument();
+    expect(screen.queryByText("Request Failed")).not.toBeInTheDocument();
+    expect(screen.queryByText("Error Code:")).not.toBeInTheDocument();
+    expect(screen.queryByText("Message:")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese default error message and hides the English one", async () => {
+    const user = userEvent.setup();
+    render(
+      <LogDetailContent
+        logEntry={createLogEntry({
+          metadata: {
+            status: "failure",
+            error_information: { error_code: "rate_limit", error_class: "RateLimitError" },
+          },
+        })}
+      />,
+    );
+
+    await user.click(screen.getByText("JSON"));
+    await user.click(screen.getByRole("tab", { name: "响应" }));
+
+    expect(screen.getByText(/发生错误/)).toBeInTheDocument();
+    expect(screen.queryByText(/An error occurred/)).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese tags heading and hides the English one", () => {
+    render(<LogDetailContent logEntry={createLogEntry({ request_tags: { env: "prod" } })} />);
+
+    expect(screen.getByText("标签")).toBeInTheDocument();
+    expect(screen.queryByText("Tags")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese batch results chrome and hides the English one", () => {
+    render(
+      <LogDetailContent
+        logEntry={createLogEntry({
+          request_id: "batch_abc123_batch_cost",
+          call_type: "aretrieve_batch",
+          metadata: {
+            status: "success",
+            batch_models: ["gemini-2.5-flash"],
+            batch_successful_requests: 2,
+            batch_failed_requests: 1,
+          },
+        })}
+      />,
+    );
+
+    expect(screen.getByText("批处理结果")).toBeInTheDocument();
+    expect(screen.getByText("批处理 ID")).toBeInTheDocument();
+    expect(screen.getByText("成功请求")).toBeInTheDocument();
+    expect(screen.getByText("失败请求")).toBeInTheDocument();
+    expect(screen.getAllByText("模型").length).toBeGreaterThanOrEqual(2);
+    expect(screen.queryByText("Batch Results")).not.toBeInTheDocument();
+    expect(screen.queryByText("Successful Requests")).not.toBeInTheDocument();
+    expect(screen.queryByText("Batch ID")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese metrics chrome and hides the English one", () => {
+    const metricsOverrides: Partial<LogEntry> = {
+      prompt_tokens: 100,
+      completion_tokens: 50,
+      total_tokens: 150,
+      spend: 0.002,
+      request_duration_ms: 1200,
+      metadata: {
+        status: "success",
+        attempted_retries: 0,
+        litellm_overhead_time_ms: 42.5,
+        usage_object: { completion_tokens_details: { text_tokens: 32, reasoning_tokens: 224 } },
+      },
+    };
+    render(<LogDetailContent logEntry={createLogEntry(metricsOverrides)} />);
+
+    expect(screen.getByText("指标")).toBeInTheDocument();
+    expect(screen.getByText("Token")).toBeInTheDocument();
+    expect(screen.getByText("推理 Token")).toBeInTheDocument();
+    expect(screen.getByText("成本")).toBeInTheDocument();
+    expect(screen.getByText("耗时")).toBeInTheDocument();
+    expect(screen.getByText("LiteLLM 开销")).toBeInTheDocument();
+    expect(screen.getByText("重试")).toBeInTheDocument();
+    expect(screen.getByText("无")).toBeInTheDocument();
+    expect(screen.getByText("开始时间")).toBeInTheDocument();
+    expect(screen.getByText("结束时间")).toBeInTheDocument();
+    expect(screen.queryByText("Metrics")).not.toBeInTheDocument();
+    expect(screen.queryByText("Reasoning Tokens")).not.toBeInTheDocument();
+    expect(screen.queryByText("LiteLLM Overhead")).not.toBeInTheDocument();
+    expect(screen.queryByText("Retries")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese anthropic input/output token labels and hides the English ones", () => {
+    render(
+      <LogDetailContent
+        logEntry={createLogEntry({
+          call_type: "anthropic_messages",
+          completionStartTime: "2025-11-14T00:00:00.500Z",
+          metadata: {
+            status: "success",
+            additional_usage_values: { prompt_tokens_details: { text_tokens: 3 } },
+          },
+        })}
+      />,
+    );
+
+    expect(screen.getByText("输入 Token")).toBeInTheDocument();
+    expect(screen.getByText("输出 Token")).toBeInTheDocument();
+    expect(screen.getByText("首 Token 时间")).toBeInTheDocument();
+    expect(screen.queryByText("Input Tokens")).not.toBeInTheDocument();
+    expect(screen.queryByText("Output Tokens")).not.toBeInTheDocument();
+    expect(screen.queryByText("Time to First Token")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese response cache chrome and hides the English one", async () => {
+    const user = userEvent.setup();
+    render(<LogDetailContent logEntry={createLogEntry({ cache_hit: "True", cache_key: "abc123cachekey" })} />);
+
+    expect(screen.getByText("响应缓存")).toBeInTheDocument();
+    expect(screen.getByText("命中")).toBeInTheDocument();
+    expect(screen.getByText("缓存键")).toBeInTheDocument();
+    expect(screen.queryByText("Response Cache")).not.toBeInTheDocument();
+    expect(screen.queryByText("Hit")).not.toBeInTheDocument();
+    expect(screen.queryByText("Cache Key")).not.toBeInTheDocument();
+
+    await user.hover(screen.getByRole("img", { name: "响应缓存 说明" }));
+    expect(await screen.findByText(/此请求是否由 LiteLLM 的响应缓存/)).toBeInTheDocument();
+    expect(screen.queryByText(/Whether this request was served from LiteLLM/)).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "文档" })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Docs" })).not.toBeInTheDocument();
+
+    await user.unhover(screen.getByRole("img", { name: "响应缓存 说明" }));
+    await user.hover(screen.getByRole("img", { name: "缓存键 说明" }));
+    expect(await screen.findByText(/LiteLLM 为此请求在响应缓存中计算出的键/)).toBeInTheDocument();
+    expect(screen.queryByText(/The key LiteLLM computed for this request/)).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese cache miss and prompt cache labels and hides the English ones", async () => {
+    const user = userEvent.setup();
+    render(
+      <LogDetailContent
+        logEntry={createLogEntry({
+          cache_hit: "False",
+          metadata: {
+            status: "success",
+            additional_usage_values: { cache_read_input_tokens: 34462, cache_creation_input_tokens: 83 },
+          },
+        })}
+      />,
+    );
+
+    expect(screen.getByText("未命中")).toBeInTheDocument();
+    expect(screen.getByText("Prompt 缓存读取 Token")).toBeInTheDocument();
+    expect(screen.getByText("Prompt 缓存写入 Token")).toBeInTheDocument();
+    expect(screen.queryByText("Miss")).not.toBeInTheDocument();
+    expect(screen.queryByText("Prompt Cache Read Tokens")).not.toBeInTheDocument();
+
+    await user.hover(screen.getByRole("img", { name: "Prompt 缓存读取 Token 说明" }));
+    expect(await screen.findByText(/从 LLM 提供商的 Prompt 缓存/)).toBeInTheDocument();
+    expect(screen.queryByText(/Input tokens read from the LLM provider/)).not.toBeInTheDocument();
+
+    await user.unhover(screen.getByRole("img", { name: "Prompt 缓存读取 Token 说明" }));
+    await user.hover(screen.getByRole("img", { name: "Prompt 缓存写入 Token 说明" }));
+    expect(await screen.findByText(/写入 LLM 提供商的 Prompt 缓存/)).toBeInTheDocument();
+    expect(screen.queryByText(/Input tokens written to the LLM provider/)).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese request and response chrome and hides the English one", async () => {
+    const user = userEvent.setup();
+    render(<LogDetailContent logEntry={createLogEntry()} />);
+
+    expect(screen.getByText("请求与响应")).toBeInTheDocument();
+    expect(screen.getByText("美化")).toBeInTheDocument();
+    expect(screen.getByText("JSON")).toBeInTheDocument();
+    expect(screen.queryByText("Request & Response")).not.toBeInTheDocument();
+    expect(screen.queryByText("Pretty")).not.toBeInTheDocument();
+
+    await user.click(screen.getByText("JSON"));
+
+    expect(screen.getByRole("tab", { name: "请求" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "响应" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "复制 JSON" })).toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: "Request" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Copy JSON" })).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese missing response state and hides the English one", async () => {
+    const user = userEvent.setup();
+    render(<LogDetailContent logEntry={createLogEntry({ response: {}, metadata: { status: "success" } })} />);
+
+    await user.click(screen.getByText("JSON"));
+    await user.click(screen.getByRole("tab", { name: "响应" }));
+
+    expect(screen.getByText("响应数据不可用")).toBeInTheDocument();
+    expect(screen.queryByText("Response data not available")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese loading state and hides the English one", () => {
+    render(<LogDetailContent logEntry={createLogEntry()} isLoadingDetails={true} />);
+
+    expect(screen.getByText("正在加载请求与响应数据…")).toBeInTheDocument();
+    expect(screen.queryByText("Loading request & response data...")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese metadata chrome and hides the English one", () => {
+    render(<LogDetailContent logEntry={createLogEntry({ metadata: { status: "success", custom_key: "value" } })} />);
+
+    expect(screen.getByText("元数据")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "复制元数据" })).toBeInTheDocument();
+    expect(screen.queryByText("Metadata")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Copy Metadata" })).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese guardrail jump labels and hides the English ones", () => {
+    const { unmount } = render(
+      <GuardrailJumpLink guardrailEntries={[{ guardrail_status: "success" }, { guardrail_status: "success" }]} />,
+    );
+    expect(screen.getByText(/已评估 2 条护栏/)).toBeInTheDocument();
+    expect(screen.queryByText(/2 guardrails evaluated/)).not.toBeInTheDocument();
+    unmount();
+
+    render(<GuardrailJumpLink guardrailEntries={[{ guardrail_status: "success" }]} />);
+    expect(screen.getByText(/已评估 1 条护栏/)).toBeInTheDocument();
+    expect(screen.queryByText(/1 guardrail evaluated/)).not.toBeInTheDocument();
   });
 });

@@ -3,6 +3,7 @@
  */
 
 import { ChevronDown, ChevronUp, Copy, MessageSquare } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/cva.config";
@@ -28,6 +29,8 @@ export function SectionHeader({
   onToggleCollapse,
   turnCount,
 }: SectionHeaderProps) {
+  const { t } = useTranslation("logs");
+
   const summary = (
     <>
       {onToggleCollapse &&
@@ -43,15 +46,25 @@ export function SectionHeader({
         ) : (
           <span className="text-sm opacity-60 grayscale">✨</span>
         )}
-        <span className="text-sm font-medium">{type === "input" ? "Input" : "Output"}</span>
+        <span className="text-sm font-medium">
+          {type === "input" ? t("detail.field.input") : t("detail.field.output")}
+        </span>
       </div>
 
-      {tokens !== undefined && <span className="text-xs text-muted-foreground">Tokens: {tokens.toLocaleString()}</span>}
+      {tokens !== undefined && (
+        <span className="text-xs text-muted-foreground">
+          {t("detail.sectionHeader.tokens", { value: tokens.toLocaleString() })}
+        </span>
+      )}
 
-      {cost !== undefined && <span className="text-xs text-muted-foreground">Cost: ${cost.toFixed(6)}</span>}
+      {cost !== undefined && (
+        <span className="text-xs text-muted-foreground">
+          {t("detail.sectionHeader.cost", { value: cost.toFixed(6) })}
+        </span>
+      )}
 
       {turnCount !== undefined && turnCount > 0 && (
-        <span className="text-xs text-muted-foreground">Turns: {turnCount}</span>
+        <span className="text-xs text-muted-foreground">{t("detail.sectionHeader.turns", { value: turnCount })}</span>
       )}
     </>
   );
@@ -82,7 +95,7 @@ export function SectionHeader({
             <Button
               variant="ghost"
               size="icon-sm"
-              aria-label={type === "input" ? "Copy input" : "Copy output"}
+              aria-label={type === "input" ? t("detail.sectionHeader.copyInput") : t("detail.sectionHeader.copyOutput")}
               onClick={(e) => {
                 e.stopPropagation();
                 onCopy();
@@ -92,7 +105,7 @@ export function SectionHeader({
         >
           <Copy />
         </TooltipTrigger>
-        <TooltipContent>Copy</TooltipContent>
+        <TooltipContent>{t("detail.copy")}</TooltipContent>
       </Tooltip>
     </div>
   );

@@ -5,6 +5,7 @@
 
 import { useState } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ParsedMessage } from "./prettyMessagesTypes";
 import { SimpleMessageBlock } from "./SimpleMessageBlock";
@@ -15,6 +16,7 @@ interface HistoryTreeProps {
 
 export function HistoryTree({ messages }: HistoryTreeProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const { t } = useTranslation("logs");
 
   if (messages.length === 0) {
     return null;
@@ -29,7 +31,9 @@ export function HistoryTree({ messages }: HistoryTreeProps) {
           <ChevronRight className="size-3 shrink-0 text-muted-foreground" />
         )}
         <span className="text-[10px] uppercase tracking-[0.5px] text-muted-foreground">
-          HISTORY ({messages.length} message{messages.length !== 1 ? "s" : ""})
+          {messages.length !== 1
+            ? t("detail.pretty.historyOther", { value: messages.length })
+            : t("detail.pretty.historyOne", { value: messages.length })}
         </span>
       </CollapsibleTrigger>
 

@@ -1,7 +1,9 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect } from "vitest";
+import { afterEach, beforeEach, describe, it, expect } from "vitest";
+
+import i18n from "@/i18n/bootstrapI18n";
 import { HistoryTree } from "./HistoryTree";
 import { ParsedMessage } from "./prettyMessagesTypes";
 
@@ -58,5 +60,38 @@ describe("HistoryTree", () => {
 
     await user.keyboard(" ");
     expect(screen.getByText("Hello")).not.toBeVisible();
+  });
+
+  describe("Chinese copy", () => {
+    beforeEach(async () => {
+      await i18n.changeLanguage("zh");
+    });
+
+    afterEach(async () => {
+      cleanup();
+      await i18n.changeLanguage("en");
+    });
+
+    it("renders the Chinese plural history label and hides the English one", () => {
+      render(
+        <HistoryTree
+          messages={[
+            { role: "user", content: "Hello" },
+            { role: "assistant", content: "Hi there" },
+            { role: "user", content: "How are you?" },
+          ]}
+        />,
+      );
+
+      expect(screen.getByText("历史记录（3 条消息）")).toBeInTheDocument();
+      expect(screen.queryByText("HISTORY (3 messages)")).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese singular history label and hides the English one", () => {
+      render(<HistoryTree messages={[{ role: "user", content: "Hello" }]} />);
+
+      expect(screen.getByText("历史记录（1 条消息）")).toBeInTheDocument();
+      expect(screen.queryByText("HISTORY (1 message)")).not.toBeInTheDocument();
+    });
   });
 });

@@ -3,6 +3,8 @@
  * These functions handle data formatting, validation, and guardrail calculations.
  */
 
+import type { TFunction } from "i18next";
+
 export type SessionLogSortMode = "duration" | "start_time";
 
 type SortableSessionLog = { startTime: string; endTime: string; request_duration_ms?: number };
@@ -85,12 +87,13 @@ export function calculateTotalMaskedEntities(entries: any[]): number {
 /**
  * Gets a display label for guardrail(s).
  * @param entries - Array of guardrail entries
+ * @param t - Translator for the count label; names come from the log payload and stay as they are
  * @returns Display string for guardrail label
  */
-export function getGuardrailLabel(entries: any[]): string {
+export function getGuardrailLabel(entries: any[], t: TFunction<"logs">): string {
   if (entries.length === 0) return "-";
   if (entries.length === 1) return entries[0]?.guardrail_name ?? "-";
-  return `${entries.length} guardrails`;
+  return t("detail.guardrailLabel.count", { value: entries.length });
 }
 
 /**

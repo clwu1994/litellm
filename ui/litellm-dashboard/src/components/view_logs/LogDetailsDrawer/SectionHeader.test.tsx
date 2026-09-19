@@ -1,6 +1,8 @@
-import { render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+import i18n from "@/i18n/bootstrapI18n";
 import { SectionHeader } from "./SectionHeader";
 
 describe("SectionHeader", () => {
@@ -78,5 +80,43 @@ describe("SectionHeader", () => {
     await userEvent.click(screen.getByText("Input"));
 
     expect(onCopy).not.toHaveBeenCalled();
+  });
+
+  describe("Chinese copy", () => {
+    beforeEach(async () => {
+      await i18n.changeLanguage("zh");
+    });
+
+    afterEach(async () => {
+      cleanup();
+      await i18n.changeLanguage("en");
+    });
+
+    it("renders the Chinese input label with token, cost and turn metrics", () => {
+      render(<SectionHeader type="input" tokens={1234} cost={0.000123} turnCount={3} onCopy={vi.fn()} />);
+
+      expect(screen.getByText("输入")).toBeInTheDocument();
+      expect(screen.getByText("Token：1,234")).toBeInTheDocument();
+      expect(screen.getByText("成本：$0.000123")).toBeInTheDocument();
+      expect(screen.getByText("轮次：3")).toBeInTheDocument();
+      expect(screen.queryByText("Input")).not.toBeInTheDocument();
+      expect(screen.queryByText("Tokens: 1,234")).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese output label and copy label and hides the English ones", () => {
+      render(<SectionHeader type="output" onCopy={vi.fn()} onToggleCollapse={vi.fn()} />);
+
+      expect(screen.getByText("输出")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "复制输出" })).toBeInTheDocument();
+      expect(screen.queryByText("Output")).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Copy output" })).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese input copy label", () => {
+      render(<SectionHeader type="input" onCopy={vi.fn()} />);
+
+      expect(screen.getByRole("button", { name: "复制输入" })).toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Copy input" })).not.toBeInTheDocument();
+    });
   });
 });

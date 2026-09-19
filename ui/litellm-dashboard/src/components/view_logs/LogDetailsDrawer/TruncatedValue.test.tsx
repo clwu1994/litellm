@@ -1,5 +1,7 @@
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { cleanup, render, screen } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+
+import i18n from "@/i18n/bootstrapI18n";
 import { TruncatedValue } from "./TruncatedValue";
 
 describe("TruncatedValue", () => {
@@ -28,5 +30,23 @@ describe("TruncatedValue", () => {
     render(<TruncatedValue value="test-value" maxWidth={300} />);
     const el = screen.getByText("test-value");
     expect(el).toHaveStyle({ maxWidth: "300px" });
+  });
+
+  describe("Chinese copy", () => {
+    beforeEach(async () => {
+      await i18n.changeLanguage("zh");
+    });
+
+    afterEach(async () => {
+      cleanup();
+      await i18n.changeLanguage("en");
+    });
+
+    it("renders the Chinese copy label and hides the English one", () => {
+      render(<TruncatedValue value="chatcmpl-abc123" />);
+
+      expect(screen.getByRole("button", { name: "复制" })).toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Copy" })).not.toBeInTheDocument();
+    });
   });
 });

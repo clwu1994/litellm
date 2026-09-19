@@ -213,5 +213,233 @@
     "noAuditLogs": "No audit logs yet",
     "noMatchingAuditLogsHint": "No audit log entries match your filters.",
     "noAuditLogsHint": "Administrative changes to keys, teams, users, and models will appear here."
+  },
+  "detail": {
+    "title": {
+      "withId": "Request {{requestId}} details",
+      "default": "Request details"
+    },
+    "header": {
+      "env": "Env: {{environment}}",
+      "copyRequestId": "Copy Request ID",
+      "copied": "Copied!",
+      "escToClose": "ESC to close",
+      "expandSidebar": "Expand trace sidebar",
+      "collapseSidebar": "Collapse trace sidebar"
+    },
+    "status": {
+      "success": "Success",
+      "failure": "Failure"
+    },
+    "sidebar": {
+      "session": "Session",
+      "trace": "Trace",
+      "copyTraceId": "Copy trace id",
+      "requestCount": "{{value}} req",
+      "cached": "{{hit}}/{{total}} cached",
+      "truncated": "Showing most recent {{shown}} of {{total}}",
+      "sortDuration": "Duration",
+      "sortStartTime": "Start time"
+    },
+    "error": {
+      "title": "Request Failed",
+      "code": "Error Code:",
+      "message": "Message:",
+      "defaultMessage": "An error occurred"
+    },
+    "request": {
+      "title": "Request Details",
+      "model": "Model",
+      "provider": "Provider",
+      "callType": "Call Type",
+      "modelId": "Model ID",
+      "apiBase": "API Base",
+      "ipAddress": "IP Address",
+      "guardrail": "Guardrail",
+      "masked": "{{value}} masked"
+    },
+    "tags": {
+      "title": "Tags"
+    },
+    "batch": {
+      "title": "Batch Results",
+      "id": "Batch ID",
+      "successful": "Successful Requests",
+      "failed": "Failed Requests",
+      "models": "Models"
+    },
+    "metrics": {
+      "title": "Metrics",
+      "inputTokens": "Input Tokens",
+      "outputTokens": "Output Tokens",
+      "tokens": "Tokens",
+      "reasoningTokens": "Reasoning Tokens",
+      "cost": "Cost",
+      "duration": "Duration",
+      "ttft": "Time to First Token",
+      "responseCache": "Response Cache",
+      "cacheHit": "Hit",
+      "cacheMiss": "Miss",
+      "cacheKey": "Cache Key",
+      "promptCacheRead": "Prompt Cache Read Tokens",
+      "promptCacheCreation": "Prompt Cache Creation Tokens",
+      "overhead": "LiteLLM Overhead",
+      "retries": "Retries",
+      "retriesNone": "None",
+      "startTime": "Start Time",
+      "endTime": "End Time",
+      "infoAria": "{{label}} info",
+      "docs": "Docs"
+    },
+    "tooltips": {
+      "responseCache": "Whether this request was served from LiteLLM's response cache (e.g. Redis / in-memory), skipping the LLM provider call entirely. This is separate from provider prompt caching; a Miss here does not mean prompt caching failed.",
+      "cacheKey": "The key LiteLLM computed for this request in the response cache. Requests with the same cache key share a cached response; a different key means the request content did not match any cached entry.",
+      "promptCacheRead": "Input tokens read from the LLM provider's prompt cache (e.g. Anthropic / OpenAI), billed at a discounted rate. Reported by the provider.",
+      "promptCacheCreation": "Input tokens written to the LLM provider's prompt cache for reuse by later requests."
+    },
+    "requestResponse": {
+      "title": "Request & Response",
+      "pretty": "Pretty",
+      "json": "JSON",
+      "request": "Request",
+      "response": "Response",
+      "copyJson": "Copy JSON",
+      "responseNotAvailable": "Response data not available",
+      "loading": "Loading request & response data..."
+    },
+    "metadata": {
+      "title": "Metadata",
+      "copy": "Copy Metadata"
+    },
+    "guardrailJump": {
+      "evaluatedOne": "{{value}} guardrail evaluated",
+      "evaluatedOther": "{{value}} guardrails evaluated"
+    },
+    "guardrailLabel": {
+      "count": "{{value}} guardrails"
+    },
+    "field": {
+      "input": "Input",
+      "output": "Output"
+    },
+    "sectionHeader": {
+      "tokens": "Tokens: {{value}}",
+      "cost": "Cost: ${{value}}",
+      "turns": "Turns: {{value}}",
+      "copyInput": "Copy input",
+      "copyOutput": "Copy output"
+    },
+    "copy": "Copy",
+    "inputCard": {
+      "copied": "Input copied"
+    },
+    "outputCard": {
+      "copied": "Output copied",
+      "noResponse": "No response data available"
+    },
+    "jsonViewer": {
+      "noData": "No data"
+    },
+    "classifier": {
+      "inputTitle": "Classifier input",
+      "inputDescription": "Provider request payload. A cached call or disabled message logging may have no capture.",
+      "originatingTitle": "Originating request, credentials masked",
+      "originatingDescription": "Comparison only. This source request was not appended to the classifier input.",
+      "responseTitle": "Classifier response",
+      "responseDescription": "The returned verdict and any explanation supplied by the classifier. Later routing rules may change the tier.",
+      "copyTitle": "Copy {{title}}",
+      "truncated": "This stored copy is truncated. The complete payload is unavailable from the configured log storage.",
+      "notCaptured": "Not captured or message logging disabled"
+    },
+    "realtime": {
+      "noEvents": "No recognized realtime events found",
+      "session": "Session",
+      "turnOne": "{{value}} turn",
+      "turnOther": "{{value}} turns",
+      "config": {
+        "model": "Model",
+        "voice": "Voice",
+        "temperature": "Temperature",
+        "maxOutputTokens": "Max Output Tokens",
+        "inputAudioFormat": "Input Audio Format",
+        "outputAudioFormat": "Output Audio Format",
+        "turnDetection": "Turn Detection",
+        "tools": "Tools"
+      },
+      "toolsCount": "{{value}} tool(s)",
+      "instructions": "Instructions",
+      "usagePerTurn": "{{input}} in / {{output}} out tokens",
+      "conversationId": "conv: {{id}}...",
+      "tokenBreakdown": "{{label}} Token Breakdown"
+    },
+    "pretty": {
+      "chars": "({{value}} chars)",
+      "historyOne": "HISTORY ({{value}} message)",
+      "historyOther": "HISTORY ({{value}} messages)",
+      "functionBadge": "function"
+    },
+    "tokens": {
+      "flow": "{{total}} ({{prompt}} prompt tokens + {{completion}} completion tokens)"
+    },
+    "classifyTag": {
+      "label": "Classify",
+      "title": "Tier classification call made by the auto-router, not a request the caller sent"
+    },
+    "routing": {
+      "title": "Routing",
+      "routerType": {
+        "complexity": "Auto-Router v2",
+        "adaptive": "Adaptive router",
+        "quality": "Quality router"
+      },
+      "row": {
+        "tier": "Tier",
+        "requestType": "Request type",
+        "decidedBy": "Decided by",
+        "score": "Score",
+        "routedTo": "Routed to",
+        "escalated": "Escalated",
+        "signals": "Signals"
+      },
+      "scoreBand": {
+        "below": "below {{boundary}}",
+        "between": "{{low}} to {{high}}",
+        "atOrAbove": "at or above {{boundary}}",
+        "withTier": "{{range}}, {{tier}}"
+      },
+      "planModeFloor": "Plan-mode floor",
+      "planModeFloorTool": "Plan-mode floor ({{tool}} tool)",
+      "planModeFloorKeyword": "Plan-mode floor: \"{{keyword}}\"",
+      "housekeeping": "Client housekeeping call, classifier skipped",
+      "housekeepingKeyword": "Client housekeeping call: \"{{keyword}}\"",
+      "reasoningOverrideBoundary": "the Simple to Medium boundary",
+      "reasoningOverride": "Heuristic, {{tier}} override (2 or more reasoning markers, score of at least {{floor}})",
+      "llmClassifier": "LLM classifier",
+      "llmClassifierWithModel": "LLM classifier ({{model}})",
+      "keywordMatch": "Keyword match",
+      "keywordMatchWithKeyword": "Keyword match: \"{{keyword}}\"",
+      "escalated": "Yes",
+      "escalatedWithKeyword": "Yes, keyword \"{{keyword}}\"",
+      "escalationRequested": "Requested; already at the highest tier",
+      "escalationRequestedWithKeyword": "Requested via \"{{keyword}}\"; already at the highest tier",
+      "cause": {
+        "heuristicScorer": "Heuristic scorer",
+        "heuristicV2": "Heuristic v2",
+        "heuristicFirstShortCircuit": "Heuristic scorer, classifier skipped",
+        "hybridShortCircuit": "Heuristic scorer, score clear of every boundary",
+        "classifierPlugin": "Custom classifier plugin",
+        "semanticKeywordMatch": "Semantic keyword match",
+        "sessionAffinityPin": "Pinned to session",
+        "sessionAffinityEscalation": "Escalated from session pin",
+        "userTurnContinuation": "Continuation turn, classifier skipped",
+        "modalityEscalation": "Escalated for image input",
+        "modalityPinOverride": "Overrode session pin for image input",
+        "qualityTier": "Quality tier mapping",
+        "bandit": "Adaptive bandit",
+        "defaultFallback": "Default model, no route matched",
+        "classifierFallback": "Fallback tier, LLM classifier failed",
+        "defaultModelFallback": "Default model, LLM classifier failed"
+      }
+    }
   }
 }

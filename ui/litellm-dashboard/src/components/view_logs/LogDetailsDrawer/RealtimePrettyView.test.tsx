@@ -1,7 +1,9 @@
 import React from "react";
-import { render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { afterEach, beforeEach, describe, it, expect, vi } from "vitest";
+
+import i18n from "@/i18n/bootstrapI18n";
 import { RealtimePrettyView, isRealtimeResponse } from "./RealtimePrettyView";
 
 const sampleRealtimeResponse = {
@@ -364,5 +366,128 @@ describe("RealtimePrettyView", () => {
     };
     render(<RealtimePrettyView response={textResponse} />);
     expect(screen.getByText("This is a text response")).toBeInTheDocument();
+  });
+
+  describe("Chinese copy", () => {
+    beforeEach(async () => {
+      await i18n.changeLanguage("zh");
+    });
+
+    afterEach(async () => {
+      cleanup();
+      await i18n.changeLanguage("en");
+    });
+
+    it("renders the Chinese session header and turn count and hides the English ones", () => {
+      render(<RealtimePrettyView response={sampleRealtimeResponse} />);
+
+      expect(screen.getByText("会话")).toBeInTheDocument();
+      expect(screen.getByText("2 轮")).toBeInTheDocument();
+      expect(screen.queryByText("Session")).not.toBeInTheDocument();
+      expect(screen.queryByText("2 turns")).not.toBeInTheDocument();
+    });
+
+    it("renders the singular Chinese turn count", () => {
+      const singleTurnResponse = {
+        results: [
+          {
+            type: "session.created",
+            session: { id: "sess_1", model: "gpt-4o-mini-realtime-preview" },
+          },
+          {
+            type: "response.done",
+            response: {
+              id: "r1",
+              status: "completed",
+              output: [
+                {
+                  id: "item1",
+                  role: "assistant",
+                  type: "message",
+                  content: [{ type: "audio", transcript: "Hi!" }],
+                },
+              ],
+            },
+          },
+        ],
+      };
+      render(<RealtimePrettyView response={singleTurnResponse} />);
+
+      expect(screen.getByText("1 轮")).toBeInTheDocument();
+      expect(screen.queryByText("1 turn")).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese session configuration labels and hides the English ones", async () => {
+      const user = userEvent.setup();
+      render(<RealtimePrettyView response={sampleRealtimeResponse} />);
+
+      await user.click(screen.getByText("会话"));
+
+      await waitFor(() => {
+        expect(screen.getByText("模型")).toBeInTheDocument();
+      });
+      expect(screen.getByText("音色")).toBeInTheDocument();
+      expect(screen.getByText("温度")).toBeInTheDocument();
+      expect(screen.getByText("最大输出 Token 数")).toBeInTheDocument();
+      expect(screen.getByText("输入音频格式")).toBeInTheDocument();
+      expect(screen.getByText("输出音频格式")).toBeInTheDocument();
+      expect(screen.getByText("轮次检测")).toBeInTheDocument();
+      expect(screen.getByText("指令")).toBeInTheDocument();
+      expect(screen.queryByText("Temperature")).not.toBeInTheDocument();
+      expect(screen.queryByText("Max Output Tokens")).not.toBeInTheDocument();
+      expect(screen.queryByText("Instructions")).not.toBeInTheDocument();
+      expect(screen.queryByText("Voice")).not.toBeInTheDocument();
+      expect(screen.queryByText("Output Audio Format")).not.toBeInTheDocument();
+      expect(screen.queryByText("Turn Detection")).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese tools count and hides the English one", async () => {
+      const user = userEvent.setup();
+      render(
+        <RealtimePrettyView
+          response={{
+            results: [
+              {
+                type: "session.created",
+                session: { id: "sess_1", model: "gpt-4o-mini-realtime-preview", tools: [{ type: "function" }] },
+              },
+            ],
+          }}
+        />,
+      );
+
+      await user.click(screen.getByText("会话"));
+
+      await waitFor(() => {
+        expect(screen.getByText("1 个工具")).toBeInTheDocument();
+      });
+      expect(screen.getByText("工具")).toBeInTheDocument();
+      expect(screen.queryByText("1 tool(s)")).not.toBeInTheDocument();
+      expect(screen.queryByText("Tools")).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese per-turn usage and token breakdown and hides the English ones", () => {
+      render(<RealtimePrettyView response={sampleRealtimeResponse} />);
+
+      expect(screen.getByText("116 输入 / 46 输出 Token")).toBeInTheDocument();
+      expect(screen.getByText("输入 Token 明细")).toBeInTheDocument();
+      expect(screen.getByText("输出 Token 明细")).toBeInTheDocument();
+      expect(screen.queryByText("116 in / 46 out tokens")).not.toBeInTheDocument();
+      expect(screen.queryByText("Input Token Breakdown")).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese conversation id label and hides the English one", () => {
+      render(<RealtimePrettyView response={sampleRealtimeResponse} />);
+
+      expect(screen.getAllByText("会话：conv_DDNQlpN...")).toHaveLength(2);
+      expect(screen.queryByText("conv: conv_DDNQlpN...")).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese no-events fallback and hides the English one", () => {
+      render(<RealtimePrettyView response={{ results: [{ type: "unknown.event" }] }} />);
+
+      expect(screen.getByText("未找到可识别的实时事件")).toBeInTheDocument();
+      expect(screen.queryByText("No recognized realtime events found")).not.toBeInTheDocument();
+    });
   });
 });

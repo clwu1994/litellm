@@ -213,5 +213,233 @@
     "noAuditLogs": "暂无审计日志",
     "noMatchingAuditLogsHint": "没有审计日志条目符合你的筛选条件。",
     "noAuditLogsHint": "对密钥、团队、用户和模型的管理变更将显示在这里。"
+  },
+  "detail": {
+    "title": {
+      "withId": "请求 {{requestId}} 详情",
+      "default": "请求详情"
+    },
+    "header": {
+      "env": "环境：{{environment}}",
+      "copyRequestId": "复制请求 ID",
+      "copied": "已复制！",
+      "escToClose": "按 ESC 关闭",
+      "expandSidebar": "展开追踪侧栏",
+      "collapseSidebar": "收起追踪侧栏"
+    },
+    "status": {
+      "success": "成功",
+      "failure": "失败"
+    },
+    "sidebar": {
+      "session": "会话",
+      "trace": "追踪",
+      "copyTraceId": "复制追踪 ID",
+      "requestCount": "{{value}} 个请求",
+      "cached": "{{hit}}/{{total}} 已缓存",
+      "truncated": "显示最近 {{shown}} 条，共 {{total}} 条",
+      "sortDuration": "耗时",
+      "sortStartTime": "开始时间"
+    },
+    "error": {
+      "title": "请求失败",
+      "code": "错误码：",
+      "message": "消息：",
+      "defaultMessage": "发生错误"
+    },
+    "request": {
+      "title": "请求详情",
+      "model": "模型",
+      "provider": "提供商",
+      "callType": "调用类型",
+      "modelId": "模型 ID",
+      "apiBase": "API 基础地址",
+      "ipAddress": "IP 地址",
+      "guardrail": "护栏",
+      "masked": "已遮蔽 {{value}} 项"
+    },
+    "tags": {
+      "title": "标签"
+    },
+    "batch": {
+      "title": "批处理结果",
+      "id": "批处理 ID",
+      "successful": "成功请求",
+      "failed": "失败请求",
+      "models": "模型"
+    },
+    "metrics": {
+      "title": "指标",
+      "inputTokens": "输入 Token",
+      "outputTokens": "输出 Token",
+      "tokens": "Token",
+      "reasoningTokens": "推理 Token",
+      "cost": "成本",
+      "duration": "耗时",
+      "ttft": "首 Token 时间",
+      "responseCache": "响应缓存",
+      "cacheHit": "命中",
+      "cacheMiss": "未命中",
+      "cacheKey": "缓存键",
+      "promptCacheRead": "Prompt 缓存读取 Token",
+      "promptCacheCreation": "Prompt 缓存写入 Token",
+      "overhead": "LiteLLM 开销",
+      "retries": "重试",
+      "retriesNone": "无",
+      "startTime": "开始时间",
+      "endTime": "结束时间",
+      "infoAria": "{{label}} 说明",
+      "docs": "文档"
+    },
+    "tooltips": {
+      "responseCache": "此请求是否由 LiteLLM 的响应缓存（例如 Redis / 内存缓存）直接返回，从而完全跳过 LLM 提供商调用。这与提供商的 Prompt 缓存不同；此处显示未命中并不代表 Prompt 缓存失败。",
+      "cacheKey": "LiteLLM 为此请求在响应缓存中计算出的键。缓存键相同的请求会共享同一份缓存响应；键不同则表示请求内容与任何缓存条目都不匹配。",
+      "promptCacheRead": "从 LLM 提供商的 Prompt 缓存（例如 Anthropic / OpenAI）读取的输入 Token，按折扣费率计费。由提供商上报。",
+      "promptCacheCreation": "写入 LLM 提供商的 Prompt 缓存、供后续请求复用的输入 Token。"
+    },
+    "requestResponse": {
+      "title": "请求与响应",
+      "pretty": "美化",
+      "json": "JSON",
+      "request": "请求",
+      "response": "响应",
+      "copyJson": "复制 JSON",
+      "responseNotAvailable": "响应数据不可用",
+      "loading": "正在加载请求与响应数据…"
+    },
+    "metadata": {
+      "title": "元数据",
+      "copy": "复制元数据"
+    },
+    "guardrailJump": {
+      "evaluatedOne": "已评估 {{value}} 条护栏",
+      "evaluatedOther": "已评估 {{value}} 条护栏"
+    },
+    "guardrailLabel": {
+      "count": "{{value}} 个护栏"
+    },
+    "field": {
+      "input": "输入",
+      "output": "输出"
+    },
+    "sectionHeader": {
+      "tokens": "Token：{{value}}",
+      "cost": "成本：${{value}}",
+      "turns": "轮次：{{value}}",
+      "copyInput": "复制输入",
+      "copyOutput": "复制输出"
+    },
+    "copy": "复制",
+    "inputCard": {
+      "copied": "已复制输入"
+    },
+    "outputCard": {
+      "copied": "已复制输出",
+      "noResponse": "没有可用的响应数据"
+    },
+    "jsonViewer": {
+      "noData": "无数据"
+    },
+    "classifier": {
+      "inputTitle": "分类器输入",
+      "inputDescription": "提供商请求载荷。缓存调用或消息日志记录被禁用时可能没有捕获内容。",
+      "originatingTitle": "原始请求，凭据已遮蔽",
+      "originatingDescription": "仅供对比。此源请求未追加到分类器输入中。",
+      "responseTitle": "分类器响应",
+      "responseDescription": "分类器返回的判定结果及提供的任何说明。后续路由规则可能会改变层级。",
+      "copyTitle": "复制{{title}}",
+      "truncated": "此存储副本已被截断。完整载荷无法从已配置的日志存储中获取。",
+      "notCaptured": "未捕获或消息日志记录已禁用"
+    },
+    "realtime": {
+      "noEvents": "未找到可识别的实时事件",
+      "session": "会话",
+      "turnOne": "{{value}} 轮",
+      "turnOther": "{{value}} 轮",
+      "config": {
+        "model": "模型",
+        "voice": "音色",
+        "temperature": "温度",
+        "maxOutputTokens": "最大输出 Token 数",
+        "inputAudioFormat": "输入音频格式",
+        "outputAudioFormat": "输出音频格式",
+        "turnDetection": "轮次检测",
+        "tools": "工具"
+      },
+      "toolsCount": "{{value}} 个工具",
+      "instructions": "指令",
+      "usagePerTurn": "{{input}} 输入 / {{output}} 输出 Token",
+      "conversationId": "会话：{{id}}...",
+      "tokenBreakdown": "{{label}} Token 明细"
+    },
+    "pretty": {
+      "chars": "（{{value}} 个字符）",
+      "historyOne": "历史记录（{{value}} 条消息）",
+      "historyOther": "历史记录（{{value}} 条消息）",
+      "functionBadge": "函数"
+    },
+    "tokens": {
+      "flow": "{{total}}（{{prompt}} 个输入 Token + {{completion}} 个输出 Token）"
+    },
+    "classifyTag": {
+      "label": "分类",
+      "title": "自动路由发起的层级分类调用，并非调用方发送的请求"
+    },
+    "routing": {
+      "title": "路由",
+      "routerType": {
+        "complexity": "Auto-Router v2",
+        "adaptive": "自适应路由器",
+        "quality": "质量路由器"
+      },
+      "row": {
+        "tier": "层级",
+        "requestType": "请求类型",
+        "decidedBy": "决策依据",
+        "score": "分数",
+        "routedTo": "路由至",
+        "escalated": "已升级",
+        "signals": "信号"
+      },
+      "scoreBand": {
+        "below": "低于 {{boundary}}",
+        "between": "{{low}} 至 {{high}}",
+        "atOrAbove": "高于或等于 {{boundary}}",
+        "withTier": "{{range}}，{{tier}}"
+      },
+      "planModeFloor": "计划模式下限",
+      "planModeFloorTool": "计划模式下限（{{tool}} 工具）",
+      "planModeFloorKeyword": "计划模式下限：\"{{keyword}}\"",
+      "housekeeping": "客户端维护调用，已跳过分类器",
+      "housekeepingKeyword": "客户端维护调用：\"{{keyword}}\"",
+      "reasoningOverrideBoundary": "Simple 到 Medium 的边界",
+      "reasoningOverride": "启发式，{{tier}} 覆盖（2 个或更多推理标记，分数至少为 {{floor}}）",
+      "llmClassifier": "LLM 分类器",
+      "llmClassifierWithModel": "LLM 分类器（{{model}}）",
+      "keywordMatch": "关键词匹配",
+      "keywordMatchWithKeyword": "关键词匹配：\"{{keyword}}\"",
+      "escalated": "是",
+      "escalatedWithKeyword": "是，关键词 \"{{keyword}}\"",
+      "escalationRequested": "已请求；已处于最高层级",
+      "escalationRequestedWithKeyword": "通过 \"{{keyword}}\" 请求；已处于最高层级",
+      "cause": {
+        "heuristicScorer": "启发式评分器",
+        "heuristicV2": "启发式 v2",
+        "heuristicFirstShortCircuit": "启发式评分器，已跳过分类器",
+        "hybridShortCircuit": "启发式评分器，分数明显高于所有边界",
+        "classifierPlugin": "自定义分类器插件",
+        "semanticKeywordMatch": "语义关键词匹配",
+        "sessionAffinityPin": "固定到会话",
+        "sessionAffinityEscalation": "从会话固定升级",
+        "userTurnContinuation": "续接轮次，已跳过分类器",
+        "modalityEscalation": "因图片输入而升级",
+        "modalityPinOverride": "因图片输入覆盖了会话固定",
+        "qualityTier": "质量层级映射",
+        "bandit": "自适应 Bandit",
+        "defaultFallback": "默认模型，无匹配路由",
+        "classifierFallback": "回退层级，LLM 分类器失败",
+        "defaultModelFallback": "默认模型，LLM 分类器失败"
+      }
+    }
   }
 }

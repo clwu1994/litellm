@@ -1,7 +1,9 @@
-import { render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import { ThemeProvider } from "next-themes";
 import { darkStyles, defaultStyles } from "react-json-view-lite";
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+
+import i18n from "@/i18n/bootstrapI18n";
 import { JsonViewer } from "./JsonViewer";
 
 const renderWithTheme = (theme: "light" | "dark", data: unknown) =>
@@ -50,5 +52,23 @@ describe("JsonViewer", () => {
       .split(" ")
       .filter((className) => !darkStyles.container.split(" ").includes(className))
       .forEach((lightOnlyClassName) => expect(tree).not.toHaveClass(lightOnlyClassName));
+  });
+
+  describe("Chinese copy", () => {
+    beforeEach(async () => {
+      await i18n.changeLanguage("zh");
+    });
+
+    afterEach(async () => {
+      cleanup();
+      await i18n.changeLanguage("en");
+    });
+
+    it("renders the Chinese empty placeholder and hides the English one", () => {
+      renderWithTheme("light", null);
+
+      expect(screen.getByText("无数据")).toBeInTheDocument();
+      expect(screen.queryByText("No data")).not.toBeInTheDocument();
+    });
   });
 });

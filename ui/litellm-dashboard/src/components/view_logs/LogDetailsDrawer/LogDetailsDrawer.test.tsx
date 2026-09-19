@@ -1,6 +1,8 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+import i18n from "@/i18n/bootstrapI18n";
 import { LogDetailsDrawer } from "./LogDetailsDrawer";
 import { sessionSpendLogsCall } from "../../networking";
 import { LogEntry } from "../columns";
@@ -20,7 +22,7 @@ vi.mock("./LogDetailContent", () => ({
 }));
 
 vi.mock("./DrawerHeader", () => ({
-  DrawerHeader: () => null,
+  DrawerHeader: ({ statusLabel }: { statusLabel: string }) => <span data-testid="drawer-status">{statusLabel}</span>,
 }));
 
 vi.mock("@/app/(dashboard)/hooks/models/useModels", () => ({
@@ -162,5 +164,86 @@ describe("LogDetailsDrawer session sidebar auto-router icon", () => {
     expect(routedRow.querySelector(".lucide-sparkles")).toBeNull();
     expect(directRow.querySelector(".lucide-sparkles")).not.toBeNull();
     expect(directRow.querySelector(".lucide-waypoints")).toBeNull();
+  });
+});
+
+describe("LogDetailsDrawer Chinese copy", () => {
+  beforeEach(async () => {
+    await i18n.changeLanguage("zh");
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  const renderSingleLog = (logEntry: LogEntry) => {
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    return render(
+      <QueryClientProvider client={queryClient}>
+        <LogDetailsDrawer open onClose={() => {}} logEntry={logEntry} accessToken="token" />
+      </QueryClientProvider>,
+    );
+  };
+
+  const renderSession = (total: number) => {
+    vi.mocked(sessionSpendLogsCall).mockResolvedValue({ data: sessionLogs, total, total_pages: 1 });
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    return render(
+      <QueryClientProvider client={queryClient}>
+        <LogDetailsDrawer open onClose={() => {}} logEntry={null} sessionId="session-1" accessToken="token" />
+      </QueryClientProvider>,
+    );
+  };
+
+  it("renders the Chinese drawer title for a named request and hides the English one", () => {
+    renderSingleLog(makeLog({ request_id: "req-9" }));
+
+    expect(screen.getByText("请求 req-9 详情")).toBeInTheDocument();
+    expect(screen.queryByText("Request req-9 details")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese default drawer title for a session and hides the English one", async () => {
+    renderSession(4);
+
+    expect(await screen.findByText("请求详情")).toBeInTheDocument();
+    expect(screen.queryByText("Request details")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese status labels and hides the English ones", () => {
+    renderSingleLog(makeLog({ metadata: { status: "failure" } }));
+    expect(screen.getByTestId("drawer-status")).toHaveTextContent("失败");
+    cleanup();
+
+    renderSingleLog(makeLog({ metadata: { status: "success" } }));
+    expect(screen.getByTestId("drawer-status")).toHaveTextContent("成功");
+    expect(screen.queryByTestId("drawer-status")).not.toHaveTextContent("Success");
+  });
+
+  it("renders the Chinese trace chrome and hides the English one", () => {
+    renderSingleLog(makeLog({ request_id: "req-1" }));
+
+    expect(screen.getByText("追踪")).toBeInTheDocument();
+    expect(screen.getByLabelText("复制追踪 ID")).toBeInTheDocument();
+    expect(screen.getByText(/1 个请求/)).toBeInTheDocument();
+    expect(screen.queryByText("Trace")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Copy trace id")).not.toBeInTheDocument();
+    expect(screen.queryByText(/1 req/)).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese session sidebar chrome and hides the English one", async () => {
+    renderSession(10);
+
+    expect(await screen.findByText("会话")).toBeInTheDocument();
+    expect(screen.getByText(/0\/4 已缓存/)).toBeInTheDocument();
+    expect(screen.getByText(/显示最近 4 条，共 10 条/)).toBeInTheDocument();
+    expect(screen.getByText("耗时")).toBeInTheDocument();
+    expect(screen.getByText("开始时间")).toBeInTheDocument();
+    expect(screen.getByLabelText("收起追踪侧栏")).toBeInTheDocument();
+    expect(screen.queryByText("Session")).not.toBeInTheDocument();
+    expect(screen.queryByText(/0\/4 cached/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Showing most recent/)).not.toBeInTheDocument();
+    expect(screen.queryByText("Start time")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Collapse trace sidebar")).not.toBeInTheDocument();
   });
 });

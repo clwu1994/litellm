@@ -1,7 +1,9 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect } from "vitest";
+import { afterEach, beforeEach, describe, it, expect } from "vitest";
+
+import i18n from "@/i18n/bootstrapI18n";
 import { CollapsibleMessage } from "./CollapsibleMessage";
 
 describe("CollapsibleMessage", () => {
@@ -50,5 +52,23 @@ describe("CollapsibleMessage", () => {
 
     await user.keyboard(" ");
     expect(screen.getByText("Toggle me")).not.toBeVisible();
+  });
+
+  describe("Chinese copy", () => {
+    beforeEach(async () => {
+      await i18n.changeLanguage("zh");
+    });
+
+    afterEach(async () => {
+      cleanup();
+      await i18n.changeLanguage("en");
+    });
+
+    it("renders the Chinese character count and hides the English one", () => {
+      render(<CollapsibleMessage label="SYSTEM" content="Hello" />);
+
+      expect(screen.getByText("（5 个字符）")).toBeInTheDocument();
+      expect(screen.queryByText("(5 chars)")).not.toBeInTheDocument();
+    });
   });
 });

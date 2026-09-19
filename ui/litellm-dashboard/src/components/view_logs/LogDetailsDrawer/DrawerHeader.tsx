@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Check, ChevronDown, ChevronUp, Copy, X } from "lucide-react";
 import moment from "moment";
+import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -145,6 +146,7 @@ function ModelProviderSection({
  */
 function RequestIdSection({ requestId }: { requestId: string }) {
   const [copied, setCopied] = useState(false);
+  const { t } = useTranslation("logs");
 
   const handleCopy = async () => {
     try {
@@ -178,7 +180,7 @@ function RequestIdSection({ requestId }: { requestId: string }) {
             {requestId}
             <button
               type="button"
-              aria-label={copied ? "Copied!" : "Copy Request ID"}
+              aria-label={copied ? t("detail.header.copied") : t("detail.header.copyRequestId")}
               onClick={handleCopy}
               className="ml-1 align-middle text-muted-foreground hover:text-foreground"
             >
@@ -205,6 +207,7 @@ function NavigationSection({
   onNext: () => void;
   onClose: () => void;
 }) {
+  const { t } = useTranslation("logs");
   const keyboardShortcutStyle = {
     border: "1px solid var(--color-border)",
     borderRadius: 4,
@@ -233,7 +236,7 @@ function NavigationSection({
           <TooltipTrigger render={<Button variant="ghost" size="icon-sm" onClick={onClose} />}>
             <X className="size-4" />
           </TooltipTrigger>
-          <TooltipContent>ESC to close</TooltipContent>
+          <TooltipContent>{t("detail.header.escToClose")}</TooltipContent>
         </Tooltip>
       </TooltipProvider>
     </div>
@@ -254,10 +257,12 @@ function StatusBar({
   statusColor: "error" | "success";
   environment: string;
 }) {
+  const { t } = useTranslation("logs");
+
   return (
     <div className="flex items-center gap-3">
       <Badge variant={statusColor === "error" ? "destructive" : "secondary"}>{statusLabel}</Badge>
-      <Badge variant="outline">Env: {environment}</Badge>
+      <Badge variant="outline">{t("detail.header.env", { environment })}</Badge>
       <div className="flex items-center gap-2">
         <span className="text-muted-foreground" style={{ fontSize: FONT_SIZE_MEDIUM }}>
           {moment(log.startTime).format("MMM D, YYYY h:mm:ss A")}
