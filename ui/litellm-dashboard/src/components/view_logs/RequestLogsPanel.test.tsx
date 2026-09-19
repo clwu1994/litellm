@@ -1,10 +1,11 @@
 import { QueryClientProvider } from "@tanstack/react-query";
-import { fireEvent, screen, waitFor, within } from "@testing-library/react";
+import { cleanup, fireEvent, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import moment from "moment";
 import { NuqsTestingAdapter, type UrlUpdateEvent } from "nuqs/adapters/testing";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import i18n from "@/i18n/bootstrapI18n";
 import { render, renderWithProviders, testQueryClient } from "../../../tests/test-utils";
 import type { LogEntry } from "./columns";
 import RequestLogsPanel from "./RequestLogsPanel";
@@ -58,6 +59,7 @@ const debounce = vi.hoisted(() => ({ settled: null as string | null }));
 
 vi.mock("@tanstack/react-pacer/debouncer", () => ({
   useDebouncedValue: vi.fn((value: unknown) => [debounce.settled ?? value, { cancel: vi.fn(), flush: vi.fn() }]),
+  useDebouncedCallback: vi.fn((callback: (...args: unknown[]) => void) => callback),
 }));
 
 import { useDebouncedValue } from "@tanstack/react-pacer/debouncer";
@@ -145,6 +147,11 @@ describe("RequestLogsPanel", () => {
     testQueryClient.clear();
     respondWith([]);
     debounce.settled = null;
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
   });
 
   describe("server-grouped session pagination (#38060)", () => {
@@ -802,6 +809,140 @@ describe("RequestLogsPanel", () => {
       await user.click(screen.getByRole("button", { name: "Stop" }));
 
       expect(screen.queryByText("Auto-refreshing every 15 seconds")).not.toBeInTheDocument();
+    });
+  });
+
+  describe("Chinese copy", () => {
+    beforeEach(async () => {
+      await i18n.changeLanguage("zh");
+    });
+
+    it("renders the Chinese panel title and search placeholder", async () => {
+      renderPanel();
+
+      expect(await screen.findByRole("heading", { name: "请求日志" })).toBeInTheDocument();
+      expect(screen.queryByRole("heading", { name: "Request Logs" })).not.toBeInTheDocument();
+      expect(screen.getByPlaceholderText("按 ID 搜索日志…")).toBeInTheDocument();
+      expect(screen.queryByPlaceholderText("Search logs by ID…")).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese toolbar switches and reset button", async () => {
+      renderPanel();
+
+      expect(await screen.findByText("实时追踪")).toBeInTheDocument();
+      expect(screen.getByText("隐藏健康检查")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "重置筛选" })).toBeInTheDocument();
+      expect(screen.queryByText("Live Tail")).not.toBeInTheDocument();
+      expect(screen.queryByText("Hide Health Checks")).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Reset Filters" })).not.toBeInTheDocument();
+    });
+
+    it("renders every Chinese quick-select label and hides the English ones", async () => {
+      const user = userEvent.setup();
+      renderPanel();
+
+      await user.click(await screen.findByRole("button", { name: /最近 24 小时/ }));
+
+      for (const label of ["最近 1 分钟", "最近 15 分钟", "最近 1 小时", "最近 4 小时", "最近 24 小时", "最近 7 天"]) {
+        expect(screen.getAllByRole("button", { name: label }).length).toBeGreaterThan(0);
+      }
+      for (const label of [
+        "Last Minute",
+        "Last 15 Minutes",
+        "Last Hour",
+        "Last 4 Hours",
+        "Last 24 Hours",
+        "Last 7 Days",
+      ]) {
+        expect(screen.queryByRole("button", { name: label })).not.toBeInTheDocument();
+      }
+    });
+
+    it("renders the Chinese custom range toggle and separator", async () => {
+      const user = userEvent.setup();
+      renderPanel();
+
+      await user.click(await screen.findByRole("button", { name: /最近 24 小时/ }));
+      await user.click(await screen.findByRole("button", { name: "自定义范围" }));
+
+      expect(await screen.findByText("至")).toBeInTheDocument();
+      expect(screen.queryByText("Custom Range")).not.toBeInTheDocument();
+      expect(screen.queryByText("to")).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese live tail banner and stop button", async () => {
+      const user = userEvent.setup();
+      renderPanel();
+
+      expect(await screen.findByText("每 15 秒自动刷新")).toBeInTheDocument();
+      expect(screen.queryByText("Auto-refreshing every 15 seconds")).not.toBeInTheDocument();
+
+      await user.click(screen.getByRole("button", { name: "停止" }));
+
+      expect(screen.queryByText("每 15 秒自动刷新")).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Stop" })).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese unfiltered empty state", async () => {
+      renderPanel();
+
+      expect(await screen.findByText("暂无请求")).toBeInTheDocument();
+      expect(screen.getByText("通过 LiteLLM 代理的请求将显示在这里。")).toBeInTheDocument();
+      expect(screen.queryByText("No requests yet")).not.toBeInTheDocument();
+      expect(screen.queryByText("Requests proxied through LiteLLM will appear here.")).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese filtered empty state", async () => {
+      renderPanel();
+
+      await waitFor(() => expect(uiSpendLogsCall).toHaveBeenCalled());
+      fireEvent.change(screen.getByTestId("datatable-search"), { target: { value: "nope" } });
+
+      expect(await screen.findByText("没有匹配的请求")).toBeInTheDocument();
+      expect(screen.getByText("此时间范围内没有请求符合你的筛选条件。")).toBeInTheDocument();
+      expect(screen.queryByText("No matching requests")).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese loading message", async () => {
+      vi.mocked(uiSpendLogsCall).mockImplementation(() => new Promise(() => {}));
+      renderPanel();
+
+      expect(await screen.findByText("正在加载请求日志…")).toBeInTheDocument();
+      expect(screen.queryByText("Loading request logs…")).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese filter drawer title and description", async () => {
+      const user = userEvent.setup();
+      renderPanel();
+
+      await user.click(screen.getByTestId("datatable-filters-trigger"));
+
+      expect(await screen.findByText("筛选")).toBeInTheDocument();
+      expect(screen.getByText("进一步筛选请求日志")).toBeInTheDocument();
+      expect(screen.queryByText("Narrow down request logs")).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese search filter chip label", async () => {
+      renderPanel();
+
+      await waitFor(() => expect(uiSpendLogsCall).toHaveBeenCalled());
+      fireEvent.change(screen.getByTestId("datatable-search"), { target: { value: "sess-42" } });
+
+      const chip = await screen.findByTestId("filter-chip-search");
+      expect(chip).toHaveTextContent("搜索:sess-42");
+      expect(chip).not.toHaveTextContent("Search:sess-42");
+    });
+
+    it("renders the Chinese back-to-logs button when a key is opened", async () => {
+      const user = userEvent.setup();
+      respondWith([logEntry({ request_id: "req-key", metadata: { user_api_key: "sk-hash-9" } })]);
+      renderPanel();
+
+      await waitFor(() => expect(row("req-key")).not.toBeNull());
+      await user.click(screen.getByText("sk-hash-9"));
+
+      expect(await screen.findByText("返回日志")).toBeInTheDocument();
+      expect(screen.queryByText("Back to Logs")).not.toBeInTheDocument();
     });
   });
 });

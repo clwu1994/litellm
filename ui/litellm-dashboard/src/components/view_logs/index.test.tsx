@@ -1,7 +1,8 @@
-import { screen } from "@testing-library/react";
+import { cleanup, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import SpendLogsTable from "./index";
+import i18n from "@/i18n/bootstrapI18n";
 import { renderWithProviders } from "../../../tests/test-utils";
 
 const { useAuthorizedMock, useOrganizationsMock } = vi.hoisted(() => ({
@@ -63,6 +64,11 @@ describe("SpendLogsTable", () => {
   beforeEach(() => {
     useAuthorizedMock.mockReturnValue({ userId: "user-1", userRole: "Admin" });
     useOrganizationsMock.mockReturnValue({ data: [] });
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
   });
 
   it("renders the four log tabs", () => {
@@ -192,6 +198,29 @@ describe("SpendLogsTable", () => {
 
       expect(document.querySelector('[aria-busy="true"]')).not.toBeInTheDocument();
       expect(screen.getByRole("tab", { name: "Request Logs" })).toBeInTheDocument();
+    });
+  });
+
+  describe("Chinese copy", () => {
+    it("renders the Chinese tab labels and hides the English ones under zh", async () => {
+      await i18n.changeLanguage("zh");
+      renderAs("Admin");
+
+      for (const label of ["请求日志", "审计日志", "已删除的密钥", "已删除的团队"]) {
+        expect(screen.getByRole("tab", { name: label })).toBeInTheDocument();
+      }
+      for (const label of ["Request Logs", "Audit Logs", "Deleted Keys", "Deleted Teams"]) {
+        expect(screen.queryByRole("tab", { name: label })).not.toBeInTheDocument();
+      }
+    });
+
+    it("renders the Chinese loading aria-label and hides the English one under zh", async () => {
+      await i18n.changeLanguage("zh");
+      useAuthorizedMock.mockReturnValue({ userRole: "Admin" });
+      renderWithProviders(<SpendLogsTable {...defaultProps} accessToken={null} />);
+
+      expect(screen.getByLabelText("加载中")).toBeInTheDocument();
+      expect(screen.queryByLabelText("Loading")).not.toBeInTheDocument();
     });
   });
 });

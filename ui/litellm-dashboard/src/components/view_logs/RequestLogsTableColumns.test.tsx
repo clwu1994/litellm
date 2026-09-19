@@ -1,8 +1,10 @@
-import { render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import type { TFunction } from "i18next";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { DataTable } from "@/components/shared/DataTable";
+import i18n from "@/i18n/bootstrapI18n";
 
 import type { LogEntry } from "./columns";
 import { getRequestLogsTableColumns } from "./RequestLogsTableColumns";
@@ -28,16 +30,182 @@ const logEntry = (overrides: Partial<LogEntry>): LogEntry => ({
 
 const noopDeps = { onKeyHashClick: vi.fn(), onSessionClick: vi.fn() };
 
-function renderRows(rows: LogEntry[], deps = noopDeps) {
+const enT: TFunction<"logs"> = i18n.getFixedT("en", "logs");
+const zhT: TFunction<"logs"> = i18n.getFixedT("zh", "logs");
+
+function renderRows(rows: LogEntry[], deps = noopDeps, t: TFunction<"logs"> = enT) {
   render(
     <DataTable
       data={rows}
-      columns={getRequestLogsTableColumns(deps)}
+      columns={getRequestLogsTableColumns(deps, t)}
       getRowId={(row) => row.request_id}
       size="compact"
     />,
   );
 }
+
+describe("RequestLogsTableColumns", () => {
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  it("renders the Chinese column headers and hides the English ones under zh", async () => {
+    await i18n.changeLanguage("zh");
+    renderRows([logEntry({})], noopDeps, zhT);
+
+    const headers = screen.getAllByRole("columnheader").map((header) => header.textContent);
+    for (const header of [
+      "时间",
+      "类型",
+      "状态",
+      "会话 ID",
+      "请求 ID",
+      "成本",
+      "耗时（秒）",
+      "TTFT（秒）",
+      "团队名称",
+      "密钥哈希",
+      "密钥别名",
+      "模型",
+      "Token 数",
+      "内部用户",
+      "最终用户",
+      "标签",
+    ]) {
+      expect(headers).toContain(header);
+    }
+    for (const header of [
+      "Time",
+      "Type",
+      "Status",
+      "Session ID",
+      "Request ID",
+      "Cost",
+      "Duration (s)",
+      "Team Name",
+      "Key Hash",
+      "Key Alias",
+      "Model",
+      "Tokens",
+      "Internal User",
+      "End User",
+      "Tags",
+    ]) {
+      expect(headers).not.toContain(header);
+    }
+  });
+
+  it("renders the Chinese success and failure badges and hides the English ones under zh", async () => {
+    await i18n.changeLanguage("zh");
+    renderRows(
+      [logEntry({ request_id: "req-ok" }), logEntry({ request_id: "req-bad", metadata: { status: "failure" } })],
+      noopDeps,
+      zhT,
+    );
+
+    expect(screen.getByText("成功")).toBeInTheDocument();
+    expect(screen.getByText("失败")).toBeInTheDocument();
+    expect(screen.queryByText("Success")).not.toBeInTheDocument();
+    expect(screen.queryByText("Failure")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese batch status and its tooltip under zh", async () => {
+    const user = userEvent.setup();
+    await i18n.changeLanguage("zh");
+    renderRows(
+      [
+        logEntry({
+          request_id: "batch_abc123_batch_cost",
+          call_type: "aretrieve_batch",
+          metadata: { batch_successful_requests: 2, batch_failed_requests: 1 },
+        }),
+      ],
+      noopDeps,
+      zhT,
+    );
+
+    expect(screen.getByText("2/3 成功")).toBeInTheDocument();
+    expect(screen.queryByText("2/3 succeeded")).not.toBeInTheDocument();
+
+    await user.hover(screen.getByText("2/3 成功"));
+    expect(await screen.findByText("3 个批处理请求中有 1 个失败")).toBeInTheDocument();
+  });
+
+  it("renders the Chinese batch badge, cost label and id tooltip under zh", async () => {
+    const user = userEvent.setup();
+    await i18n.changeLanguage("zh");
+    renderRows(
+      [
+        logEntry({
+          request_id: "batch_abc123_batch_cost",
+          call_type: "aretrieve_batch",
+          metadata: { batch_successful_requests: 1, batch_failed_requests: 0 },
+        }),
+      ],
+      noopDeps,
+      zhT,
+    );
+
+    expect(screen.getByText("批处理")).toBeInTheDocument();
+    expect(screen.getByText("批处理成本")).toBeInTheDocument();
+    expect(screen.queryByText("Batch")).not.toBeInTheDocument();
+    expect(screen.queryByText("batch cost")).not.toBeInTheDocument();
+
+    await user.hover(screen.getByText("batch_abc123"));
+    expect(await screen.findByText("批处理 batch_abc123（行：batch_abc123_batch_cost）")).toBeInTheDocument();
+  });
+
+  it("renders the Chinese session total labels and hides the English ones under zh", async () => {
+    await i18n.changeLanguage("zh");
+    const sessionTotalRow: Partial<LogEntry> = {
+      request_id: "req-session",
+      spend: 0.01,
+      session_id: "sess-1",
+      session_total_count: 3,
+      session_total_spend: 0.06,
+      session_total_tokens: 60,
+      session_total_prompt_tokens: 42,
+      session_total_completion_tokens: 18,
+    };
+    renderRows([logEntry(sessionTotalRow)], noopDeps, zhT);
+
+    expect(screen.getAllByText("会话总计")).toHaveLength(2);
+    expect(screen.queryByText("session total")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese session composition tooltip under zh", async () => {
+    const user = userEvent.setup();
+    await i18n.changeLanguage("zh");
+    const sessionCompositionRow: Partial<LogEntry> = {
+      request_id: "req-mcp-rep",
+      call_type: "call_mcp_tool",
+      session_id: "sess-edge",
+      session_total_count: 3,
+      session_llm_count: 2,
+      mcp_tool_call_count: 1,
+      session_agent_count: 1,
+      session_cache_hit_count: 4,
+    };
+    renderRows([logEntry(sessionCompositionRow)], noopDeps, zhT);
+
+    await user.hover(screen.getByText("3"));
+    expect(await screen.findByText("2 LLM • 1 Agent • 1 MCP • 4 缓存命中")).toBeInTheDocument();
+    expect(screen.queryByText("2 LLM • 1 Agent • 1 MCP • 4 cache hit")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese MCP spend note under zh", async () => {
+    await i18n.changeLanguage("zh");
+    renderRows(
+      [logEntry({ request_id: "req-mcp-spend", mcp_tool_call_count: 2, mcp_tool_call_spend: 0.001 })],
+      noopDeps,
+      zhT,
+    );
+
+    expect(screen.getByText(/含来自 2 个 MCP 的/)).toBeInTheDocument();
+    expect(screen.queryByText(/incl\./)).not.toBeInTheDocument();
+  });
+});
 
 describe("Cost column", () => {
   it("renders '-' for zero spend with no tooltip, so hovering never shows a contradictory $0", async () => {

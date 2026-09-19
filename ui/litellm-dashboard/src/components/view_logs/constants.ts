@@ -1,16 +1,16 @@
-export const ERROR_CODE_OPTIONS: { label: string; value: string }[] = [
-  { label: "400 - Bad Request", value: "400" },
-  { label: "401 - Invalid Authentication", value: "401" },
-  { label: "403 - Permission Denied", value: "403" },
-  { label: "404 - Not Found", value: "404" },
-  { label: "408 - Request Timeout", value: "408" },
-  { label: "422 - Unprocessable Entity", value: "422" },
-  { label: "429 - Rate Limited", value: "429" },
-  { label: "500 - Internal Server Error", value: "500" },
-  { label: "502 - Bad Gateway", value: "502" },
-  { label: "503 - Service Unavailable", value: "503" },
-  { label: "529 - Overloaded", value: "529" },
-];
+export const ERROR_CODE_OPTIONS = [
+  { labelKey: "request.filters.errorCode.codes.400", value: "400" },
+  { labelKey: "request.filters.errorCode.codes.401", value: "401" },
+  { labelKey: "request.filters.errorCode.codes.403", value: "403" },
+  { labelKey: "request.filters.errorCode.codes.404", value: "404" },
+  { labelKey: "request.filters.errorCode.codes.408", value: "408" },
+  { labelKey: "request.filters.errorCode.codes.422", value: "422" },
+  { labelKey: "request.filters.errorCode.codes.429", value: "429" },
+  { labelKey: "request.filters.errorCode.codes.500", value: "500" },
+  { labelKey: "request.filters.errorCode.codes.502", value: "502" },
+  { labelKey: "request.filters.errorCode.codes.503", value: "503" },
+  { labelKey: "request.filters.errorCode.codes.529", value: "529" },
+] as const;
 
 /** Call types that represent MCP tool invocations (shared across columns, index, drawer). */
 export const MCP_CALL_TYPES = ["call_mcp_tool", "list_mcp_tools"];
@@ -21,11 +21,11 @@ export const AGENT_CALL_TYPES = ["asend_message"];
 /** Call types that represent Batch API operations (creation and retrieval, sync and async). */
 export const BATCH_CALL_TYPES = ["acreate_batch", "create_batch", "aretrieve_batch", "retrieve_batch"];
 
-export const QUICK_SELECT_OPTIONS: { label: string; value: number; unit: string }[] = [
-  { label: "Last Minute", value: 1, unit: "minutes" },
-  { label: "Last 15 Minutes", value: 15, unit: "minutes" },
-  { label: "Last Hour", value: 1, unit: "hours" },
-  { label: "Last 4 Hours", value: 4, unit: "hours" },
-  { label: "Last 24 Hours", value: 24, unit: "hours" },
-  { label: "Last 7 Days", value: 7, unit: "days" },
-];
+export const QUICK_SELECT_OPTIONS = [
+  { labelKey: "request.toolbar.quickSelect.lastMinute", value: 1, unit: "minutes" },
+  { labelKey: "request.toolbar.quickSelect.last15Minutes", value: 15, unit: "minutes" },
+  { labelKey: "request.toolbar.quickSelect.lastHour", value: 1, unit: "hours" },
+  { labelKey: "request.toolbar.quickSelect.last4Hours", value: 4, unit: "hours" },
+  { labelKey: "request.toolbar.quickSelect.last24Hours", value: 24, unit: "hours" },
+  { labelKey: "request.toolbar.quickSelect.last7Days", value: 7, unit: "days" },
+] as const;

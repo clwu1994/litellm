@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { useInfiniteSpendLogEndUsers } from "@/app/(dashboard)/hooks/spendLogs/useSpendLogEndUsers";
 import { useInfiniteSpendLogUsers } from "@/app/(dashboard)/hooks/spendLogs/useSpendLogUsers";
@@ -26,17 +27,6 @@ import { LOG_FILTER_IDS, type LogsWindow } from "./log_filter_logic";
 
 const ALL_VALUE = "all";
 
-const STATUS_FILTER_ITEMS = [
-  { value: ALL_VALUE, label: "All Statuses" },
-  { value: "success", label: "Success" },
-  { value: "failure", label: "Failure" },
-] as const;
-
-const CACHE_FILTER_ITEMS = [
-  { value: ALL_VALUE, label: "All Requests" },
-  { value: "hit", label: "Cache Hit" },
-  { value: "miss", label: "Cache Miss" },
-] as const;
 const PAGE_SIZE = 50;
 
 const SEARCH_INPUT_REASONS: ReadonlySet<string> = new Set(["input-change", "input-clear", "clear-press"]);
@@ -53,6 +43,7 @@ function TeamFilterField({
   onChange: (value: string | undefined) => void;
   teams: Team[];
 }) {
+  const { t } = useTranslation("logs");
   const options = useMemo<SearchSelectOption[]>(
     () =>
       teams.map((team) => ({
@@ -64,13 +55,13 @@ function TeamFilterField({
   );
 
   return (
-    <DataTableFilterField label="Team ID">
+    <DataTableFilterField label={t("request.filters.teamId")}>
       <SearchSelect
         options={options}
         value={value}
         onValueChange={(next) => onChange(next ?? undefined)}
-        placeholder="Search or select a team"
-        emptyText="No teams found"
+        placeholder={t("request.filters.teamPlaceholder")}
+        emptyText={t("request.filters.teamEmpty")}
       />
     </DataTableFilterField>
   );
@@ -85,6 +76,7 @@ function KeyAliasFilterField({
   onChange: (value: string | undefined) => void;
   teamId: string;
 }) {
+  const { t } = useTranslation("logs");
   const [search, setSearch] = useState("");
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteKeyAliases(
     PAGE_SIZE,
@@ -104,7 +96,7 @@ function KeyAliasFilterField({
   }, [data]);
 
   return (
-    <DataTableFilterField label="Key Alias">
+    <DataTableFilterField label={t("request.filters.keyAlias")}>
       <PaginatedSearchSelect
         options={options}
         value={value}
@@ -114,14 +106,15 @@ function KeyAliasFilterField({
         hasNextPage={hasNextPage}
         isLoading={isLoading}
         isFetchingNextPage={isFetchingNextPage}
-        placeholder="Search a key alias"
-        emptyText="No key aliases found"
+        placeholder={t("request.filters.keyAliasPlaceholder")}
+        emptyText={t("request.filters.keyAliasEmpty")}
       />
     </DataTableFilterField>
   );
 }
 
 function ModelFilterField({ value, onChange }: { value: string; onChange: (value: string | undefined) => void }) {
+  const { t } = useTranslation("logs");
   const [search, setSearch] = useState("");
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteModelInfo(
     PAGE_SIZE,
@@ -136,13 +129,19 @@ function ModelFilterField({ value, onChange }: { value: string; onChange: (value
         const modelName = model.model_name ?? "";
         if (!modelId || seen.has(modelId)) return [];
         seen.add(modelId);
-        return [{ label: modelName || modelId, value: modelId, sublabel: `Model ID: ${modelId}` }];
+        return [
+          {
+            label: modelName || modelId,
+            value: modelId,
+            sublabel: t("request.filters.modelIdSublabel", { modelId }),
+          },
+        ];
       }),
     );
-  }, [data]);
+  }, [data, t]);
 
   return (
-    <DataTableFilterField label="Model">
+    <DataTableFilterField label={t("request.filters.model")}>
       <PaginatedSearchSelect
         options={options}
         value={value}
@@ -152,8 +151,8 @@ function ModelFilterField({ value, onChange }: { value: string; onChange: (value
         hasNextPage={hasNextPage}
         isLoading={isLoading}
         isFetchingNextPage={isFetchingNextPage}
-        placeholder="Search a model"
-        emptyText="No models found"
+        placeholder={t("request.filters.modelPlaceholder")}
+        emptyText={t("request.filters.modelEmpty")}
       />
     </DataTableFilterField>
   );
@@ -168,6 +167,7 @@ function UserIdFilterField({
   onChange: (value: string | undefined) => void;
   logsWindow: LogsWindow;
 }) {
+  const { t } = useTranslation("logs");
   const [search, setSearch] = useState("");
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteSpendLogUsers(
     logsWindow,
@@ -187,7 +187,7 @@ function UserIdFilterField({
   }, [data]);
 
   return (
-    <DataTableFilterField label="User ID">
+    <DataTableFilterField label={t("request.filters.userId")}>
       <PaginatedSearchSelect
         options={options}
         value={value}
@@ -197,8 +197,8 @@ function UserIdFilterField({
         hasNextPage={hasNextPage}
         isLoading={isLoading}
         isFetchingNextPage={isFetchingNextPage}
-        placeholder="Search an internal user"
-        emptyText="No users found"
+        placeholder={t("request.filters.userPlaceholder")}
+        emptyText={t("request.filters.userEmpty")}
       />
     </DataTableFilterField>
   );
@@ -213,6 +213,7 @@ function EndUserFilterField({
   onChange: (value: string | undefined) => void;
   logsWindow: LogsWindow;
 }) {
+  const { t } = useTranslation("logs");
   const [search, setSearch] = useState("");
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteSpendLogEndUsers(
     logsWindow,
@@ -232,7 +233,7 @@ function EndUserFilterField({
   }, [data]);
 
   return (
-    <DataTableFilterField label="End User">
+    <DataTableFilterField label={t("request.filters.endUser")}>
       <PaginatedSearchSelect
         options={options}
         value={value}
@@ -242,31 +243,37 @@ function EndUserFilterField({
         hasNextPage={hasNextPage}
         isLoading={isLoading}
         isFetchingNextPage={isFetchingNextPage}
-        placeholder="Search an end user"
-        emptyText="No end users in this time range"
+        placeholder={t("request.filters.endUserPlaceholder")}
+        emptyText={t("request.filters.endUserEmpty")}
       />
     </DataTableFilterField>
   );
 }
 
 function ErrorCodeFilterField({ value, onChange }: { value: string; onChange: (value: string | undefined) => void }) {
+  const { t } = useTranslation("logs");
   const [query, setQuery] = useState("");
+
+  const resolvedOptions = useMemo(
+    () => ERROR_CODE_OPTIONS.map((option) => ({ label: t(option.labelKey), value: option.value })),
+    [t],
+  );
 
   const options = useMemo<SearchSelectOption[]>(() => {
     const trimmed = query.trim();
     const lowered = trimmed.toLowerCase();
-    const matches = ERROR_CODE_OPTIONS.filter((option) => option.label.toLowerCase().includes(lowered));
-    const isKnownCode = ERROR_CODE_OPTIONS.some(
+    const matches = resolvedOptions.filter((option) => option.label.toLowerCase().includes(lowered));
+    const isKnownCode = resolvedOptions.some(
       (option) => option.value === trimmed || option.label.toLowerCase() === lowered,
     );
     if (trimmed === "" || isKnownCode) return matches;
-    return [...matches, { label: `Use custom code: ${trimmed}`, value: trimmed }];
-  }, [query]);
+    return [...matches, { label: t("request.filters.errorCode.custom", { code: trimmed }), value: trimmed }];
+  }, [query, resolvedOptions, t]);
 
   const selected = useMemo<SearchSelectOption | null>(() => {
     if (value === "") return null;
-    return ERROR_CODE_OPTIONS.find((option) => option.value === value) ?? { label: value, value };
-  }, [value]);
+    return resolvedOptions.find((option) => option.value === value) ?? { label: value, value };
+  }, [value, resolvedOptions]);
 
   const items = useMemo<SearchSelectOption[]>(() => {
     if (selected === null) return options;
@@ -275,7 +282,7 @@ function ErrorCodeFilterField({ value, onChange }: { value: string; onChange: (v
   }, [options, selected]);
 
   return (
-    <DataTableFilterField label="Error Code">
+    <DataTableFilterField label={t("request.filters.errorCode.label")}>
       <Combobox
         items={items}
         value={selected}
@@ -290,12 +297,12 @@ function ErrorCodeFilterField({ value, onChange }: { value: string; onChange: (v
       >
         <ComboboxInput
           onFocus={(event) => event.currentTarget.select()}
-          placeholder="Select or type an error code"
+          placeholder={t("request.filters.errorCode.placeholder")}
           showClear={value !== ""}
           className="w-full"
         />
         <ComboboxContent>
-          <ComboboxEmpty>No error codes found</ComboboxEmpty>
+          <ComboboxEmpty>{t("request.filters.errorCode.empty")}</ComboboxEmpty>
           <ComboboxList data-testid="error-code-filter-list">
             {(item: SearchSelectOption) => (
               <ComboboxItem key={item.value} value={item}>
@@ -317,8 +324,27 @@ interface RequestLogsFiltersProps {
 }
 
 export function RequestLogsFilters({ get, set, teams, logsWindow }: RequestLogsFiltersProps) {
+  const { t } = useTranslation("logs");
   const valueOf = (id: string): string => asString(get(id));
   const setter = (id: string) => (next: string | undefined) => set(id, next);
+
+  const statusFilterItems = useMemo(
+    () => [
+      { value: ALL_VALUE, label: t("request.filters.status.all") },
+      { value: "success", label: t("request.filters.status.success") },
+      { value: "failure", label: t("request.filters.status.failure") },
+    ],
+    [t],
+  );
+
+  const cacheFilterItems = useMemo(
+    () => [
+      { value: ALL_VALUE, label: t("request.filters.cache.all") },
+      { value: "hit", label: t("request.filters.cache.hit") },
+      { value: "miss", label: t("request.filters.cache.miss") },
+    ],
+    [t],
+  );
 
   return (
     <>
@@ -328,17 +354,17 @@ export function RequestLogsFilters({ get, set, teams, logsWindow }: RequestLogsF
         teams={teams}
       />
 
-      <DataTableFilterField label="Status">
+      <DataTableFilterField label={t("request.filters.status.label")}>
         <Select
-          items={STATUS_FILTER_ITEMS}
+          items={statusFilterItems}
           value={valueOf(LOG_FILTER_IDS.STATUS) === "" ? ALL_VALUE : valueOf(LOG_FILTER_IDS.STATUS)}
           onValueChange={(next) => set(LOG_FILTER_IDS.STATUS, next === null || next === ALL_VALUE ? undefined : next)}
         >
           <SelectTrigger className="w-full">
-            <SelectValue placeholder="All Statuses" />
+            <SelectValue placeholder={t("request.filters.status.all")} />
           </SelectTrigger>
           <SelectContent>
-            {STATUS_FILTER_ITEMS.map((item) => (
+            {statusFilterItems.map((item) => (
               <SelectItem key={item.value} value={item.value}>
                 {item.label}
               </SelectItem>
@@ -347,19 +373,19 @@ export function RequestLogsFilters({ get, set, teams, logsWindow }: RequestLogsF
         </Select>
       </DataTableFilterField>
 
-      <DataTableFilterField label="Cache">
+      <DataTableFilterField label={t("request.filters.cache.label")}>
         <Select
-          items={CACHE_FILTER_ITEMS}
+          items={cacheFilterItems}
           value={valueOf(LOG_FILTER_IDS.CACHE_STATUS) === "" ? ALL_VALUE : valueOf(LOG_FILTER_IDS.CACHE_STATUS)}
           onValueChange={(next) =>
             set(LOG_FILTER_IDS.CACHE_STATUS, next === null || next === ALL_VALUE ? undefined : next)
           }
         >
           <SelectTrigger className="w-full">
-            <SelectValue placeholder="All Requests" />
+            <SelectValue placeholder={t("request.filters.cache.all")} />
           </SelectTrigger>
           <SelectContent>
-            {CACHE_FILTER_ITEMS.map((item) => (
+            {cacheFilterItems.map((item) => (
               <SelectItem key={item.value} value={item.value}>
                 {item.label}
               </SelectItem>
@@ -388,37 +414,37 @@ export function RequestLogsFilters({ get, set, teams, logsWindow }: RequestLogsF
 
       <ErrorCodeFilterField value={valueOf(LOG_FILTER_IDS.ERROR_CODE)} onChange={setter(LOG_FILTER_IDS.ERROR_CODE)} />
 
-      <DataTableFilterField label="Error Message">
+      <DataTableFilterField label={t("request.filters.errorMessage")}>
         <Input
           value={valueOf(LOG_FILTER_IDS.ERROR_MESSAGE)}
           onChange={(event) => set(LOG_FILTER_IDS.ERROR_MESSAGE, emptyToUndefined(event.target.value))}
-          placeholder="Enter error message…"
+          placeholder={t("request.filters.errorMessagePlaceholder")}
         />
       </DataTableFilterField>
 
-      <DataTableFilterField label="Key Hash">
+      <DataTableFilterField label={t("request.filters.keyHash")}>
         <Input
           value={valueOf(LOG_FILTER_IDS.KEY_HASH)}
           onChange={(event) => set(LOG_FILTER_IDS.KEY_HASH, emptyToUndefined(event.target.value))}
-          placeholder="Enter key hash…"
+          placeholder={t("request.filters.keyHashPlaceholder")}
         />
       </DataTableFilterField>
 
-      <DataTableFilterField label="Session ID">
+      <DataTableFilterField label={t("request.filters.sessionId")}>
         <Input
           value={valueOf(LOG_FILTER_IDS.SESSION_ID)}
           onChange={(event) => set(LOG_FILTER_IDS.SESSION_ID, emptyToUndefined(event.target.value))}
-          placeholder="Enter session ID…"
+          placeholder={t("request.filters.sessionIdPlaceholder")}
         />
       </DataTableFilterField>
 
       <ModelFilterField value={valueOf(LOG_FILTER_IDS.MODEL_ID)} onChange={setter(LOG_FILTER_IDS.MODEL_ID)} />
 
-      <DataTableFilterField label="Public model / search tool">
+      <DataTableFilterField label={t("request.filters.publicModel")}>
         <Input
           value={valueOf(LOG_FILTER_IDS.PUBLIC_MODEL_OR_SEARCH_TOOL)}
           onChange={(event) => set(LOG_FILTER_IDS.PUBLIC_MODEL_OR_SEARCH_TOOL, emptyToUndefined(event.target.value))}
-          placeholder="Enter public model or search tool…"
+          placeholder={t("request.filters.publicModelPlaceholder")}
         />
       </DataTableFilterField>
     </>

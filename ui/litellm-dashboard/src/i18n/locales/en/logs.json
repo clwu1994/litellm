@@ -1,0 +1,154 @@
+{
+  "tabs": {
+    "requestLogs": "Request Logs",
+    "auditLogs": "Audit Logs",
+    "deletedKeys": "Deleted Keys",
+    "deletedTeams": "Deleted Teams",
+    "loading": "Loading"
+  },
+  "request": {
+    "panel": {
+      "title": "Request Logs",
+      "backToLogs": "Back to Logs"
+    },
+    "table": {
+      "loading": "Loading request logs…",
+      "searchPlaceholder": "Search logs by ID…",
+      "header": {
+        "time": "Time",
+        "type": "Type",
+        "status": "Status",
+        "sessionId": "Session ID",
+        "requestId": "Request ID",
+        "cost": "Cost",
+        "duration": "Duration (s)",
+        "ttft": "TTFT (s)",
+        "teamName": "Team Name",
+        "keyHash": "Key Hash",
+        "keyAlias": "Key Alias",
+        "model": "Model",
+        "tokens": "Tokens",
+        "internalUser": "Internal User",
+        "endUser": "End User",
+        "tags": "Tags"
+      },
+      "status": {
+        "success": "Success",
+        "failure": "Failure",
+        "batchSucceeded": "{{successful}}/{{total}} succeeded",
+        "batchFailedTooltip": "{{failed}} of {{total}} batch requests failed"
+      },
+      "batch": {
+        "badge": "Batch",
+        "cost": "batch cost",
+        "tooltip": "Batch {{batchId}} (row: {{requestId}})"
+      },
+      "session": {
+        "total": "session total",
+        "mcpSpendNote": "incl. {{spend}} from {{value}} MCP",
+        "llm": "{{value}} LLM",
+        "agent": "{{value}} Agent",
+        "mcp": "{{value}} MCP",
+        "cacheHit": "{{value}} cache hit"
+      },
+      "badges": {
+        "llm": "LLM",
+        "mcp": "MCP",
+        "agent": "Agent"
+      }
+    },
+    "filters": {
+      "title": "Filters",
+      "description": "Narrow down request logs",
+      "teamId": "Team ID",
+      "teamPlaceholder": "Search or select a team",
+      "teamEmpty": "No teams found",
+      "status": {
+        "label": "Status",
+        "all": "All Statuses",
+        "success": "Success",
+        "failure": "Failure"
+      },
+      "cache": {
+        "label": "Cache",
+        "all": "All Requests",
+        "hit": "Cache Hit",
+        "miss": "Cache Miss"
+      },
+      "keyAlias": "Key Alias",
+      "keyAliasPlaceholder": "Search a key alias",
+      "keyAliasEmpty": "No key aliases found",
+      "userId": "User ID",
+      "userPlaceholder": "Search an internal user",
+      "userEmpty": "No users found",
+      "endUser": "End User",
+      "endUserPlaceholder": "Search an end user",
+      "endUserEmpty": "No end users in this time range",
+      "errorCode": {
+        "label": "Error Code",
+        "placeholder": "Select or type an error code",
+        "empty": "No error codes found",
+        "custom": "Use custom code: {{code}}",
+        "codes": {
+          "400": "400 - Bad Request",
+          "401": "401 - Invalid Authentication",
+          "403": "403 - Permission Denied",
+          "404": "404 - Not Found",
+          "408": "408 - Request Timeout",
+          "422": "422 - Unprocessable Entity",
+          "429": "429 - Rate Limited",
+          "500": "500 - Internal Server Error",
+          "502": "502 - Bad Gateway",
+          "503": "503 - Service Unavailable",
+          "529": "529 - Overloaded"
+        }
+      },
+      "errorMessage": "Error Message",
+      "errorMessagePlaceholder": "Enter error message…",
+      "keyHash": "Key Hash",
+      "keyHashPlaceholder": "Enter key hash…",
+      "sessionId": "Session ID",
+      "sessionIdPlaceholder": "Enter session ID…",
+      "model": "Model",
+      "modelPlaceholder": "Search a model",
+      "modelEmpty": "No models found",
+      "modelIdSublabel": "Model ID: {{modelId}}",
+      "publicModel": "Public model / search tool",
+      "publicModelPlaceholder": "Enter public model or search tool…",
+      "search": "Search"
+    },
+    "toolbar": {
+      "quickSelect": {
+        "lastMinute": "Last Minute",
+        "last15Minutes": "Last 15 Minutes",
+        "lastHour": "Last Hour",
+        "last4Hours": "Last 4 Hours",
+        "last24Hours": "Last 24 Hours",
+        "last7Days": "Last 7 Days"
+      },
+      "relative": {
+        "lastMinute": "Last 1 Minute",
+        "last15Minutes": "Last 15 Minutes",
+        "lastHour": "Last Hour",
+        "last4Hours": "Last 4 Hours",
+        "last24Hours": "Last 24 Hours",
+        "last7Days": "Last 7 Days"
+      },
+      "customRange": "Custom Range",
+      "to": "to",
+      "liveTail": "Live Tail",
+      "hideHealthChecks": "Hide Health Checks",
+      "resetFilters": "Reset Filters"
+    },
+    "banner": {
+      "autoRefresh": "Auto-refreshing every 15 seconds",
+      "stop": "Stop"
+    }
+  },
+  "empty": {
+    "noMatches": "No matching requests",
+    "noMatchesHint": "No requests match your filters for this time range.",
+    "noRequests": "No requests yet",
+    "noRequestsHint": "Requests proxied through LiteLLM will appear here."
+  }
+}

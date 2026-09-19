@@ -1,0 +1,154 @@
+{
+  "tabs": {
+    "requestLogs": "请求日志",
+    "auditLogs": "审计日志",
+    "deletedKeys": "已删除的密钥",
+    "deletedTeams": "已删除的团队",
+    "loading": "加载中"
+  },
+  "request": {
+    "panel": {
+      "title": "请求日志",
+      "backToLogs": "返回日志"
+    },
+    "table": {
+      "loading": "正在加载请求日志…",
+      "searchPlaceholder": "按 ID 搜索日志…",
+      "header": {
+        "time": "时间",
+        "type": "类型",
+        "status": "状态",
+        "sessionId": "会话 ID",
+        "requestId": "请求 ID",
+        "cost": "成本",
+        "duration": "耗时（秒）",
+        "ttft": "TTFT（秒）",
+        "teamName": "团队名称",
+        "keyHash": "密钥哈希",
+        "keyAlias": "密钥别名",
+        "model": "模型",
+        "tokens": "Token 数",
+        "internalUser": "内部用户",
+        "endUser": "最终用户",
+        "tags": "标签"
+      },
+      "status": {
+        "success": "成功",
+        "failure": "失败",
+        "batchSucceeded": "{{successful}}/{{total}} 成功",
+        "batchFailedTooltip": "{{total}} 个批处理请求中有 {{failed}} 个失败"
+      },
+      "batch": {
+        "badge": "批处理",
+        "cost": "批处理成本",
+        "tooltip": "批处理 {{batchId}}（行：{{requestId}}）"
+      },
+      "session": {
+        "total": "会话总计",
+        "mcpSpendNote": "含来自 {{value}} 个 MCP 的 {{spend}}",
+        "llm": "{{value}} LLM",
+        "agent": "{{value}} Agent",
+        "mcp": "{{value}} MCP",
+        "cacheHit": "{{value}} 缓存命中"
+      },
+      "badges": {
+        "llm": "LLM",
+        "mcp": "MCP",
+        "agent": "Agent"
+      }
+    },
+    "filters": {
+      "title": "筛选",
+      "description": "进一步筛选请求日志",
+      "teamId": "团队 ID",
+      "teamPlaceholder": "搜索或选择团队",
+      "teamEmpty": "未找到团队",
+      "status": {
+        "label": "状态",
+        "all": "全部状态",
+        "success": "成功",
+        "failure": "失败"
+      },
+      "cache": {
+        "label": "缓存",
+        "all": "全部请求",
+        "hit": "缓存命中",
+        "miss": "缓存未命中"
+      },
+      "keyAlias": "密钥别名",
+      "keyAliasPlaceholder": "搜索密钥别名",
+      "keyAliasEmpty": "未找到密钥别名",
+      "userId": "用户 ID",
+      "userPlaceholder": "搜索内部用户",
+      "userEmpty": "未找到用户",
+      "endUser": "最终用户",
+      "endUserPlaceholder": "搜索最终用户",
+      "endUserEmpty": "此时间范围内没有最终用户",
+      "errorCode": {
+        "label": "错误码",
+        "placeholder": "选择或输入错误码",
+        "empty": "未找到错误码",
+        "custom": "使用自定义错误码：{{code}}",
+        "codes": {
+          "400": "400 - 请求错误",
+          "401": "401 - 身份验证无效",
+          "403": "403 - 权限被拒绝",
+          "404": "404 - 未找到",
+          "408": "408 - 请求超时",
+          "422": "422 - 无法处理的实体",
+          "429": "429 - 请求过于频繁",
+          "500": "500 - 内部服务器错误",
+          "502": "502 - 网关错误",
+          "503": "503 - 服务不可用",
+          "529": "529 - 服务过载"
+        }
+      },
+      "errorMessage": "错误消息",
+      "errorMessagePlaceholder": "输入错误消息…",
+      "keyHash": "密钥哈希",
+      "keyHashPlaceholder": "输入密钥哈希…",
+      "sessionId": "会话 ID",
+      "sessionIdPlaceholder": "输入会话 ID…",
+      "model": "模型",
+      "modelPlaceholder": "搜索模型",
+      "modelEmpty": "未找到模型",
+      "modelIdSublabel": "模型 ID：{{modelId}}",
+      "publicModel": "公开模型 / 搜索工具",
+      "publicModelPlaceholder": "输入公开模型或搜索工具…",
+      "search": "搜索"
+    },
+    "toolbar": {
+      "quickSelect": {
+        "lastMinute": "最近 1 分钟",
+        "last15Minutes": "最近 15 分钟",
+        "lastHour": "最近 1 小时",
+        "last4Hours": "最近 4 小时",
+        "last24Hours": "最近 24 小时",
+        "last7Days": "最近 7 天"
+      },
+      "relative": {
+        "lastMinute": "最近 1 分钟",
+        "last15Minutes": "最近 15 分钟",
+        "lastHour": "最近 1 小时",
+        "last4Hours": "最近 4 小时",
+        "last24Hours": "最近 24 小时",
+        "last7Days": "最近 7 天"
+      },
+      "customRange": "自定义范围",
+      "to": "至",
+      "liveTail": "实时追踪",
+      "hideHealthChecks": "隐藏健康检查",
+      "resetFilters": "重置筛选"
+    },
+    "banner": {
+      "autoRefresh": "每 15 秒自动刷新",
+      "stop": "停止"
+    }
+  },
+  "empty": {
+    "noMatches": "没有匹配的请求",
+    "noMatchesHint": "此时间范围内没有请求符合你的筛选条件。",
+    "noRequests": "暂无请求",
+    "noRequestsHint": "通过 LiteLLM 代理的请求将显示在这里。"
+  }
+}

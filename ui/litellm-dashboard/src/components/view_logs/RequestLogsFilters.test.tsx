@@ -1,8 +1,9 @@
-import { fireEvent, screen, waitFor, within } from "@testing-library/react";
+import { cleanup, fireEvent, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import i18n from "@/i18n/bootstrapI18n";
 import { chooseSelectOption, renderWithProviders, testQueryClient } from "../../../tests/test-utils";
 import { ERROR_CODE_OPTIONS } from "./constants";
 import { LOG_FILTER_IDS } from "./log_filter_logic";
@@ -343,5 +344,208 @@ describe("RequestLogsFilters", () => {
     await user.click(await screen.findByRole("option", { name: "All Requests" }));
 
     expect(set).toHaveBeenCalledWith(LOG_FILTER_IDS.CACHE_STATUS, undefined);
+  });
+
+  describe("Chinese copy", () => {
+    beforeEach(async () => {
+      await i18n.changeLanguage("zh");
+    });
+
+    afterEach(async () => {
+      cleanup();
+      await i18n.changeLanguage("en");
+    });
+
+    it("renders every Chinese filter label and hides the English ones", async () => {
+      renderFilters();
+
+      for (const label of [
+        "团队 ID",
+        "状态",
+        "缓存",
+        "密钥别名",
+        "用户 ID",
+        "最终用户",
+        "错误码",
+        "错误消息",
+        "密钥哈希",
+        "会话 ID",
+        "模型",
+        "公开模型 / 搜索工具",
+      ]) {
+        expect(await screen.findByText(label)).toBeInTheDocument();
+      }
+      for (const label of [
+        "Team ID",
+        "Status",
+        "Cache",
+        "Key Alias",
+        "User ID",
+        "End User",
+        "Error Code",
+        "Error Message",
+        "Key Hash",
+        "Session ID",
+        "Model",
+        "Public model / search tool",
+      ]) {
+        expect(screen.queryByText(label)).not.toBeInTheDocument();
+      }
+    });
+
+    it("renders every Chinese placeholder and hides the English ones", async () => {
+      renderFilters();
+
+      for (const placeholder of [
+        "搜索或选择团队",
+        "搜索密钥别名",
+        "搜索内部用户",
+        "搜索最终用户",
+        "选择或输入错误码",
+        "输入错误消息…",
+        "输入密钥哈希…",
+        "输入会话 ID…",
+        "搜索模型",
+        "输入公开模型或搜索工具…",
+      ]) {
+        expect(await screen.findByPlaceholderText(placeholder)).toBeInTheDocument();
+      }
+      for (const placeholder of [
+        "Search or select a team",
+        "Search a key alias",
+        "Search an internal user",
+        "Search an end user",
+        "Select or type an error code",
+        "Enter error message…",
+        "Enter key hash…",
+        "Enter session ID…",
+        "Search a model",
+        "Enter public model or search tool…",
+      ]) {
+        expect(screen.queryByPlaceholderText(placeholder)).not.toBeInTheDocument();
+      }
+    });
+
+    it("renders the Chinese status and cache trigger labels and hides the English ones", async () => {
+      renderFilters();
+
+      expect(await screen.findByText("全部状态")).toBeInTheDocument();
+      expect(screen.getByText("全部请求")).toBeInTheDocument();
+      expect(screen.queryByText("All Statuses")).not.toBeInTheDocument();
+      expect(screen.queryByText("All Requests")).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese status options and hides the English ones", async () => {
+      const user = userEvent.setup();
+      renderFilters();
+
+      await user.click(await screen.findByText("全部状态"));
+
+      expect(await screen.findByRole("option", { name: "成功" })).toBeInTheDocument();
+      expect(screen.getByRole("option", { name: "失败" })).toBeInTheDocument();
+      expect(screen.queryByRole("option", { name: "Success" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("option", { name: "Failure" })).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese cache options and hides the English ones", async () => {
+      const user = userEvent.setup();
+      renderFilters();
+
+      await user.click(await screen.findByText("全部请求"));
+
+      expect(await screen.findByRole("option", { name: "缓存命中" })).toBeInTheDocument();
+      expect(screen.getByRole("option", { name: "缓存未命中" })).toBeInTheDocument();
+      expect(screen.queryByRole("option", { name: "Cache Hit" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("option", { name: "Cache Miss" })).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese error code options and hides the English ones", async () => {
+      const user = userEvent.setup();
+      renderFilters();
+
+      await user.click(await screen.findByPlaceholderText("选择或输入错误码"));
+
+      expect(await screen.findByRole("option", { name: "429 - 请求过于频繁" })).toBeInTheDocument();
+      expect(screen.queryByRole("option", { name: "429 - Rate Limited" })).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese custom error code option", async () => {
+      const user = userEvent.setup();
+      const { set } = renderFilters();
+
+      const input = await screen.findByPlaceholderText("选择或输入错误码");
+      await user.click(input);
+      await user.type(input, "418");
+      await user.click(await screen.findByRole("option", { name: "使用自定义错误码：418" }));
+
+      expect(set).toHaveBeenCalledWith(LOG_FILTER_IDS.ERROR_CODE, "418");
+    });
+
+    it("renders the Chinese team picker empty text", async () => {
+      const user = userEvent.setup();
+      renderFilters();
+
+      await user.click(await screen.findByPlaceholderText("搜索或选择团队"));
+
+      expect(await screen.findByText("未找到团队")).toBeInTheDocument();
+      expect(screen.queryByText("No teams found")).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese key alias picker empty text", async () => {
+      const user = userEvent.setup();
+      renderFilters();
+
+      await user.click(await screen.findByPlaceholderText("搜索密钥别名"));
+
+      expect(await screen.findByText("未找到密钥别名")).toBeInTheDocument();
+      expect(screen.queryByText("No key aliases found")).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese user picker empty text", async () => {
+      const user = userEvent.setup();
+      renderFilters();
+
+      await user.click(await screen.findByPlaceholderText("搜索内部用户"));
+
+      expect(await screen.findByText("未找到用户")).toBeInTheDocument();
+      expect(screen.queryByText("No users found")).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese end user picker empty text", async () => {
+      const user = userEvent.setup();
+      renderFilters();
+
+      await user.click(await screen.findByPlaceholderText("搜索最终用户"));
+
+      expect(await screen.findByText("此时间范围内没有最终用户")).toBeInTheDocument();
+      expect(screen.queryByText("No end users in this time range")).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese model picker empty text", async () => {
+      const user = userEvent.setup();
+      renderFilters();
+
+      await user.click(await screen.findByPlaceholderText("搜索模型"));
+
+      expect(await screen.findByText("未找到模型")).toBeInTheDocument();
+      expect(screen.queryByText("No models found")).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese model id sublabel", async () => {
+      vi.mocked(useInfiniteModelInfo).mockReturnValue({
+        ...emptyInfiniteQuery,
+        data: {
+          pages: [{ data: [{ model_info: { id: "model-1" }, model_name: "GPT" }] }],
+          pageParams: [1],
+        },
+      } as unknown as ReturnType<typeof useInfiniteModelInfo>);
+      const user = userEvent.setup();
+      renderFilters();
+
+      await user.click(await screen.findByPlaceholderText("搜索模型"));
+
+      expect(await screen.findByText("模型 ID：model-1")).toBeInTheDocument();
+      expect(screen.queryByText("Model ID: model-1")).not.toBeInTheDocument();
+    });
   });
 });
