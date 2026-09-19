@@ -45,12 +45,12 @@ Design reference: `docs/superpowers/specs/2026-09-14-litellm-i18n-design.md` (se
 
 ### Task 3: Log detail drawer
 
-**Files:** `LogDetailsDrawer/LogDetailContent.tsx`, `RoutingDecisionCard.tsx`, `RealtimePrettyView.tsx`, `DrawerHeader.tsx`, `SectionHeader.tsx`, `SidebarToggle.tsx`, `InputCard.tsx`, `OutputCard.tsx`, `JsonViewer.tsx`, `TruncatedValue.tsx`, `ClassifierAuditView.tsx`, `LogDetailsDrawer.tsx`, `constants.ts`, `prettyMessagesUtils.ts`
+**Files:** `LogDetailsDrawer/LogDetailContent.tsx`, `RoutingDecisionCard.tsx`, `RealtimePrettyView.tsx`, `DrawerHeader.tsx`, `SectionHeader.tsx`, `SidebarToggle.tsx`, `InputCard.tsx`, `OutputCard.tsx`, `JsonViewer.tsx`, `TruncatedValue.tsx`, `ClassifierAuditView.tsx`, `LogDetailsDrawer.tsx`, `constants.ts`, `prettyMessagesUtils.ts`, plus the live drawer chrome the original inventory missed: `CollapsibleMessage.tsx`, `HistoryTree.tsx`, `SimpleToolCallBlock.tsx`, `TokenFlow.tsx`, `ClassifyTag.tsx`, and `LogDetailsDrawer/utils.ts` (Task 3 was executed with these six included, since leaving them English would have left the drawer half-Chinese)
 - [ ] Same shape, extending `logs`. `prettyMessagesUtils.ts` and `constants.ts` are data or logic modules: store keys and resolve at render.
 
 ### Task 4: Guardrail, eval, tools and vector-store viewers
 
-**Files:** `GuardrailViewer/BedrockGuardrailDetails.tsx`, `GuardrailViewer.tsx`, `CompliancePanel.tsx`, `ContentFilterDetails.tsx`, `PresidioDetectedEntities.tsx`, `EvalViewer/EvalViewer.tsx`, `ToolsSection/*`, `VectorStoreViewer.tsx`, `CostBreakdownViewer.tsx`, `ConfigInfoMessage.tsx`, `batchLogUtils.ts`, `logDetailRouting.ts`, `utils.ts`
+**Files:** `GuardrailViewer/BedrockGuardrailDetails.tsx`, `GuardrailViewer.tsx`, `CompliancePanel.tsx`, `ContentFilterDetails.tsx`, `PresidioDetectedEntities.tsx`, `EvalViewer/EvalViewer.tsx`, `ToolsSection/*`, `VectorStoreViewer.tsx`, `CostBreakdownViewer.tsx`, `ConfigInfoMessage.tsx`, `batchLogUtils.ts`, `logDetailRouting.ts`, `view_logs/utils.ts` (not `LogDetailsDrawer/utils.ts`, which Task 3 already translated, nor `ToolsSection/utils.ts`, which this task covers separately)
 - [ ] Same shape, extending `logs`. Guardrail names, entity types and tool names are data: leave them English.
 
 ---
