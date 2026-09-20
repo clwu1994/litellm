@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -40,6 +41,7 @@ const GuardrailSelectionModal: React.FC<GuardrailSelectionModalProps> = ({
   isLoading = false,
   progressInfo,
 }) => {
+  const { t } = useTranslation("guardrails");
   const [selectedGuardrails, setSelectedGuardrails] = useState<Set<string>>(new Set());
 
   // Prepare guardrail info with existence status
@@ -165,7 +167,7 @@ const GuardrailSelectionModal: React.FC<GuardrailSelectionModalProps> = ({
                     <div className="flex gap-2 mt-2">
                       <Badge variant="outline">{guardrail.definition?.litellm_params?.guardrail || "unknown"}</Badge>
                       <Badge variant="secondary">
-                        {formatGuardrailMode(guardrail.definition?.litellm_params?.mode) || "unknown"}
+                        {formatGuardrailMode(guardrail.definition?.litellm_params?.mode, t) || "unknown"}
                       </Badge>
                       {guardrail.definition?.litellm_params?.patterns && (
                         <Badge variant="secondary">

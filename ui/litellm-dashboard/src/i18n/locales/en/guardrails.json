@@ -1,0 +1,184 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "cancel": "Cancel",
+    "yes": "Yes",
+    "no": "No",
+    "selectOption": "Select an option",
+    "unnamedGuardrail": "Unnamed Guardrail",
+    "tagBasedMode": "tag-based"
+  },
+  "table": {
+    "columns": {
+      "guardrailId": "Guardrail ID",
+      "name": "Name",
+      "provider": "Provider",
+      "mode": "Mode",
+      "defaultOn": "Default On",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "actions": "Actions"
+    },
+    "defaultOn": "Default On",
+    "defaultOff": "Default Off",
+    "delete": "Delete",
+    "openActionsAria": "Open guardrail actions",
+    "configDeleteHint": "Config guardrails are defined in the config file and cannot be deleted from the dashboard.",
+    "emptyTitle": "No guardrails yet",
+    "emptyDescription": "Add a guardrail to start filtering requests and responses.",
+    "loading": "Loading guardrails…"
+  },
+  "list": {
+    "tabs": {
+      "garden": "Guardrail Garden",
+      "guardrails": "Guardrails",
+      "playground": "Test Playground",
+      "submitted": "Submitted Guardrails"
+    },
+    "addNew": "Add New Guardrail",
+    "addProvider": "Add Provider Guardrail",
+    "addCustomCode": "Create Custom Code Guardrail",
+    "deleteModal": {
+      "title": "Delete Guardrail",
+      "message": "Are you sure you want to delete guardrail: {{name}}? This action cannot be undone.",
+      "resourceInformationTitle": "Guardrail Information",
+      "name": "Name",
+      "id": "ID",
+      "provider": "Provider",
+      "mode": "Mode",
+      "defaultOn": "Default On"
+    },
+    "toast": {
+      "deleted": "Guardrail \"{{name}}\" deleted successfully",
+      "deleteFailed": "Failed to delete guardrail"
+    }
+  },
+  "info": {
+    "backToGuardrails": "Back to Guardrails",
+    "notFound": "Guardrail not found",
+    "tabs": {
+      "overview": "Overview",
+      "settings": "Settings"
+    },
+    "provider": "Provider",
+    "mode": "Mode",
+    "defaultOn": "Default On",
+    "defaultOff": "Default Off",
+    "createdAt": "Created At",
+    "lastUpdated": "Last Updated",
+    "lastUpdatedWithDate": "Last Updated: {{date}}",
+    "piiProtection": "PII Protection",
+    "piiEntitiesConfigured": "{{value}} PII entities configured",
+    "piiEntityConfiguration": "PII Entity Configuration",
+    "piiAction": {
+      "block": "BLOCK",
+      "mask": "MASK",
+      "redact": "REDACT"
+    },
+    "entityType": "Entity Type",
+    "configuration": "Configuration",
+    "customCode": "Custom Code",
+    "editCode": "Edit Code",
+    "settingsTitle": "Guardrail Settings",
+    "configEditHint": "Guardrail is defined in the config file and cannot be edited.",
+    "configAria": "Config guardrail details",
+    "editSettings": "Edit Settings",
+    "guardrailId": "Guardrail ID",
+    "guardrailName": "Guardrail Name",
+    "namePlaceholder": "Enter guardrail name",
+    "guardrailInfo": "Guardrail Information",
+    "providerSettings": "Provider Settings",
+    "advancedSettings": "Advanced Settings",
+    "saveChanges": "Save Changes",
+    "skipSystemMessageLabel": "Skip system messages in guardrail",
+    "skipSystemMessageHint": "Unified guardrails: omit role: system from guardrail input (LLM still gets full messages). Use global default follows litellm_settings.skip_system_message_in_guardrail.",
+    "skipToolMessageLabel": "Skip tool messages in guardrail",
+    "skipToolMessageHint": "Unified guardrails: omit role: tool from guardrail input (LLM still gets full messages). Use global default follows litellm_settings.skip_tool_message_in_guardrail.",
+    "validation": {
+      "nameRequired": "Please input a guardrail name"
+    },
+    "toast": {
+      "loadFailed": "Failed to load guardrail information",
+      "noChanges": "No changes detected",
+      "updated": "Guardrail updated successfully",
+      "updateFailed": "Failed to update guardrail"
+    }
+  },
+  "form": {
+    "title": "Create guardrail",
+    "guardrailName": "Guardrail Name",
+    "guardrailNamePlaceholder": "Enter a name for this guardrail",
+    "guardrailProvider": "Guardrail Provider",
+    "providerPlaceholder": "Select a guardrail provider",
+    "noMatchingProviders": "No matching providers",
+    "mode": "Mode",
+    "modeHint": "How the guardrail should be applied",
+    "alwaysOn": "Always On",
+    "alwaysOnHint": "If enabled, this guardrail will be applied to all requests by default.",
+    "skipSystemMessageLabel": "Skip system messages in guardrail",
+    "skipSystemMessageHint": "Unified guardrails only: omit role: system from guardrail evaluation input (OpenAI chat + Anthropic messages). The model still receives full messages. Use global default follows litellm_settings.skip_system_message_in_guardrail.",
+    "skipToolMessageLabel": "Skip tool messages in guardrail",
+    "skipToolMessageHint": "Unified guardrails only: omit role: tool from guardrail evaluation input (OpenAI chat + Anthropic messages). The model still receives full messages. Use global default follows litellm_settings.skip_tool_message_in_guardrail.",
+    "skipMessage": {
+      "inherit": "Use global default",
+      "yes": "Yes — exclude from guardrail scan",
+      "no": "No — always include in scan"
+    },
+    "previous": "Previous",
+    "next": "Next",
+    "create": "Create Guardrail",
+    "steps": {
+      "basicInfo": "Basic Info",
+      "topics": "Topics",
+      "patterns": "Patterns",
+      "keywords": "Keywords",
+      "endpointSettings": "Endpoint Settings (Optional)",
+      "piiConfiguration": "PII Configuration",
+      "providerConfiguration": "Provider Configuration",
+      "optional": "optional",
+      "edit": "Edit"
+    },
+    "modeDescriptions": {
+      "preCall": "Before LLM Call - Runs before the LLM call and checks the input (Recommended)",
+      "duringCall": "During LLM Call - Runs in parallel with the LLM call, with response held until check completes",
+      "postCall": "After LLM Call - Runs after the LLM call and checks only the output",
+      "loggingOnly": "Logging Only - Only runs on logging callbacks without affecting the LLM call",
+      "preMcpCall": "Before MCP Tool Call - Runs before MCP tool execution and validates tool calls",
+      "duringMcpCall": "During MCP Tool Call - Runs in parallel with MCP tool execution for monitoring",
+      "postMcpCall": "After MCP Tool Call - Runs after MCP tool execution and checks the tool result"
+    },
+    "endpoint": {
+      "description": "Configure settings for a specific call type. Most guardrails don't need this — skip it unless you're using a specific endpoint like <code>/v1/realtime</code>.",
+      "callType": "Call type",
+      "callTypePlaceholder": "Select a call type",
+      "moreCallTypes": "More call types coming soon.",
+      "realtimeSettings": "/v1/realtime settings",
+      "endSessionAfter": "End session after X violations",
+      "endSessionAfterHint": "Automatically close the session after this many guardrail violations. Leave empty to never auto-close.",
+      "endSessionPlaceholder": "e.g. 3",
+      "onViolation": "On violation",
+      "onViolationWarn": "Warn",
+      "onViolationEndSession": "End session",
+      "warnHint": "Bot speaks the message, session continues",
+      "endSessionHint": "Bot speaks the message, connection closes immediately",
+      "violationMessage": "Message the user hears",
+      "violationMessageHint": "What the bot says aloud when this guardrail fires. Falls back to the default violation message if empty."
+    },
+    "validation": {
+      "nameRequired": "Please enter a guardrail name",
+      "providerRequired": "Please select a provider",
+      "modeRequired": "Please select a mode",
+      "fixHighlighted": "Failed to create guardrail: please fix the highlighted fields",
+      "contentFilterRequired": "Please configure at least one content filter setting (category, pattern, keyword, or competitor intent)",
+      "invalidJson": "Invalid JSON in configuration",
+      "criteriaRequired": "Add at least one evaluation criterion",
+      "criteriaWeightSum": "Criterion weights must sum to 100% (currently {{value}}%)",
+      "toolRuleRequired": "Add at least one tool permission rule"
+    },
+    "toast": {
+      "loadConfigFailed": "Failed to load guardrail configuration",
+      "created": "Guardrail created successfully",
+      "createFailed": "Failed to create guardrail: {{message}}"
+    }
+  }
+}

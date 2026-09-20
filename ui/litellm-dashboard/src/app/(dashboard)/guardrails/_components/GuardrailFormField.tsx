@@ -1,8 +1,10 @@
 "use client";
 
+import type { ParseKeys } from "i18next";
 import { CircleHelp } from "lucide-react";
-import React, { useId } from "react";
+import React, { useId, useMemo } from "react";
 import { useController, type Control, type ControllerRenderProps, type RegisterOptions } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -99,22 +101,27 @@ export const GuardrailField: React.FC<GuardrailFieldProps> = ({
   );
 };
 
-const SKIP_MESSAGE_ITEMS = [
-  { label: "Use global default", value: "inherit" },
-  { label: "Yes — exclude from guardrail scan", value: "yes" },
-  { label: "No — always include in scan", value: "no" },
-];
+const SKIP_MESSAGE_ITEM_KEYS = [
+  { labelKey: "form.skipMessage.inherit", value: "inherit" },
+  { labelKey: "form.skipMessage.yes", value: "yes" },
+  { labelKey: "form.skipMessage.no", value: "no" },
+] as const satisfies ReadonlyArray<{ labelKey: ParseKeys<"guardrails">; value: string }>;
 
 export const SkipMessageSelect: React.FC<{ control: GuardrailFieldControlProps }> = ({ control }) => {
+  const { t } = useTranslation("guardrails");
   const { id, value, onChange, "aria-invalid": ariaInvalid, "aria-describedby": ariaDescribedBy } = control;
+  const items = useMemo(
+    () => SKIP_MESSAGE_ITEM_KEYS.map(({ labelKey, value: itemValue }) => ({ label: t(labelKey), value: itemValue })),
+    [t],
+  );
 
   return (
-    <Select items={SKIP_MESSAGE_ITEMS} value={asText(value) || null} onValueChange={onChange}>
+    <Select items={items} value={asText(value) || null} onValueChange={onChange}>
       <SelectTrigger id={id} aria-invalid={ariaInvalid} aria-describedby={ariaDescribedBy} className="w-full">
-        <SelectValue placeholder="Select an option" />
+        <SelectValue placeholder={t("common.selectOption")} />
       </SelectTrigger>
       <SelectContent>
-        {SKIP_MESSAGE_ITEMS.map((item) => (
+        {items.map((item) => (
           <SelectItem key={item.value} value={item.value}>
             {item.label}
           </SelectItem>

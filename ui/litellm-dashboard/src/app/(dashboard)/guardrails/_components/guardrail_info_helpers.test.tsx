@@ -1,4 +1,6 @@
+import type { TFunction } from "i18next";
 import { describe, expect, it, beforeEach } from "vitest";
+import i18n from "@/i18n/bootstrapI18n";
 import {
   populateGuardrailProviders,
   populateGuardrailProviderMap,
@@ -212,9 +214,12 @@ describe("guardrail_info_helpers", () => {
   });
 
   describe("formatGuardrailMode", () => {
+    const enT: TFunction<"guardrails"> = i18n.getFixedT("en", "guardrails");
+    const zhT: TFunction<"guardrails"> = i18n.getFixedT("zh", "guardrails");
+
     it("renders a single mode and a list of modes", () => {
-      expect(formatGuardrailMode("pre_call")).toBe("pre_call");
-      expect(formatGuardrailMode(["pre_call", "post_call"])).toBe("pre_call, post_call");
+      expect(formatGuardrailMode("pre_call", enT)).toBe("pre_call");
+      expect(formatGuardrailMode(["pre_call", "post_call"], enT)).toBe("pre_call, post_call");
     });
 
     it("flattens a tag-based mode object into deduped modes instead of returning it verbatim", () => {
@@ -223,19 +228,26 @@ describe("guardrail_info_helpers", () => {
         default: ["pre_call", "post_call"],
       };
 
-      expect(formatGuardrailMode(mode)).toBe("pre_call, post_call, during_call (tag-based)");
+      expect(formatGuardrailMode(mode, enT)).toBe("pre_call, post_call, during_call (tag-based)");
+    });
+
+    it("renders the tag-based suffix from the catalog and hides the English one in Chinese", () => {
+      const mode = { default: ["pre_call", "post_call"] };
+
+      expect(formatGuardrailMode(mode, zhT)).toBe("pre_call, post_call (基于标签)");
+      expect(formatGuardrailMode(mode, zhT)).not.toContain("tag-based");
     });
 
     it("handles a tag-based mode with no default and with no tags", () => {
-      expect(formatGuardrailMode({ tags: { "team: a": "post_call" } })).toBe("post_call (tag-based)");
-      expect(formatGuardrailMode({ default: "pre_call" })).toBe("pre_call (tag-based)");
+      expect(formatGuardrailMode({ tags: { "team: a": "post_call" } }, enT)).toBe("post_call (tag-based)");
+      expect(formatGuardrailMode({ default: "pre_call" }, enT)).toBe("pre_call (tag-based)");
     });
 
     it("returns an empty string for missing or unusable modes", () => {
-      expect(formatGuardrailMode(undefined)).toBe("");
-      expect(formatGuardrailMode(null)).toBe("");
-      expect(formatGuardrailMode({})).toBe("");
-      expect(formatGuardrailMode({ tags: {}, default: null })).toBe("");
+      expect(formatGuardrailMode(undefined, enT)).toBe("");
+      expect(formatGuardrailMode(null, enT)).toBe("");
+      expect(formatGuardrailMode({}, enT)).toBe("");
+      expect(formatGuardrailMode({ tags: {}, default: null }, enT)).toBe("");
     });
   });
 

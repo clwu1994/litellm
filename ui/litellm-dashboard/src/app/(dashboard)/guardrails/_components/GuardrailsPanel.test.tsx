@@ -1,8 +1,12 @@
 import { type UrlUpdateEvent } from "nuqs/adapters/testing";
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { cleanup } from "@testing-library/react";
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import GuardrailsPanel from "./GuardrailsPanel";
 import { getGuardrailsList, deleteGuardrailCall } from "@/components/networking";
+import { GuardrailDefinitionLocation } from "@/components/guardrails/types";
 import { fireEvent, renderWithProviders, screen, waitFor, within } from "@/../tests/test-utils";
+import i18n from "@/i18n/bootstrapI18n";
+import { toast } from "@/lib/toast";
 
 vi.mock("@/components/networking", () => ({
   getGuardrailsList: vi.fn(),
@@ -219,5 +223,105 @@ describe("GuardrailsPanel", () => {
       expect(lastUpdate.options.history).toBe("replace");
       expect(await screen.findByText("Mock Guardrail Table")).toBeInTheDocument();
     });
+  });
+});
+
+describe("GuardrailsPanel Chinese copy", () => {
+  const defaultProps = {
+    accessToken: "test-token",
+    userRole: "admin",
+  };
+
+  const mockGetGuardrailsList = vi.mocked(getGuardrailsList);
+  const mockDeleteGuardrailCall = vi.mocked(deleteGuardrailCall);
+
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    await i18n.changeLanguage("zh");
+    mockGetGuardrailsList.mockResolvedValue({
+      guardrails: [
+        {
+          guardrail_id: "test-guardrail-1",
+          guardrail_name: "Test Guardrail",
+          litellm_params: { guardrail: "test-provider", mode: "async", default_on: true },
+          guardrail_info: null,
+          created_at: "2024-01-01T00:00:00Z",
+          updated_at: "2024-01-01T00:00:00Z",
+          guardrail_definition_location: GuardrailDefinitionLocation.DB,
+        },
+      ],
+    });
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  it("renders the Chinese tabs and add menu and hides the English ones", async () => {
+    renderWithProviders(<GuardrailsPanel {...defaultProps} />);
+
+    expect(screen.getByRole("tab", { name: "Guardrail Garden" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Guardrails" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "测试 Playground" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "已提交的 Guardrails" })).toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: "Test Playground" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: "Submitted Guardrails" })).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("tab", { name: "Guardrails" }));
+    fireEvent.mouseDown(screen.getByText("新增 Guardrail"));
+
+    expect(await screen.findByText("添加提供商 Guardrail")).toBeInTheDocument();
+    expect(screen.getByText("创建自定义代码 Guardrail")).toBeInTheDocument();
+    expect(screen.queryByText("Add New Guardrail")).not.toBeInTheDocument();
+    expect(screen.queryByText("Add Provider Guardrail")).not.toBeInTheDocument();
+    expect(screen.queryByText("Create Custom Code Guardrail")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese delete modal chrome and hides the English one", async () => {
+    renderWithProviders(<GuardrailsPanel {...defaultProps} />);
+    fireEvent.click(screen.getByRole("tab", { name: "Guardrails" }));
+    fireEvent.click(await screen.findByTestId("delete-button"));
+
+    const modal = within(await screen.findByRole("dialog"));
+    expect(modal.getByText("删除 Guardrail")).toBeInTheDocument();
+    expect(modal.getByText("确定要删除 Guardrail：Test Guardrail？此操作无法撤销。")).toBeInTheDocument();
+    expect(modal.getByText("Guardrail 信息")).toBeInTheDocument();
+    expect(modal.getByText("名称")).toBeInTheDocument();
+    expect(modal.getByText("ID")).toBeInTheDocument();
+    expect(modal.getByText("提供商")).toBeInTheDocument();
+    expect(modal.getByText("模式")).toBeInTheDocument();
+    expect(modal.getByText("默认开启")).toBeInTheDocument();
+    expect(modal.getByText("是")).toBeInTheDocument();
+
+    expect(modal.queryByText("Delete Guardrail")).not.toBeInTheDocument();
+    expect(modal.queryByText("Guardrail Information")).not.toBeInTheDocument();
+    expect(modal.queryByText("Default On")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese deleted toast and hides the English one", async () => {
+    mockDeleteGuardrailCall.mockResolvedValue({});
+    renderWithProviders(<GuardrailsPanel {...defaultProps} />);
+    fireEvent.click(screen.getByRole("tab", { name: "Guardrails" }));
+    fireEvent.click(await screen.findByTestId("delete-button"));
+
+    const modal = within(await screen.findByRole("dialog"));
+    fireEvent.click(modal.getByRole("button", { name: "Delete" }));
+
+    await waitFor(() => expect(toast.success).toHaveBeenCalledWith("Guardrail「Test Guardrail」删除成功"));
+    expect(toast.success).not.toHaveBeenCalledWith('Guardrail "Test Guardrail" deleted successfully');
+  });
+
+  it("renders the Chinese delete-failure toast and hides the English one", async () => {
+    mockDeleteGuardrailCall.mockRejectedValue(new Error("boom"));
+    renderWithProviders(<GuardrailsPanel {...defaultProps} />);
+    fireEvent.click(screen.getByRole("tab", { name: "Guardrails" }));
+    fireEvent.click(await screen.findByTestId("delete-button"));
+
+    const modal = within(await screen.findByRole("dialog"));
+    fireEvent.click(modal.getByRole("button", { name: "Delete" }));
+
+    await waitFor(() => expect(toast.fromError).toHaveBeenCalledWith("删除 Guardrail 失败"));
+    expect(toast.fromError).not.toHaveBeenCalledWith("Failed to delete guardrail");
   });
 });

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { FlaskConical, Search } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import GuardrailTestPanel from "./GuardrailTestPanel";
 import { applyGuardrail } from "@/components/networking";
 import { toast } from "@/lib/toast";
@@ -47,6 +48,7 @@ const GuardrailTestPlayground: React.FC<GuardrailTestPlaygroundProps> = ({
   accessToken,
   onClose,
 }) => {
+  const { t } = useTranslation("guardrails");
   const [selectedGuardrails, setSelectedGuardrails] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState("");
   const [testResults, setTestResults] = useState<TestResult[]>([]);
@@ -174,7 +176,7 @@ const GuardrailTestPlayground: React.FC<GuardrailTestPlaygroundProps> = ({
                           <div>
                             <span className="font-medium">Mode: </span>
                             <span className="text-muted-foreground">
-                              {formatGuardrailMode(guardrail.litellm_params.mode)}
+                              {formatGuardrailMode(guardrail.litellm_params.mode, t)}
                             </span>
                           </div>
                         </div>

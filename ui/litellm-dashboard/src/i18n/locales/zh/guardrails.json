@@ -1,0 +1,184 @@
+{
+  "common": {
+    "loading": "加载中...",
+    "cancel": "取消",
+    "yes": "是",
+    "no": "否",
+    "selectOption": "请选择",
+    "unnamedGuardrail": "未命名 Guardrail",
+    "tagBasedMode": "基于标签"
+  },
+  "table": {
+    "columns": {
+      "guardrailId": "Guardrail ID",
+      "name": "名称",
+      "provider": "提供商",
+      "mode": "模式",
+      "defaultOn": "默认开启",
+      "createdAt": "创建时间",
+      "updatedAt": "更新时间",
+      "actions": "操作"
+    },
+    "defaultOn": "默认开启",
+    "defaultOff": "默认关闭",
+    "delete": "删除",
+    "openActionsAria": "打开 Guardrail 操作",
+    "configDeleteHint": "Config Guardrail 在配置文件中定义，无法从仪表盘删除。",
+    "emptyTitle": "还没有 Guardrail",
+    "emptyDescription": "添加 Guardrail 即可开始过滤请求和响应。",
+    "loading": "正在加载 Guardrails…"
+  },
+  "list": {
+    "tabs": {
+      "garden": "Guardrail Garden",
+      "guardrails": "Guardrails",
+      "playground": "测试 Playground",
+      "submitted": "已提交的 Guardrails"
+    },
+    "addNew": "新增 Guardrail",
+    "addProvider": "添加提供商 Guardrail",
+    "addCustomCode": "创建自定义代码 Guardrail",
+    "deleteModal": {
+      "title": "删除 Guardrail",
+      "message": "确定要删除 Guardrail：{{name}}？此操作无法撤销。",
+      "resourceInformationTitle": "Guardrail 信息",
+      "name": "名称",
+      "id": "ID",
+      "provider": "提供商",
+      "mode": "模式",
+      "defaultOn": "默认开启"
+    },
+    "toast": {
+      "deleted": "Guardrail「{{name}}」删除成功",
+      "deleteFailed": "删除 Guardrail 失败"
+    }
+  },
+  "info": {
+    "backToGuardrails": "返回 Guardrails",
+    "notFound": "未找到 Guardrail",
+    "tabs": {
+      "overview": "概览",
+      "settings": "设置"
+    },
+    "provider": "提供商",
+    "mode": "模式",
+    "defaultOn": "默认开启",
+    "defaultOff": "默认关闭",
+    "createdAt": "创建时间",
+    "lastUpdated": "最后更新",
+    "lastUpdatedWithDate": "最后更新：{{date}}",
+    "piiProtection": "PII 保护",
+    "piiEntitiesConfigured": "已配置 {{value}} 个 PII 实体",
+    "piiEntityConfiguration": "PII 实体配置",
+    "piiAction": {
+      "block": "阻止",
+      "mask": "屏蔽",
+      "redact": "脱敏"
+    },
+    "entityType": "实体类型",
+    "configuration": "配置",
+    "customCode": "自定义代码",
+    "editCode": "编辑代码",
+    "settingsTitle": "Guardrail 设置",
+    "configEditHint": "Guardrail 在配置文件中定义，无法编辑。",
+    "configAria": "Config Guardrail 详情",
+    "editSettings": "编辑设置",
+    "guardrailId": "Guardrail ID",
+    "guardrailName": "Guardrail 名称",
+    "namePlaceholder": "输入 Guardrail 名称",
+    "guardrailInfo": "Guardrail 信息",
+    "providerSettings": "提供商设置",
+    "advancedSettings": "高级设置",
+    "saveChanges": "保存更改",
+    "skipSystemMessageLabel": "在 Guardrail 中跳过 system 消息",
+    "skipSystemMessageHint": "统一 Guardrail：从 Guardrail 输入中省略 role: system（LLM 仍会收到完整消息）。使用全局默认值将遵循 litellm_settings.skip_system_message_in_guardrail。",
+    "skipToolMessageLabel": "在 Guardrail 中跳过 tool 消息",
+    "skipToolMessageHint": "统一 Guardrail：从 Guardrail 输入中省略 role: tool（LLM 仍会收到完整消息）。使用全局默认值将遵循 litellm_settings.skip_tool_message_in_guardrail。",
+    "validation": {
+      "nameRequired": "请输入 Guardrail 名称"
+    },
+    "toast": {
+      "loadFailed": "加载 Guardrail 信息失败",
+      "noChanges": "未检测到更改",
+      "updated": "Guardrail 更新成功",
+      "updateFailed": "更新 Guardrail 失败"
+    }
+  },
+  "form": {
+    "title": "创建 Guardrail",
+    "guardrailName": "Guardrail 名称",
+    "guardrailNamePlaceholder": "输入此 Guardrail 的名称",
+    "guardrailProvider": "Guardrail 提供商",
+    "providerPlaceholder": "选择 Guardrail 提供商",
+    "noMatchingProviders": "没有匹配的提供商",
+    "mode": "模式",
+    "modeHint": "Guardrail 的应用方式",
+    "alwaysOn": "始终开启",
+    "alwaysOnHint": "启用后，此 Guardrail 将默认应用于所有请求。",
+    "skipSystemMessageLabel": "在 Guardrail 中跳过 system 消息",
+    "skipSystemMessageHint": "仅统一 Guardrail：从 Guardrail 评估输入中省略 role: system（OpenAI chat + Anthropic messages）。模型仍会收到完整消息。使用全局默认值将遵循 litellm_settings.skip_system_message_in_guardrail。",
+    "skipToolMessageLabel": "在 Guardrail 中跳过 tool 消息",
+    "skipToolMessageHint": "仅统一 Guardrail：从 Guardrail 评估输入中省略 role: tool（OpenAI chat + Anthropic messages）。模型仍会收到完整消息。使用全局默认值将遵循 litellm_settings.skip_tool_message_in_guardrail。",
+    "skipMessage": {
+      "inherit": "使用全局默认值",
+      "yes": "是 — 从 Guardrail 扫描中排除",
+      "no": "否 — 始终包含在扫描中"
+    },
+    "previous": "上一步",
+    "next": "下一步",
+    "create": "创建 Guardrail",
+    "steps": {
+      "basicInfo": "基本信息",
+      "topics": "主题",
+      "patterns": "匹配模式",
+      "keywords": "关键词",
+      "endpointSettings": "Endpoint 设置（可选）",
+      "piiConfiguration": "PII 配置",
+      "providerConfiguration": "提供商配置",
+      "optional": "可选",
+      "edit": "编辑"
+    },
+    "modeDescriptions": {
+      "preCall": "LLM 调用前 - 在 LLM 调用之前运行并检查输入（推荐）",
+      "duringCall": "LLM 调用中 - 与 LLM 调用并行运行，检查完成前暂扣响应",
+      "postCall": "LLM 调用后 - 在 LLM 调用之后运行，仅检查输出",
+      "loggingOnly": "仅记录日志 - 仅在日志回调中运行，不影响 LLM 调用",
+      "preMcpCall": "MCP 工具调用前 - 在 MCP 工具执行之前运行并校验工具调用",
+      "duringMcpCall": "MCP 工具调用中 - 与 MCP 工具执行并行运行以进行监控",
+      "postMcpCall": "MCP 工具调用后 - 在 MCP 工具执行之后运行并检查工具结果"
+    },
+    "endpoint": {
+      "description": "为特定调用类型配置设置。大多数 Guardrail 不需要此项，除非你使用像 <code>/v1/realtime</code> 这样的特定 Endpoint，否则可以跳过。",
+      "callType": "调用类型",
+      "callTypePlaceholder": "选择调用类型",
+      "moreCallTypes": "更多调用类型即将推出。",
+      "realtimeSettings": "/v1/realtime 设置",
+      "endSessionAfter": "X 次违规后结束会话",
+      "endSessionAfterHint": "在达到此数量的 Guardrail 违规后自动关闭会话。留空表示永不自动关闭。",
+      "endSessionPlaceholder": "例如 3",
+      "onViolation": "违规时",
+      "onViolationWarn": "警告",
+      "onViolationEndSession": "结束会话",
+      "warnHint": "Bot 朗读该消息，会话继续",
+      "endSessionHint": "Bot 朗读该消息，连接立即关闭",
+      "violationMessage": "用户听到的消息",
+      "violationMessageHint": "此 Guardrail 触发时 Bot 朗读的内容。留空则回退到默认的违规消息。"
+    },
+    "validation": {
+      "nameRequired": "请输入 Guardrail 名称",
+      "providerRequired": "请选择提供商",
+      "modeRequired": "请选择模式",
+      "fixHighlighted": "创建 Guardrail 失败：请修正高亮的字段",
+      "contentFilterRequired": "请至少配置一项内容过滤设置（类别、匹配模式、关键词或竞品意图）",
+      "invalidJson": "配置中的 JSON 无效",
+      "criteriaRequired": "请至少添加一个评判标准",
+      "criteriaWeightSum": "各评判标准权重之和必须为 100%（当前为 {{value}}%）",
+      "toolRuleRequired": "请至少添加一条工具权限规则"
+    },
+    "toast": {
+      "loadConfigFailed": "加载 Guardrail 配置失败",
+      "created": "Guardrail 创建成功",
+      "createFailed": "创建 Guardrail 失败：{{message}}"
+    }
+  }
+}
