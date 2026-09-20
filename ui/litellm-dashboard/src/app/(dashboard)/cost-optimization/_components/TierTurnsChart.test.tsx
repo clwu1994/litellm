@@ -1,8 +1,9 @@
-import { render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import React from "react";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { AutoRouterDeployment } from "@/app/(dashboard)/hooks/models/useModels";
+import i18n from "@/i18n/bootstrapI18n";
 
 vi.mock("@/components/shared/charts", () => ({
   DonutChart: ({ label }: { label: string }) => <div data-testid="donut">{label}</div>,
@@ -173,5 +174,28 @@ describe("TierTurnsChart", () => {
     const { container } = render(<TierTurnsChart view={groupView({ tier_turns: {} })} autoRouters={[]} />);
 
     expect(container).toBeEmptyDOMElement();
+  });
+});
+
+describe("TierTurnsChart Chinese copy", () => {
+  beforeEach(async () => {
+    await i18n.changeLanguage("zh");
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  it("renders the Chinese card title, description and total and hides the English ones", () => {
+    render(<TierTurnsChart view={groupView()} autoRouters={[deployment({ tier_labels: { SIMPLE: "Cheap" } })]} />);
+
+    expect(screen.getByText("按层级统计路由")).toBeInTheDocument();
+    expect(screen.getByText(/各层级处理的轮次/)).toBeInTheDocument();
+    expect(screen.getByTestId("donut")).toHaveTextContent("共 4 轮次");
+
+    expect(screen.queryByText("Routing by tier")).not.toBeInTheDocument();
+    expect(screen.queryByText(/Turns each tier served/)).not.toBeInTheDocument();
+    expect(screen.getByTestId("donut")).not.toHaveTextContent("4 total turns");
   });
 });

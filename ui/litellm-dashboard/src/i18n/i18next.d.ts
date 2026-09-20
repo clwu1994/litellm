@@ -1,6 +1,7 @@
 import type zhAuth from "./locales/zh/auth.json";
 import type zhBudgets from "./locales/zh/budgets.json";
 import type zhCommon from "./locales/zh/common.json";
+import type zhCostTracking from "./locales/zh/costTracking.json";
 import type zhKeys from "./locales/zh/keys.json";
 import type zhLogs from "./locales/zh/logs.json";
 import type zhNav from "./locales/zh/nav.json";
@@ -17,6 +18,7 @@ declare module "i18next" {
       nav: typeof zhNav;
       auth: typeof zhAuth;
       budgets: typeof zhBudgets;
+      costTracking: typeof zhCostTracking;
       keys: typeof zhKeys;
       logs: typeof zhLogs;
       teams: typeof zhTeams;

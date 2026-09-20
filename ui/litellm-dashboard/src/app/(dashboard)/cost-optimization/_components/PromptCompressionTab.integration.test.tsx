@@ -1,6 +1,9 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+import i18n from "@/i18n/bootstrapI18n";
+import { toast } from "@/lib/toast";
 
 import PromptCompressionTab from "./PromptCompressionTab";
 
@@ -125,5 +128,147 @@ describe("PromptCompressionTab submit payload", () => {
     expect(await screen.findByText("Always on")).toBeInTheDocument();
     expect(screen.getByText("Opt-in")).toBeInTheDocument();
     expect(screen.getByText("https://a.example.com")).toBeInTheDocument();
+  });
+});
+
+describe("PromptCompressionTab Chinese copy", () => {
+  beforeEach(async () => {
+    createGuardrailCall.mockClear().mockResolvedValue({});
+    getGuardrailsList.mockClear().mockResolvedValue({ guardrails: [] });
+    vi.mocked(toast.success).mockClear();
+    vi.mocked(toast.fromError).mockClear();
+    await i18n.changeLanguage("zh");
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  it("renders the Chinese chrome, description and warning and hides the English", async () => {
+    render(<PromptCompressionTab accessToken="test-token" />);
+
+    expect(await screen.findByText("Headroom 提示词压缩")).toBeInTheDocument();
+    expect(screen.getByText(/Headroom 是 LiteLLM 原生的护栏/)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Headroom 配置文档" })).toBeInTheDocument();
+    expect(screen.getByText("添加 Headroom 压缩护栏")).toBeInTheDocument();
+    expect(screen.getByLabelText("名称")).toBeInTheDocument();
+    expect(screen.getByLabelText("Headroom API Base")).toBeInTheDocument();
+    expect(screen.getByText("你的 Headroom 压缩服务所托管的 URL")).toBeInTheDocument();
+    expect(screen.getByLabelText("应用到所有请求")).toBeInTheDocument();
+    expect(screen.getByText(/对所有请求应用压缩面向所有用户开放/)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "这里" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "添加护栏" })).toBeInTheDocument();
+
+    expect(screen.queryByText("Headroom prompt compression")).not.toBeInTheDocument();
+    expect(screen.queryByText("Add Headroom compression guardrail")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Name")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Headroom API base")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Apply to all requests")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Add guardrail" })).not.toBeInTheDocument();
+  });
+
+  /* eslint-disable testing-library/no-node-access -- The tooltip trigger is an icon with no accessible name, so reaching its portal needs the DOM */
+  it("renders the Chinese API base hint in a tooltip and hides the English one", async () => {
+    const user = userEvent.setup();
+    render(<PromptCompressionTab accessToken="test-token" />);
+
+    const trigger = screen.getByText("Headroom API Base").querySelector("svg");
+    expect(trigger).toBeTruthy();
+    await user.hover(trigger as SVGElement);
+
+    expect(
+      await screen.findByText("你的 Headroom 压缩服务的 Base URL（LiteLLM 会调用其 /v1/compress Endpoint）"),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("Base URL of your Headroom compression service (LiteLLM calls its /v1/compress endpoint)"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("shows the Chinese loading state and empty state and hides the English ones", async () => {
+    getGuardrailsList.mockReturnValue(new Promise(() => {}));
+    render(<PromptCompressionTab accessToken="test-token" />);
+
+    expect(await screen.findByText("加载中...")).toBeInTheDocument();
+    expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
+
+    cleanup();
+    getGuardrailsList.mockResolvedValue({ guardrails: [] });
+    render(<PromptCompressionTab accessToken="test-token" />);
+
+    expect(await screen.findByText("尚未配置提示词压缩护栏。在下方添加一个即可开始节省输入 Token")).toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        "No prompt compression guardrails configured yet. Add one below to start saving on input tokens",
+      ),
+    ).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese always-on and opt-in badges and hides the English ones", async () => {
+    getGuardrailsList.mockResolvedValue({
+      guardrails: [
+        {
+          guardrail_id: "g-1",
+          guardrail_name: "always-on-one",
+          litellm_params: { guardrail: "headroom", api_base: "https://a.example.com", default_on: true },
+        },
+        {
+          guardrail_id: "g-2",
+          guardrail_name: "opt-in-one",
+          litellm_params: { guardrail: "headroom", api_base: "https://b.example.com", default_on: false },
+        },
+      ],
+    });
+    render(<PromptCompressionTab accessToken="test-token" />);
+
+    expect(await screen.findByText("始终开启")).toBeInTheDocument();
+    expect(screen.getByText("按需启用")).toBeInTheDocument();
+    expect(screen.queryByText("Always on")).not.toBeInTheDocument();
+    expect(screen.queryByText("Opt-in")).not.toBeInTheDocument();
+  });
+
+  it("shows both Chinese required messages when the form is empty", async () => {
+    const user = userEvent.setup();
+    render(<PromptCompressionTab accessToken="test-token" />);
+
+    await user.click(screen.getByRole("button", { name: "添加护栏" }));
+
+    expect(await screen.findByText("请输入名称")).toBeInTheDocument();
+    expect(screen.getByText("请输入 API Base")).toBeInTheDocument();
+    expect(screen.queryByText("Name is required")).not.toBeInTheDocument();
+    expect(screen.queryByText("API base is required")).not.toBeInTheDocument();
+  });
+
+  it("reports a Chinese load failure toast and hides the English message", async () => {
+    getGuardrailsList.mockRejectedValue(new Error("boom"));
+    render(<PromptCompressionTab accessToken="test-token" />);
+
+    await vi.waitFor(() => expect(toast.fromError).toHaveBeenCalledWith("加载压缩护栏失败"));
+    expect(toast.fromError).not.toHaveBeenCalledWith("Failed to load compression guardrails");
+  });
+
+  it("reports a Chinese success toast after creating a guardrail", async () => {
+    const user = userEvent.setup();
+    render(<PromptCompressionTab accessToken="test-token" />);
+
+    fireEvent.change(screen.getByLabelText("名称"), { target: { value: "headroom-compression" } });
+    fireEvent.change(screen.getByLabelText("Headroom API Base"), { target: { value: "https://a.example.com" } });
+    await user.click(screen.getByRole("button", { name: "添加护栏" }));
+
+    await vi.waitFor(() => expect(toast.success).toHaveBeenCalledWith("压缩护栏已创建"));
+    expect(toast.success).not.toHaveBeenCalledWith("Compression guardrail created");
+  });
+
+  it("reports a Chinese create failure toast and hides the English message", async () => {
+    const user = userEvent.setup();
+    createGuardrailCall.mockRejectedValue(new Error("boom"));
+    render(<PromptCompressionTab accessToken="test-token" />);
+
+    fireEvent.change(screen.getByLabelText("名称"), { target: { value: "headroom-compression" } });
+    fireEvent.change(screen.getByLabelText("Headroom API Base"), { target: { value: "https://a.example.com" } });
+    await user.click(screen.getByRole("button", { name: "添加护栏" }));
+
+    await vi.waitFor(() => expect(toast.fromError).toHaveBeenCalledWith("创建压缩护栏失败"));
+    expect(toast.fromError).not.toHaveBeenCalledWith("Failed to create compression guardrail");
   });
 });

@@ -1,0 +1,263 @@
+{
+  "common": {
+    "loading": "加载中..."
+  },
+  "view": {
+    "title": "成本优化",
+    "subtitle": "跟踪并配置为你省钱的机制：提示词压缩和提示词缓存。自动路由位于「模型 + Endpoints」中的 Auto-Routers 标签页",
+    "tabs": {
+      "overall": "总览",
+      "compression": "提示词压缩",
+      "caching": "提示词缓存",
+      "autoRouter": "自动路由"
+    },
+    "experimental": {
+      "title": "这是一个实验性仪表盘",
+      "feedback": "有反馈？欢迎加入讨论 <feedback>这里</feedback>"
+    }
+  },
+  "usage": {
+    "utcNote": "支出按 UTC 日期归集",
+    "savingsTitle": "节省",
+    "cumulative": "累计",
+    "perDay": "按天",
+    "runningTotalSaved": "累计节省总额",
+    "savedPerDay": "每日节省",
+    "savingsByDriver": "按来源统计节省",
+    "spendByTool": "按工具统计支出",
+    "spendByToolDescription": "调用了各工具的请求所产生的支出（MCP 和客户端工具）；仅声明工具而未调用不计入。一个请求调用多个工具时，其全部支出会计入每个工具，因此这里是对支出的归因而非拆分。",
+    "totalByTool": "按工具汇总",
+    "dailySpendByTool": "按工具统计每日支出",
+    "rangeUtc": "{{range}}（UTC）"
+  },
+  "empty": {
+    "noToolUsage": "此时间范围内没有工具用量。",
+    "noPromptCompressionGuardrails": "尚未配置提示词压缩护栏。在下方添加一个即可开始节省输入 Token"
+  },
+  "compression": {
+    "title": "Headroom 提示词压缩",
+    "description": "Headroom 是 LiteLLM 原生的护栏，会在提示词发送到模型前进行压缩，从而减少你为输入 Token 支付的费用。它移除的 Token 会被计价，并作为压缩节省显示在「用量」标签页上。<docs>Headroom 配置文档</docs>",
+    "alwaysOn": "始终开启",
+    "optIn": "按需启用",
+    "addTitle": "添加 Headroom 压缩护栏",
+    "nameLabel": "名称",
+    "apiBaseLabel": "Headroom API Base",
+    "apiBaseHint": "你的 Headroom 压缩服务的 Base URL（LiteLLM 会调用其 /v1/compress Endpoint）",
+    "apiBaseDescription": "你的 Headroom 压缩服务所托管的 URL",
+    "applyToAll": "应用到所有请求",
+    "enterpriseWarning": "对所有请求应用压缩面向所有用户开放。按密钥或团队选择性启用是 LiteLLM 企业版功能。获取试用密钥请点击<pricing>这里</pricing>",
+    "addButton": "添加护栏",
+    "validation": {
+      "nameRequired": "请输入名称",
+      "apiBaseRequired": "请输入 API Base"
+    },
+    "toast": {
+      "loadFailed": "加载压缩护栏失败",
+      "created": "压缩护栏已创建",
+      "createFailed": "创建压缩护栏失败",
+      "cachingLoadFailed": "加载提示词缓存设置失败"
+    }
+  },
+  "cacheLeakage": {
+    "titleKey": "按 Virtual Key 统计缓存泄漏",
+    "titleModel": "按模型统计缓存泄漏",
+    "description": "{{subject}}如果发送大量未缓存输入且缓存命中率偏低，很可能没有使用提示词缓存。潜在节省为估算值：未缓存输入按你的缓存流量每个缓存 Token 的净收益（扣除缓存写入溢价后）计价。",
+    "streaming": "数据仍在加载；随着时间范围剩余部分返回，行和合计会更新。",
+    "empty": "此时间范围内没有{{noun}}用量。",
+    "subjectKey": "密钥",
+    "subjectModel": "模型",
+    "columnKey": "密钥",
+    "columnModel": "模型",
+    "emptyNounKey": "密钥",
+    "emptyNounModel": "模型",
+    "tabs": {
+      "byKey": "按 Virtual Key",
+      "byModel": "按模型"
+    },
+    "column": {
+      "uncachedInputTokens": "未缓存输入 Token",
+      "cacheHitRate": "缓存命中率",
+      "potentialSavings": "潜在节省"
+    },
+    "info": {
+      "uncachedInputTokens": "你在该时间范围内发送的、既未从缓存读取也未写入缓存的输入 Token",
+      "cacheHitRate": "从缓存读取的输入 Token 占比",
+      "potentialSavings": "如果这些未缓存输入使用提示词缓存，大致能节省的金额。估算方式为未缓存输入 Token 数乘以你的缓存流量每个缓存 Token 的净收益（实际缓存节省，扣除写入溢价后，除以缓存读取和写入 Token 数）。当缓存整体尚未产生节省时留空。"
+    },
+    "sortBy": "按{{label}}排序"
+  },
+  "benchmarks": {
+    "title": "自动路由用量",
+    "loading": "正在加载自动路由用量...",
+    "adminOnly": "自动路由用量仅对代理管理员角色可见",
+    "unavailableNow": "自动路由用量当前不可用",
+    "allRouters": "全部自动路由",
+    "range": "{{range}}（UTC）",
+    "tabs": {
+      "usage": "用量",
+      "shadowEvals": "影子评估"
+    },
+    "totalSavings": "预计节省总额",
+    "actualSpend": "自动路由实际支出",
+    "llmSpend": "LLM 支出",
+    "classificationCost": "分类成本",
+    "unavailable": "不可用",
+    "breakdownUnavailable": "明细不可用，因为部分用量早于分类成本统计功能。",
+    "baselineSpend": "按最高层级模型估算的支出",
+    "avgSavedPerSession": "每会话平均节省",
+    "sessionsHint": "· {{sessions}} 个会话",
+    "avgTurnsPerSession": "每会话平均轮次",
+    "avgSessionLength": "平均会话时长",
+    "avgTokensPerSession": "每会话平均 Token 数",
+    "explanation": "将你的实际路由支出与仅使用自动路由中配置的最贵模型时的估算成本进行对比。它同时考虑了固定使用一个模型带来的缓存节省，以及切换模型增加的缓存成本。节省额已扣除记录的 LLM 分类成本，该成本计入实际支出。每 1K 轮次的分类成本按所有自动路由轮次取平均，包括跳过分类的轮次。该时间范围统计与其重叠的完整会话，因此合计可能与「总览」标签页略有差异，后者按 UTC 日期归集节省。",
+    "cacheTitle": "自动路由提示词缓存",
+    "cacheSubtitle": "每个轮次都恰好归入一个桶，取决于路由器当时的处理方式",
+    "classificationRate": "（{{value}} / 1K 轮次）",
+    "classificationRateBelow": "（<{{value}} / 1K 轮次）",
+    "duration": {
+      "seconds": "{{value}} 秒",
+      "minutes": "{{value}} 分钟",
+      "hours": "{{value}} 小时"
+    },
+    "buckets": {
+      "sameModel": "同一模型",
+      "sameModelHint": "上一轮次 → 同一层级",
+      "firstVisit": "首次访问",
+      "firstVisitHint": "上一轮次 → 尚未使用的层级",
+      "returnToTier": "返回层级",
+      "returnToTierHint": "上一轮次 → 之前用过的层级"
+    },
+    "cache": {
+      "shareOfTurnsAria": "各桶轮次占比",
+      "bucketTitle": "{{label}}：{{turns}} 轮次",
+      "bucket": "桶",
+      "turns": "轮次",
+      "hitRate": "命中率",
+      "cacheHitRate": "缓存命中率",
+      "expiredMiss": "过期未命中",
+      "expiredMissHint": "在所有已统计轮次中，因回到较早层级时已超过其 TTL 而未能命中缓存的占比",
+      "shareOfTurns": "轮次占比",
+      "turnsMeasured": "已统计 <amount>{{turns}}</amount> 轮次",
+      "unordered": "有 {{turns}} 个轮次跨 Pod 乱序到达，未纳入分桶"
+    }
+  },
+  "tiers": {
+    "title": "按层级统计路由",
+    "description": "各层级处理的轮次。分类器发送到默认模型的轮次不属于任何层级，也未计入此处，因此这里的总数可能少于该路由器的轮次。",
+    "totalTurns": "共 {{turns}} 轮次"
+  },
+  "shadowEval": {
+    "title": "影子评估",
+    "description": "对某个密钥、团队或用户（团队和用户覆盖 JWT 认证流量）的真实流量进行自动路由盲评：切换前对比他们当前使用的模型，切换后对比一个固定基线。",
+    "loadError": "无法加载已有评估。刷新页面重试。",
+    "loading": "正在加载评估...",
+    "startTitle": "启动影子评估",
+    "startButton": "开始影子评估",
+    "starting": "正在启动...",
+    "stopButton": "停止",
+    "stopping": "正在停止...",
+    "previous": "历史评估（{{total}}）",
+    "show": "展开",
+    "hide": "收起",
+    "targets": "{{total}} 个目标",
+    "noVerdictsYet": "暂无评判结果",
+    "viewResults": "查看结果",
+    "noVerdicts": "无评判结果",
+    "lastFailure": "最近失败：",
+    "lowSample": "（样本不足）",
+    "turnsJudged": "已评判 {{value}} 轮次",
+    "judged": "已评判 {{value}}",
+    "errored": "{{value}} 次错误",
+    "evalSpend": "评估支出 {{spend}}",
+    "evalSpendWithBudget": "评估支出 {{spend}}（共 {{budget}}）",
+    "endsInDays": "{{days}} 天后结束",
+    "endsWithinDay": "一天内结束",
+    "endingNow": "即将结束",
+    "headlineForward": "对 <targets>{{targets}}</targets> 的 {{percentage}}% 流量通过 <routers>{{routers}}</routers> 进行影子评估",
+    "headlineReverse": "在 <targets>{{targets}}</targets> 的 {{percentage}}% 流量上，将 <routers>{{routers}}</routers> 与 <baseline>{{baseline}}</baseline> 进行对比",
+    "headlineModels": "模型范围：<list>{{models}}</list>",
+    "arm": {
+      "baseline": "基线",
+      "currentModel": "当前模型"
+    },
+    "costVsBaseline": "路由器成本 vs 基线",
+    "costVsCurrent": "路由器成本 vs 你当前的模型",
+    "matchedOrBeatBaseline": "路由器达到或超过基线",
+    "matchedOrBeatCurrent": "路由器达到或超过你当前的模型",
+    "ofJudgedResponses": "共 {{total}} 条已评判响应",
+    "costTooltip": "每个分支按其补全成本加上自身路由分类器调用计价，均基于相同的已评判轮次；评判器的成本不计入任一分支",
+    "spendVs": "{{router}} vs {{other}}，基于相同的已评判轮次",
+    "cacheServedExcluded": "；已排除 {{turns}} 个由缓存服务的轮次",
+    "verdictAria": "评判结果分布",
+    "routerWon": "路由器胜出",
+    "tie": "平局",
+    "armWon": "{{arm}}胜出",
+    "groups": {
+      "router": "路由器",
+      "routerPick": "路由器选择",
+      "comparedAgainst": "对比对象",
+      "promptDifficulty": "提示词难度"
+    },
+    "columns": {
+      "judgedTurns": "已评判轮次",
+      "routerWins": "路由器胜出",
+      "armWins": "{{arm}}胜出",
+      "ties": "平局",
+      "judgeConfidence": "评判置信度",
+      "routerCost": "路由器成本",
+      "armCost": "{{arm}}成本",
+      "target": "目标",
+      "status": "状态",
+      "budgetUsed": "预算使用"
+    },
+    "budgetUsedTurns": "{{used}} / {{total}} 轮次",
+    "results": {
+      "error": "无法加载结果。正在重试。",
+      "collecting": "正在收集评判结果。随着采样请求被评判，结果会陆续显示。",
+      "noVerdictsRecorded": "该任务没有记录任何评判结果。",
+      "loading": "正在加载结果..."
+    },
+    "direction": {
+      "forward": "采用检查：密钥流量 vs 路由器",
+      "reverse": "回归检查：路由器选择 vs 基线"
+    },
+    "descriptionForward": "将所选目标（密钥、团队或用户）流量的一个采样切片复制一份通过自动路由，并由 LLM 评判器对两个答案进行盲评。每个目标有自己的支出预算。路由器的答案绝不会提供给用户；评判调用计入所采样流量自身的身份。",
+    "descriptionReverse": "将自动路由已经在服务的流量的一个采样切片复制一份，与一个固定基线模型对比，并由 LLM 评判器对两个答案进行盲评。每个目标有自己的支出预算。基线的答案绝不会提供给用户；评判调用计入所采样流量自身的身份。",
+    "durationDays": "{{days}} 天",
+    "keyPlaceholder": "按别名搜索密钥",
+    "noMatchingKeys": "没有匹配的密钥",
+    "keysLoadError": "无法加载密钥。刷新页面重试。",
+    "userPlaceholder": "按邮箱搜索用户",
+    "noMatchingUsers": "没有匹配的用户",
+    "usersLoadError": "无法加载用户。刷新页面重试。",
+    "autoRoutersLabel": "自动路由",
+    "routerPlaceholder": "最多选择 4 个自动路由",
+    "noAutoRouters": "未配置自动路由",
+    "tooManyRouters": "最多选择 {{max}} 个自动路由",
+    "reverseSingleRouter": "回归检查只将一个路由器与其基线对比",
+    "forwardSharedRouters": "每个路由器看到相同的采样请求，并基于相同的实时响应进行评判",
+    "directionLabel": "方向",
+    "keysToShadow": "要影子的密钥",
+    "teamsToShadow": "要影子的团队",
+    "usersToShadow": "要影子的用户",
+    "teamPlaceholder": "按别名搜索团队",
+    "onlyOnModels": "仅限模型",
+    "everyModelPlaceholder": "目标使用的所有模型",
+    "noModelsConfigured": "未配置模型",
+    "tooManyModels": "最多选择 {{max}} 个模型",
+    "modelsScopeHint": "将上方每个目标缩小到对这些模型的请求",
+    "trafficSampled": "采样流量",
+    "percentOfTraffic": "占流量百分比",
+    "percentageRange": "请输入 0.1 到 100 之间的值",
+    "durationLabel": "时长",
+    "spendBudget": "支出预算",
+    "maxSpendHint": "每个目标的影子 + 评判支出上限",
+    "budgetRange": "请输入 0.01 到 10000 之间的值",
+    "baselineModel": "基线模型",
+    "baselinePlaceholder": "选择基线模型",
+    "judgeModel": "评判模型",
+    "judgePlaceholder": "选择评判模型",
+    "noChatModels": "没有可用的对话模型",
+    "recommended": "推荐"
+  }
+}

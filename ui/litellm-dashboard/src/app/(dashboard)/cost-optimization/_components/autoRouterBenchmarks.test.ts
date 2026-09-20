@@ -1,19 +1,26 @@
 import { describe, expect, it } from "vitest";
 
+import i18n from "@/i18n/index";
+
 import {
   ALL_ROUTERS,
+  ALL_ROUTERS_LABEL_KEY,
   bucketRows,
   bucketTurnsTotal,
-  durationLabel,
+  durationParts,
   expiredMissShare,
   groupKey,
   groupLabel,
   pctLabel,
   viewFor,
+  viewLabel,
   type AutoRouterBenchmarkGroup,
   type AutoRouterBenchmarksResponse,
   type AutoRouterCacheStats,
 } from "./autoRouterBenchmarks";
+
+const en = () => i18n.getFixedT("en", "costTracking");
+const zh = () => i18n.getFixedT("zh", "costTracking");
 
 const cache = (overrides: Partial<AutoRouterCacheStats> = {}): AutoRouterCacheStats => ({
   coverage_pct: 99.6,
@@ -66,7 +73,9 @@ describe("viewFor", () => {
     const data = response([group(), group({ router_name: "gpt-auto", sessions: 7 })]);
     const view = viewFor(data, ALL_ROUTERS);
     expect(view.stats).toBe(data.totals);
-    expect(view.label).toBe("All auto-routers");
+    expect(view.labelKey).toBe(ALL_ROUTERS_LABEL_KEY);
+    expect(viewLabel(view, en())).toBe("All auto-routers");
+    expect(viewLabel(view, zh())).toBe("全部自动路由");
   });
 
   it("maps a selected router to that group's slice with a scope of one", () => {
@@ -75,13 +84,14 @@ describe("viewFor", () => {
     const view = viewFor(data, groupKey(other));
     expect(view.stats).toBe(other);
     expect(view.label).toBe("gpt-auto");
+    expect(viewLabel(view, en())).toBe("gpt-auto");
   });
 
   it("falls back to the all-routers view when the selected key no longer exists", () => {
     const data = response([group()]);
     const view = viewFor(data, "vanished complexity");
     expect(view.stats).toBe(data.totals);
-    expect(view.label).toBe("All auto-routers");
+    expect(view.labelKey).toBe(ALL_ROUTERS_LABEL_KEY);
   });
 
   it("distinguishes two groups sharing an alias by their router type", () => {
@@ -128,6 +138,18 @@ describe("bucketRows", () => {
     const rows = bucketRows(cache({ same_model: empty, first_visit: empty, return_to_tier: empty }));
     expect(rows.map((r) => r.sharePct)).toEqual([0, 0, 0]);
   });
+
+  it("labels the three buckets from the catalog in both locales", () => {
+    const rows = bucketRows(cache());
+    expect(rows).toHaveLength(3);
+    expect(rows.map((r) => en()(r.labelKey))).toEqual(["Same model", "First visit", "Return to tier"]);
+    expect(rows.map((r) => zh()(r.labelKey))).toEqual(["同一模型", "首次访问", "返回层级"]);
+    expect(rows.map((r) => zh()(r.sublabelKey))).toEqual([
+      "上一轮次 → 同一层级",
+      "上一轮次 → 尚未使用的层级",
+      "上一轮次 → 之前用过的层级",
+    ]);
+  });
 });
 
 describe("expiredMissShare", () => {
@@ -155,9 +177,15 @@ describe("expiredMissShare", () => {
 
 describe("formatting", () => {
   it("renders session length in the largest sensible unit", () => {
-    expect(durationLabel(42)).toBe("42s");
-    expect(durationLabel(150)).toBe("2.5m");
-    expect(durationLabel(7560)).toBe("2.1h");
+    expect(durationParts(42)).toEqual({ unitKey: "benchmarks.duration.seconds", value: "42" });
+    expect(durationParts(150)).toEqual({ unitKey: "benchmarks.duration.minutes", value: "2.5" });
+    expect(durationParts(7560)).toEqual({ unitKey: "benchmarks.duration.hours", value: "2.1" });
+  });
+
+  it("resolves the duration unit in both locales", () => {
+    const parts = durationParts(7560);
+    expect(en()(parts.unitKey, { value: parts.value })).toBe("2.1h");
+    expect(zh()(parts.unitKey, { value: parts.value })).toBe("2.1 小时");
   });
 
   it("renders percentages at the requested precision", () => {

@@ -1,7 +1,9 @@
-import { render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ToolSpendResponse } from "@/components/networking";
+
+import i18n from "@/i18n/bootstrapI18n";
 
 import type { DailyData, SpendMetrics } from "@/components/UsagePage/types";
 
@@ -435,6 +437,66 @@ describe("UsageTab", () => {
 
       expect(await screen.findByText("Spend by tool")).toBeInTheDocument();
       expect(mockGetToolSpend).toHaveBeenCalled();
+    });
+  });
+
+  describe("Chinese copy", () => {
+    beforeEach(async () => {
+      await i18n.changeLanguage("zh");
+    });
+
+    afterEach(async () => {
+      cleanup();
+      await i18n.changeLanguage("en");
+    });
+
+    it("renders the Chinese savings chrome and hides the English", async () => {
+      renderWith(twoDays());
+
+      expect(screen.getByText("支出按 UTC 日期归集")).toBeInTheDocument();
+      expect(screen.getByText("节省")).toBeInTheDocument();
+      expect(screen.getByRole("tab", { name: "累计" })).toBeInTheDocument();
+      expect(screen.getByRole("tab", { name: "按天" })).toBeInTheDocument();
+      expect(screen.getByText("累计节省总额 · Jul 1 – Jul 14（UTC）")).toBeInTheDocument();
+      expect(screen.getByText("按来源统计节省")).toBeInTheDocument();
+
+      expect(screen.queryByText("Spend is bucketed by UTC day")).not.toBeInTheDocument();
+      expect(screen.queryByText("Savings")).not.toBeInTheDocument();
+      expect(screen.queryByRole("tab", { name: "Cumulative" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("tab", { name: "Per day" })).not.toBeInTheDocument();
+      expect(screen.queryByText("Running total saved · Jul 1 – Jul 14 (UTC)")).not.toBeInTheDocument();
+      expect(screen.queryByText("Savings by driver")).not.toBeInTheDocument();
+
+      await userEvent.click(screen.getByRole("tab", { name: "按天" }));
+      expect(screen.getByText("每日节省 · Jul 1 – Jul 14（UTC）")).toBeInTheDocument();
+      expect(screen.queryByText("Saved per day · Jul 1 – Jul 14 (UTC)")).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese spend-by-tool card, description and empty state and hides the English", async () => {
+      renderWith([day("2026-07-12", {})], { toolSpend: emptyToolSpend });
+
+      expect(await screen.findByText("按工具统计支出")).toBeInTheDocument();
+      expect(screen.getByText(/调用了各工具的请求所产生的支出/)).toBeInTheDocument();
+      expect(await screen.findByText("此时间范围内没有工具用量。")).toBeInTheDocument();
+
+      expect(screen.queryByText("Spend by tool")).not.toBeInTheDocument();
+      expect(screen.queryByText(/Spend on requests that invoked each tool/)).not.toBeInTheDocument();
+      expect(screen.queryByText("No tool usage in this range.")).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese tool chart headings and hides the English", async () => {
+      const toolSpend: ToolSpendResponse = {
+        by_tool: [{ tool_name: "search", spend: 4.0, call_count: 3, total_tokens: 150 }],
+        daily: [{ date: "2026-07-12", tool_name: "search", spend: 4.0, call_count: 3 }],
+        start_date: "2026-07-12",
+        end_date: "2026-07-12",
+      };
+      renderWith([day("2026-07-12", {})], { toolSpend });
+
+      expect(await screen.findByText("按工具汇总")).toBeInTheDocument();
+      expect(screen.getByText("按工具统计每日支出")).toBeInTheDocument();
+      expect(screen.queryByText("Total by tool")).not.toBeInTheDocument();
+      expect(screen.queryByText("Daily spend by tool")).not.toBeInTheDocument();
     });
   });
 });

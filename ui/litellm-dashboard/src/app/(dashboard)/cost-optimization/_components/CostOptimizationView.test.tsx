@@ -1,7 +1,9 @@
 import React from "react";
-import { fireEvent, render, screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+import i18n from "@/i18n/bootstrapI18n";
 
 const { useAuthorizedMock } = vi.hoisted(() => ({ useAuthorizedMock: vi.fn() }));
 
@@ -96,5 +98,40 @@ describe("CostOptimizationView", () => {
       expect(screen.queryByTestId("caching-tab")).not.toBeInTheDocument();
       expect(screen.queryByTestId("autorouter-benchmarks-tab")).not.toBeInTheDocument();
     });
+  });
+});
+
+describe("CostOptimizationView Chinese copy", () => {
+  beforeEach(async () => {
+    await i18n.changeLanguage("zh");
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  it("renders the Chinese header, tabs and feedback banner and hides the English ones", () => {
+    renderView();
+
+    expect(screen.getByRole("heading", { level: 1, name: "成本优化" })).toBeInTheDocument();
+    expect(screen.getByText(/跟踪并配置为你省钱的机制/)).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "总览" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "提示词压缩" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "提示词缓存" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "自动路由" })).toBeInTheDocument();
+    expect(screen.getByText("这是一个实验性仪表盘")).toBeInTheDocument();
+    expect(screen.getByText(/有反馈？欢迎加入讨论/)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "这里" })).toBeInTheDocument();
+
+    expect(screen.queryByRole("heading", { level: 1, name: "Cost Optimization" })).not.toBeInTheDocument();
+    expect(screen.queryByText(/Track and configure the mechanisms that save you money/)).not.toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: "Overall" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: "Prompt Compression" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: "Prompt Caching" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: "Auto-Router" })).not.toBeInTheDocument();
+    expect(screen.queryByText("This is an experimental dashboard")).not.toBeInTheDocument();
+    expect(screen.queryByText(/Have feedback\? Join the discussion/)).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "here" })).not.toBeInTheDocument();
   });
 });

@@ -1,5 +1,7 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+import i18n from "@/i18n/bootstrapI18n";
 
 import type { DailyData, KeyMetricWithMetadata, SpendMetrics } from "@/components/UsagePage/types";
 import type { DailyActivityRange } from "./useDailyActivityRange";
@@ -176,5 +178,102 @@ describe("CacheLeakageCard", () => {
     expect(
       screen.queryByText("Data is still loading; rows and totals will update as the rest of the range arrives."),
     ).not.toBeInTheDocument();
+  });
+});
+
+describe("CacheLeakageCard Chinese copy", () => {
+  beforeEach(async () => {
+    await i18n.changeLanguage("zh");
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  const leaky = () => [
+    dayWithKeys("2026-07-12", {
+      "hash-leaky": key("leaky-key", { prompt_tokens: 10000, cache_read_input_tokens: 0 }),
+    }),
+  ];
+
+  it("renders the Chinese key-view chrome, columns and info labels and hides the English ones", () => {
+    renderWith(leaky());
+
+    expect(screen.getByText("按 Virtual Key 统计缓存泄漏")).toBeInTheDocument();
+    expect(screen.getByText(/密钥如果发送大量未缓存输入/)).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "按 Virtual Key" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "按模型" })).toBeInTheDocument();
+    expect(screen.getByText("密钥")).toBeInTheDocument();
+    expect(screen.getByText("未缓存输入 Token")).toBeInTheDocument();
+    expect(screen.getByText("缓存命中率")).toBeInTheDocument();
+    expect(screen.getByText("潜在节省")).toBeInTheDocument();
+    expect(screen.getByLabelText("你在该时间范围内发送的、既未从缓存读取也未写入缓存的输入 Token")).toBeInTheDocument();
+    expect(screen.getByLabelText("从缓存读取的输入 Token 占比")).toBeInTheDocument();
+    expect(screen.getByLabelText(/如果这些未缓存输入使用提示词缓存/)).toBeInTheDocument();
+
+    expect(screen.queryByText("Cache leakage by virtual key")).not.toBeInTheDocument();
+    expect(screen.queryByText("Uncached input tokens")).not.toBeInTheDocument();
+    expect(screen.queryByText("Cache hit rate")).not.toBeInTheDocument();
+    expect(screen.queryByText("Potential savings")).not.toBeInTheDocument();
+    expect(
+      screen.queryByLabelText("Input tokens you sent in this range that weren't served from or written to the cache"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByLabelText("Share of your input tokens that were served from the cache"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese model view and hides the English one", () => {
+    renderWith([
+      dayWithModels("2026-07-12", { "claude-sonnet-5": { prompt_tokens: 5000, cache_read_input_tokens: 0 } }),
+    ]);
+    fireEvent.click(screen.getByRole("tab", { name: "按模型" }));
+
+    expect(screen.getByText("按模型统计缓存泄漏")).toBeInTheDocument();
+    expect(screen.getByText(/模型如果发送大量未缓存输入/)).toBeInTheDocument();
+    expect(screen.getByText("模型")).toBeInTheDocument();
+
+    expect(screen.queryByText("Cache leakage by model")).not.toBeInTheDocument();
+    expect(screen.queryByText("Models sending large volumes of uncached input")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese empty state for keys and models", () => {
+    renderWith([dayWithKeys("2026-07-12", {})]);
+    expect(screen.getByText("此时间范围内没有密钥用量。")).toBeInTheDocument();
+    expect(screen.queryByText("No key usage in this range.")).not.toBeInTheDocument();
+
+    cleanup();
+    renderWith([dayWithModels("2026-07-12", {})]);
+    fireEvent.click(screen.getByRole("tab", { name: "按模型" }));
+    expect(screen.getByText("此时间范围内没有模型用量。")).toBeInTheDocument();
+    expect(screen.queryByText("No model usage in this range.")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese streaming note and loading state and hides the English ones", () => {
+    renderWith([dayWithKeys("2026-07-12", { "hash-leaky": key("leaky-key", { prompt_tokens: 10000 }) })], {
+      isFetchingMore: true,
+    });
+    expect(screen.getByText("数据仍在加载；随着时间范围剩余部分返回，行和合计会更新。")).toBeInTheDocument();
+    expect(
+      screen.queryByText("Data is still loading; rows and totals will update as the rest of the range arrives."),
+    ).not.toBeInTheDocument();
+
+    cleanup();
+    renderWith([dayWithKeys("2026-07-12", {})], { loading: true });
+    expect(screen.getByText("加载中...")).toBeInTheDocument();
+    expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese sort aria-labels and hides the English ones", () => {
+    renderWith(leaky());
+
+    expect(screen.getByRole("button", { name: "按未缓存输入 Token排序" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "按缓存命中率排序" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "按潜在节省排序" })).toBeInTheDocument();
+
+    expect(screen.queryByRole("button", { name: "Sort by Uncached input tokens" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Sort by Cache hit rate" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Sort by Potential savings" })).not.toBeInTheDocument();
   });
 });

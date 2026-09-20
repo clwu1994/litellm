@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 
+import i18n from "@/i18n/index";
+
 import type { DailyData, SpendMetrics } from "@/components/UsagePage/types";
 import type { ToolSpendDailyEntry, ToolSpendEntry } from "@/components/networking";
 import {
@@ -403,19 +405,31 @@ describe("usd", () => {
 });
 
 describe("classificationRatePer1kTurns", () => {
+  const en = i18n.getFixedT("en", "costTracking");
+  const zh = i18n.getFixedT("zh", "costTracking");
+  const rateLabel = (classifierCost: number, turns: number, t: typeof en): string => {
+    const { key, value } = classificationRatePer1kTurns(classifierCost, turns);
+    return t(key, { value });
+  };
+
   it("normalizes total classification cost to one thousand turns", () => {
-    expect(classificationRatePer1kTurns(342.18, 140815)).toBe("($2.43 / 1K turns)");
-    expect(classificationRatePer1kTurns(0.0004, 100)).toBe("($0.0040 / 1K turns)");
+    expect(rateLabel(342.18, 140815, en)).toBe("($2.43 / 1K turns)");
+    expect(rateLabel(0.0004, 100, en)).toBe("($0.0040 / 1K turns)");
   });
 
   it("shows a floor instead of rounding a real cost down to zero", () => {
-    expect(classificationRatePer1kTurns(0.00001, 1000)).toBe("(<$0.0001 / 1K turns)");
-    expect(classificationRatePer1kTurns(0.0001, 1000)).toBe("($0.0001 / 1K turns)");
+    expect(rateLabel(0.00001, 1000, en)).toBe("(<$0.0001 / 1K turns)");
+    expect(rateLabel(0.0001, 1000, en)).toBe("($0.0001 / 1K turns)");
   });
 
   it("reports zero when there are no turns or no classification cost", () => {
-    expect(classificationRatePer1kTurns(0, 0)).toBe("($0.00 / 1K turns)");
-    expect(classificationRatePer1kTurns(0, 100)).toBe("($0.00 / 1K turns)");
+    expect(rateLabel(0, 0, en)).toBe("($0.00 / 1K turns)");
+    expect(rateLabel(0, 100, en)).toBe("($0.00 / 1K turns)");
+  });
+
+  it("resolves the rate and the sub-cent floor in Chinese", () => {
+    expect(rateLabel(342.18, 140815, zh)).toBe("（$2.43 / 1K 轮次）");
+    expect(rateLabel(0.00001, 1000, zh)).toBe("（<$0.0001 / 1K 轮次）");
   });
 });
 

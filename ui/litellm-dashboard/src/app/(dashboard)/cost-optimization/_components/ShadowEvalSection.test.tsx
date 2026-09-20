@@ -1,10 +1,12 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { useInfiniteKeys } from "@/app/(dashboard)/hooks/keys/useKeys";
+import { useInfiniteUsers } from "@/app/(dashboard)/hooks/users/useUsers";
+import i18n from "@/i18n/bootstrapI18n";
 import { ApiError } from "@/lib/http/client";
 
 vi.mock("./useShadowEval", () => ({
@@ -95,7 +97,7 @@ vi.mock("@/components/networking", async (importOriginal) => ({
   modelInfoCall: vi.fn(),
 }));
 
-import { usePlainChatModelGroups, usePlainModelGroups } from "@/app/(dashboard)/hooks/models/useModels";
+import { useAutoRouters, usePlainChatModelGroups, usePlainModelGroups } from "@/app/(dashboard)/hooks/models/useModels";
 import { modelInfoCall } from "@/components/networking";
 
 import ShadowEvalSection, { shadowedTargetLabel } from "./ShadowEvalSection";
@@ -974,5 +976,623 @@ describe("ShadowEvalSection", () => {
 
     expect(await screen.findByText("SIMPLE")).toBeInTheDocument();
     expect(screen.getByText("REASONING")).toBeInTheDocument();
+  });
+});
+
+describe("ShadowEvalSection Chinese copy", () => {
+  beforeEach(async () => {
+    authorizedRoleMock.mockReturnValue({ accessToken: "token", isViewOnly: false });
+    await i18n.changeLanguage("zh");
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  it("renders the Chinese chrome and start form labels and hides the English ones", () => {
+    mockHooks({});
+    render(<ShadowEvalSection />);
+
+    expect(screen.getByRole("heading", { name: "影子评估" })).toBeInTheDocument();
+    expect(screen.getByText(/对某个密钥、团队或用户/)).toBeInTheDocument();
+    expect(screen.getByText("启动影子评估")).toBeInTheDocument();
+    expect(screen.getByText("开始影子评估")).toBeInTheDocument();
+    expect(screen.getByText("方向")).toBeInTheDocument();
+    expect(screen.getByText("要影子的密钥")).toBeInTheDocument();
+    expect(screen.getByText("要影子的团队")).toBeInTheDocument();
+    expect(screen.getByText("要影子的用户")).toBeInTheDocument();
+    expect(screen.getByText("仅限模型")).toBeInTheDocument();
+    expect(screen.getByText("自动路由")).toBeInTheDocument();
+    expect(screen.getByText("采样流量")).toBeInTheDocument();
+    expect(screen.getByText("时长")).toBeInTheDocument();
+    expect(screen.getByText("支出预算")).toBeInTheDocument();
+    expect(screen.getByText("评判模型")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("按别名搜索密钥")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("按别名搜索团队")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("按邮箱搜索用户")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("目标使用的所有模型")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("最多选择 4 个自动路由")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("选择评判模型")).toBeInTheDocument();
+    expect(screen.getByText("占流量百分比")).toBeInTheDocument();
+    expect(screen.getByText("每个目标的影子 + 评判支出上限")).toBeInTheDocument();
+    expect(screen.getByText("采用检查：密钥流量 vs 路由器")).toBeInTheDocument();
+    expect(screen.getByText("7 天")).toBeInTheDocument();
+    expect(screen.getByText(/将所选目标（密钥、团队或用户）流量的一个采样切片/)).toBeInTheDocument();
+    expect(screen.getByText("将上方每个目标缩小到对这些模型的请求")).toBeInTheDocument();
+
+    expect(screen.queryByText("Shadow eval")).not.toBeInTheDocument();
+    expect(screen.queryByText("Start a shadow eval")).not.toBeInTheDocument();
+    expect(screen.queryByText("Start shadow eval")).not.toBeInTheDocument();
+    expect(screen.queryByText("Direction")).not.toBeInTheDocument();
+    expect(screen.queryByText("Keys to shadow")).not.toBeInTheDocument();
+    expect(screen.queryByText("Teams to shadow")).not.toBeInTheDocument();
+    expect(screen.queryByText("Users to shadow")).not.toBeInTheDocument();
+    expect(screen.queryByText("Only on models")).not.toBeInTheDocument();
+    expect(screen.queryByText("Auto-routers")).not.toBeInTheDocument();
+    expect(screen.queryByText("Traffic sampled")).not.toBeInTheDocument();
+    expect(screen.queryByText("Duration")).not.toBeInTheDocument();
+    expect(screen.queryByText("Spend budget")).not.toBeInTheDocument();
+    expect(screen.queryByText("Judge model")).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("Search keys by alias")).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("Search teams by alias")).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("Search users by email")).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("Every model the targets use")).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("Select up to 4 auto-routers")).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("Select a judge model")).not.toBeInTheDocument();
+    expect(screen.queryByText("Adoption check: key's traffic vs the router")).not.toBeInTheDocument();
+    expect(screen.queryByText("% of traffic")).not.toBeInTheDocument();
+    expect(screen.queryByText("max shadow + judge spend, per target")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese direction options and hides the English ones", async () => {
+    const user = userEvent.setup();
+    mockHooks({});
+    render(<ShadowEvalSection />);
+
+    await user.click(screen.getByText("采用检查：密钥流量 vs 路由器"));
+
+    expect((await screen.findAllByRole("option")).map((option) => option.textContent)).toEqual([
+      "采用检查：密钥流量 vs 路由器",
+      "回归检查：路由器选择 vs 基线",
+    ]);
+    expect(
+      screen.queryByRole("option", { name: "Adoption check: key's traffic vs the router" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese duration options and hides the English ones", async () => {
+    const user = userEvent.setup();
+    mockHooks({});
+    render(<ShadowEvalSection />);
+
+    await user.click(screen.getByText("7 天"));
+
+    expect((await screen.findAllByRole("option")).map((option) => option.textContent)).toEqual([
+      "1 天",
+      "3 天",
+      "7 天",
+      "14 天",
+      "30 天",
+    ]);
+    expect(screen.queryByRole("option", { name: "1 day" })).not.toBeInTheDocument();
+  });
+
+  it("labels the recommended judge model in Chinese and hides the English one", async () => {
+    const user = userEvent.setup();
+    mockHooks({});
+    render(<ShadowEvalSection />);
+
+    await user.click(screen.getByPlaceholderText("选择评判模型"));
+
+    expect(screen.getByRole("option", { name: /prod-judge.*推荐/ })).toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: /prod-judge.*Recommended/ })).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese reverse baseline field and description and hides the English ones", async () => {
+    const user = userEvent.setup();
+    mockHooks({});
+    render(<ShadowEvalSection />);
+
+    await chooseSelectOption(user, screen.getByText("采用检查：密钥流量 vs 路由器"), "回归检查：路由器选择 vs 基线");
+
+    expect(screen.getByText("基线模型")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("选择基线模型")).toBeInTheDocument();
+    expect(screen.getByText(/将自动路由已经在服务的流量的一个采样切片/)).toBeInTheDocument();
+    expect(screen.queryByText("Baseline model")).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("Select a baseline model")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese percentage and budget range validation and hides the English ones", () => {
+    mockHooks({});
+    render(<ShadowEvalSection />);
+
+    const [percentageInput, budgetInput] = screen.getAllByRole("spinbutton");
+    fireEvent.change(percentageInput, { target: { value: "200" } });
+    expect(screen.getByText("请输入 0.1 到 100 之间的值")).toBeInTheDocument();
+
+    fireEvent.change(budgetInput, { target: { value: "0.001" } });
+    expect(screen.getByText("请输入 0.01 到 10000 之间的值")).toBeInTheDocument();
+
+    expect(screen.queryByText("Enter a value from 0.1 to 100")).not.toBeInTheDocument();
+    expect(screen.queryByText("Enter a value from 0.01 to 10000")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese picker empty states", async () => {
+    const user = userEvent.setup();
+    const keysImpl = vi.mocked(useInfiniteKeys).getMockImplementation();
+    const usersImpl = vi.mocked(useInfiniteUsers).getMockImplementation();
+    const groupsImpl = vi.mocked(usePlainModelGroups).getMockImplementation();
+    const chatGroupsImpl = vi.mocked(usePlainChatModelGroups).getMockImplementation();
+    const routersImpl = vi.mocked(useAutoRouters).getMockImplementation();
+    vi.mocked(useInfiniteKeys).mockImplementation(
+      () =>
+        ({
+          data: { pages: [{ keys: [], total_count: 0, current_page: 1, total_pages: 1 }] },
+          isPending: false,
+          isError: false,
+          fetchNextPage: vi.fn(),
+          hasNextPage: false,
+          isFetchingNextPage: false,
+        }) as unknown as ReturnType<typeof useInfiniteKeys>,
+    );
+    vi.mocked(useInfiniteUsers).mockImplementation(
+      () =>
+        ({
+          data: { pages: [{ users: [], page: 1, total_pages: 1 }] },
+          isPending: false,
+          isError: false,
+          fetchNextPage: vi.fn(),
+          hasNextPage: false,
+          isFetchingNextPage: false,
+        }) as unknown as ReturnType<typeof useInfiniteUsers>,
+    );
+    vi.mocked(usePlainModelGroups).mockImplementation(() => new Set<string>());
+    vi.mocked(usePlainChatModelGroups).mockImplementation(() => new Set<string>());
+    vi.mocked(useAutoRouters).mockImplementation(() => ({ data: [] }) as unknown as ReturnType<typeof useAutoRouters>);
+    mockHooks({});
+    render(<ShadowEvalSection />);
+
+    await user.click(screen.getByPlaceholderText("按别名搜索密钥"));
+    expect(await screen.findByText("没有匹配的密钥")).toBeInTheDocument();
+    expect(screen.queryByText("No matching keys")).not.toBeInTheDocument();
+    await user.keyboard("{Escape}");
+
+    await user.click(screen.getByPlaceholderText("按邮箱搜索用户"));
+    expect(await screen.findByText("没有匹配的用户")).toBeInTheDocument();
+    expect(screen.queryByText("No matching users")).not.toBeInTheDocument();
+    await user.keyboard("{Escape}");
+
+    await user.click(screen.getByPlaceholderText("目标使用的所有模型"));
+    expect(await screen.findByText("未配置模型")).toBeInTheDocument();
+    expect(screen.queryByText("No models configured")).not.toBeInTheDocument();
+    await user.keyboard("{Escape}");
+
+    await user.click(screen.getByPlaceholderText("最多选择 4 个自动路由"));
+    expect(await screen.findByText("未配置自动路由")).toBeInTheDocument();
+    expect(screen.queryByText("No auto-routers configured")).not.toBeInTheDocument();
+    await user.keyboard("{Escape}");
+
+    await user.click(screen.getByPlaceholderText("选择评判模型"));
+    expect(await screen.findByText("没有可用的对话模型")).toBeInTheDocument();
+    expect(screen.queryByText("No chat models available")).not.toBeInTheDocument();
+
+    if (keysImpl) vi.mocked(useInfiniteKeys).mockImplementation(keysImpl);
+    if (usersImpl) vi.mocked(useInfiniteUsers).mockImplementation(usersImpl);
+    if (groupsImpl) vi.mocked(usePlainModelGroups).mockImplementation(groupsImpl);
+    if (chatGroupsImpl) vi.mocked(usePlainChatModelGroups).mockImplementation(chatGroupsImpl);
+    if (routersImpl) vi.mocked(useAutoRouters).mockImplementation(routersImpl);
+  });
+
+  it("renders the Chinese picker load failures", async () => {
+    const user = userEvent.setup();
+    const keysImpl = vi.mocked(useInfiniteKeys).getMockImplementation();
+    const usersImpl = vi.mocked(useInfiniteUsers).getMockImplementation();
+    vi.mocked(useInfiniteKeys).mockImplementation(
+      () =>
+        ({
+          data: undefined,
+          isPending: false,
+          isError: true,
+          fetchNextPage: vi.fn(),
+          hasNextPage: false,
+          isFetchingNextPage: false,
+        }) as unknown as ReturnType<typeof useInfiniteKeys>,
+    );
+    vi.mocked(useInfiniteUsers).mockImplementation(
+      () =>
+        ({
+          data: undefined,
+          isPending: false,
+          isError: true,
+          fetchNextPage: vi.fn(),
+          hasNextPage: false,
+          isFetchingNextPage: false,
+        }) as unknown as ReturnType<typeof useInfiniteUsers>,
+    );
+    mockHooks({});
+    render(<ShadowEvalSection />);
+
+    await user.click(screen.getByPlaceholderText("按别名搜索密钥"));
+    expect(await screen.findByText("无法加载密钥。刷新页面重试。")).toBeInTheDocument();
+    expect(screen.queryByText("Keys could not be loaded. Refresh the page to retry.")).not.toBeInTheDocument();
+
+    await user.click(screen.getByPlaceholderText("按邮箱搜索用户"));
+    expect(await screen.findByText("无法加载用户。刷新页面重试。")).toBeInTheDocument();
+    expect(screen.queryByText("Users could not be loaded. Refresh the page to retry.")).not.toBeInTheDocument();
+
+    if (keysImpl) vi.mocked(useInfiniteKeys).mockImplementation(keysImpl);
+    if (usersImpl) vi.mocked(useInfiniteUsers).mockImplementation(usersImpl);
+  });
+
+  it("renders the Chinese forward job results and hides the English ones", () => {
+    const j = job();
+    mockHooks({ jobs: [j], detailsById: { "job-1": j } });
+    render(<ShadowEvalSection />);
+
+    expect(screen.getByText("路由器达到或超过你当前的模型")).toBeInTheDocument();
+    expect(screen.getByText("共 42 条已评判响应")).toBeInTheDocument();
+    expect(screen.getByText(/路由器胜出 48\.0%/)).toBeInTheDocument();
+    expect(screen.getByText(/平局 22\.0%/)).toBeInTheDocument();
+    expect(screen.getByText(/当前模型胜出 30\.0%/)).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "评判结果分布" })).toBeInTheDocument();
+    expect(screen.getByText("路由器成本 vs 你当前的模型")).toBeInTheDocument();
+    expect(
+      screen.getByText("$0.3000 vs $0.6000，基于相同的已评判轮次；已排除 2 个由缓存服务的轮次"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("提示词难度")).toBeInTheDocument();
+    expect(screen.getByText("对比对象")).toBeInTheDocument();
+    expect(screen.getAllByText("已评判轮次")).toHaveLength(2);
+    expect(screen.getAllByText("当前模型胜出")).toHaveLength(2);
+    expect(screen.getAllByText("评判置信度")).toHaveLength(2);
+    expect(screen.getAllByText("路由器成本")).toHaveLength(2);
+    expect(screen.getAllByText("当前模型成本")).toHaveLength(2);
+    expect(screen.getAllByText("（样本不足）")).toHaveLength(1);
+    expect(screen.getByText(/已评判 42 轮次/)).toBeInTheDocument();
+    expect(screen.getByText(/1 次错误/)).toBeInTheDocument();
+    expect(screen.getByText(/评估支出 \$3\.21（共 \$10\.00）/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "停止" })).toBeInTheDocument();
+
+    expect(screen.queryByText("Router matched or beat your current model")).not.toBeInTheDocument();
+    expect(screen.queryByText("Router cost vs your current model")).not.toBeInTheDocument();
+    expect(screen.queryByText("Judged turns")).not.toBeInTheDocument();
+    expect(screen.queryByText("Router wins")).not.toBeInTheDocument();
+    expect(screen.queryByText("Current model wins")).not.toBeInTheDocument();
+    expect(screen.queryByText("Ties")).not.toBeInTheDocument();
+    expect(screen.queryByText("Judge confidence")).not.toBeInTheDocument();
+    expect(screen.queryByText("Current model cost")).not.toBeInTheDocument();
+    expect(screen.queryByText("Prompt difficulty")).not.toBeInTheDocument();
+    expect(screen.queryByText("Compared against")).not.toBeInTheDocument();
+    expect(screen.queryByText("(low sample)")).not.toBeInTheDocument();
+    expect(screen.queryByText("Stop")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese reverse job results and hides the English ones", () => {
+    const j = job({ direction: "reverse", baseline_model: "openai/gpt-4o" });
+    mockHooks({ jobs: [j], detailsById: { "job-1": j } });
+    render(<ShadowEvalSection />);
+
+    expect(screen.getByText("路由器达到或超过基线")).toBeInTheDocument();
+    expect(screen.getByText("路由器成本 vs 基线")).toBeInTheDocument();
+    expect(screen.getByText("路由器选择")).toBeInTheDocument();
+    expect(screen.getAllByText("基线胜出")).toHaveLength(2);
+    expect(screen.getAllByText("基线成本")).toHaveLength(2);
+    expect(screen.getByText(/基线胜出 48\.0%/)).toBeInTheDocument();
+
+    expect(screen.queryByText("Router matched or beat the baseline")).not.toBeInTheDocument();
+    expect(screen.queryByText("Router cost vs the baseline")).not.toBeInTheDocument();
+    expect(screen.queryByText("Router pick")).not.toBeInTheDocument();
+    expect(screen.queryByText("Baseline wins")).not.toBeInTheDocument();
+    expect(screen.queryByText("Baseline cost")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese per-target table and turn-budget cell", () => {
+    const legacyTurnBudgetLeg = { max_budget: null, spend: 0.5, max_turns: 500, attempt_count: 3 };
+    mockHooks({
+      jobs: [
+        job({
+          targets: [
+            targetEntry("hash-spent", { max_budget: 2, spend: 2, attempt_count: 40 }),
+            targetEntry("hash-hungry", legacyTurnBudgetLeg),
+          ],
+        }),
+      ],
+    });
+    render(<ShadowEvalSection />);
+
+    expect(screen.getByText("目标")).toBeInTheDocument();
+    expect(screen.getByText("状态")).toBeInTheDocument();
+    expect(screen.getByText("预算使用")).toBeInTheDocument();
+    expect(screen.getAllByText("当前模型胜出").length).toBeGreaterThan(0);
+    expect(screen.getByText("3 / 500 轮次")).toBeInTheDocument();
+    expect(screen.getAllByText("暂无评判结果")).toHaveLength(2);
+
+    expect(screen.queryByText("Target")).not.toBeInTheDocument();
+    expect(screen.queryByText("Status")).not.toBeInTheDocument();
+    expect(screen.queryByText("Budget used")).not.toBeInTheDocument();
+    expect(screen.queryByText("No verdicts yet")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese forward and reverse headlines and target count", () => {
+    const scoped = job({ models: ["prod-claude", "prod-haiku"] });
+    mockHooks({ jobs: [scoped], detailsById: { "job-1": scoped } });
+    render(<ShadowEvalSection />);
+
+    expect(
+      screen.getByText(
+        (_, element) =>
+          element?.tagName === "P" &&
+          element.textContent ===
+            "对 prod-alpha 的 10% 流量通过 claude-auto 进行影子评估 模型范围：prod-claude, prod-haiku",
+      ),
+    ).toBeInTheDocument();
+
+    cleanup();
+    const reverse = job({ direction: "reverse", baseline_model: "openai/gpt-4o" });
+    mockHooks({ jobs: [reverse], detailsById: { "job-1": reverse } });
+    render(<ShadowEvalSection />);
+    expect(
+      screen.getByText(
+        (_, element) =>
+          element?.tagName === "P" &&
+          element.textContent === "在 prod-alpha 的 10% 流量上，将 claude-auto 与 openai/gpt-4o 进行对比",
+      ),
+    ).toBeInTheDocument();
+
+    cleanup();
+    mockHooks({
+      jobs: [
+        job({
+          judged_count: 0,
+          results: null,
+          targets: [targetEntry("hash-a"), targetEntry("hash-b")],
+        }),
+      ],
+    });
+    render(<ShadowEvalSection />);
+    expect(screen.getByText("2 个目标")).toBeInTheDocument();
+  });
+
+  it("renders the Chinese result empty states and hides the English ones", () => {
+    mockHooks({ jobs: [job({ status: "running", results: null })] });
+    render(<ShadowEvalSection />);
+    expect(screen.getByText(/正在收集评判结果/)).toBeInTheDocument();
+    expect(screen.queryByText(/Collecting verdicts/)).not.toBeInTheDocument();
+
+    cleanup();
+    mockHooks({ jobs: [job({ status: "completed", judged_count: 0, results: null })] });
+    render(<ShadowEvalSection />);
+    expect(screen.getByText("该任务没有记录任何评判结果。")).toBeInTheDocument();
+    expect(screen.queryByText("No verdicts were recorded for this job.")).not.toBeInTheDocument();
+
+    cleanup();
+    mockHooks({ jobs: [job({ status: "completed", judged_count: 12, results: null })], detailsById: {} });
+    render(<ShadowEvalSection />);
+    expect(screen.getByText("正在加载结果...")).toBeInTheDocument();
+    expect(screen.queryByText("Loading results...")).not.toBeInTheDocument();
+
+    cleanup();
+    mockHooks({
+      jobs: [job({ status: "completed", judged_count: 12, results: null })],
+      detailsById: {},
+      detailError: true,
+    });
+    render(<ShadowEvalSection />);
+    expect(screen.getByText("无法加载结果。正在重试。")).toBeInTheDocument();
+    expect(screen.queryByText("Results could not be loaded. Retrying.")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese loading and list-failure messages and hides the English ones", () => {
+    mockHooks({ isPending: true });
+    render(<ShadowEvalSection />);
+    expect(screen.getByText("正在加载评估...")).toBeInTheDocument();
+    expect(screen.queryByText("Loading evaluations...")).not.toBeInTheDocument();
+
+    cleanup();
+    mockHooks({ error: new Error("boom") });
+    render(<ShadowEvalSection />);
+    expect(screen.getByText("无法加载已有评估。刷新页面重试。")).toBeInTheDocument();
+    expect(screen.queryByText(/Existing evaluations could not be loaded/)).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese previous evaluations chrome and summary", async () => {
+    const user = userEvent.setup();
+    const currentOverrides: Partial<ShadowEvalJob> = {
+      job_id: "job-new",
+      status: "running",
+      judged_count: 0,
+      error_count: 0,
+      results: null,
+    };
+    const olderOverrides: Partial<ShadowEvalJob> = {
+      job_id: "job-old",
+      status: "completed",
+      results: null,
+      judged_count: 12,
+    };
+    const current = job(currentOverrides);
+    const older = job(olderOverrides);
+    mockHooks({ jobs: [current, older], detailsById: { "job-new": current, "job-old": older } });
+    render(<ShadowEvalSection />);
+
+    const toggle = screen.getByRole("button", { name: /历史评估（1）/ });
+    expect(toggle).toHaveTextContent("展开");
+    await user.click(toggle);
+    expect(screen.getByRole("button", { name: /历史评估（1）/ })).toHaveTextContent("收起");
+    expect(screen.getByText("查看结果")).toBeInTheDocument();
+    expect(screen.getByText(/已评判 12/)).toBeInTheDocument();
+
+    expect(screen.queryByText(/Previous evaluations \(1\)/)).not.toBeInTheDocument();
+    expect(screen.queryByText("Show")).not.toBeInTheDocument();
+    expect(screen.queryByText("view results")).not.toBeInTheDocument();
+
+    cleanup();
+    const countlessOverrides: Partial<ShadowEvalJob> = {
+      job_id: "job-countless",
+      status: "stopped",
+      judged_count: 0,
+      results: null,
+    };
+    const countless = job(countlessOverrides);
+    mockHooks({
+      jobs: [current, countless],
+      detailsById: { "job-new": current, "job-countless": countless },
+    });
+    render(<ShadowEvalSection />);
+    await user.click(screen.getByRole("button", { name: /历史评估（1）/ }));
+    expect(screen.getByText("无评判结果")).toBeInTheDocument();
+    expect(screen.queryByText("no verdicts")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese ends-in and ending-now text and hides the English ones", () => {
+    const threeDays = job({ ends_at: new Date(Date.now() + 3 * 86_400_000).toISOString() });
+    mockHooks({ jobs: [threeDays], detailsById: { "job-1": threeDays } });
+    render(<ShadowEvalSection />);
+    expect(screen.getByText(/3 天后结束/)).toBeInTheDocument();
+    expect(screen.queryByText(/ends in 3 days/)).not.toBeInTheDocument();
+
+    cleanup();
+    const withinDay = job({ ends_at: new Date(Date.now() + 12 * 3_600_000).toISOString() });
+    mockHooks({ jobs: [withinDay], detailsById: { "job-1": withinDay } });
+    render(<ShadowEvalSection />);
+    expect(screen.getByText(/一天内结束/)).toBeInTheDocument();
+    expect(screen.queryByText(/ends within a day/)).not.toBeInTheDocument();
+
+    cleanup();
+    const ended = job({ ends_at: new Date(Date.now() - 3_600_000).toISOString() });
+    mockHooks({ jobs: [ended], detailsById: { "job-1": ended } });
+    render(<ShadowEvalSection />);
+    expect(screen.getByText(/即将结束/)).toBeInTheDocument();
+    expect(screen.queryByText(/ending now/)).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese last-failure prefix and hides the English one", () => {
+    const j = job({ error_count: 7, last_error: "judge call failed" });
+    mockHooks({ jobs: [j], detailsById: { "job-1": j } });
+    render(<ShadowEvalSection />);
+
+    expect(screen.getByText("最近失败：")).toBeInTheDocument();
+    expect(screen.queryByText("Last failure:")).not.toBeInTheDocument();
+  });
+
+  /* eslint-disable testing-library/no-node-access -- The tooltip trigger is an icon with no accessible name, so reaching its portal needs the DOM */
+  it("renders the Chinese cost tooltip and hides the English one", async () => {
+    const user = userEvent.setup();
+    const j = job();
+    mockHooks({ jobs: [j], detailsById: { "job-1": j } });
+    render(<ShadowEvalSection />);
+
+    const trigger = screen.getByText("路由器成本 vs 你当前的模型").parentElement?.querySelector("svg");
+    expect(trigger).toBeTruthy();
+    await user.hover(trigger as SVGElement);
+
+    expect(
+      await screen.findByText(
+        "每个分支按其补全成本加上自身路由分类器调用计价，均基于相同的已评判轮次；评判器的成本不计入任一分支",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText(/Each arm is priced as its completion plus its own routing classifier call/),
+    ).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese starting and stopping labels and hides the English ones", () => {
+    mockHooks({});
+    vi.mocked(useStartShadowEval).mockReturnValue({
+      mutate: vi.fn(),
+      isPending: true,
+    } as unknown as ReturnType<typeof useStartShadowEval>);
+    render(<ShadowEvalSection />);
+    expect(screen.getByRole("button", { name: "正在启动..." })).toBeInTheDocument();
+    expect(screen.queryByText("Starting...")).not.toBeInTheDocument();
+
+    cleanup();
+    const j = job();
+    mockHooks({ jobs: [j], detailsById: { "job-1": j } });
+    vi.mocked(useStopShadowEval).mockReturnValue({
+      mutate: vi.fn(),
+      isPending: true,
+    } as unknown as ReturnType<typeof useStopShadowEval>);
+    render(<ShadowEvalSection />);
+    expect(screen.getByRole("button", { name: "正在停止..." })).toBeInTheDocument();
+    expect(screen.queryByText("Stopping...")).not.toBeInTheDocument();
+  });
+
+  it("warns in Chinese when more than four auto-routers are picked and hides the English warning", async () => {
+    const user = userEvent.setup();
+    const routers = ["r1", "r2", "r3", "r4", "r5"].map((name) => ({
+      model_name: name,
+      litellm_params: { model: `auto_router/${name}` },
+    }));
+    const routersImpl = vi.mocked(useAutoRouters).getMockImplementation();
+    vi.mocked(useAutoRouters).mockImplementation(
+      () => ({ data: routers }) as unknown as ReturnType<typeof useAutoRouters>,
+    );
+    mockHooks({});
+    render(<ShadowEvalSection />);
+
+    const routerInput = screen.getByPlaceholderText("最多选择 4 个自动路由");
+    for (const router of routers) {
+      await user.click(routerInput);
+      await user.click(await screen.findByText(router.model_name));
+    }
+
+    expect(screen.getByText("最多选择 4 个自动路由")).toBeInTheDocument();
+    expect(screen.getByText("每个路由器看到相同的采样请求，并基于相同的实时响应进行评判")).toBeInTheDocument();
+    expect(screen.queryByText("Pick at most 4 auto-routers")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Every router sees the same sampled requests, judged against the same live responses"),
+    ).not.toBeInTheDocument();
+
+    if (routersImpl) vi.mocked(useAutoRouters).mockImplementation(routersImpl);
+  });
+
+  it("blocks a reverse job with more than one router in Chinese and hides the English reason", async () => {
+    const user = userEvent.setup();
+    const routers = ["r1", "r2"].map((name) => ({
+      model_name: name,
+      litellm_params: { model: `auto_router/${name}` },
+    }));
+    const routersImpl = vi.mocked(useAutoRouters).getMockImplementation();
+    vi.mocked(useAutoRouters).mockImplementation(
+      () => ({ data: routers }) as unknown as ReturnType<typeof useAutoRouters>,
+    );
+    mockHooks({});
+    render(<ShadowEvalSection />);
+
+    const routerInput = screen.getByPlaceholderText("最多选择 4 个自动路由");
+    for (const router of routers) {
+      await user.click(routerInput);
+      await user.click(await screen.findByText(router.model_name));
+    }
+    await chooseSelectOption(user, screen.getByText("采用检查：密钥流量 vs 路由器"), "回归检查：路由器选择 vs 基线");
+
+    expect(screen.getByText("回归检查只将一个路由器与其基线对比")).toBeInTheDocument();
+    expect(screen.queryByText("A regression check compares one router to its baseline")).not.toBeInTheDocument();
+
+    if (routersImpl) vi.mocked(useAutoRouters).mockImplementation(routersImpl);
+  });
+
+  it("warns in Chinese when more than 100 models are picked and hides the English warning", async () => {
+    const user = userEvent.setup();
+    const names = Array.from({ length: 101 }, (_, index) => `model-${index}`);
+    const groupsImpl = vi.mocked(usePlainModelGroups).getMockImplementation();
+    const chatGroupsImpl = vi.mocked(usePlainChatModelGroups).getMockImplementation();
+    vi.mocked(usePlainModelGroups).mockImplementation(() => new Set(names));
+    vi.mocked(usePlainChatModelGroups).mockImplementation(() => new Set(names));
+    mockHooks({});
+    render(<ShadowEvalSection />);
+
+    const modelInput = screen.getByPlaceholderText("目标使用的所有模型");
+    for (const name of names) {
+      await user.click(modelInput);
+      await user.click(await screen.findByRole("option", { name }));
+    }
+
+    expect(screen.getByText("最多选择 100 个模型")).toBeInTheDocument();
+    expect(screen.queryByText("Pick at most 100 models")).not.toBeInTheDocument();
+
+    if (groupsImpl) vi.mocked(usePlainModelGroups).mockImplementation(groupsImpl);
+    if (chatGroupsImpl) vi.mocked(usePlainChatModelGroups).mockImplementation(chatGroupsImpl);
   });
 });

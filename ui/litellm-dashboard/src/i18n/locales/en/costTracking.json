@@ -1,0 +1,263 @@
+{
+  "common": {
+    "loading": "Loading..."
+  },
+  "view": {
+    "title": "Cost Optimization",
+    "subtitle": "Track and configure the mechanisms that save you money: prompt compression and prompt caching. Auto routers live under Models + Endpoints, on the Auto-Routers tab",
+    "tabs": {
+      "overall": "Overall",
+      "compression": "Prompt Compression",
+      "caching": "Prompt Caching",
+      "autoRouter": "Auto-Router"
+    },
+    "experimental": {
+      "title": "This is an experimental dashboard",
+      "feedback": "Have feedback? Join the discussion <feedback>here</feedback>"
+    }
+  },
+  "usage": {
+    "utcNote": "Spend is bucketed by UTC day",
+    "savingsTitle": "Savings",
+    "cumulative": "Cumulative",
+    "perDay": "Per day",
+    "runningTotalSaved": "Running total saved",
+    "savedPerDay": "Saved per day",
+    "savingsByDriver": "Savings by driver",
+    "spendByTool": "Spend by tool",
+    "spendByToolDescription": "Spend on requests that invoked each tool (MCP and client-side tools); declaring a tool without invoking it does not count. A request that invoked multiple tools counts its full spend toward each, so this attributes rather than partitions spend.",
+    "totalByTool": "Total by tool",
+    "dailySpendByTool": "Daily spend by tool",
+    "rangeUtc": "{{range}} (UTC)"
+  },
+  "empty": {
+    "noToolUsage": "No tool usage in this range.",
+    "noPromptCompressionGuardrails": "No prompt compression guardrails configured yet. Add one below to start saving on input tokens"
+  },
+  "compression": {
+    "title": "Headroom prompt compression",
+    "description": "Headroom is a native LiteLLM guardrail that compresses your prompts before they reach the model, so you pay for fewer input tokens. The tokens it removes are priced and shown on the Usage tab as compression savings. <docs>Headroom setup docs</docs>",
+    "alwaysOn": "Always on",
+    "optIn": "Opt-in",
+    "addTitle": "Add Headroom compression guardrail",
+    "nameLabel": "Name",
+    "apiBaseLabel": "Headroom API base",
+    "apiBaseHint": "Base URL of your Headroom compression service (LiteLLM calls its /v1/compress endpoint)",
+    "apiBaseDescription": "The URL where your Headroom compression service is hosted",
+    "applyToAll": "Apply to all requests",
+    "enterpriseWarning": "Applying compression to all requests is available to all users. Enabling it selectively per key or team is a LiteLLM Enterprise feature. Get a trial key <pricing>here</pricing>",
+    "addButton": "Add guardrail",
+    "validation": {
+      "nameRequired": "Name is required",
+      "apiBaseRequired": "API base is required"
+    },
+    "toast": {
+      "loadFailed": "Failed to load compression guardrails",
+      "created": "Compression guardrail created",
+      "createFailed": "Failed to create compression guardrail",
+      "cachingLoadFailed": "Failed to load prompt caching settings"
+    }
+  },
+  "cacheLeakage": {
+    "titleKey": "Cache leakage by virtual key",
+    "titleModel": "Cache leakage by model",
+    "description": "{{subject}} sending large volumes of uncached input with a low cache hit rate are likely missing prompt caching. Potential savings is approximate: uncached input priced at what your cached traffic nets per cached token, after cache-write premiums.",
+    "streaming": "Data is still loading; rows and totals will update as the rest of the range arrives.",
+    "empty": "No {{noun}} usage in this range.",
+    "subjectKey": "Keys",
+    "subjectModel": "Models",
+    "columnKey": "Key",
+    "columnModel": "Model",
+    "emptyNounKey": "key",
+    "emptyNounModel": "model",
+    "tabs": {
+      "byKey": "By virtual key",
+      "byModel": "By model"
+    },
+    "column": {
+      "uncachedInputTokens": "Uncached input tokens",
+      "cacheHitRate": "Cache hit rate",
+      "potentialSavings": "Potential savings"
+    },
+    "info": {
+      "uncachedInputTokens": "Input tokens you sent in this range that weren't served from or written to the cache",
+      "cacheHitRate": "Share of your input tokens that were served from the cache",
+      "potentialSavings": "About how much you'd save if this uncached input used prompt caching. Estimated as uncached input tokens times what your cached traffic already nets per cached token (realized cache savings, after write premiums, ÷ cache read and write tokens). Blank when caching is not currently saving anything overall."
+    },
+    "sortBy": "Sort by {{label}}"
+  },
+  "benchmarks": {
+    "title": "Auto-router usage",
+    "loading": "Loading auto-router usage...",
+    "adminOnly": "Auto-router usage is visible to proxy admin roles only",
+    "unavailableNow": "Auto-router usage is unavailable right now",
+    "allRouters": "All auto-routers",
+    "range": "{{range}} (UTC)",
+    "tabs": {
+      "usage": "Usage",
+      "shadowEvals": "Shadow Evals"
+    },
+    "totalSavings": "Total estimated savings",
+    "actualSpend": "Actual auto-router spend",
+    "llmSpend": "LLM spend",
+    "classificationCost": "Classification cost",
+    "unavailable": "Unavailable",
+    "breakdownUnavailable": "Breakdown unavailable because some usage predates classification-cost tracking.",
+    "baselineSpend": "Estimated spend at highest-tier model",
+    "avgSavedPerSession": "Avg saved per session",
+    "sessionsHint": "· {{sessions}} sessions",
+    "avgTurnsPerSession": "Avg turns per session",
+    "avgSessionLength": "Avg session length",
+    "avgTokensPerSession": "Avg tokens per session",
+    "explanation": "Compares your actual routed spend with the estimated cost of using only the most expensive model configured in the auto-router. It accounts for both the cache savings from staying on one model and the added cache costs from switching models. Savings are net of recorded LLM classification cost, which is included in actual spend. Classification cost per 1K turns is averaged over all auto-router turns, including those that skip classification. The range counts whole sessions that overlap it, so totals can differ slightly from the Overall tab, which buckets savings by UTC day.",
+    "cacheTitle": "Auto-router prompt caching",
+    "cacheSubtitle": "every turn falls in exactly one bucket, by what the router did",
+    "classificationRate": "({{value}} / 1K turns)",
+    "classificationRateBelow": "(<{{value}} / 1K turns)",
+    "duration": {
+      "seconds": "{{value}}s",
+      "minutes": "{{value}}m",
+      "hours": "{{value}}h"
+    },
+    "buckets": {
+      "sameModel": "Same model",
+      "sameModelHint": "previous turn → same tier",
+      "firstVisit": "First visit",
+      "firstVisitHint": "previous turn → a tier not used yet",
+      "returnToTier": "Return to tier",
+      "returnToTierHint": "previous turn → a tier used earlier"
+    },
+    "cache": {
+      "shareOfTurnsAria": "Share of turns by bucket",
+      "bucketTitle": "{{label}}: {{turns}} turns",
+      "bucket": "Bucket",
+      "turns": "Turns",
+      "hitRate": "Hit rate",
+      "cacheHitRate": "Cache hit rate",
+      "expiredMiss": "Expired-miss",
+      "expiredMissHint": "share of all measured turns that missed cache because a return to an earlier tier came after its TTL lapsed",
+      "shareOfTurns": "Share of turns",
+      "turnsMeasured": "<amount>{{turns}}</amount> turns measured",
+      "unordered": "{{turns}} turns arrived out of order across pods and are not bucketed"
+    }
+  },
+  "tiers": {
+    "title": "Routing by tier",
+    "description": "Turns each tier served. Turns the classifier sent to the default model belong to no tier and are not counted here, so this can total less than the router's turns.",
+    "totalTurns": "{{turns}} total turns"
+  },
+  "shadowEval": {
+    "title": "Shadow eval",
+    "description": "Blind-judge the auto-router on the real traffic of a key, team, or user (teams and users cover JWT-authenticated traffic): against the models they use today before switching, or against a fixed baseline after they have switched.",
+    "loadError": "Existing evaluations could not be loaded. Refresh the page to retry.",
+    "loading": "Loading evaluations...",
+    "startTitle": "Start a shadow eval",
+    "startButton": "Start shadow eval",
+    "starting": "Starting...",
+    "stopButton": "Stop",
+    "stopping": "Stopping...",
+    "previous": "Previous evaluations ({{total}})",
+    "show": "Show",
+    "hide": "Hide",
+    "targets": "{{total}} targets",
+    "noVerdictsYet": "No verdicts yet",
+    "viewResults": "view results",
+    "noVerdicts": "no verdicts",
+    "lastFailure": "Last failure:",
+    "lowSample": "(low sample)",
+    "turnsJudged": "{{value}} turns judged",
+    "judged": "{{value}} judged",
+    "errored": "{{value}} errored",
+    "evalSpend": "{{spend}} eval spend",
+    "evalSpendWithBudget": "{{spend}} of {{budget}} eval spend",
+    "endsInDays": "ends in {{days}} days",
+    "endsWithinDay": "ends within a day",
+    "endingNow": "ending now",
+    "headlineForward": "Shadowing {{percentage}}% of <targets>{{targets}}</targets> traffic via <routers>{{routers}}</routers>",
+    "headlineReverse": "Comparing <routers>{{routers}}</routers> to <baseline>{{baseline}}</baseline> on {{percentage}}% of <targets>{{targets}}</targets> traffic",
+    "headlineModels": "on <list>{{models}}</list>",
+    "arm": {
+      "baseline": "Baseline",
+      "currentModel": "Current model"
+    },
+    "costVsBaseline": "Router cost vs the baseline",
+    "costVsCurrent": "Router cost vs your current model",
+    "matchedOrBeatBaseline": "Router matched or beat the baseline",
+    "matchedOrBeatCurrent": "Router matched or beat your current model",
+    "ofJudgedResponses": "of {{total}} judged responses",
+    "costTooltip": "Each arm is priced as its completion plus its own routing classifier call, measured on the same judged turns; the judge's cost is excluded from both arms",
+    "spendVs": "{{router}} vs {{other}} on the same judged turns",
+    "cacheServedExcluded": "; {{turns}} cache-served turns excluded",
+    "verdictAria": "Verdict breakdown",
+    "routerWon": "Router won",
+    "tie": "Tie",
+    "armWon": "{{arm}} won",
+    "groups": {
+      "router": "Router",
+      "routerPick": "Router pick",
+      "comparedAgainst": "Compared against",
+      "promptDifficulty": "Prompt difficulty"
+    },
+    "columns": {
+      "judgedTurns": "Judged turns",
+      "routerWins": "Router wins",
+      "armWins": "{{arm}} wins",
+      "ties": "Ties",
+      "judgeConfidence": "Judge confidence",
+      "routerCost": "Router cost",
+      "armCost": "{{arm}} cost",
+      "target": "Target",
+      "status": "Status",
+      "budgetUsed": "Budget used"
+    },
+    "budgetUsedTurns": "{{used}} / {{total}} turns",
+    "results": {
+      "error": "Results could not be loaded. Retrying.",
+      "collecting": "Collecting verdicts. Results appear as sampled requests are judged.",
+      "noVerdictsRecorded": "No verdicts were recorded for this job.",
+      "loading": "Loading results..."
+    },
+    "direction": {
+      "forward": "Adoption check: key's traffic vs the router",
+      "reverse": "Regression check: router's picks vs a baseline"
+    },
+    "descriptionForward": "Duplicates a sampled slice of the selected targets' traffic (keys, teams, or users) through the auto-router and has an LLM judge compare both answers blind. Each target gets its own spend budget. The router's answers are never served to users; judge calls bill to the sampled traffic's own identity.",
+    "descriptionReverse": "Duplicates a sampled slice of the traffic the auto-router already serves against a fixed baseline model and has an LLM judge compare both answers blind. Each target gets its own spend budget. The baseline's answers are never served to users; judge calls bill to the sampled traffic's own identity.",
+    "durationDays": "{{days}} days",
+    "keyPlaceholder": "Search keys by alias",
+    "noMatchingKeys": "No matching keys",
+    "keysLoadError": "Keys could not be loaded. Refresh the page to retry.",
+    "userPlaceholder": "Search users by email",
+    "noMatchingUsers": "No matching users",
+    "usersLoadError": "Users could not be loaded. Refresh the page to retry.",
+    "autoRoutersLabel": "Auto-routers",
+    "routerPlaceholder": "Select up to 4 auto-routers",
+    "noAutoRouters": "No auto-routers configured",
+    "tooManyRouters": "Pick at most {{max}} auto-routers",
+    "reverseSingleRouter": "A regression check compares one router to its baseline",
+    "forwardSharedRouters": "Every router sees the same sampled requests, judged against the same live responses",
+    "directionLabel": "Direction",
+    "keysToShadow": "Keys to shadow",
+    "teamsToShadow": "Teams to shadow",
+    "usersToShadow": "Users to shadow",
+    "teamPlaceholder": "Search teams by alias",
+    "onlyOnModels": "Only on models",
+    "everyModelPlaceholder": "Every model the targets use",
+    "noModelsConfigured": "No models configured",
+    "tooManyModels": "Pick at most {{max}} models",
+    "modelsScopeHint": "Narrows every target above to requests for these models",
+    "trafficSampled": "Traffic sampled",
+    "percentOfTraffic": "% of traffic",
+    "percentageRange": "Enter a value from 0.1 to 100",
+    "durationLabel": "Duration",
+    "spendBudget": "Spend budget",
+    "maxSpendHint": "max shadow + judge spend, per target",
+    "budgetRange": "Enter a value from 0.01 to 10000",
+    "baselineModel": "Baseline model",
+    "baselinePlaceholder": "Select a baseline model",
+    "judgeModel": "Judge model",
+    "judgePlaceholder": "Select a judge model",
+    "noChatModels": "No chat models available",
+    "recommended": "Recommended"
+  }
+}

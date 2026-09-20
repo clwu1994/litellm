@@ -1,9 +1,11 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import React from "react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { AutoRouterDeployment } from "@/app/(dashboard)/hooks/models/useModels";
+import i18n from "@/i18n/bootstrapI18n";
 import { ApiError } from "@/lib/http/client";
 
 vi.mock("./useAutoRouterBenchmarks", () => ({ useAutoRouterBenchmarks: vi.fn() }));
@@ -461,5 +463,144 @@ describe("AutoRouterBenchmarksTab", () => {
 
     expect(screen.getByTestId("date-picker")).toBeInTheDocument();
     expect(screen.getByText("All auto-routers")).toBeInTheDocument();
+  });
+});
+
+describe("AutoRouterBenchmarksTab Chinese copy", () => {
+  beforeEach(async () => {
+    mockAutoRouters();
+    await i18n.changeLanguage("zh");
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  it("renders the Chinese usage chrome, metrics and cache buckets and hides the English ones", () => {
+    mockHook({ data: response([group(), group({ router_name: "gpt-auto" })]) });
+    renderTab();
+
+    expect(screen.getByRole("heading", { name: "自动路由用量" })).toBeInTheDocument();
+    expect(screen.getByText("Jul 6 – Aug 5（UTC）")).toBeInTheDocument();
+    expect(screen.getByText("全部自动路由")).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "用量" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "影子评估" })).toBeInTheDocument();
+    expect(screen.getByText("预计节省总额")).toBeInTheDocument();
+    expect(screen.getByText("自动路由实际支出")).toBeInTheDocument();
+    expect(screen.getByText("LLM 支出")).toBeInTheDocument();
+    expect(screen.getByText("分类成本")).toBeInTheDocument();
+    expect(screen.getByText("（$2.00 / 1K 轮次）")).toBeInTheDocument();
+    expect(screen.getByText("按最高层级模型估算的支出")).toBeInTheDocument();
+    expect(screen.getByText("每会话平均节省")).toBeInTheDocument();
+    expect(screen.getByText("· 94 个会话")).toBeInTheDocument();
+    expect(screen.getByText("每会话平均轮次")).toBeInTheDocument();
+    expect(screen.getByText("平均会话时长")).toBeInTheDocument();
+    expect(screen.getByText("2.1 小时")).toBeInTheDocument();
+    expect(screen.getByText("每会话平均 Token 数")).toBeInTheDocument();
+    expect(screen.getByText(/将你的实际路由支出与仅使用自动路由中配置的最贵模型/)).toBeInTheDocument();
+    expect(screen.getByText("自动路由提示词缓存")).toBeInTheDocument();
+    expect(screen.getByText("每个轮次都恰好归入一个桶，取决于路由器当时的处理方式")).toBeInTheDocument();
+    expect(screen.getByText("缓存命中率")).toBeInTheDocument();
+    expect(screen.getByText("过期未命中")).toBeInTheDocument();
+    expect(screen.getByText("轮次占比")).toBeInTheDocument();
+    expect(screen.getByText("桶")).toBeInTheDocument();
+    expect(screen.getByText("轮次")).toBeInTheDocument();
+    expect(screen.getByText("命中率")).toBeInTheDocument();
+    expect(screen.getByText("同一模型")).toBeInTheDocument();
+    expect(screen.getByText("上一轮次 → 同一层级")).toBeInTheDocument();
+    expect(screen.getByText("首次访问")).toBeInTheDocument();
+    expect(screen.getByText("上一轮次 → 尚未使用的层级")).toBeInTheDocument();
+    expect(screen.getByText("返回层级")).toBeInTheDocument();
+    expect(screen.getByText("上一轮次 → 之前用过的层级")).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "各桶轮次占比" })).toBeInTheDocument();
+    expect(screen.getByTitle("同一模型：400 轮次")).toBeInTheDocument();
+    expect(
+      screen.getByText((_, element) => element?.tagName === "P" && element.textContent === "已统计 818 轮次"),
+    ).toBeInTheDocument();
+
+    expect(screen.queryByRole("heading", { name: "Auto-router usage" })).not.toBeInTheDocument();
+    expect(screen.queryByText("Total estimated savings")).not.toBeInTheDocument();
+    expect(screen.queryByText("Actual auto-router spend")).not.toBeInTheDocument();
+    expect(screen.queryByText("LLM spend")).not.toBeInTheDocument();
+    expect(screen.queryByText("Classification cost")).not.toBeInTheDocument();
+    expect(screen.queryByText("Same model")).not.toBeInTheDocument();
+    expect(screen.queryByRole("img", { name: "Share of turns by bucket" })).not.toBeInTheDocument();
+    expect(screen.queryByText("Bucket")).not.toBeInTheDocument();
+    expect(screen.queryByText("Turns")).not.toBeInTheDocument();
+    expect(screen.queryByText("Hit rate")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese expired-miss tooltip and hides the English one", async () => {
+    const user = userEvent.setup();
+    mockHook({ data: response([group()]) });
+    renderTab();
+
+    await user.hover(screen.getByRole("button", { name: /过期未命中/ }));
+
+    expect(
+      await screen.findByText("在所有已统计轮次中，因回到较早层级时已超过其 TTL 而未能命中缓存的占比"),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/share of all measured turns that missed cache/)).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese out-of-order note and hides the English one", () => {
+    const unordered = totals({ cache: cache({ unordered_turns: 12 }) });
+    mockHook({ data: response([group(unordered)], unordered) });
+    renderTab();
+
+    expect(screen.getByText("有 12 个轮次跨 Pod 乱序到达，未纳入分桶")).toBeInTheDocument();
+    expect(screen.queryByText(/turns arrived out of order/)).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese loading, admin-only and unavailable messages", () => {
+    mockHook({ isPending: true });
+    renderTab();
+    expect(screen.getByText("正在加载自动路由用量...")).toBeInTheDocument();
+    expect(screen.queryByText("Loading auto-router usage...")).not.toBeInTheDocument();
+
+    cleanup();
+    mockHook({ error: new ApiError("forbidden", 403, {}) });
+    renderTab();
+    expect(screen.getByText("自动路由用量仅对代理管理员角色可见")).toBeInTheDocument();
+    expect(screen.queryByText("Auto-router usage is visible to proxy admin roles only")).not.toBeInTheDocument();
+
+    cleanup();
+    mockHook({ error: new ApiError("boom", 500, {}) });
+    renderTab();
+    expect(screen.getByText("自动路由用量当前不可用")).toBeInTheDocument();
+    expect(screen.queryByText("Auto-router usage is unavailable right now")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese classification breakdown fallback and hides the English one", () => {
+    const stats = totals({ classifier_cost: null });
+    mockHook({ data: response([group(stats)], stats) });
+    renderTab();
+
+    expect(screen.getAllByText("不可用")).toHaveLength(2);
+    expect(screen.getByText("明细不可用，因为部分用量早于分类成本统计功能。")).toBeInTheDocument();
+    expect(screen.queryByText("Unavailable")).not.toBeInTheDocument();
+    expect(screen.queryByText(/Breakdown unavailable because some usage predates/)).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese sub-cent classification rate and hides the English one", () => {
+    const stats = totals({ classifier_cost: 0.00001, turns: 1000 });
+    mockHook({ data: response([group(stats)], stats) });
+    renderTab();
+
+    expect(screen.getByText("（<$0.0001 / 1K 轮次）")).toBeInTheDocument();
+    expect(screen.queryByText("(<$0.0001 / 1K turns)")).not.toBeInTheDocument();
+  });
+
+  it.each([
+    [42, "42 秒"],
+    [150, "2.5 分钟"],
+    [7560, "2.1 小时"],
+  ])("renders the Chinese session length for %s seconds as %s", (seconds, label) => {
+    const stats = totals({ avg_session_seconds: seconds });
+    mockHook({ data: response([group(stats)], stats) });
+    renderTab();
+
+    expect(screen.getByText(label)).toBeInTheDocument();
   });
 });
