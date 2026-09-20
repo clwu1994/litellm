@@ -862,5 +862,155 @@
       "alice": "Alice",
       "conduct": "Conduct Guard"
     }
+  },
+  "teamTab": {
+    "stats": {
+      "totalSubmitted": "Total Submitted"
+    },
+    "status": {
+      "active": "Active",
+      "pending": "Pending Review",
+      "rejected": "Rejected"
+    },
+    "searchPlaceholder": "Search guardrails...",
+    "filterAria": "Filter by status",
+    "filterAll": "All Status",
+    "addGuardrail": "Add Guardrail",
+    "loading": "Loading submissions…",
+    "empty": "No guardrails match your filters.",
+    "loadFailed": "Failed to load submissions",
+    "card": {
+      "team": "Team: {{team}}",
+      "model": "Model:",
+      "submitted": "Submitted:",
+      "forwardApiKey": "Forward API Key",
+      "review": "Review",
+      "close": "Close",
+      "approve": "Approve",
+      "reject": "Reject",
+      "staticHeaders": "Static headers",
+      "noStaticHeaders": "No static headers configured."
+    },
+    "detail": {
+      "closeAria": "Close detail panel",
+      "submittedBy": "Submitted by {{user}} on {{date}}",
+      "endpoint": "Endpoint",
+      "method": "Method",
+      "forwardApiKeyTitle": "Forward LiteLLM API Key",
+      "forwardApiKeyBody": "When enabled, the caller's LiteLLM API key is forwarded as an <code>Authorization</code> header to your guardrail endpoint. This allows your guardrail to authenticate model calls using the original caller's credentials.",
+      "staticHeadersHint": "Sent with every request to the guardrail.",
+      "headerNamePlaceholder": "Header name (e.g. X-API-Key)",
+      "valuePlaceholder": "Value",
+      "add": "Add",
+      "forwardClientHeaders": "Forward client headers",
+      "forwardClientHeadersHint": "Allowed header names to forward from the client request to the guardrail (e.g. x-request-id).",
+      "noForwardClientHeaders": "No forward client headers configured.",
+      "removeAria": "Remove {{key}}",
+      "equivalentConfig": "Equivalent config",
+      "docsBody": "This guardrail runs on a separate instance. It receives the user request and forwards the result to the next step in the pipeline. See <docs>LiteLLM Generic Guardrail API docs</docs> for configuration details.",
+      "testEndpoint": "Test Endpoint"
+    },
+    "confirm": {
+      "approveTitle": "Approve Guardrail",
+      "rejectTitle": "Reject Guardrail",
+      "sure": "Are you sure you want to {{action}}",
+      "approveAction": "approve",
+      "rejectAction": "reject",
+      "approveDetail": "This will make it active and available for use.",
+      "rejectDetail": "This will mark it as rejected and notify the team."
+    },
+    "submit": {
+      "title": "Submit Guardrail for Review",
+      "banner": "Your guardrail will be sent for admin review before it becomes active.",
+      "team": "Team",
+      "guardrailName": "Guardrail Name",
+      "mode": "Mode",
+      "apiBaseUrl": "API Base URL",
+      "extraParams": "Additional litellm_params (optional)",
+      "extraParamsHint": "JSON object merged into litellm_params. e.g. forward_api_key, headers, model, unreachable_fallback",
+      "guardrailInfo": "Guardrail Info (optional)",
+      "submit": "Submit for Review"
+    },
+    "modes": {
+      "preCall": "Pre Call",
+      "postCall": "Post Call",
+      "duringCall": "During Call"
+    },
+    "validation": {
+      "selectTeam": "Select a team",
+      "nameRequired": "Enter a guardrail name",
+      "apiBaseRequired": "Enter the API base URL",
+      "validUrl": "Must be a valid URL",
+      "jsonObject": "Must be a JSON object",
+      "invalidJson": "Invalid JSON"
+    },
+    "toast": {
+      "submitted": "Guardrail submitted for review",
+      "forwardKeyEnabled": "Forward API key enabled",
+      "forwardKeyDisabled": "Forward API key disabled",
+      "forwardKeyFailed": "Failed to update forward API key",
+      "staticHeadersUpdated": "Static headers updated",
+      "staticHeadersFailed": "Failed to update static headers",
+      "extraHeadersUpdated": "Forward client headers updated",
+      "extraHeadersFailed": "Failed to update forward client headers",
+      "approved": "Guardrail approved",
+      "approveFailed": "Failed to approve guardrail",
+      "rejected": "Guardrail rejected",
+      "rejectFailed": "Failed to reject guardrail"
+    }
+  },
+  "testPlayground": {
+    "guardrailsHeading": "Guardrails",
+    "searchPlaceholder": "Search guardrails...",
+    "noMatch": "No guardrails match your search",
+    "noAvailable": "No guardrails available",
+    "typeLabel": "Type:",
+    "modeLabel": "Mode:",
+    "selectedCount": "{{selected}} of {{total}} selected",
+    "title": "Guardrail Testing Playground",
+    "emptyTitle": "Select Guardrails to Test",
+    "emptyDescription": "Choose one or more guardrails from the left sidebar to start testing and comparing results.",
+    "toast": {
+      "appliedOne": "{{value}} guardrail applied successfully",
+      "appliedOther": "{{value}} guardrails applied successfully",
+      "failedOne": "{{value}} guardrail failed",
+      "failedOther": "{{value}} guardrails failed"
+    }
+  },
+  "testPanel": {
+    "title": "Test Guardrails:",
+    "subtitleOne": "Test {{value}} guardrail and compare results",
+    "subtitleOther": "Test {{value}} guardrails and compare results",
+    "inputText": "Input Text",
+    "inputHint": "Press Enter to submit. Use Shift+Enter for new line.",
+    "copyInput": "Copy Input",
+    "inputPlaceholder": "Enter text to test with guardrails...",
+    "enterHint": "Press <kbd>Enter</kbd> to submit • <kbd>Shift+Enter</kbd> for new line",
+    "characters": "Characters: {{value}}",
+    "metadata": "Metadata (optional)",
+    "metadataHint": "JSON object forwarded to the guardrail as request_data['metadata']. Custom guardrails can read per-request configuration from it.",
+    "testingOne": "Testing {{value}} guardrail...",
+    "testingOther": "Testing {{value}} guardrails...",
+    "testOne": "Test {{value}} guardrail",
+    "testOther": "Test {{value}} guardrails",
+    "enterTextError": "Please enter text to test",
+    "metadataObjectError": "Metadata must be a JSON object",
+    "invalidJsonError": "Invalid JSON",
+    "metadataPrefix": "Metadata: {{error}}",
+    "toast": {
+      "inputCopied": "Input copied to clipboard",
+      "copyInputFailed": "Failed to copy input"
+    }
+  },
+  "testResults": {
+    "title": "Results",
+    "copy": "Copy",
+    "outputText": "Output Text",
+    "charactersLabel": "Characters:",
+    "errorLabel": "{{name}} - Error",
+    "toast": {
+      "resultCopied": "Result copied to clipboard",
+      "copyFailed": "Failed to copy result"
+    }
   }
 }

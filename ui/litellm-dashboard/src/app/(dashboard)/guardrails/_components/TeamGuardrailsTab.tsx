@@ -1,8 +1,10 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useDebouncedValue } from "@tanstack/react-pacer/debouncer";
 import { DEBOUNCE_WAIT_MS } from "@/utils/debounceConstants";
+import type { ParseKeys, TFunction } from "i18next";
+import { Trans, useTranslation } from "react-i18next";
 import {
   SearchIcon,
   PlusIcon,
@@ -42,41 +44,45 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Button } from "@/components/ui/button";
 
 const GUARDRAIL_MODES = [
-  { value: "pre_call", label: "Pre Call" },
-  { value: "post_call", label: "Post Call" },
-  { value: "during_call", label: "During Call" },
-] as const;
+  { value: "pre_call", labelKey: "teamTab.modes.preCall" },
+  { value: "post_call", labelKey: "teamTab.modes.postCall" },
+  { value: "during_call", labelKey: "teamTab.modes.duringCall" },
+] as const satisfies ReadonlyArray<{ value: string; labelKey: ParseKeys<"guardrails"> }>;
 
-const submitGuardrailSchema = z.object({
-  team_id: z
-    .string()
-    .nullable()
-    .pipe(z.string({ error: "Select a team" }).min(1, "Select a team")),
-  guardrail_name: z.string().min(1, "Enter a guardrail name"),
-  mode: z.string().min(1, "Select a mode"),
-  api_base: z.string().min(1, "Enter the API base URL").refine(isValidUrl, "Must be a valid URL"),
-  extra_litellm_params: z.string().superRefine((value, ctx) => {
-    if (!value) return;
-    try {
-      const parsed: unknown = JSON.parse(value);
-      if (typeof parsed !== "object" || Array.isArray(parsed)) {
-        ctx.addIssue({ code: "custom", message: "Must be a JSON object" });
+const createSubmitGuardrailSchema = (t: TFunction<"guardrails">) =>
+  z.object({
+    team_id: z
+      .string()
+      .nullable()
+      .pipe(z.string({ error: t("teamTab.validation.selectTeam") }).min(1, t("teamTab.validation.selectTeam"))),
+    guardrail_name: z.string().min(1, t("teamTab.validation.nameRequired")),
+    mode: z.string().min(1, "Select a mode"),
+    api_base: z
+      .string()
+      .min(1, t("teamTab.validation.apiBaseRequired"))
+      .refine(isValidUrl, t("teamTab.validation.validUrl")),
+    extra_litellm_params: z.string().superRefine((value, ctx) => {
+      if (!value) return;
+      try {
+        const parsed: unknown = JSON.parse(value);
+        if (typeof parsed !== "object" || Array.isArray(parsed)) {
+          ctx.addIssue({ code: "custom", message: t("teamTab.validation.jsonObject") });
+        }
+      } catch {
+        ctx.addIssue({ code: "custom", message: t("teamTab.validation.invalidJson") });
       }
-    } catch {
-      ctx.addIssue({ code: "custom", message: "Invalid JSON" });
-    }
-  }),
-  guardrail_info: z.string().superRefine((value, ctx) => {
-    if (!value) return;
-    try {
-      JSON.parse(value);
-    } catch {
-      ctx.addIssue({ code: "custom", message: "Invalid JSON" });
-    }
-  }),
-});
+    }),
+    guardrail_info: z.string().superRefine((value, ctx) => {
+      if (!value) return;
+      try {
+        JSON.parse(value);
+      } catch {
+        ctx.addIssue({ code: "custom", message: t("teamTab.validation.invalidJson") });
+      }
+    }),
+  });
 
-type SubmitGuardrailValues = z.output<typeof submitGuardrailSchema>;
+type SubmitGuardrailValues = z.output<ReturnType<typeof createSubmitGuardrailSchema>>;
 
 const EMPTY_SUBMIT_VALUES: SubmitGuardrailValues = {
   team_id: "",
@@ -180,21 +186,24 @@ function submissionToTeamGuardrail(item: GuardrailSubmissionItem): TeamGuardrail
   };
 }
 
-const STATUS_CONFIG: Record<GuardrailStatus, { label: string; bg: string; text: string; dot: string }> = {
+const STATUS_CONFIG: Record<
+  GuardrailStatus,
+  { labelKey: ParseKeys<"guardrails">; bg: string; text: string; dot: string }
+> = {
   active: {
-    label: "Active",
+    labelKey: "teamTab.status.active",
     bg: "bg-success/10",
     text: "text-success",
     dot: "bg-success",
   },
   pending: {
-    label: "Pending Review",
+    labelKey: "teamTab.status.pending",
     bg: "bg-warning/10",
     text: "text-warning",
     dot: "bg-warning",
   },
   rejected: {
-    label: "Rejected",
+    labelKey: "teamTab.status.rejected",
     bg: "bg-destructive/10",
     text: "text-destructive",
     dot: "bg-destructive",
@@ -309,6 +318,7 @@ function GuardrailCard({
   onApprove,
   onReject,
 }: GuardrailCardProps) {
+  const { t } = useTranslation("guardrails");
   const status = STATUS_CONFIG[g.status];
   const teamColor = TEAM_COLORS[g.team] ?? "bg-muted text-foreground";
   return (
@@ -320,12 +330,14 @@ function GuardrailCard({
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-            <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${teamColor}`}>Team: {g.team}</span>
+            <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${teamColor}`}>
+              {t("teamTab.card.team", { team: g.team })}
+            </span>
             <span
               className={`inline-flex items-center gap-1.5 text-xs font-medium px-2 py-0.5 rounded-full ${status.bg} ${status.text}`}
             >
               <span className={`w-1.5 h-1.5 rounded-full ${status.dot}`} />
-              {status.label}
+              {t(status.labelKey)}
             </span>
           </div>
           <h3 className="text-sm font-semibold text-foreground mb-1">{g.name}</h3>
@@ -336,16 +348,16 @@ function GuardrailCard({
           </div>
           <div className="flex items-center gap-4 text-xs text-muted-foreground">
             <span>
-              Model: <span className="font-medium text-foreground">{g.model}</span>
+              {t("teamTab.card.model")} <span className="font-medium text-foreground">{g.model}</span>
             </span>
             <span>
-              Submitted: <span className="font-medium text-foreground">{g.submittedAt}</span>
+              {t("teamTab.card.submitted")} <span className="font-medium text-foreground">{g.submittedAt}</span>
             </span>
           </div>
         </div>
         <div className="flex flex-col items-end gap-2 shrink-0">
           <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground whitespace-nowrap">Forward API Key</span>
+            <span className="text-xs text-muted-foreground whitespace-nowrap">{t("teamTab.card.forwardApiKey")}</span>
             <Toggle enabled={g.forwardKey} onToggle={onToggleForwardKey} disabled={!isAdmin} />
           </div>
           <div className="flex items-center gap-2 mt-1">
@@ -354,7 +366,7 @@ function GuardrailCard({
               onClick={onSelect}
               className="text-xs border border-border text-muted-foreground hover:bg-muted px-3 py-1.5 rounded-md transition-colors font-medium"
             >
-              {isSelected ? "Close" : "Review"}
+              {isSelected ? t("teamTab.card.close") : t("teamTab.card.review")}
             </button>
             {isAdmin && g.status === "pending" && (
               <>
@@ -363,14 +375,14 @@ function GuardrailCard({
                   onClick={onApprove}
                   className="text-xs bg-success hover:bg-success/80 text-success-foreground px-3 py-1.5 rounded-md transition-colors font-medium"
                 >
-                  Approve
+                  {t("teamTab.card.approve")}
                 </button>
                 <button
                   type="button"
                   onClick={onReject}
                   className="text-xs border border-destructive/30 text-destructive hover:bg-destructive/10 px-3 py-1.5 rounded-md transition-colors font-medium"
                 >
-                  Reject
+                  {t("teamTab.card.reject")}
                 </button>
               </>
             )}
@@ -384,7 +396,7 @@ function GuardrailCard({
           className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
         >
           {isHeadersExpanded ? <ChevronUpIcon className="h-3.5 w-3.5" /> : <ChevronDownIcon className="h-3.5 w-3.5" />}
-          Static headers
+          {t("teamTab.card.staticHeaders")}
           {g.customHeaders.length > 0 && (
             <span className="ml-1 bg-muted text-muted-foreground rounded-full px-1.5 py-0.5 text-xs">
               {g.customHeaders.length}
@@ -394,7 +406,7 @@ function GuardrailCard({
         {isHeadersExpanded && (
           <div className="mt-2">
             {g.customHeaders.length === 0 ? (
-              <p className="text-xs text-muted-foreground italic">No static headers configured.</p>
+              <p className="text-xs text-muted-foreground italic">{t("teamTab.card.noStaticHeaders")}</p>
             ) : (
               <div className="space-y-1">
                 {g.customHeaders.map((h, i) => (
@@ -447,6 +459,7 @@ function DetailPanel({
   onUpdateCustomHeaders,
   onUpdateExtraHeaders,
 }: DetailPanelProps) {
+  const { t } = useTranslation("guardrails");
   const [configExpanded, setConfigExpanded] = useState(false);
   const [newExtraHeader, setNewExtraHeader] = useState("");
   const [newStaticHeaderKey, setNewStaticHeaderKey] = useState("");
@@ -459,31 +472,33 @@ function DetailPanel({
         <div className="flex items-start justify-between mb-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${teamColor}`}>Team: {g.team}</span>
+              <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${teamColor}`}>
+                {t("teamTab.card.team", { team: g.team })}
+              </span>
               <span
                 className={`inline-flex items-center gap-1.5 text-xs font-medium px-2 py-0.5 rounded-full ${status.bg} ${status.text}`}
               >
                 <span className={`w-1.5 h-1.5 rounded-full ${status.dot}`} />
-                {status.label}
+                {t(status.labelKey)}
               </span>
             </div>
             <h2 className="text-base font-semibold text-foreground">{g.name}</h2>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Submitted by {g.submittedBy} on {g.submittedAt}
+              {t("teamTab.detail.submittedBy", { user: g.submittedBy, date: g.submittedAt })}
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
             className="text-muted-foreground hover:text-foreground transition-colors"
-            aria-label="Close detail panel"
+            aria-label={t("teamTab.detail.closeAria")}
           >
             <XIcon className="h-4 w-4" />
           </button>
         </div>
         <p className="text-sm text-muted-foreground mb-5">{g.description}</p>
         <div className="space-y-4">
-          <ConfigRow label="Endpoint">
+          <ConfigRow label={t("teamTab.detail.endpoint")}>
             <div className="flex items-center gap-1.5">
               <code className="text-xs font-mono text-foreground break-all">{g.endpoint}</code>
               <a
@@ -496,7 +511,7 @@ function DetailPanel({
               </a>
             </div>
           </ConfigRow>
-          <ConfigRow label="Method">
+          <ConfigRow label={t("teamTab.detail.method")}>
             <span className="text-xs font-mono font-medium text-foreground bg-muted px-2 py-0.5 rounded-sm">
               {g.method}
             </span>
@@ -505,29 +520,30 @@ function DetailPanel({
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-1.5">
                 <KeyIcon className="h-3.5 w-3.5 text-info" />
-                <span className="text-xs font-semibold text-info">Forward LiteLLM API Key</span>
+                <span className="text-xs font-semibold text-info">{t("teamTab.detail.forwardApiKeyTitle")}</span>
               </div>
               <Toggle enabled={g.forwardKey} onToggle={onToggleForwardKey} disabled={!isAdmin} />
             </div>
             <p className="text-xs text-info leading-relaxed">
-              When enabled, the caller&apos;s LiteLLM API key is forwarded as an{" "}
-              <code className="font-mono bg-info/15 px-1 rounded-sm">Authorization</code> header to your guardrail
-              endpoint. This allows your guardrail to authenticate model calls using the original caller&apos;s
-              credentials.
+              <Trans
+                ns="guardrails"
+                i18nKey="teamTab.detail.forwardApiKeyBody"
+                components={{ code: <code className="font-mono bg-info/15 px-1 rounded-sm" /> }}
+              />
             </p>
           </div>
           <div>
             <div className="flex items-center gap-1.5 mb-2">
-              <span className="text-xs font-semibold text-foreground">Static headers</span>
+              <span className="text-xs font-semibold text-foreground">{t("teamTab.card.staticHeaders")}</span>
               {g.customHeaders.length > 0 && (
                 <span className="bg-muted text-muted-foreground rounded-full px-1.5 py-0.5 text-xs">
                   {g.customHeaders.length}
                 </span>
               )}
             </div>
-            <p className="text-xs text-muted-foreground mb-2">Sent with every request to the guardrail.</p>
+            <p className="text-xs text-muted-foreground mb-2">{t("teamTab.detail.staticHeadersHint")}</p>
             {g.customHeaders.length === 0 ? (
-              <p className="text-xs text-muted-foreground italic mb-2">No static headers configured.</p>
+              <p className="text-xs text-muted-foreground italic mb-2">{t("teamTab.card.noStaticHeaders")}</p>
             ) : (
               <ul className="list-none space-y-1 mb-2">
                 {g.customHeaders.map((h, i) => (
@@ -543,7 +559,7 @@ function DetailPanel({
                         type="button"
                         onClick={() => onUpdateCustomHeaders(g.customHeaders.filter((_, idx) => idx !== i))}
                         className="text-muted-foreground hover:text-destructive shrink-0"
-                        aria-label={`Remove ${h.key}`}
+                        aria-label={t("teamTab.detail.removeAria", { key: h.key })}
                       >
                         <XIcon className="h-3.5 w-3.5" />
                       </button>
@@ -558,7 +574,7 @@ function DetailPanel({
                   type="text"
                   value={newStaticHeaderKey}
                   onChange={(e) => setNewStaticHeaderKey(e.target.value)}
-                  placeholder="Header name (e.g. X-API-Key)"
+                  placeholder={t("teamTab.detail.headerNamePlaceholder")}
                   className="flex-1 min-w-0 text-xs font-mono border border-border rounded-sm px-2 py-1.5 text-foreground placeholder:text-muted-foreground focus:outline-hidden focus:ring-1 focus:ring-ring"
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
@@ -577,7 +593,7 @@ function DetailPanel({
                   type="text"
                   value={newStaticHeaderValue}
                   onChange={(e) => setNewStaticHeaderValue(e.target.value)}
-                  placeholder="Value"
+                  placeholder={t("teamTab.detail.valuePlaceholder")}
                   className="flex-1 min-w-0 text-xs font-mono border border-border rounded-sm px-2 py-1.5 text-foreground placeholder:text-muted-foreground focus:outline-hidden focus:ring-1 focus:ring-ring"
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
@@ -605,25 +621,23 @@ function DetailPanel({
                   }}
                   className="text-xs font-medium text-info border border-info/20 bg-info/10 hover:bg-info/15 px-2 py-1.5 rounded-sm transition-colors shrink-0"
                 >
-                  Add
+                  {t("teamTab.detail.add")}
                 </button>
               </div>
             )}
           </div>
           <div>
             <div className="flex items-center gap-1.5 mb-2">
-              <span className="text-xs font-semibold text-foreground">Forward client headers</span>
+              <span className="text-xs font-semibold text-foreground">{t("teamTab.detail.forwardClientHeaders")}</span>
               {g.extraHeaders.length > 0 && (
                 <span className="bg-muted text-muted-foreground rounded-full px-1.5 py-0.5 text-xs">
                   {g.extraHeaders.length}
                 </span>
               )}
             </div>
-            <p className="text-xs text-muted-foreground mb-2">
-              Allowed header names to forward from the client request to the guardrail (e.g. x-request-id).
-            </p>
+            <p className="text-xs text-muted-foreground mb-2">{t("teamTab.detail.forwardClientHeadersHint")}</p>
             {g.extraHeaders.length === 0 ? (
-              <p className="text-xs text-muted-foreground italic mb-2">No forward client headers configured.</p>
+              <p className="text-xs text-muted-foreground italic mb-2">{t("teamTab.detail.noForwardClientHeaders")}</p>
             ) : (
               <ul className="list-none space-y-1 mb-2">
                 {g.extraHeaders.map((name, i) => (
@@ -637,7 +651,7 @@ function DetailPanel({
                         type="button"
                         onClick={() => onUpdateExtraHeaders(g.extraHeaders.filter((_, idx) => idx !== i))}
                         className="text-muted-foreground hover:text-destructive shrink-0"
-                        aria-label={`Remove ${name}`}
+                        aria-label={t("teamTab.detail.removeAria", { key: name })}
                       >
                         <XIcon className="h-3.5 w-3.5" />
                       </button>
@@ -676,7 +690,7 @@ function DetailPanel({
                   }}
                   className="text-xs font-medium text-info border border-info/20 bg-info/10 hover:bg-info/15 px-2 py-1.5 rounded-sm transition-colors"
                 >
-                  Add
+                  {t("teamTab.detail.add")}
                 </button>
               </div>
             )}
@@ -687,7 +701,7 @@ function DetailPanel({
               onClick={() => setConfigExpanded(!configExpanded)}
               className="w-full flex items-center justify-between px-3 py-2 text-left text-xs font-semibold text-foreground bg-muted hover:bg-border transition-colors"
             >
-              <span>Equivalent config</span>
+              <span>{t("teamTab.detail.equivalentConfig")}</span>
               {configExpanded ? (
                 <ChevronUpIcon className="h-3.5 w-3.5 text-muted-foreground" />
               ) : (
@@ -703,17 +717,20 @@ function DetailPanel({
           <div className="flex items-start gap-2 bg-muted border border-border rounded-lg p-3">
             <InfoIcon className="h-3.5 w-3.5 text-muted-foreground shrink-0 mt-0.5" />
             <p className="text-xs text-muted-foreground leading-relaxed">
-              This guardrail runs on a separate instance. It receives the user request and forwards the result to the
-              next step in the pipeline. See{" "}
-              <a
-                href="https://docs.litellm.ai/docs/adding_provider/generic_guardrail_api"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-info hover:underline"
-              >
-                LiteLLM Generic Guardrail API docs
-              </a>{" "}
-              for configuration details.
+              <Trans
+                ns="guardrails"
+                i18nKey="teamTab.detail.docsBody"
+                components={{
+                  docs: (
+                    <a
+                      href="https://docs.litellm.ai/docs/adding_provider/generic_guardrail_api"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-info hover:underline"
+                    />
+                  ),
+                }}
+              />
             </p>
           </div>
         </div>
@@ -723,7 +740,7 @@ function DetailPanel({
             className="w-full flex items-center justify-center gap-2 border border-border text-foreground hover:bg-muted text-sm font-medium py-2 rounded-md transition-colors"
           >
             <ExternalLinkIcon className="h-4 w-4" />
-            Test Endpoint
+            {t("teamTab.detail.testEndpoint")}
           </button>
           {isAdmin && g.status === "pending" && (
             <div className="flex gap-2">
@@ -733,7 +750,7 @@ function DetailPanel({
                 className="flex-1 flex items-center justify-center gap-1.5 bg-success hover:bg-success/80 text-success-foreground text-sm font-medium py-2 rounded-md transition-colors"
               >
                 <CheckIcon className="h-4 w-4" />
-                Approve
+                {t("teamTab.card.approve")}
               </button>
               <button
                 type="button"
@@ -741,7 +758,7 @@ function DetailPanel({
                 className="flex-1 flex items-center justify-center gap-1.5 border border-destructive/30 text-destructive hover:bg-destructive/10 text-sm font-medium py-2 rounded-md transition-colors"
               >
                 <XIcon className="h-4 w-4" />
-                Reject
+                {t("teamTab.card.reject")}
               </button>
             </div>
           )}
@@ -759,6 +776,7 @@ type ConfirmDialogProps = {
 };
 
 function ConfirmDialog({ action, guardrailName, onConfirm, onCancel }: ConfirmDialogProps) {
+  const { t } = useTranslation("guardrails");
   const isApprove = action === "approve";
   return (
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-overlay">
@@ -775,14 +793,14 @@ function ConfirmDialog({ action, guardrailName, onConfirm, onCancel }: ConfirmDi
           )}
         </div>
         <h3 className="text-base font-semibold text-foreground mb-1">
-          {isApprove ? "Approve Guardrail" : "Reject Guardrail"}
+          {isApprove ? t("teamTab.confirm.approveTitle") : t("teamTab.confirm.rejectTitle")}
         </h3>
         <p className="text-sm text-muted-foreground mb-5">
-          Are you sure you want to {action}{" "}
+          {t("teamTab.confirm.sure", {
+            action: isApprove ? t("teamTab.confirm.approveAction") : t("teamTab.confirm.rejectAction"),
+          })}{" "}
           <span className="font-medium text-foreground">&quot;{guardrailName}&quot;</span>?{" "}
-          {isApprove
-            ? "This will make it active and available for use."
-            : "This will mark it as rejected and notify the team."}
+          {isApprove ? t("teamTab.confirm.approveDetail") : t("teamTab.confirm.rejectDetail")}
         </p>
         <div className="flex gap-3">
           <button
@@ -790,7 +808,7 @@ function ConfirmDialog({ action, guardrailName, onConfirm, onCancel }: ConfirmDi
             onClick={onCancel}
             className="flex-1 border border-border text-foreground hover:bg-muted text-sm font-medium py-2 rounded-md transition-colors"
           >
-            Cancel
+            {t("common.cancel")}
           </button>
           <button
             type="button"
@@ -801,7 +819,7 @@ function ConfirmDialog({ action, guardrailName, onConfirm, onCancel }: ConfirmDi
                 : "bg-destructive text-destructive-foreground hover:bg-destructive/80"
             }`}
           >
-            {isApprove ? "Approve" : "Reject"}
+            {isApprove ? t("teamTab.card.approve") : t("teamTab.card.reject")}
           </button>
         </div>
       </div>
@@ -814,6 +832,7 @@ interface TeamGuardrailsTabProps {
 }
 
 export function TeamGuardrailsTab({ accessToken }: TeamGuardrailsTabProps) {
+  const { t } = useTranslation("guardrails");
   const { userRole } = useAuthorized();
   const isAdmin = userRole ? isProxyAdminRole(userRole) : false;
   const [guardrails, setGuardrails] = useState<TeamGuardrail[]>([]);
@@ -835,6 +854,8 @@ export function TeamGuardrailsTab({ accessToken }: TeamGuardrailsTabProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
+  const submitGuardrailSchema = useMemo(() => createSubmitGuardrailSchema(t), [t]);
+  const modeItems = useMemo(() => GUARDRAIL_MODES.map(({ labelKey, value }) => ({ label: t(labelKey), value })), [t]);
   const submitForm = useZodForm(submitGuardrailSchema, { defaultValues: EMPTY_SUBMIT_VALUES });
   const registerGuardrail = useRegisterGuardrail();
 
@@ -855,12 +876,12 @@ export function TeamGuardrailsTab({ accessToken }: TeamGuardrailsTabProps) {
       setGuardrails(res.submissions.map(submissionToTeamGuardrail));
       setSummary(res.summary);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load submissions");
+      setError(err instanceof Error ? err.message : t("teamTab.loadFailed"));
       setGuardrails([]);
     } finally {
       setIsLoading(false);
     }
-  }, [accessToken, statusFilter, searchDebounced]);
+  }, [accessToken, statusFilter, searchDebounced, t]);
 
   useEffect(() => {
     fetchSubmissions();
@@ -880,7 +901,7 @@ export function TeamGuardrailsTab({ accessToken }: TeamGuardrailsTabProps) {
         litellm_params,
         guardrail_info: values.guardrail_info ? JSON.parse(values.guardrail_info) : undefined,
       });
-      toast.success("Guardrail submitted for review");
+      toast.success(t("teamTab.toast.submitted"));
       setIsSubmitModalOpen(false);
       submitForm.reset();
       fetchSubmissions();
@@ -906,9 +927,9 @@ export function TeamGuardrailsTab({ accessToken }: TeamGuardrailsTabProps) {
         litellm_params: { forward_api_key: newValue },
       });
       setGuardrails((prev) => prev.map((x) => (x.id === id ? { ...x, forwardKey: newValue } : x)));
-      toast.success(newValue ? "Forward API key enabled" : "Forward API key disabled");
+      toast.success(t(newValue ? "teamTab.toast.forwardKeyEnabled" : "teamTab.toast.forwardKeyDisabled"));
     } catch {
-      toast.fromError("Failed to update forward API key");
+      toast.fromError(t("teamTab.toast.forwardKeyFailed"));
     }
   }
 
@@ -932,9 +953,9 @@ export function TeamGuardrailsTab({ accessToken }: TeamGuardrailsTabProps) {
             : x,
         ),
       );
-      toast.success("Static headers updated");
+      toast.success(t("teamTab.toast.staticHeadersUpdated"));
     } catch {
-      toast.fromError("Failed to update static headers");
+      toast.fromError(t("teamTab.toast.staticHeadersFailed"));
     }
   }
 
@@ -945,9 +966,9 @@ export function TeamGuardrailsTab({ accessToken }: TeamGuardrailsTabProps) {
         litellm_params: { extra_headers: extraHeaders },
       });
       setGuardrails((prev) => prev.map((x) => (x.id === id ? { ...x, extraHeaders } : x)));
-      toast.success("Forward client headers updated");
+      toast.success(t("teamTab.toast.extraHeadersUpdated"));
     } catch {
-      toast.fromError("Failed to update forward client headers");
+      toast.fromError(t("teamTab.toast.extraHeadersFailed"));
     }
   }
 
@@ -958,9 +979,9 @@ export function TeamGuardrailsTab({ accessToken }: TeamGuardrailsTabProps) {
       setConfirmAction(null);
       if (selectedId === id) setSelectedId(null);
       await fetchSubmissions();
-      toast.success("Guardrail approved");
+      toast.success(t("teamTab.toast.approved"));
     } catch {
-      toast.fromError("Failed to approve guardrail");
+      toast.fromError(t("teamTab.toast.approveFailed"));
     }
   }
 
@@ -971,9 +992,9 @@ export function TeamGuardrailsTab({ accessToken }: TeamGuardrailsTabProps) {
       setConfirmAction(null);
       if (selectedId === id) setSelectedId(null);
       await fetchSubmissions();
-      toast.success("Guardrail rejected");
+      toast.success(t("teamTab.toast.rejected"));
     } catch {
-      toast.fromError("Failed to reject guardrail");
+      toast.fromError(t("teamTab.toast.rejectFailed"));
     }
   }
 
@@ -990,32 +1011,32 @@ export function TeamGuardrailsTab({ accessToken }: TeamGuardrailsTabProps) {
     <div className="flex h-full">
       <div className={`flex-1 min-w-0 p-6 overflow-auto ${selected ? "border-r border-border" : ""}`}>
         <div className="grid grid-cols-4 gap-4 mb-6">
-          <StatCard label="Total Submitted" value={totalCount} color="text-foreground" />
-          <StatCard label="Pending Review" value={pendingCount} color="text-warning" />
-          <StatCard label="Active" value={activeCount} color="text-success" />
-          <StatCard label="Rejected" value={rejectedCount} color="text-destructive" />
+          <StatCard label={t("teamTab.stats.totalSubmitted")} value={totalCount} color="text-foreground" />
+          <StatCard label={t("teamTab.status.pending")} value={pendingCount} color="text-warning" />
+          <StatCard label={t("teamTab.status.active")} value={activeCount} color="text-success" />
+          <StatCard label={t("teamTab.status.rejected")} value={rejectedCount} color="text-destructive" />
         </div>
         <div className="flex items-center gap-3 mb-5">
           <div className="relative flex-1 max-w-xs">
             <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <input
               type="text"
-              placeholder="Search guardrails..."
+              placeholder={t("teamTab.searchPlaceholder")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-9 pr-4 py-2 border border-border rounded-md text-sm text-foreground placeholder:text-muted-foreground focus:outline-hidden focus:ring-1 focus:ring-ring focus:border-info"
             />
           </div>
           <select
-            aria-label="Filter by status"
+            aria-label={t("teamTab.filterAria")}
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)}
             className="border border-border rounded-md px-3 py-2 text-sm text-foreground focus:outline-hidden focus:ring-1 focus:ring-ring focus:border-info bg-background"
           >
-            <option value="all">All Status</option>
-            <option value="pending">Pending Review</option>
-            <option value="active">Active</option>
-            <option value="rejected">Rejected</option>
+            <option value="all">{t("teamTab.filterAll")}</option>
+            <option value="pending">{t("teamTab.status.pending")}</option>
+            <option value="active">{t("teamTab.status.active")}</option>
+            <option value="rejected">{t("teamTab.status.rejected")}</option>
           </select>
           <button
             type="button"
@@ -1023,14 +1044,14 @@ export function TeamGuardrailsTab({ accessToken }: TeamGuardrailsTabProps) {
             className="ml-auto flex items-center gap-2 bg-info hover:bg-info/80 text-info-foreground text-sm font-medium px-4 py-2 rounded-md transition-colors"
           >
             <PlusIcon className="h-4 w-4" />
-            Add Guardrail
+            {t("teamTab.addGuardrail")}
           </button>
         </div>
         <div className="space-y-3">
-          {isLoading && <div className="text-center py-12 text-muted-foreground text-sm">Loading submissions…</div>}
+          {isLoading && <div className="text-center py-12 text-muted-foreground text-sm">{t("teamTab.loading")}</div>}
           {error && <div className="text-center py-12 text-destructive text-sm">{error}</div>}
           {!isLoading && !error && filtered.length === 0 && (
-            <div className="text-center py-12 text-muted-foreground text-sm">No guardrails match your filters.</div>
+            <div className="text-center py-12 text-muted-foreground text-sm">{t("teamTab.empty")}</div>
           )}
           {!isLoading &&
             !error &&
@@ -1084,23 +1105,23 @@ export function TeamGuardrailsTab({ accessToken }: TeamGuardrailsTabProps) {
       >
         <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Submit Guardrail for Review</DialogTitle>
+            <DialogTitle>{t("teamTab.submit.title")}</DialogTitle>
           </DialogHeader>
           <div className="rounded-md bg-info/10 border border-info/20 px-4 py-3 text-sm text-info mb-4">
-            Your guardrail will be sent for admin review before it becomes active.
+            {t("teamTab.submit.banner")}
           </div>
           <TooltipProvider>
             <form onSubmit={handleSubmitGuardrail}>
               <FieldGroup>
-                <FormField control={submitForm.control} name="team_id" label="Team">
+                <FormField control={submitForm.control} name="team_id" label={t("teamTab.submit.team")}>
                   {({ id, value, onChange }) => <TeamDropdown id={id} value={value} onChange={onChange} />}
                 </FormField>
-                <FormField control={submitForm.control} name="guardrail_name" label="Guardrail Name">
+                <FormField control={submitForm.control} name="guardrail_name" label={t("teamTab.submit.guardrailName")}>
                   {({ ref, ...field }) => <Input {...field} ref={ref} placeholder="e.g. pii-detection" />}
                 </FormField>
-                <FormField control={submitForm.control} name="mode" label="Mode">
+                <FormField control={submitForm.control} name="mode" label={t("teamTab.submit.mode")}>
                   {({ id, value, onChange, "aria-invalid": ariaInvalid, "aria-describedby": ariaDescribedBy }) => (
-                    <Select items={GUARDRAIL_MODES} value={value} onValueChange={onChange}>
+                    <Select items={modeItems} value={value} onValueChange={onChange}>
                       <SelectTrigger
                         id={id}
                         aria-invalid={ariaInvalid}
@@ -1110,7 +1131,7 @@ export function TeamGuardrailsTab({ accessToken }: TeamGuardrailsTabProps) {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {GUARDRAIL_MODES.map((mode) => (
+                        {modeItems.map((mode) => (
                           <SelectItem key={mode.value} value={mode.value} title={mode.label}>
                             {mode.label}
                           </SelectItem>
@@ -1119,7 +1140,7 @@ export function TeamGuardrailsTab({ accessToken }: TeamGuardrailsTabProps) {
                     </Select>
                   )}
                 </FormField>
-                <FormField control={submitForm.control} name="api_base" label="API Base URL">
+                <FormField control={submitForm.control} name="api_base" label={t("teamTab.submit.apiBaseUrl")}>
                   {({ ref, ...field }) => (
                     <Input
                       {...field}
@@ -1132,10 +1153,7 @@ export function TeamGuardrailsTab({ accessToken }: TeamGuardrailsTabProps) {
                 <FormField
                   control={submitForm.control}
                   name="extra_litellm_params"
-                  label={labelWithHint(
-                    "Additional litellm_params (optional)",
-                    "JSON object merged into litellm_params. e.g. forward_api_key, headers, model, unreachable_fallback",
-                  )}
+                  label={labelWithHint(t("teamTab.submit.extraParams"), t("teamTab.submit.extraParamsHint"))}
                 >
                   {({ ref, ...field }) => (
                     <Textarea
@@ -1147,7 +1165,7 @@ export function TeamGuardrailsTab({ accessToken }: TeamGuardrailsTabProps) {
                     />
                   )}
                 </FormField>
-                <FormField control={submitForm.control} name="guardrail_info" label="Guardrail Info (optional)">
+                <FormField control={submitForm.control} name="guardrail_info" label={t("teamTab.submit.guardrailInfo")}>
                   {({ ref, ...field }) => (
                     <Textarea
                       {...field}
@@ -1169,9 +1187,9 @@ export function TeamGuardrailsTab({ accessToken }: TeamGuardrailsTabProps) {
                 submitForm.reset();
               }}
             >
-              Cancel
+              {t("common.cancel")}
             </Button>
-            <Button onClick={handleSubmitGuardrail}>Submit for Review</Button>
+            <Button onClick={handleSubmitGuardrail}>{t("teamTab.submit.submit")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

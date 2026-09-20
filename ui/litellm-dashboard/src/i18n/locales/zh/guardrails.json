@@ -862,5 +862,155 @@
       "alice": "Alice",
       "conduct": "Conduct Guard"
     }
+  },
+  "teamTab": {
+    "stats": {
+      "totalSubmitted": "已提交总数"
+    },
+    "status": {
+      "active": "活跃",
+      "pending": "待审核",
+      "rejected": "已拒绝"
+    },
+    "searchPlaceholder": "搜索 Guardrail...",
+    "filterAria": "按状态筛选",
+    "filterAll": "全部状态",
+    "addGuardrail": "添加 Guardrail",
+    "loading": "正在加载提交内容…",
+    "empty": "没有符合筛选条件的 Guardrail。",
+    "loadFailed": "加载提交内容失败",
+    "card": {
+      "team": "团队：{{team}}",
+      "model": "模型：",
+      "submitted": "提交时间：",
+      "forwardApiKey": "转发 API Key",
+      "review": "审核",
+      "close": "关闭",
+      "approve": "通过",
+      "reject": "拒绝",
+      "staticHeaders": "静态请求头",
+      "noStaticHeaders": "未配置静态请求头。"
+    },
+    "detail": {
+      "closeAria": "关闭详情面板",
+      "submittedBy": "由 {{user}} 于 {{date}} 提交",
+      "endpoint": "Endpoint",
+      "method": "方法",
+      "forwardApiKeyTitle": "转发 LiteLLM API Key",
+      "forwardApiKeyBody": "启用后，调用方的 LiteLLM API Key 会作为 <code>Authorization</code> 请求头转发到你的 Guardrail Endpoint。这使你的 Guardrail 可以使用原调用方的凭证验证模型调用。",
+      "staticHeadersHint": "每次请求都会发送到 Guardrail。",
+      "headerNamePlaceholder": "请求头名称（例如 X-API-Key）",
+      "valuePlaceholder": "值",
+      "add": "添加",
+      "forwardClientHeaders": "转发客户端请求头",
+      "forwardClientHeadersHint": "允许从客户端请求转发到 Guardrail 的请求头名称（例如 x-request-id）。",
+      "noForwardClientHeaders": "未配置转发的客户端请求头。",
+      "removeAria": "移除 {{key}}",
+      "equivalentConfig": "等效配置",
+      "docsBody": "该 Guardrail 运行在独立实例上。它接收用户请求，并将结果转发到流水线的下一步。配置详情请参见 <docs>LiteLLM Generic Guardrail API 文档</docs>。",
+      "testEndpoint": "测试 Endpoint"
+    },
+    "confirm": {
+      "approveTitle": "通过 Guardrail",
+      "rejectTitle": "拒绝 Guardrail",
+      "sure": "确定要{{action}}",
+      "approveAction": "通过",
+      "rejectAction": "拒绝",
+      "approveDetail": "这将使其生效并可供使用。",
+      "rejectDetail": "这将将其标记为已拒绝并通知团队。"
+    },
+    "submit": {
+      "title": "提交 Guardrail 以供审核",
+      "banner": "你的 Guardrail 将先发送给管理员审核，审核通过后才会生效。",
+      "team": "团队",
+      "guardrailName": "Guardrail 名称",
+      "mode": "模式",
+      "apiBaseUrl": "API Base URL",
+      "extraParams": "额外的 litellm_params（可选）",
+      "extraParamsHint": "合并到 litellm_params 的 JSON 对象。例如 forward_api_key、headers、model、unreachable_fallback",
+      "guardrailInfo": "Guardrail 信息（可选）",
+      "submit": "提交审核"
+    },
+    "modes": {
+      "preCall": "调用前",
+      "postCall": "调用后",
+      "duringCall": "调用中"
+    },
+    "validation": {
+      "selectTeam": "请选择团队",
+      "nameRequired": "请输入 Guardrail 名称",
+      "apiBaseRequired": "请输入 API Base URL",
+      "validUrl": "必须是有效的 URL",
+      "jsonObject": "必须是 JSON 对象",
+      "invalidJson": "无效的 JSON"
+    },
+    "toast": {
+      "submitted": "Guardrail 已提交审核",
+      "forwardKeyEnabled": "已启用转发 API Key",
+      "forwardKeyDisabled": "已禁用转发 API Key",
+      "forwardKeyFailed": "更新转发 API Key 失败",
+      "staticHeadersUpdated": "静态请求头已更新",
+      "staticHeadersFailed": "更新静态请求头失败",
+      "extraHeadersUpdated": "转发的客户端请求头已更新",
+      "extraHeadersFailed": "更新转发的客户端请求头失败",
+      "approved": "Guardrail 已通过",
+      "approveFailed": "通过 Guardrail 失败",
+      "rejected": "Guardrail 已拒绝",
+      "rejectFailed": "拒绝 Guardrail 失败"
+    }
+  },
+  "testPlayground": {
+    "guardrailsHeading": "Guardrail 列表",
+    "searchPlaceholder": "搜索 Guardrail...",
+    "noMatch": "没有符合搜索条件的 Guardrail",
+    "noAvailable": "暂无可用 Guardrail",
+    "typeLabel": "类型：",
+    "modeLabel": "模式：",
+    "selectedCount": "已选择 {{selected}} / {{total}}",
+    "title": "Guardrail 测试 Playground",
+    "emptyTitle": "选择要测试的 Guardrail",
+    "emptyDescription": "从左侧栏选择一个或多个 Guardrail，开始测试并比较结果。",
+    "toast": {
+      "appliedOne": "{{value}} 个 Guardrail 应用成功",
+      "appliedOther": "{{value}} 个 Guardrail 应用成功",
+      "failedOne": "{{value}} 个 Guardrail 失败",
+      "failedOther": "{{value}} 个 Guardrail 失败"
+    }
+  },
+  "testPanel": {
+    "title": "测试 Guardrails：",
+    "subtitleOne": "测试 {{value}} 个 Guardrail 并比较结果",
+    "subtitleOther": "测试 {{value}} 个 Guardrail 并比较结果",
+    "inputText": "输入文本",
+    "inputHint": "按 Enter 提交，按 Shift+Enter 换行。",
+    "copyInput": "复制输入",
+    "inputPlaceholder": "输入要使用 Guardrail 测试的文本...",
+    "enterHint": "按 <kbd>Enter</kbd> 提交 • 按 <kbd>Shift+Enter</kbd> 换行",
+    "characters": "字符数：{{value}}",
+    "metadata": "元数据（可选）",
+    "metadataHint": "作为 request_data['metadata'] 转发给 Guardrail 的 JSON 对象。自定义 Guardrail 可从中读取按请求的配置。",
+    "testingOne": "正在测试 {{value}} 个 Guardrail...",
+    "testingOther": "正在测试 {{value}} 个 Guardrail...",
+    "testOne": "测试 {{value}} 个 Guardrail",
+    "testOther": "测试 {{value}} 个 Guardrail",
+    "enterTextError": "请输入要测试的文本",
+    "metadataObjectError": "元数据必须是 JSON 对象",
+    "invalidJsonError": "无效的 JSON",
+    "metadataPrefix": "元数据：{{error}}",
+    "toast": {
+      "inputCopied": "输入已复制到剪贴板",
+      "copyInputFailed": "复制输入失败"
+    }
+  },
+  "testResults": {
+    "title": "结果",
+    "copy": "复制",
+    "outputText": "输出文本",
+    "charactersLabel": "字符数：",
+    "errorLabel": "{{name}} - 错误",
+    "toast": {
+      "resultCopied": "结果已复制到剪贴板",
+      "copyFailed": "复制结果失败"
+    }
   }
 }
