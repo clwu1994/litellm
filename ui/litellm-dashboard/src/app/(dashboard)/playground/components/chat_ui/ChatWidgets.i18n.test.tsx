@@ -149,6 +149,20 @@ describe("chat widgets Chinese copy", () => {
     expect(screen.queryByText("Show sources (2)")).not.toBeInTheDocument();
   });
 
+  it("renders the Chinese singular result count", () => {
+    const results: VectorStoreSearchResponse[] = [
+      {
+        object: "search",
+        search_query: "pricing",
+        data: [{ score: 0.5, content: [{ text: "only", type: "text" }] }],
+      },
+    ];
+    render(<SearchResultsDisplay searchResults={results} />);
+
+    expect(screen.getByText("1 条结果")).toBeInTheDocument();
+    expect(screen.queryByText("1 result")).not.toBeInTheDocument();
+  });
+
   it("aliases the message role and renders the Chinese generated image alt", () => {
     const roles: Array<[string, string]> = [
       ["user", "用户"],

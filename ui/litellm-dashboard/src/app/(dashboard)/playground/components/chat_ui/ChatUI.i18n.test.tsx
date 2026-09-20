@@ -8,6 +8,7 @@ import ChatUI from "./ChatUI";
 import * as fetchModelsModule from "@/components/llm_calls/fetch_models";
 import { makeOpenAIChatCompletionRequest } from "@/components/llm_calls/chat_completion";
 import { makeOpenAIResponsesRequest } from "@/components/llm_calls/responses_api";
+import type { MCPEvent } from "@/components/mcp_tools/types";
 
 vi.mock("@/components/llm_calls/fetch_models", () => ({ fetchAvailableModels: vi.fn() }));
 vi.mock("@/components/llm_calls/chat_completion", () => ({
@@ -839,9 +840,9 @@ describe("ChatUI Chinese copy", () => {
     await waitForReady();
 
     await selectOption("选择模型", "Model 1");
-    // eslint-disable-next-line testing-library/no-node-access -- the sr-only file input carries no accessible name
     const input = screen
       .getByLabelText("附加图片或 PDF")
+      // eslint-disable-next-line testing-library/no-node-access -- the sr-only file input carries no accessible name
       .parentElement?.parentElement?.querySelector("input[type=file]");
     fireEvent.change(input as HTMLInputElement, {
       target: { files: [new File(["a"], "one.png", { type: "image/png" })] },
@@ -866,5 +867,80 @@ describe("ChatUI Chinese copy", () => {
     fireEvent.drop(dropZone, { dataTransfer: { files } });
 
     await waitFor(() => expect(toast.error).toHaveBeenCalledWith("最多只能上传 10 张图片。"));
+  });
+
+  it("renders the Chinese audio display without a prompt", async () => {
+    (fetchModelsModule.fetchAvailableModels as ReturnType<typeof vi.fn>).mockResolvedValue([
+      { model_group: "WhisperModel", mode: "audio_transcription" },
+    ]);
+    renderChat();
+    await waitForReady();
+
+    await selectOption("选择 Endpoint", "/v1/audio/transcriptions");
+    await selectOption("选择模型", "WhisperModel");
+    const dropZone = await screen.findByText("点击或拖拽音频文件上传");
+    fireEvent.drop(dropZone, { dataTransfer: { files: [new File(["a"], "clip.wav", { type: "audio/wav" })] } });
+    await screen.findByText("clip.wav");
+
+    fireEvent.keyDown(screen.getByPlaceholderText("可选：为转录添加上下文或提示词..."), {
+      key: "Enter",
+      code: "Enter",
+    });
+
+    expect(await screen.findByText("🎵 音频文件：clip.wav")).toBeInTheDocument();
+    expect(screen.queryByText("🎵 Audio file: clip.wav")).not.toBeInTheDocument();
+    expect(screen.queryByText("提示词：", { exact: false })).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese chat title in the simplified layout", async () => {
+    renderChat({ simplified: true });
+    await screen.findByRole("button", { name: "清除对话" });
+
+    expect(screen.getByRole("heading", { name: "对话" })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Chat" })).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese MCP connect button for a server without a user credential", async () => {
+    (fetchMCPServers as ReturnType<typeof vi.fn>).mockResolvedValue([
+      { server_id: "srv-1", alias: "github", server_name: "github-mcp", is_byok: true, has_user_credential: false },
+    ]);
+    (listMCPTools as ReturnType<typeof vi.fn>).mockResolvedValue({
+      tools: [{ name: "list_repos", description: "List repositories" }],
+    });
+    renderChat();
+    await waitForReady();
+
+    await selectOption("选择 MCP 服务器", "github");
+    expect(await screen.findByText("github 需要你的 API Key")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "连接" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Connect" })).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese assistant header and loading aria while an MCP response is in flight", async () => {
+    (fetchModelsModule.fetchAvailableModels as ReturnType<typeof vi.fn>).mockResolvedValue([
+      { model_group: "gpt-4o", mode: "chat" },
+    ]);
+    (makeOpenAIResponsesRequest as ReturnType<typeof vi.fn>).mockImplementation((...args: unknown[]) => {
+      const onMCPEvent = args[16] as (event: MCPEvent) => void;
+      onMCPEvent({
+        type: "response.output_item.done",
+        item_id: "call-1",
+        item: { type: "mcp_call", name: "list_repos" },
+      });
+      return new Promise(() => {});
+    });
+    renderChat();
+    await waitForReady();
+
+    await selectOption("选择 Endpoint", "/v1/responses");
+    await selectOption("选择模型", "gpt-4o");
+    const input = screen.getByPlaceholderText("输入你的消息...（Shift+Enter 换行）");
+    fireEvent.change(input, { target: { value: "hello" } });
+    fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
+
+    expect(await screen.findByText("助手")).toBeInTheDocument();
+    expect(screen.queryByText("Assistant")).not.toBeInTheDocument();
+    expect(screen.getByLabelText("加载中")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Loading")).not.toBeInTheDocument();
   });
 });
