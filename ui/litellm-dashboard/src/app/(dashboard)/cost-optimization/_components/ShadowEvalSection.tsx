@@ -15,6 +15,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ApiError } from "@/lib/http/client";
 
 import { usd } from "./costOptimizationUtils";
+import { SHADOW_EVAL_STATUS_KEYS, SHADOW_EVAL_TARGET_TYPE_KEYS } from "./shadowEvalLabels";
 import { StartForm } from "./ShadowEvalStartForm";
 import {
   useShadowEvalJob,
@@ -84,7 +85,7 @@ const targetSpent = (target: ShadowEvalJobTarget): boolean => {
   return spendBudgetReached || turnValveReached;
 };
 
-const targetStatus = (job: ShadowEvalJob, target: ShadowEvalJobTarget): string => {
+const targetStatus = (job: ShadowEvalJob, target: ShadowEvalJobTarget): ShadowEvalJob["status"] => {
   if (job.status === "completed" || (target.stopped_at == null && targetSpent(target))) return "completed";
   return target.stopped_at != null ? "stopped" : "running";
 };
@@ -155,11 +156,14 @@ const STATUS_STYLES: Record<string, string> = {
   stopped: "bg-secondary text-muted-foreground",
 };
 
-const StatusBadge: React.FC<{ status: string }> = ({ status }) => (
-  <Badge variant="secondary" className={STATUS_STYLES[status] ?? STATUS_STYLES.stopped}>
-    {status}
-  </Badge>
-);
+const StatusBadge: React.FC<{ status: ShadowEvalJob["status"] }> = ({ status }) => {
+  const { t } = useTranslation("costTracking");
+  return (
+    <Badge variant="secondary" className={STATUS_STYLES[status] ?? STATUS_STYLES.stopped}>
+      {t(SHADOW_EVAL_STATUS_KEYS[status])}
+    </Badge>
+  );
+};
 
 const SliceTable: React.FC<{
   groupHeader: string;
@@ -317,7 +321,9 @@ const TargetTable: React.FC<{ job: ShadowEvalJob }> = ({ job }) => {
               <TableCell className="font-medium text-foreground">
                 {shadowedTargetLabel(target)}
                 {target.target_type !== "key" && (
-                  <span className="ml-2 text-xs font-normal text-muted-foreground">{target.target_type}</span>
+                  <span className="ml-2 text-xs font-normal text-muted-foreground">
+                    {t(SHADOW_EVAL_TARGET_TYPE_KEYS[target.target_type])}
+                  </span>
                 )}
               </TableCell>
               <TableCell>

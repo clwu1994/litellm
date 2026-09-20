@@ -210,6 +210,15 @@
       "status": "Status",
       "budgetUsed": "Budget used"
     },
+    "status": {
+      "running": "running",
+      "completed": "completed",
+      "stopped": "stopped"
+    },
+    "targetType": {
+      "team": "team",
+      "user": "user"
+    },
     "budgetUsedTurns": "{{used}} / {{total}} turns",
     "results": {
       "error": "Results could not be loaded. Retrying.",

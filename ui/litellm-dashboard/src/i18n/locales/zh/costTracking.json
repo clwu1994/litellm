@@ -210,6 +210,15 @@
       "status": "状态",
       "budgetUsed": "预算使用"
     },
+    "status": {
+      "running": "运行中",
+      "completed": "已完成",
+      "stopped": "已停止"
+    },
+    "targetType": {
+      "team": "团队",
+      "user": "用户"
+    },
     "budgetUsedTurns": "{{used}} / {{total}} 轮次",
     "results": {
       "error": "无法加载结果。正在重试。",

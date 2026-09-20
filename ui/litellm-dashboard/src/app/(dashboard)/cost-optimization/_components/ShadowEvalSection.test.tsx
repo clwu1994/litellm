@@ -1313,6 +1313,39 @@ describe("ShadowEvalSection Chinese copy", () => {
     expect(screen.queryByText("No verdicts yet")).not.toBeInTheDocument();
   });
 
+  it("renders the Chinese job and target statuses and target type tags and hides the English ones", () => {
+    const completedTeamTarget: Partial<ShadowEvalJob["targets"][number]> = {
+      target_type: "team",
+      max_budget: 2,
+      spend: 2,
+      attempt_count: 40,
+    };
+    const statusJobOverrides: Partial<ShadowEvalJob> = {
+      status: "running",
+      judged_count: 0,
+      results: null,
+      targets: [
+        targetEntry("hash-completed", completedTeamTarget),
+        targetEntry("hash-stopped", { target_type: "user", stopped_at: "2026-08-08T00:00:00Z" }),
+        targetEntry("hash-running"),
+      ],
+    };
+    mockHooks({ jobs: [job(statusJobOverrides)] });
+    render(<ShadowEvalSection />);
+
+    expect(screen.getAllByText("运行中")).toHaveLength(2);
+    expect(screen.getByText("已完成")).toBeInTheDocument();
+    expect(screen.getByText("已停止")).toBeInTheDocument();
+    expect(screen.getByText("团队")).toBeInTheDocument();
+    expect(screen.getByText("用户")).toBeInTheDocument();
+
+    expect(screen.queryByText("running")).not.toBeInTheDocument();
+    expect(screen.queryByText("completed")).not.toBeInTheDocument();
+    expect(screen.queryByText("stopped")).not.toBeInTheDocument();
+    expect(screen.queryByText("team")).not.toBeInTheDocument();
+    expect(screen.queryByText("user")).not.toBeInTheDocument();
+  });
+
   it("renders the Chinese forward and reverse headlines and target count", () => {
     const scoped = job({ models: ["prod-claude", "prod-haiku"] });
     mockHooks({ jobs: [scoped], detailsById: { "job-1": scoped } });
