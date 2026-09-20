@@ -1,6 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import i18n from "@/i18n/bootstrapI18n";
 import CustomPatternModal from "./CustomPatternModal";
 
 describe("CustomPatternModal", () => {
@@ -59,5 +60,48 @@ describe("CustomPatternModal", () => {
 
     // Verify onAdd was called
     expect(mockOnAdd).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("CustomPatternModal Chinese copy", () => {
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    await i18n.changeLanguage("zh");
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  it("renders the Chinese modal chrome and hides the English one", async () => {
+    render(
+      <CustomPatternModal
+        visible={true}
+        patternName=""
+        patternRegex=""
+        patternAction="BLOCK"
+        onNameChange={vi.fn()}
+        onRegexChange={vi.fn()}
+        onActionChange={vi.fn()}
+        onAdd={vi.fn()}
+        onCancel={vi.fn()}
+      />,
+    );
+
+    expect(await screen.findByText("添加自定义正则匹配模式")).toBeInTheDocument();
+    expect(screen.getByText("匹配模式名称")).toBeInTheDocument();
+    expect(screen.getByText("正则表达式")).toBeInTheDocument();
+    expect(screen.getByText("输入有效的正则表达式以匹配敏感数据")).toBeInTheDocument();
+    expect(screen.getByText("操作")).toBeInTheDocument();
+    expect(screen.getByText("选择检测到此匹配模式时 Guardrail 应执行的操作")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "取消" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "添加" })).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("e.g., ID-[0-9]{6}")).toBeInTheDocument();
+
+    expect(screen.queryByText("Add custom regex pattern")).not.toBeInTheDocument();
+    expect(screen.queryByText("Pattern name")).not.toBeInTheDocument();
+    expect(screen.queryByText("Enter a valid regular expression to match sensitive data")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Cancel" })).not.toBeInTheDocument();
   });
 });

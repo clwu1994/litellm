@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Trash2 } from "lucide-react";
 import type { ColumnDef } from "@tanstack/react-table";
+import { useTranslation } from "react-i18next";
 import { DataTable } from "@/components/shared/DataTable";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ACTION_ITEMS } from "./action_options";
+import { actionItems } from "./action_options";
 
 interface Pattern {
   id: string;
@@ -23,20 +24,26 @@ interface PatternTableProps {
 }
 
 const PatternTable: React.FC<PatternTableProps> = ({ patterns, onActionChange, onRemove }) => {
+  const { t } = useTranslation("guardrails");
+  const items = useMemo(() => actionItems(t), [t]);
   const columns: ColumnDef<Pattern>[] = [
     {
-      header: "Type",
+      header: t("contentFilter.tables.type"),
       accessorKey: "type",
       size: 100,
-      cell: ({ row }) => <Badge variant="secondary">{row.original.type === "prebuilt" ? "Prebuilt" : "Custom"}</Badge>,
+      cell: ({ row }) => (
+        <Badge variant="secondary">
+          {row.original.type === "prebuilt" ? t("contentFilter.tables.prebuilt") : t("contentFilter.tables.custom")}
+        </Badge>
+      ),
     },
     {
-      header: "Pattern name",
+      header: t("contentFilter.tables.patternName"),
       accessorKey: "name",
       cell: ({ row }) => row.original.display_name || row.original.name,
     },
     {
-      header: "Regex pattern",
+      header: t("contentFilter.tables.regexPattern"),
       accessorKey: "pattern",
       cell: ({ row }) =>
         row.original.pattern ? (
@@ -46,20 +53,20 @@ const PatternTable: React.FC<PatternTableProps> = ({ patterns, onActionChange, o
         ),
     },
     {
-      header: "Action",
+      header: t("contentFilter.tables.action"),
       accessorKey: "action",
       size: 150,
       cell: ({ row }) => (
         <Select
-          items={ACTION_ITEMS}
+          items={items}
           value={row.original.action}
           onValueChange={(value: string | null) => value && onActionChange(row.original.id, value as "BLOCK" | "MASK")}
         >
-          <SelectTrigger size="sm" className="w-[120px]" aria-label="Action">
+          <SelectTrigger size="sm" className="w-[120px]" aria-label={t("contentFilter.tables.action")}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {ACTION_ITEMS.map((item) => (
+            {items.map((item) => (
               <SelectItem key={item.value} value={item.value}>
                 {item.label}
               </SelectItem>
@@ -75,14 +82,14 @@ const PatternTable: React.FC<PatternTableProps> = ({ patterns, onActionChange, o
       cell: ({ row }) => (
         <Button variant="ghost" size="sm" onClick={() => onRemove(row.original.id)}>
           <Trash2 />
-          Delete
+          {t("contentFilter.tables.delete")}
         </Button>
       ),
     },
   ];
 
   if (patterns.length === 0) {
-    return <div className="py-10 text-center text-muted-foreground">No patterns added.</div>;
+    return <div className="py-10 text-center text-muted-foreground">{t("contentFilter.tables.emptyPatterns")}</div>;
   }
 
   return <DataTable data={patterns} columns={columns} getRowId={(row) => row.id} size="compact" />;

@@ -1,6 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import i18n from "@/i18n/bootstrapI18n";
 import ContentFilterManager, { formatContentFilterDataForAPI } from "./ContentFilterManager";
 
 const CONTENT_FILTER_GUARDRAIL_DATA = {
@@ -462,5 +463,38 @@ describe("formatContentFilterDataForAPI", () => {
         severity_threshold: "medium",
       },
     ]);
+  });
+});
+
+describe("ContentFilterManager Chinese copy", () => {
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    await i18n.changeLanguage("zh");
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  it("renders the Chinese edit heading and unsaved-changes alert and hides the English ones", async () => {
+    const user = userEvent.setup({ delay: null });
+    render(
+      <ContentFilterManager
+        guardrailData={CONTENT_FILTER_GUARDRAIL_DATA}
+        guardrailSettings={GUARDRAIL_SETTINGS}
+        isEditing
+        accessToken="test-token"
+      />,
+    );
+
+    expect(await screen.findByText("内容过滤配置")).toBeInTheDocument();
+    expect(screen.queryByText("Content Filter Configuration")).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Add pattern" }));
+    expect(
+      await screen.findByText("匹配模式或关键词有未保存的更改。请记得点击底部的「保存更改」。"),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/You have unsaved changes to patterns or keywords/)).not.toBeInTheDocument();
   });
 });

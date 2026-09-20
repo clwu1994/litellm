@@ -1,6 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import i18n from "@/i18n/bootstrapI18n";
 import PatternModal from "./PatternModal";
 
 describe("PatternModal", () => {
@@ -150,5 +151,57 @@ describe("PatternModal", () => {
     const content = document.querySelector('[data-slot="dialog-content"]');
     expect(content).not.toBeNull();
     expect(Array.from(content!.classList).filter((cls) => cls.startsWith("z-"))).toEqual(["z-popup"]);
+  });
+});
+
+describe("PatternModal Chinese copy", () => {
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    await i18n.changeLanguage("zh");
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  const renderZhModal = () =>
+    render(
+      <PatternModal
+        visible={true}
+        prebuiltPatterns={[
+          { name: "us_ssn", display_name: "US Social Security Number", category: "PII Patterns", description: "d" },
+        ]}
+        categories={["PII Patterns"]}
+        selectedPatternName=""
+        patternAction="BLOCK"
+        onPatternNameChange={vi.fn()}
+        onActionChange={vi.fn()}
+        onAdd={vi.fn()}
+        onCancel={vi.fn()}
+      />,
+    );
+
+  it("renders the Chinese modal chrome and hides the English one", async () => {
+    const user = userEvent.setup({ delay: null });
+    renderZhModal();
+
+    expect(await screen.findByText("添加预置匹配模式")).toBeInTheDocument();
+    expect(screen.getByText("匹配模式类型")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("选择匹配模式类型")).toBeInTheDocument();
+    expect(screen.getByText("操作")).toBeInTheDocument();
+    expect(screen.getByText("选择检测到此匹配模式时 Guardrail 应执行的操作")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "取消" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "添加" })).toBeInTheDocument();
+
+    expect(screen.queryByText("Add prebuilt pattern")).not.toBeInTheDocument();
+    expect(screen.queryByText("Pattern type")).not.toBeInTheDocument();
+    expect(screen.queryByText("Choose pattern type")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Cancel" })).not.toBeInTheDocument();
+
+    await user.click(screen.getAllByRole("combobox")[0]);
+    await user.keyboard("zzz");
+    expect(await screen.findByText("没有匹配的匹配模式")).toBeInTheDocument();
+    expect(screen.queryByText("No matching patterns")).not.toBeInTheDocument();
   });
 });

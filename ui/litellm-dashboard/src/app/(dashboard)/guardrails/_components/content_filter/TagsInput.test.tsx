@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import i18n from "@/i18n/bootstrapI18n";
 import { TagsInput, type TagsInputOption } from "./TagsInput";
 
 const Harness = ({
@@ -84,5 +85,30 @@ describe("TagsInput", () => {
     render(<Harness initial={["qatar airways"]} options={[{ value: "qatar airways", label: "Qatar Airways (qr)" }]} />);
 
     expect(screen.getByLabelText("Qatar Airways (qr)")).toBeInTheDocument();
+  });
+});
+
+describe("TagsInput Chinese copy", () => {
+  beforeEach(async () => {
+    await i18n.changeLanguage("zh");
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  it("renders the Chinese no-match empty state and loading placeholder", async () => {
+    const user = userEvent.setup();
+    const { unmount } = render(<TagsInput value={[]} onValueChange={vi.fn()} placeholder="tags" />);
+
+    await user.click(screen.getByRole("combobox"));
+    expect(await screen.findByText("没有匹配的选项")).toBeInTheDocument();
+    expect(screen.queryByText("No matching options")).not.toBeInTheDocument();
+
+    unmount();
+    render(<TagsInput value={[]} onValueChange={vi.fn()} loading placeholder="tags" />);
+    expect(screen.getByPlaceholderText("加载中...")).toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("Loading...")).not.toBeInTheDocument();
   });
 });

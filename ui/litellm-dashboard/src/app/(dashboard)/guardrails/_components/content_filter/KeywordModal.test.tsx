@@ -1,6 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import i18n from "@/i18n/bootstrapI18n";
 import KeywordModal from "./KeywordModal";
 
 describe("KeywordModal", () => {
@@ -96,5 +97,50 @@ describe("KeywordModal", () => {
     const content = document.querySelector('[data-slot="dialog-content"]');
     expect(content).not.toBeNull();
     expect(Array.from(content!.classList).filter((cls) => cls.startsWith("z-"))).toEqual(["z-popup"]);
+  });
+});
+
+describe("KeywordModal Chinese copy", () => {
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    await i18n.changeLanguage("zh");
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  it("renders the Chinese modal chrome and hides the English one", async () => {
+    render(
+      <KeywordModal
+        visible
+        keyword=""
+        action="BLOCK"
+        description=""
+        onKeywordChange={vi.fn()}
+        onActionChange={vi.fn()}
+        onDescriptionChange={vi.fn()}
+        onAdd={vi.fn()}
+        onCancel={vi.fn()}
+      />,
+    );
+
+    expect(await screen.findByText("添加屏蔽关键词")).toBeInTheDocument();
+    expect(screen.getByText("关键词")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("输入敏感关键词或短语")).toBeInTheDocument();
+    expect(screen.getByText("操作")).toBeInTheDocument();
+    expect(screen.getByText("选择检测到此关键词时 Guardrail 应执行的操作")).toBeInTheDocument();
+    expect(screen.getByText("描述（可选）")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("说明此关键词为何敏感")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "取消" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "添加" })).toBeInTheDocument();
+
+    expect(screen.queryByText("Add blocked keyword")).not.toBeInTheDocument();
+    expect(screen.queryByText("Description (optional)")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Choose what action the guardrail should take when this keyword is detected"),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Cancel" })).not.toBeInTheDocument();
   });
 });

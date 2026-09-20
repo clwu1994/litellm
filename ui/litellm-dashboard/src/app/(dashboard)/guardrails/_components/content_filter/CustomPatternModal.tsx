@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ACTION_ITEMS } from "./action_options";
+import { actionItems } from "./action_options";
 
 interface CustomPatternModalProps {
   visible: boolean;
@@ -28,16 +29,19 @@ const CustomPatternModal: React.FC<CustomPatternModalProps> = ({
   onAdd,
   onCancel,
 }) => {
+  const { t } = useTranslation("guardrails");
+  const items = useMemo(() => actionItems(t), [t]);
+
   return (
     <Dialog open={visible} onOpenChange={(open) => !open && onCancel()}>
       <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[800px]">
         <DialogHeader>
-          <DialogTitle>Add custom regex pattern</DialogTitle>
+          <DialogTitle>{t("contentFilter.customPatternModal.title")}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
           <div>
-            <p className="font-semibold">Pattern name</p>
+            <p className="font-semibold">{t("contentFilter.customPatternModal.patternName")}</p>
             <Input
               className="mt-2"
               placeholder="e.g., internal_id, employee_code"
@@ -47,31 +51,29 @@ const CustomPatternModal: React.FC<CustomPatternModalProps> = ({
           </div>
 
           <div>
-            <p className="font-semibold">Regex pattern</p>
+            <p className="font-semibold">{t("contentFilter.customPatternModal.regexPattern")}</p>
             <Input
               className="mt-2"
               placeholder="e.g., ID-[0-9]{6}"
               value={patternRegex}
               onChange={(e) => onRegexChange(e.target.value)}
             />
-            <p className="text-xs text-muted-foreground">Enter a valid regular expression to match sensitive data</p>
+            <p className="text-xs text-muted-foreground">{t("contentFilter.customPatternModal.regexHint")}</p>
           </div>
 
           <div>
-            <p className="font-semibold">Action</p>
-            <p className="mt-1 mb-2 text-muted-foreground">
-              Choose what action the guardrail should take when this pattern is detected
-            </p>
+            <p className="font-semibold">{t("contentFilter.customPatternModal.action")}</p>
+            <p className="mt-1 mb-2 text-muted-foreground">{t("contentFilter.customPatternModal.actionHint")}</p>
             <Select
-              items={ACTION_ITEMS}
+              items={items}
               value={patternAction}
               onValueChange={(value: string | null) => value && onActionChange(value as "BLOCK" | "MASK")}
             >
-              <SelectTrigger className="w-full" aria-label="Action">
+              <SelectTrigger className="w-full" aria-label={t("contentFilter.customPatternModal.action")}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {ACTION_ITEMS.map((item) => (
+                {items.map((item) => (
                   <SelectItem key={item.value} value={item.value}>
                     {item.label}
                   </SelectItem>
@@ -83,9 +85,9 @@ const CustomPatternModal: React.FC<CustomPatternModalProps> = ({
 
         <DialogFooter>
           <Button variant="outline" onClick={onCancel}>
-            Cancel
+            {t("contentFilter.customPatternModal.cancel")}
           </Button>
-          <Button onClick={onAdd}>Add</Button>
+          <Button onClick={onAdd}>{t("contentFilter.customPatternModal.add")}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

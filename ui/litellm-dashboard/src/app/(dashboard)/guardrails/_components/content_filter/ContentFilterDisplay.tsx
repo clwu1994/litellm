@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import PatternTable from "./PatternTable";
@@ -56,6 +57,7 @@ const ContentFilterDisplay: React.FC<ContentFilterDisplayProps> = ({
   onCategorySeverityChange,
   onCategoryRemove,
 }) => {
+  const { t } = useTranslation("guardrails");
   if (patterns.length === 0 && blockedWords.length === 0 && categories.length === 0) {
     return null;
   }
@@ -69,8 +71,10 @@ const ContentFilterDisplay: React.FC<ContentFilterDisplayProps> = ({
         <Card className="mt-6">
           <CardContent>
             <div className="mb-4 flex items-center justify-between">
-              <p className="text-lg font-semibold">Content Categories</p>
-              <Badge variant="secondary">{categories.length} categories configured</Badge>
+              <p className="text-lg font-semibold">{t("contentFilter.display.contentCategories")}</p>
+              <Badge variant="secondary">
+                {t("contentFilter.display.categoriesConfigured", { count: categories.length })}
+              </Badge>
             </div>
             <CategoryTable
               categories={categories}
@@ -87,8 +91,10 @@ const ContentFilterDisplay: React.FC<ContentFilterDisplayProps> = ({
         <Card className="mt-6">
           <CardContent>
             <div className="mb-4 flex items-center justify-between">
-              <p className="text-lg font-semibold">Pattern Detection</p>
-              <Badge variant="secondary">{patterns.length} patterns configured</Badge>
+              <p className="text-lg font-semibold">{t("contentFilter.config.patternDetection")}</p>
+              <Badge variant="secondary">
+                {t("contentFilter.display.patternsConfigured", { count: patterns.length })}
+              </Badge>
             </div>
             <PatternTable
               patterns={patterns}
@@ -103,8 +109,10 @@ const ContentFilterDisplay: React.FC<ContentFilterDisplayProps> = ({
         <Card className="mt-6">
           <CardContent>
             <div className="mb-4 flex items-center justify-between">
-              <p className="text-lg font-semibold">Blocked Keywords</p>
-              <Badge variant="secondary">{blockedWords.length} keywords configured</Badge>
+              <p className="text-lg font-semibold">{t("contentFilter.config.blockedKeywords")}</p>
+              <Badge variant="secondary">
+                {t("contentFilter.display.keywordsConfigured", { count: blockedWords.length })}
+              </Badge>
             </div>
             <KeywordTable
               keywords={blockedWords}

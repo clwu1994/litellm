@@ -1,5 +1,6 @@
-import { describe, it, expect } from "vitest";
-import { renderWithProviders, screen } from "@/../tests/test-utils";
+import { describe, it, expect, afterEach, beforeEach } from "vitest";
+import { cleanup, renderWithProviders, screen } from "@/../tests/test-utils";
+import i18n from "@/i18n/bootstrapI18n";
 import ContentFilterDisplay from "./ContentFilterDisplay";
 
 const PATTERN = {
@@ -73,8 +74,8 @@ describe("ContentFilterDisplay", () => {
       <ContentFilterDisplay patterns={[PATTERN]} blockedWords={[KEYWORD]} categories={[CATEGORY]} readOnly={true} />,
     );
 
-    expect(screen.getByText("HIGH")).toBeInTheDocument();
-    expect(screen.getByText("BLOCK")).toBeInTheDocument();
+    expect(screen.getAllByText("High").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Block").length).toBeGreaterThan(0);
     expect(screen.getAllByRole("button", { name: /delete/i })).toHaveLength(2);
   });
 
@@ -84,6 +85,47 @@ describe("ContentFilterDisplay", () => {
     );
 
     expect(screen.queryByText("HIGH")).not.toBeInTheDocument();
+    expect(screen.queryByText("BLOCK")).not.toBeInTheDocument();
     expect(screen.getAllByRole("button", { name: /delete/i })).toHaveLength(3);
+  });
+});
+
+describe("ContentFilterDisplay Chinese copy", () => {
+  beforeEach(async () => {
+    await i18n.changeLanguage("zh");
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  it("renders the Chinese section headings and configured counts and hides the English ones", () => {
+    renderWithProviders(<ContentFilterDisplay patterns={[PATTERN]} blockedWords={[KEYWORD]} categories={[CATEGORY]} />);
+
+    expect(screen.getByText("内容类别")).toBeInTheDocument();
+    expect(screen.getByText("已配置 1 个类别")).toBeInTheDocument();
+    expect(screen.getByText("匹配模式检测")).toBeInTheDocument();
+    expect(screen.getByText("已配置 1 个匹配模式")).toBeInTheDocument();
+    expect(screen.getByText("屏蔽关键词")).toBeInTheDocument();
+    expect(screen.getByText("已配置 1 个关键词")).toBeInTheDocument();
+
+    expect(screen.queryByText("Content Categories")).not.toBeInTheDocument();
+    expect(screen.queryByText("1 categories configured")).not.toBeInTheDocument();
+    expect(screen.queryByText("1 patterns configured")).not.toBeInTheDocument();
+    expect(screen.queryByText("1 keywords configured")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese read-only severity and action labels instead of the raw wire values", () => {
+    renderWithProviders(
+      <ContentFilterDisplay patterns={[PATTERN]} blockedWords={[KEYWORD]} categories={[CATEGORY]} readOnly />,
+    );
+
+    expect(screen.getByText("高")).toBeInTheDocument();
+    expect(screen.getAllByText("阻止").length).toBeGreaterThan(0);
+    expect(screen.queryByText("HIGH")).not.toBeInTheDocument();
+    expect(screen.queryByText("BLOCK")).not.toBeInTheDocument();
+    expect(screen.queryByText("High")).not.toBeInTheDocument();
+    expect(screen.queryByText("Block")).not.toBeInTheDocument();
   });
 });

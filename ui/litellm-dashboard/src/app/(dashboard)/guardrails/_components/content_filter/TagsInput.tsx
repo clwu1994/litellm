@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import {
   Combobox,
@@ -46,12 +47,13 @@ export const TagsInput = ({
   onValueChange,
   options = [],
   placeholder,
-  emptyText = "No matching options",
+  emptyText,
   tokenSeparators = [],
   loading = false,
   disabled = false,
   id,
 }: TagsInputProps) => {
+  const { t } = useTranslation("guardrails");
   const anchor = useComboboxAnchor();
   const [query, setQuery] = useState("");
 
@@ -118,7 +120,7 @@ export const TagsInput = ({
               ))}
               <ComboboxChipsInput
                 id={id}
-                placeholder={loading ? "Loading..." : placeholder}
+                placeholder={loading ? t("contentFilter.tagsInput.loading") : placeholder}
                 className="min-w-24"
                 onBlur={commitPending}
                 onKeyDown={handleKeyDown}
@@ -128,7 +130,7 @@ export const TagsInput = ({
         </ComboboxValue>
       </ComboboxChips>
       <ComboboxContent anchor={anchor}>
-        <ComboboxEmpty>{emptyText}</ComboboxEmpty>
+        <ComboboxEmpty>{emptyText ?? t("contentFilter.tagsInput.noMatching")}</ComboboxEmpty>
         <ComboboxList>
           {(option: TagsInputOption) => (
             <ComboboxItem key={option.value} value={option} title={option.label}>

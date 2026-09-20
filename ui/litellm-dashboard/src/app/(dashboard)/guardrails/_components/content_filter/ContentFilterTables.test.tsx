@@ -1,10 +1,16 @@
-import { renderWithProviders, screen } from "@/../tests/test-utils";
+import { cleanup, renderWithProviders, screen } from "@/../tests/test-utils";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { getCategoryYaml } from "@/components/networking";
+import i18n from "@/i18n/bootstrapI18n";
 import CategoryTable from "./CategoryTable";
 import ContentCategoryConfiguration from "./ContentCategoryConfiguration";
 import KeywordTable from "./KeywordTable";
 import PatternTable from "./PatternTable";
+
+vi.mock("@/components/networking", () => ({ getCategoryYaml: vi.fn() }));
+
+const mockGetCategoryYaml = vi.mocked(getCategoryYaml);
 
 describe("content filter tables", () => {
   it("should render category details in the shared table and remove a category", async () => {
@@ -202,5 +208,206 @@ describe("content filter tables", () => {
     await user.click(maskOptions[maskOptions.length - 1]);
 
     expect(onActionChange).toHaveBeenCalledWith("category-1", "MASK");
+  });
+});
+
+const ZH_CATEGORIES = [
+  { name: "violence", display_name: "Violence", description: "Violent content", default_action: "BLOCK" },
+  { name: "hate", display_name: "Hate", description: "Hateful content", default_action: "MASK" },
+];
+
+const ZH_SELECTED = [
+  {
+    id: "category-1",
+    category: "violence",
+    display_name: "Violence",
+    action: "BLOCK" as const,
+    severity_threshold: "medium" as const,
+  },
+];
+
+const renderCategoryConfig = (accessToken?: string) =>
+  renderWithProviders(
+    <ContentCategoryConfiguration
+      availableCategories={ZH_CATEGORIES}
+      selectedCategories={ZH_SELECTED}
+      onCategoryAdd={vi.fn()}
+      onCategoryRemove={vi.fn()}
+      onCategoryUpdate={vi.fn()}
+      accessToken={accessToken}
+    />,
+  );
+
+describe("content filter tables Chinese copy", () => {
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    await i18n.changeLanguage("zh");
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  it("renders the Chinese category table chrome and hides the English one", () => {
+    renderWithProviders(
+      <CategoryTable
+        categories={[ZH_SELECTED[0]]}
+        onActionChange={vi.fn()}
+        onSeverityChange={vi.fn()}
+        onRemove={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByRole("columnheader", { name: "类别" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "严重程度阈值" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "操作" })).toBeInTheDocument();
+    expect(screen.getByRole("combobox", { name: "操作" })).toBeInTheDocument();
+    expect(screen.getByRole("combobox", { name: "严重程度阈值" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "删除" })).toBeInTheDocument();
+
+    expect(screen.queryByText("Severity Threshold")).not.toBeInTheDocument();
+    expect(screen.queryByText("Category")).not.toBeInTheDocument();
+    expect(screen.queryByText("Delete")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese category table empty state", () => {
+    renderWithProviders(
+      <CategoryTable categories={[]} onActionChange={vi.fn()} onSeverityChange={vi.fn()} onRemove={vi.fn()} />,
+    );
+
+    expect(screen.getByText("尚未配置类别。")).toBeInTheDocument();
+    expect(screen.queryByText("No categories configured.")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese read-only severity and action labels", () => {
+    renderWithProviders(<CategoryTable categories={[ZH_SELECTED[0]]} readOnly />);
+
+    expect(screen.getByText("中")).toBeInTheDocument();
+    expect(screen.getByText("阻止")).toBeInTheDocument();
+    expect(screen.queryByText("MEDIUM")).not.toBeInTheDocument();
+    expect(screen.queryByText("BLOCK")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese keyword table chrome and empty state", () => {
+    const { unmount } = renderWithProviders(
+      <KeywordTable
+        keywords={[{ id: "keyword-1", keyword: "secret", action: "MASK", description: "Sensitive term" }]}
+        onActionChange={vi.fn()}
+        onRemove={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByRole("columnheader", { name: "关键词" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "操作" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "描述" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "删除" })).toBeInTheDocument();
+    expect(screen.queryByText("Keyword")).not.toBeInTheDocument();
+    expect(screen.queryByText("Description")).not.toBeInTheDocument();
+
+    unmount();
+    renderWithProviders(<KeywordTable keywords={[]} onActionChange={vi.fn()} onRemove={vi.fn()} />);
+    expect(screen.getByText("尚未添加关键词。")).toBeInTheDocument();
+    expect(screen.queryByText("No keywords added.")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese pattern table chrome, type badges and empty state", () => {
+    const { unmount } = renderWithProviders(
+      <PatternTable
+        patterns={[{ id: "pattern-1", type: "prebuilt", name: "email", action: "BLOCK" }]}
+        onActionChange={vi.fn()}
+        onRemove={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByRole("columnheader", { name: "类型" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "匹配模式名称" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "正则表达式" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "操作" })).toBeInTheDocument();
+    expect(screen.getByText("预置")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "删除" })).toBeInTheDocument();
+    expect(screen.queryByText("Prebuilt")).not.toBeInTheDocument();
+    expect(screen.queryByText("Pattern name")).not.toBeInTheDocument();
+    expect(screen.queryByText("Regex pattern")).not.toBeInTheDocument();
+
+    unmount();
+    renderWithProviders(
+      <PatternTable
+        patterns={[{ id: "pattern-2", type: "custom", name: "email", action: "BLOCK" }]}
+        onActionChange={vi.fn()}
+        onRemove={vi.fn()}
+      />,
+    );
+    expect(screen.getByText("自定义")).toBeInTheDocument();
+    expect(screen.queryByText("Custom")).not.toBeInTheDocument();
+
+    unmount();
+    renderWithProviders(<PatternTable patterns={[]} onActionChange={vi.fn()} onRemove={vi.fn()} />);
+    expect(screen.getByText("尚未添加匹配模式。")).toBeInTheDocument();
+    expect(screen.queryByText("No patterns added.")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese blocked-topics chrome and the no-match empty state", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(
+      <ContentCategoryConfiguration
+        availableCategories={ZH_CATEGORIES}
+        selectedCategories={[]}
+        onCategoryAdd={vi.fn()}
+        onCategoryRemove={vi.fn()}
+        onCategoryUpdate={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText("屏蔽主题")).toBeInTheDocument();
+    expect(screen.getByText("使用关键词和语义分析选择要屏蔽的主题")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("选择内容类别")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "添加" })).toBeInTheDocument();
+    expect(screen.getByText("尚未选择屏蔽主题。添加主题以检测并屏蔽有害内容。")).toBeInTheDocument();
+    expect(screen.queryByText("Blocked topics")).not.toBeInTheDocument();
+    expect(screen.queryByText("Select a content category")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("No blocked topics selected. Add topics to detect and block harmful content."),
+    ).not.toBeInTheDocument();
+
+    await user.click(screen.getByPlaceholderText("选择内容类别"));
+    await user.type(screen.getByPlaceholderText("选择内容类别"), "zzz");
+    expect(await screen.findByText("没有匹配的类别")).toBeInTheDocument();
+    expect(screen.queryByText("No matching categories")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese selected-category chrome, preview and unavailable file content", async () => {
+    const user = userEvent.setup();
+    renderCategoryConfig();
+
+    expect(screen.getByRole("button", { name: "移除" })).toBeInTheDocument();
+    expect(screen.getByText("查看 Violence 的 YAML")).toBeInTheDocument();
+    expect(screen.queryByText(/View YAML for Violence/)).not.toBeInTheDocument();
+
+    await user.click(screen.getByPlaceholderText("选择内容类别"));
+    await user.click(await screen.findByText("Hate"));
+
+    expect(await screen.findByText("预览：Hate")).toBeInTheDocument();
+    expect(screen.getByText("无法加载类别内容")).toBeInTheDocument();
+    expect(screen.queryByText(/Preview: Hate/)).not.toBeInTheDocument();
+    expect(screen.queryByText("Unable to load category content")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese loading and collapsed-content states", async () => {
+    const user = userEvent.setup();
+    mockGetCategoryYaml.mockReturnValue(new Promise(() => {}));
+    const { unmount } = renderCategoryConfig("test-token");
+
+    await user.click(screen.getByRole("button", { name: /查看 Violence 的 YAML/ }));
+    expect(await screen.findByText("正在加载内容...")).toBeInTheDocument();
+    expect(screen.queryByText("Loading content...")).not.toBeInTheDocument();
+
+    unmount();
+    mockGetCategoryYaml.mockRejectedValue(new Error("nope"));
+    renderCategoryConfig("test-token");
+
+    await user.click(screen.getByRole("button", { name: /查看 Violence 的 YAML/ }));
+    expect(await screen.findByText("展开后将加载内容")).toBeInTheDocument();
+    expect(screen.queryByText("Content will load when expanded")).not.toBeInTheDocument();
   });
 });

@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { getMajorAirlines } from "@/components/networking";
+import i18n from "@/i18n/bootstrapI18n";
 
 import CompetitorIntentConfiguration, { type CompetitorIntentConfig } from "./CompetitorIntentConfiguration";
 
@@ -193,5 +194,96 @@ describe("CompetitorIntentConfiguration reported config", () => {
     await user.click(await screen.findByRole("option", { name: "Generic (specify competitors manually)" }));
 
     expect(screen.getByRole("combobox", { name: "Type" })).toHaveTextContent("Generic (specify competitors manually)");
+  });
+});
+
+describe("CompetitorIntentConfiguration Chinese copy", () => {
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    mockAirlines.mockResolvedValue({ airlines: [] });
+    await i18n.changeLanguage("zh");
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  it("renders the Chinese competitor-intent chrome and hides the English one", async () => {
+    const user = userEvent.setup({ delay: null });
+    render(<Harness />);
+
+    expect(screen.getByText("竞品意图过滤器")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "阻止或改写竞品对比问题。航空公司类型使用主要航空公司（不含你的品牌）；通用类型需要手动填写竞品列表。",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByText("类型")).toBeInTheDocument();
+    expect(screen.getByText("你的品牌（brand_self）")).toBeInTheDocument();
+    expect(screen.getByText("从列表中选择你的航空公司（不计入竞品），或输入以添加自定义词")).toBeInTheDocument();
+    expect(screen.getByText("地点（可选）")).toBeInTheDocument();
+    expect(screen.getByText("用于消歧的国家、城市、机场（例如 qatar、doha）")).toBeInTheDocument();
+    expect(screen.getByText("策略：竞品对比")).toBeInTheDocument();
+    expect(screen.getByText("策略：可能的竞品对比")).toBeInTheDocument();
+    expect(screen.getByText("置信度阈值")).toBeInTheDocument();
+    expect(screen.getByText("高")).toBeInTheDocument();
+    expect(screen.getByText("中")).toBeInTheDocument();
+    expect(screen.getByText("低")).toBeInTheDocument();
+    expect(screen.getByText(/按置信度（0–1）对竞品意图分类/)).toBeInTheDocument();
+    expect(screen.getByText("高（≥）")).toBeInTheDocument();
+    expect(screen.getByText("：视为完整竞品对比 -> 使用「竞品对比」策略")).toBeInTheDocument();
+    expect(screen.getByText("中（≥）")).toBeInTheDocument();
+    expect(screen.getByText("：视为可能的对比 -> 使用「可能的竞品对比」策略")).toBeInTheDocument();
+    expect(screen.getByText("低（≥）")).toBeInTheDocument();
+    expect(screen.getByText("：仅记录日志；允许请求。低于低 -> 允许且不执行操作")).toBeInTheDocument();
+    expect(screen.getByText(/提高阈值更宽松；降低阈值更严格。/)).toBeInTheDocument();
+
+    expect(screen.getByRole("combobox", { name: "类型" })).toHaveTextContent("航空公司（从 IATA 自动加载竞品）");
+    expect(screen.getByRole("combobox", { name: "策略：竞品对比" })).toHaveTextContent("拒绝（阻止请求）");
+    expect(screen.getByRole("combobox", { name: "策略：可能的竞品对比" })).toHaveTextContent(
+      "改写（向后端 LLM 建议替代方案）",
+    );
+    expect(await screen.findByPlaceholderText("搜索或选择航空公司，或输入以添加自定义项")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("输入后按 Enter 添加")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("combobox", { name: "类型" }));
+    expect(await screen.findByRole("option", { name: "通用（手动指定竞品）" })).toBeInTheDocument();
+    await user.keyboard("{Escape}");
+
+    await user.click(screen.getByRole("combobox", { name: "策略：竞品对比" }));
+    expect(await screen.findByRole("option", { name: "改写（建议替代方案）" })).toBeInTheDocument();
+
+    expect(screen.queryByText("Competitor Intent Filter")).not.toBeInTheDocument();
+    expect(screen.queryByText("Confidence thresholds")).not.toBeInTheDocument();
+    expect(screen.queryByText("Your Brand (brand_self)")).not.toBeInTheDocument();
+    expect(screen.queryByText("Policy: Competitor comparison")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese generic-type chrome and the disabled explanation", async () => {
+    const user = userEvent.setup({ delay: null });
+    const { unmount } = render(<Harness />);
+
+    await user.click(screen.getByRole("combobox", { name: "类型" }));
+    await user.click(await screen.findByRole("option", { name: "通用（手动指定竞品）" }));
+
+    expect(screen.getByText("竞品")).toBeInTheDocument();
+    expect(screen.getByText("要检测的竞品名称（通用类型必填）")).toBeInTheDocument();
+    expect(screen.getByText("用户用于指代你品牌的名称或代码")).toBeInTheDocument();
+    expect(screen.queryByText("地点（可选）")).not.toBeInTheDocument();
+    expect(screen.queryByText("Competitors")).not.toBeInTheDocument();
+
+    unmount();
+    render(<Harness initialEnabled={false} />);
+    expect(
+      screen.getByText(
+        "阻止或改写竞品对比问题。启用后，航空公司类型会从 IATA 自动加载竞品；通用类型需要手动填写竞品列表。",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        "Block or reframe competitor comparison questions. When enabled, airline type auto-loads competitors from IATA; generic type requires manual competitor list.",
+      ),
+    ).not.toBeInTheDocument();
   });
 });

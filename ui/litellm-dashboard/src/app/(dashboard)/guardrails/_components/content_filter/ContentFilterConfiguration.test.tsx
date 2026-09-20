@@ -1,6 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { renderWithProviders, screen } from "@/../tests/test-utils";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { cleanup, fireEvent, renderWithProviders, screen } from "@/../tests/test-utils";
 import userEvent from "@testing-library/user-event";
+import { validateBlockedWordsFile } from "@/components/networking";
+import i18n from "@/i18n/bootstrapI18n";
+import { toast } from "@/lib/toast";
 import ContentFilterConfiguration from "./ContentFilterConfiguration";
 
 vi.mock("@/components/networking", () => ({
@@ -128,5 +131,113 @@ describe("ContentFilterConfiguration", () => {
 
     expect(screen.getByText("Pattern Detection")).toBeInTheDocument();
     expect(screen.queryByText("Blocked Keywords")).not.toBeInTheDocument();
+  });
+});
+
+describe("ContentFilterConfiguration Chinese copy", () => {
+  const handlers = {
+    onPatternAdd: vi.fn(),
+    onPatternRemove: vi.fn(),
+    onPatternActionChange: vi.fn(),
+    onBlockedWordAdd: vi.fn(),
+    onBlockedWordRemove: vi.fn(),
+    onBlockedWordUpdate: vi.fn(),
+  };
+
+  const renderZhConfig = (overrides = {}) =>
+    renderWithProviders(
+      <ContentFilterConfiguration
+        prebuiltPatterns={PREBUILT}
+        categories={["PII Patterns"]}
+        selectedPatterns={[]}
+        blockedWords={[]}
+        accessToken="test-token"
+        {...handlers}
+        {...overrides}
+      />,
+    );
+
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    await i18n.changeLanguage("zh");
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  it("renders the Chinese configuration chrome and hides the English one", () => {
+    renderZhConfig();
+
+    expect(screen.getByText(/配置匹配模式、关键词和内容类别/)).toBeInTheDocument();
+    expect(screen.getByText("匹配模式检测")).toBeInTheDocument();
+    expect(screen.getByText(/使用正则表达式检测敏感信息/)).toBeInTheDocument();
+    expect(screen.getByText("屏蔽关键词")).toBeInTheDocument();
+    expect(screen.getByText("阻止或屏蔽特定的敏感词和短语")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "添加预置匹配模式" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "添加自定义正则" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "添加关键词" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "上传 YAML 文件" })).toBeInTheDocument();
+
+    expect(screen.queryByText("Pattern Detection")).not.toBeInTheDocument();
+    expect(screen.queryByText("Blocked Keywords")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Add prebuilt pattern/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Upload YAML file/i })).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese modal validation toasts and hides the English ones", async () => {
+    const user = userEvent.setup({ delay: null });
+    renderZhConfig();
+
+    await user.click(screen.getByRole("button", { name: "添加预置匹配模式" }));
+    await user.click(await screen.findByRole("button", { name: "添加" }));
+    expect(toast.error).toHaveBeenCalledWith("请选择一个匹配模式");
+    expect(toast.error).not.toHaveBeenCalledWith("Please select a pattern");
+    await user.click(screen.getByRole("button", { name: "取消" }));
+
+    await user.click(screen.getByRole("button", { name: "添加自定义正则" }));
+    await user.click(await screen.findByRole("button", { name: "添加" }));
+    expect(toast.error).toHaveBeenCalledWith("请提供匹配模式名称和正则表达式");
+    expect(toast.error).not.toHaveBeenCalledWith("Please provide pattern name and regex");
+    await user.click(screen.getByRole("button", { name: "取消" }));
+
+    await user.click(screen.getByRole("button", { name: "添加关键词" }));
+    await user.click(await screen.findByRole("button", { name: "添加" }));
+    expect(toast.error).toHaveBeenCalledWith("请输入关键词");
+    expect(toast.error).not.toHaveBeenCalledWith("Please enter a keyword");
+  });
+
+  /* eslint-disable testing-library/no-container, testing-library/no-node-access -- jsdom cannot open a native file picker, so the hidden file input is reached directly to fire its change event */
+  it("renders the Chinese upload success and failure toasts and hides the English ones", async () => {
+    const mockValidate = vi.mocked(validateBlockedWordsFile);
+    const { container } = renderZhConfig();
+    const input = container.querySelector('input[type="file"]') as HTMLInputElement;
+
+    const upload = async () => {
+      const file = new File(["words"], "words.yaml", { type: "text/yaml" });
+      Object.defineProperty(file, "text", { value: () => Promise.resolve("words") });
+      Object.defineProperty(input, "files", { value: [file], configurable: true });
+      fireEvent.change(input);
+    };
+
+    mockValidate.mockResolvedValue({ valid: true, message: "" });
+    await upload();
+    await vi.waitFor(() => expect(toast.success).toHaveBeenCalledWith("文件上传成功"));
+    expect(toast.success).not.toHaveBeenCalledWith("File uploaded successfully");
+
+    mockValidate.mockResolvedValue({ valid: false });
+    await upload();
+    await vi.waitFor(() => expect(toast.error).toHaveBeenCalledWith("校验失败：文件无效"));
+    expect(toast.error).not.toHaveBeenCalledWith("Validation failed: Invalid file");
+
+    mockValidate.mockResolvedValue({ valid: false, error: "bad words" });
+    await upload();
+    await vi.waitFor(() => expect(toast.error).toHaveBeenCalledWith("校验失败：bad words"));
+
+    mockValidate.mockRejectedValue(new Error("boom"));
+    await upload();
+    await vi.waitFor(() => expect(toast.error).toHaveBeenCalledWith("上传文件失败：Error: boom"));
+    expect(toast.error).not.toHaveBeenCalledWith("Failed to upload file: Error: boom");
   });
 });

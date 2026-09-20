@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
+import type { TFunction } from "i18next";
+import { useTranslation } from "react-i18next";
 import {
   guardrail_provider_map,
   populateGuardrailProviders,
@@ -55,11 +57,6 @@ interface ProviderParamsResponse {
   [provider: string]: { [key: string]: ProviderParam };
 }
 
-const BOOLEAN_ITEMS = [
-  { label: "True", value: true },
-  { label: "False", value: false },
-];
-
 const isSecretKey = (fieldKey: string): boolean =>
   fieldKey.includes("password") || fieldKey.includes("secret") || fieldKey.includes("key");
 
@@ -68,14 +65,14 @@ const isPlainObject = (value: unknown): value is Record<string, unknown> =>
 
 // Object fields hold the raw text while the user types, so submission must be
 // blocked until the value parses to a plain JSON object (or is cleared).
-const jsonObjectRule = (fieldKey: string): GuardrailFieldRules => ({
+const jsonObjectRule = (fieldKey: string, t: TFunction<"guardrails">): GuardrailFieldRules => ({
   validate: (value: unknown) =>
-    value === undefined || isPlainObject(value) ? true : `${fieldKey} must be a valid JSON object`,
+    value === undefined || isPlainObject(value) ? true : t("providerFields.jsonObjectRequired", { field: fieldKey }),
 });
 
 // Commits a parsed object (or undefined for a cleared field) to the form on
 // blur; anything else stays as raw text so jsonObjectRule blocks submission.
-const commitObjectField = (raw: string, onChange: (value: unknown) => void): void => {
+const commitObjectField = (raw: string, onChange: (value: unknown) => void, t: TFunction<"guardrails">): void => {
   const next = raw.trim();
   if (next === "") {
     onChange(undefined);
@@ -90,15 +87,19 @@ const commitObjectField = (raw: string, onChange: (value: unknown) => void): voi
   if (isPlainObject(parsed)) {
     onChange(parsed);
   } else {
-    toast.error("Enter a valid JSON object for this configuration");
+    toast.error(t("providerFields.invalidJson"));
   }
 };
 
-const fieldRules = (field: ProviderParam, fieldKey: string): GuardrailFieldRules | undefined => {
+const fieldRules = (
+  field: ProviderParam,
+  fieldKey: string,
+  t: TFunction<"guardrails">,
+): GuardrailFieldRules | undefined => {
   if (field.type === "object") {
-    return jsonObjectRule(fieldKey);
+    return jsonObjectRule(fieldKey, t);
   }
-  return field.required ? requiredRule(`${fieldKey} is required`) : undefined;
+  return field.required ? requiredRule(t("providerFields.fieldRequired", { field: fieldKey })) : undefined;
 };
 
 interface ProviderFieldInputProps {
@@ -108,6 +109,14 @@ interface ProviderFieldInputProps {
 }
 
 const ProviderFieldInput: React.FC<ProviderFieldInputProps> = ({ descriptor, fieldKey, control }) => {
+  const { t } = useTranslation("guardrails");
+  const booleanItems = useMemo(
+    () => [
+      { label: t("providerFields.booleanTrue"), value: true },
+      { label: t("providerFields.booleanFalse"), value: false },
+    ],
+    [t],
+  );
   const { id, value, onChange, onBlur, ref, name, ...aria } = control;
 
   if (descriptor.type === "select" && descriptor.options) {
@@ -146,7 +155,7 @@ const ProviderFieldInput: React.FC<ProviderFieldInputProps> = ({ descriptor, fie
   if (descriptor.type === "bool" || descriptor.type === "boolean") {
     return (
       <Select
-        items={BOOLEAN_ITEMS}
+        items={booleanItems}
         value={typeof value === "boolean" ? value : null}
         onValueChange={(next: boolean | null) => onChange(next)}
       >
@@ -154,8 +163,8 @@ const ProviderFieldInput: React.FC<ProviderFieldInputProps> = ({ descriptor, fie
           <SelectValue placeholder={descriptor.description} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value={true}>True</SelectItem>
-          <SelectItem value={false}>False</SelectItem>
+          <SelectItem value={true}>{t("providerFields.booleanTrue")}</SelectItem>
+          <SelectItem value={false}>{t("providerFields.booleanFalse")}</SelectItem>
         </SelectContent>
       </Select>
     );
@@ -193,7 +202,7 @@ const ProviderFieldInput: React.FC<ProviderFieldInputProps> = ({ descriptor, fie
         value={objectValue}
         onChange={(event) => onChange(event.target.value)}
         onBlur={(event) => {
-          commitObjectField(event.target.value, onChange);
+          commitObjectField(event.target.value, onChange, t);
           onBlur();
         }}
         {...aria}
@@ -252,6 +261,7 @@ const GuardrailProviderFields: React.FC<GuardrailProviderFieldsProps> = ({
   providerParams: providerParamsProp = null,
   value = null,
 }) => {
+  const { t } = useTranslation("guardrails");
   const [loading, setLoading] = useState(false);
   const [providerParams, setProviderParams] = useState<ProviderParamsResponse | null>(providerParamsProp);
   const [error, setError] = useState<string | null>(null);
@@ -279,7 +289,7 @@ const GuardrailProviderFields: React.FC<GuardrailProviderFieldsProps> = ({
         populateGuardrailProviderMap(data);
       } catch (error) {
         console.error("Error fetching provider params:", error);
-        setError("Failed to load provider parameters");
+        setError(t("providerFields.loadFailed"));
       } finally {
         setLoading(false);
       }
@@ -289,7 +299,7 @@ const GuardrailProviderFields: React.FC<GuardrailProviderFieldsProps> = ({
     if (!providerParamsProp) {
       fetchProviderParams();
     }
-  }, [accessToken, providerParamsProp]);
+  }, [accessToken, providerParamsProp, t]);
 
   // If no provider is selected, don't render anything
   if (!selectedProvider) {
@@ -301,7 +311,7 @@ const GuardrailProviderFields: React.FC<GuardrailProviderFieldsProps> = ({
     return (
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
         <UiLoadingSpinner className="size-4" />
-        Loading provider parameters...
+        {t("providerFields.loading")}
       </div>
     );
   }
@@ -318,7 +328,7 @@ const GuardrailProviderFields: React.FC<GuardrailProviderFieldsProps> = ({
   const providerFields = providerParams && providerParams[providerKey];
 
   if (!providerFields || Object.keys(providerFields).length === 0) {
-    return <div>No configuration fields available for this provider.</div>;
+    return <div>{t("providerFields.noFields")}</div>;
   }
 
   // Fields to skip for content filter provider (handled in dedicated steps)
@@ -376,7 +386,7 @@ const GuardrailProviderFields: React.FC<GuardrailProviderFieldsProps> = ({
           control={control}
           name={fullFieldKey}
           label={labelWithHint(fieldKey, field.description)}
-          rules={fieldRules(field, fieldKey)}
+          rules={fieldRules(field, fieldKey, t)}
           defaultValue={resolvedInitialValue}
         >
           {(fieldControl) => <ProviderFieldInput descriptor={field} fieldKey={fieldKey} control={fieldControl} />}

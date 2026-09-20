@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { MultiSelect } from "@/components/shared/MultiSelect";
 import { PasswordInput } from "@/components/shared/PasswordInput";
 import NumericalInput from "@/components/shared/numerical_input";
@@ -41,11 +42,6 @@ interface DictFieldProps {
   value: unknown;
 }
 
-const BOOLEAN_ITEMS = [
-  { label: "True", value: true },
-  { label: "False", value: false },
-];
-
 const isSecretKey = (fieldKey: string): boolean =>
   fieldKey.includes("password") || fieldKey.includes("secret") || fieldKey.includes("key");
 
@@ -59,11 +55,19 @@ const BooleanSelect: React.FC<{ control: GuardrailFieldControlProps; placeholder
   control,
   placeholder,
 }) => {
+  const { t } = useTranslation("guardrails");
   const { id, value, onChange, "aria-invalid": ariaInvalid, "aria-describedby": ariaDescribedBy } = control;
+  const items = React.useMemo(
+    () => [
+      { label: t("providerFields.booleanTrue"), value: true },
+      { label: t("providerFields.booleanFalse"), value: false },
+    ],
+    [t],
+  );
 
   return (
     <Select
-      items={BOOLEAN_ITEMS}
+      items={items}
       value={typeof value === "boolean" ? value : null}
       onValueChange={(next: boolean | null) => onChange(next)}
     >
@@ -71,14 +75,15 @@ const BooleanSelect: React.FC<{ control: GuardrailFieldControlProps; placeholder
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value={true}>True</SelectItem>
-        <SelectItem value={false}>False</SelectItem>
+        <SelectItem value={true}>{t("providerFields.booleanTrue")}</SelectItem>
+        <SelectItem value={false}>{t("providerFields.booleanFalse")}</SelectItem>
       </SelectContent>
     </Select>
   );
 };
 
 const DictField: React.FC<DictFieldProps> = ({ field, fullFieldKey, control, value }) => {
+  const { t } = useTranslation("guardrails");
   const [selectedEntries, setSelectedEntries] = React.useState<Array<{ key: string; id: string }>>([]);
   const [availableKeys, setAvailableKeys] = React.useState<string[]>(field.dict_key_options || []);
 
@@ -133,7 +138,7 @@ const DictField: React.FC<DictFieldProps> = ({ field, fullFieldKey, control, val
                     id={fieldControl.id}
                     name={fieldControl.name}
                     step={1}
-                    placeholder={`Enter ${entry.key} value`}
+                    placeholder={t("optionalParams.enterValue", { key: entry.key })}
                     value={asText(fieldControl.value)}
                     onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
                       fieldControl.onChange(toNumberValue(event.target.value))
@@ -146,7 +151,12 @@ const DictField: React.FC<DictFieldProps> = ({ field, fullFieldKey, control, val
               }
 
               if (field.dict_value_type === "boolean") {
-                return <BooleanSelect control={fieldControl} placeholder={`Select ${entry.key} value`} />;
+                return (
+                  <BooleanSelect
+                    control={fieldControl}
+                    placeholder={t("optionalParams.selectValue", { key: entry.key })}
+                  />
+                );
               }
 
               return (
@@ -154,7 +164,7 @@ const DictField: React.FC<DictFieldProps> = ({ field, fullFieldKey, control, val
                   id={fieldControl.id}
                   name={fieldControl.name}
                   ref={fieldControl.ref}
-                  placeholder={`Enter ${entry.key} value`}
+                  placeholder={t("optionalParams.enterValue", { key: entry.key })}
                   value={asText(fieldControl.value)}
                   onChange={fieldControl.onChange}
                   onBlur={fieldControl.onBlur}
@@ -170,7 +180,7 @@ const DictField: React.FC<DictFieldProps> = ({ field, fullFieldKey, control, val
             className="text-destructive hover:text-destructive/80"
             onClick={() => removeEntry(entry.id, entry.key)}
           >
-            Remove
+            {t("optionalParams.remove")}
           </Button>
         </div>
       ))}
@@ -184,7 +194,7 @@ const DictField: React.FC<DictFieldProps> = ({ field, fullFieldKey, control, val
             onValueChange={(next: string | null) => next && addEntry(next)}
           >
             <SelectTrigger className="w-50">
-              <SelectValue placeholder="Select category to configure" />
+              <SelectValue placeholder={t("optionalParams.selectCategoryPlaceholder")} />
             </SelectTrigger>
             <SelectContent>
               {availableKeys.map((key) => (
@@ -194,7 +204,7 @@ const DictField: React.FC<DictFieldProps> = ({ field, fullFieldKey, control, val
               ))}
             </SelectContent>
           </Select>
-          <span className="text-sm text-muted-foreground">Select a category to add threshold configuration</span>
+          <span className="text-sm text-muted-foreground">{t("optionalParams.selectCategoryHint")}</span>
         </div>
       )}
     </div>
@@ -297,6 +307,7 @@ const GuardrailOptionalParams: React.FC<GuardrailOptionalParamsProps> = ({
   control,
   values,
 }) => {
+  const { t } = useTranslation("guardrails");
   const renderField = (fieldKey: string, field: ProviderParam) => {
     const fullFieldKey = `${parentFieldKey}.${fieldKey}`;
     const value = values?.[fieldKey];
@@ -318,7 +329,7 @@ const GuardrailOptionalParams: React.FC<GuardrailOptionalParamsProps> = ({
           name={fullFieldKey}
           label={<span className="text-base">{fieldKey}</span>}
           description={field.description}
-          rules={field.required ? requiredRule(`${fieldKey} is required`) : undefined}
+          rules={field.required ? requiredRule(t("providerFields.fieldRequired", { field: fieldKey })) : undefined}
           defaultValue={value !== undefined ? value : field.default_value}
         >
           {(fieldControl) => <OptionalParamInput descriptor={field} fieldKey={fieldKey} control={fieldControl} />}
@@ -334,9 +345,9 @@ const GuardrailOptionalParams: React.FC<GuardrailOptionalParamsProps> = ({
   return (
     <div className="guardrail-optional-params">
       <div className="mb-8 border-b border-border pb-4">
-        <h3 className="mb-2 text-lg font-semibold text-foreground">Optional Parameters</h3>
+        <h3 className="mb-2 text-lg font-semibold text-foreground">{t("optionalParams.title")}</h3>
         <p className="text-sm text-muted-foreground">
-          {optionalParams.description || "Configure additional settings for this guardrail provider"}
+          {optionalParams.description || t("optionalParams.descriptionFallback")}
         </p>
       </div>
 

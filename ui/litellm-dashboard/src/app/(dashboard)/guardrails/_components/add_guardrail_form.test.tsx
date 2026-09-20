@@ -99,10 +99,10 @@ const zhModeDescriptions = [
 const renderZhForm = () => {
   const onSuccess = vi.fn();
   const onClose = vi.fn();
-  renderWithProviders(
+  const view = renderWithProviders(
     <AddGuardrailForm visible onClose={onClose} accessToken="test-token" onSuccess={onSuccess} preset={undefined} />,
   );
-  return { onSuccess, onClose };
+  return { ...view, onSuccess, onClose };
 };
 
 const pickZhProvider = async (user: ReturnType<typeof userEvent.setup>, label: string) => {
@@ -363,9 +363,9 @@ describe("AddGuardrailForm Chinese copy", () => {
     await user.type(await screen.findByLabelText("Guardrail 名称"), "judge-zh");
     await pickZhProvider(user, "LiteLLM LLM as a Judge");
     await user.click(screen.getByText("下一步"));
-    await user.click(await screen.findByLabelText("Judge Model"));
+    await user.click(await screen.findByLabelText("评判模型"));
     await user.click(await screen.findByTitle("gpt-5"));
-    await user.click(screen.getByLabelText("Remove criterion"));
+    await user.click(screen.getByLabelText("移除标准"));
     await user.click(screen.getByRole("button", { name: "创建 Guardrail" }));
 
     await vi.waitFor(() => expect(toast.fromError).toHaveBeenCalledWith("请至少添加一个评判标准"));
@@ -380,12 +380,12 @@ describe("AddGuardrailForm Chinese copy", () => {
     await pickZhProvider(user, "LiteLLM LLM as a Judge");
     await user.click(screen.getByText("下一步"));
 
-    await user.type(await screen.findByPlaceholderText("Criterion name (e.g. Policy accuracy)"), "Accuracy");
-    await user.type(screen.getByPlaceholderText("What should the judge check for this criterion?"), "Is it right");
+    await user.type(await screen.findByPlaceholderText("标准名称（例如 Policy accuracy）"), "Accuracy");
+    await user.type(screen.getByPlaceholderText("评判模型应针对此标准检查什么？"), "Is it right");
     const weight = screen.getByPlaceholderText("e.g. 50");
     await user.clear(weight);
     await user.type(weight, "60");
-    await user.click(screen.getByLabelText("Judge Model"));
+    await user.click(screen.getByLabelText("评判模型"));
     await user.click(await screen.findByTitle("gpt-5"));
     await user.click(screen.getByRole("button", { name: "创建 Guardrail" }));
 
@@ -426,5 +426,81 @@ describe("AddGuardrailForm Chinese copy", () => {
 
     await vi.waitFor(() => expect(toast.fromError).toHaveBeenCalledWith("加载 Guardrail 配置失败"));
     expect(toast.fromError).not.toHaveBeenCalledWith("Failed to load guardrail configuration");
+  });
+});
+
+describe("AddGuardrailForm fully Chinese configuration editors", () => {
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    await i18n.changeLanguage("zh");
+    vi.mocked(networking.getGuardrailUISettings).mockResolvedValue(zhUiSettings);
+    vi.mocked(networking.modelAvailableCall).mockResolvedValue({ data: [{ id: "gpt-5" }] });
+    vi.mocked(networking.createGuardrailCall).mockResolvedValue({ guardrail_id: "new" });
+    vi.mocked(networking.getGuardrailProviderSpecificParams).mockResolvedValue({
+      ...zhProviderParams,
+      bedrock: {
+        ui_friendly_name: "Bedrock Guardrail",
+        guardrailIdentifier: { description: "The guardrail id on Bedrock", required: true, type: null },
+        optional_params: {
+          description: "",
+          required: false,
+          type: "nested",
+          fields: { severity_threshold: { description: "Severity threshold", required: false, type: "number" } },
+        },
+      },
+    });
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  it("shows no English editor chrome at step 1 for a PII, an LLM-judge and a plain provider", async () => {
+    const user = userEvent.setup({ delay: null });
+
+    const { unmount } = renderZhForm();
+    await user.type(await screen.findByLabelText("Guardrail 名称"), "my-pii");
+    await pickZhProvider(user, "Presidio PII");
+    await user.click(screen.getByText("下一步"));
+
+    expect(await screen.findByText("配置 PII 保护")).toBeInTheDocument();
+    expect(screen.getByText("已选择 0 项")).toBeInTheDocument();
+    expect(screen.getByText("按类别筛选")).toBeInTheDocument();
+    expect(screen.getByText("快捷操作")).toBeInTheDocument();
+    expect(screen.getByText("PII 类型")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "全选并屏蔽" })).toBeInTheDocument();
+    expect(screen.queryByText("Configure PII Protection")).not.toBeInTheDocument();
+    expect(screen.queryByText("Quick Actions")).not.toBeInTheDocument();
+    expect(screen.queryByText("PII Type")).not.toBeInTheDocument();
+    expect(screen.queryByText("Select All & Mask")).not.toBeInTheDocument();
+
+    unmount();
+
+    renderZhForm();
+    await user.type(await screen.findByLabelText("Guardrail 名称"), "my-judge");
+    await pickZhProvider(user, "LiteLLM LLM as a Judge");
+    await user.click(screen.getByText("下一步"));
+
+    expect(await screen.findByLabelText("评判模型")).toBeInTheDocument();
+    expect(screen.getByText("通过的最低分数")).toBeInTheDocument();
+    expect(screen.getByText("失败时")).toBeInTheDocument();
+    expect(screen.getByText("评判标准")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "添加标准" })).toBeInTheDocument();
+    expect(screen.queryByText("Judge Model")).not.toBeInTheDocument();
+    expect(screen.queryByText("Minimum Score to Pass")).not.toBeInTheDocument();
+    expect(screen.queryByText("Evaluation Criteria")).not.toBeInTheDocument();
+
+    unmount();
+
+    renderZhForm();
+    await user.type(await screen.findByLabelText("Guardrail 名称"), "my-bedrock");
+    await pickZhProvider(user, "Bedrock Guardrail");
+    await user.click(screen.getByText("下一步"));
+
+    expect(await screen.findByText("可选参数")).toBeInTheDocument();
+    expect(screen.queryByText("Optional Parameters")).not.toBeInTheDocument();
+    expect(screen.queryByText("No configuration fields available for this provider.")).not.toBeInTheDocument();
+    expect(screen.queryByText("Loading provider parameters...")).not.toBeInTheDocument();
   });
 });

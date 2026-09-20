@@ -1,4 +1,6 @@
-import React, { useEffect, useId, useState } from "react";
+import React, { useEffect, useId, useMemo, useState } from "react";
+import type { ParseKeys } from "i18next";
+import { useTranslation } from "react-i18next";
 
 import { getMajorAirlines } from "@/components/networking";
 import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field";
@@ -49,26 +51,41 @@ const DEFAULT_CONFIG: CompetitorIntentConfig = {
   threshold_low: 0.3,
 };
 
-const INTENT_TYPES = [
-  { value: "airline", label: "Airline (auto-load competitors from IATA)" },
-  { value: "generic", label: "Generic (specify competitors manually)" },
-] as const;
+const INTENT_TYPE_KEYS = [
+  { value: "airline", labelKey: "contentFilter.competitorIntent.intentAirline" },
+  { value: "generic", labelKey: "contentFilter.competitorIntent.intentGeneric" },
+] as const satisfies ReadonlyArray<{ value: "airline" | "generic"; labelKey: ParseKeys<"guardrails"> }>;
 
-const COMPETITOR_COMPARISON_POLICIES = [
-  { value: "refuse", label: "Refuse (block request)" },
-  { value: "reframe", label: "Reframe (suggest alternative)" },
-] as const;
+const COMPETITOR_COMPARISON_POLICY_KEYS = [
+  { value: "refuse", labelKey: "contentFilter.competitorIntent.policyRefuse" },
+  { value: "reframe", labelKey: "contentFilter.competitorIntent.policyReframe" },
+] as const satisfies ReadonlyArray<{ value: "refuse" | "reframe"; labelKey: ParseKeys<"guardrails"> }>;
 
-const POSSIBLE_COMPETITOR_COMPARISON_POLICIES = [
-  { value: "refuse", label: "Refuse (block request)" },
-  { value: "reframe", label: "Reframe (suggest alternative to backend LLM)" },
-] as const;
+const POSSIBLE_COMPETITOR_COMPARISON_POLICY_KEYS = [
+  { value: "refuse", labelKey: "contentFilter.competitorIntent.policyRefuse" },
+  { value: "reframe", labelKey: "contentFilter.competitorIntent.policyReframeBackend" },
+] as const satisfies ReadonlyArray<{ value: "refuse" | "reframe"; labelKey: ParseKeys<"guardrails"> }>;
 
 const THRESHOLDS = [
-  { field: "threshold_high", label: "High", hint: "e.g. 0.7", fallback: 0.7 },
-  { field: "threshold_medium", label: "Medium", hint: "e.g. 0.45", fallback: 0.45 },
-  { field: "threshold_low", label: "Low", hint: "e.g. 0.3", fallback: 0.3 },
-] as const;
+  {
+    field: "threshold_high",
+    labelKey: "contentFilter.competitorIntent.thresholdHigh",
+    hint: "e.g. 0.7",
+    fallback: 0.7,
+  },
+  {
+    field: "threshold_medium",
+    labelKey: "contentFilter.competitorIntent.thresholdMedium",
+    hint: "e.g. 0.45",
+    fallback: 0.45,
+  },
+  { field: "threshold_low", labelKey: "contentFilter.competitorIntent.thresholdLow", hint: "e.g. 0.3", fallback: 0.3 },
+] as const satisfies ReadonlyArray<{
+  field: "threshold_high" | "threshold_medium" | "threshold_low";
+  labelKey: ParseKeys<"guardrails">;
+  hint: string;
+  fallback: number;
+}>;
 
 const CompetitorIntentConfiguration: React.FC<CompetitorIntentConfigurationProps> = ({
   enabled,
@@ -76,6 +93,20 @@ const CompetitorIntentConfiguration: React.FC<CompetitorIntentConfigurationProps
   onChange,
   accessToken,
 }) => {
+  const { t } = useTranslation("guardrails");
+  const intentTypes = useMemo(
+    () => INTENT_TYPE_KEYS.map((option) => ({ value: option.value, label: t(option.labelKey) })),
+    [t],
+  );
+  const comparisonPolicies = useMemo(
+    () => COMPETITOR_COMPARISON_POLICY_KEYS.map((option) => ({ value: option.value, label: t(option.labelKey) })),
+    [t],
+  );
+  const possibleComparisonPolicies = useMemo(
+    () =>
+      POSSIBLE_COMPETITOR_COMPARISON_POLICY_KEYS.map((option) => ({ value: option.value, label: t(option.labelKey) })),
+    [t],
+  );
   const effectiveConfig = config ?? DEFAULT_CONFIG;
   const [airlineOptions, setAirlineOptions] = useState<MajorAirline[]>([]);
   const [loadingAirlines, setLoadingAirlines] = useState(false);
@@ -139,7 +170,7 @@ const CompetitorIntentConfiguration: React.FC<CompetitorIntentConfigurationProps
 
   const header = (
     <CardHeader className="gap-0">
-      <CardTitle className="text-base">Competitor Intent Filter</CardTitle>
+      <CardTitle className="text-base">{t("contentFilter.competitorIntent.title")}</CardTitle>
       <CardAction>
         <Switch checked={enabled} onCheckedChange={handleEnabledChange} />
       </CardAction>
@@ -151,10 +182,7 @@ const CompetitorIntentConfiguration: React.FC<CompetitorIntentConfigurationProps
       <Card>
         {header}
         <CardContent>
-          <p className="text-sm text-muted-foreground">
-            Block or reframe competitor comparison questions. When enabled, airline type auto-loads competitors from
-            IATA; generic type requires manual competitor list.
-          </p>
+          <p className="text-sm text-muted-foreground">{t("contentFilter.competitorIntent.offDescription")}</p>
         </CardContent>
       </Card>
     );
@@ -179,15 +207,12 @@ const CompetitorIntentConfiguration: React.FC<CompetitorIntentConfigurationProps
     <Card>
       {header}
       <CardContent>
-        <p className="mb-4 text-sm text-muted-foreground">
-          Block or reframe competitor comparison questions. Airline type uses major airlines (excluding your brand);
-          generic requires manual competitor list.
-        </p>
+        <p className="mb-4 text-sm text-muted-foreground">{t("contentFilter.competitorIntent.onDescription")}</p>
         <FieldGroup>
           <Field>
-            <FieldLabel htmlFor={`${fieldId}-type`}>Type</FieldLabel>
+            <FieldLabel htmlFor={`${fieldId}-type`}>{t("contentFilter.competitorIntent.type")}</FieldLabel>
             <Select
-              items={INTENT_TYPES}
+              items={intentTypes}
               value={effectiveConfig.competitor_intent_type}
               onValueChange={(v: string | null) => v !== null && handleConfigChange("competitor_intent_type", v)}
             >
@@ -195,7 +220,7 @@ const CompetitorIntentConfiguration: React.FC<CompetitorIntentConfigurationProps
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {INTENT_TYPES.map((type) => (
+                {intentTypes.map((type) => (
                   <SelectItem key={type.value} value={type.value} title={type.label}>
                     {type.label}
                   </SelectItem>
@@ -205,7 +230,7 @@ const CompetitorIntentConfiguration: React.FC<CompetitorIntentConfigurationProps
           </Field>
 
           <Field>
-            <FieldLabel htmlFor={`${fieldId}-brand-self`}>Your Brand (brand_self)</FieldLabel>
+            <FieldLabel htmlFor={`${fieldId}-brand-self`}>{t("contentFilter.competitorIntent.brandSelf")}</FieldLabel>
             <TagsInput
               id={`${fieldId}-brand-self`}
               value={effectiveConfig.brand_self}
@@ -219,49 +244,53 @@ const CompetitorIntentConfiguration: React.FC<CompetitorIntentConfigurationProps
               loading={loadingAirlines}
               placeholder={
                 effectiveConfig.competitor_intent_type === "airline"
-                  ? "Search or select airline, or type to add custom"
-                  : "Type and press Enter to add"
+                  ? t("contentFilter.competitorIntent.brandSelfAirlinePlaceholder")
+                  : t("contentFilter.competitorIntent.typeToAdd")
               }
             />
             <FieldDescription>
               {effectiveConfig.competitor_intent_type === "airline"
-                ? "Select your airline from the list (excluded from competitors) or type to add a custom term"
-                : "Names/codes users use for your brand"}
+                ? t("contentFilter.competitorIntent.brandSelfAirlineHint")
+                : t("contentFilter.competitorIntent.brandSelfGenericHint")}
             </FieldDescription>
           </Field>
 
           {effectiveConfig.competitor_intent_type === "airline" && (
             <Field>
-              <FieldLabel htmlFor={`${fieldId}-locations`}>Locations (optional)</FieldLabel>
+              <FieldLabel htmlFor={`${fieldId}-locations`}>{t("contentFilter.competitorIntent.locations")}</FieldLabel>
               <TagsInput
                 id={`${fieldId}-locations`}
                 value={effectiveConfig.locations ?? []}
                 onValueChange={(v) => handleNestedArrayChange("locations", v)}
                 tokenSeparators={[","]}
-                placeholder="Type and press Enter to add"
+                placeholder={t("contentFilter.competitorIntent.typeToAdd")}
               />
-              <FieldDescription>Countries, cities, airports for disambiguation (e.g. qatar, doha)</FieldDescription>
+              <FieldDescription>{t("contentFilter.competitorIntent.locationsHint")}</FieldDescription>
             </Field>
           )}
 
           {effectiveConfig.competitor_intent_type === "generic" && (
             <Field>
-              <FieldLabel htmlFor={`${fieldId}-competitors`}>Competitors</FieldLabel>
+              <FieldLabel htmlFor={`${fieldId}-competitors`}>
+                {t("contentFilter.competitorIntent.competitors")}
+              </FieldLabel>
               <TagsInput
                 id={`${fieldId}-competitors`}
                 value={effectiveConfig.competitors ?? []}
                 onValueChange={(v) => handleNestedArrayChange("competitors", v)}
                 tokenSeparators={[","]}
-                placeholder="Type and press Enter to add"
+                placeholder={t("contentFilter.competitorIntent.typeToAdd")}
               />
-              <FieldDescription>Competitor names to detect (required for generic type)</FieldDescription>
+              <FieldDescription>{t("contentFilter.competitorIntent.competitorsHint")}</FieldDescription>
             </Field>
           )}
 
           <Field>
-            <FieldLabel htmlFor={`${fieldId}-competitor-comparison`}>Policy: Competitor comparison</FieldLabel>
+            <FieldLabel htmlFor={`${fieldId}-competitor-comparison`}>
+              {t("contentFilter.competitorIntent.policyComparison")}
+            </FieldLabel>
             <Select
-              items={COMPETITOR_COMPARISON_POLICIES}
+              items={comparisonPolicies}
               value={effectiveConfig.policy?.competitor_comparison ?? "refuse"}
               onValueChange={(v: string | null) => v !== null && handlePolicyChange("competitor_comparison", v)}
             >
@@ -269,7 +298,7 @@ const CompetitorIntentConfiguration: React.FC<CompetitorIntentConfigurationProps
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {COMPETITOR_COMPARISON_POLICIES.map((policy) => (
+                {comparisonPolicies.map((policy) => (
                   <SelectItem key={policy.value} value={policy.value} title={policy.label}>
                     {policy.label}
                   </SelectItem>
@@ -280,10 +309,10 @@ const CompetitorIntentConfiguration: React.FC<CompetitorIntentConfigurationProps
 
           <Field>
             <FieldLabel htmlFor={`${fieldId}-possible-competitor-comparison`}>
-              Policy: Possible competitor comparison
+              {t("contentFilter.competitorIntent.policyPossible")}
             </FieldLabel>
             <Select
-              items={POSSIBLE_COMPETITOR_COMPARISON_POLICIES}
+              items={possibleComparisonPolicies}
               value={effectiveConfig.policy?.possible_competitor_comparison ?? "reframe"}
               onValueChange={(v: string | null) =>
                 v !== null && handlePolicyChange("possible_competitor_comparison", v)
@@ -293,7 +322,7 @@ const CompetitorIntentConfiguration: React.FC<CompetitorIntentConfigurationProps
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {POSSIBLE_COMPETITOR_COMPARISON_POLICIES.map((policy) => (
+                {possibleComparisonPolicies.map((policy) => (
                   <SelectItem key={policy.value} value={policy.value} title={policy.label}>
                     {policy.label}
                   </SelectItem>
@@ -303,11 +332,11 @@ const CompetitorIntentConfiguration: React.FC<CompetitorIntentConfigurationProps
           </Field>
 
           <Field>
-            <FieldLabel>Confidence thresholds</FieldLabel>
+            <FieldLabel>{t("contentFilter.competitorIntent.thresholds")}</FieldLabel>
             <div className="flex flex-wrap gap-4">
               {THRESHOLDS.map((threshold) => (
                 <Field key={threshold.field} className="w-20">
-                  <FieldLabel htmlFor={`${fieldId}-${threshold.field}`}>{threshold.label}</FieldLabel>
+                  <FieldLabel htmlFor={`${fieldId}-${threshold.field}`}>{t(threshold.labelKey)}</FieldLabel>
                   <ThresholdInput
                     id={`${fieldId}-${threshold.field}`}
                     value={effectiveConfig[threshold.field] ?? threshold.fallback}
@@ -321,21 +350,22 @@ const CompetitorIntentConfiguration: React.FC<CompetitorIntentConfigurationProps
               ))}
             </div>
             <FieldDescription>
-              Classify competitor intent by confidence (0–1). Higher confidence -&gt; stronger intent.
+              {t("contentFilter.competitorIntent.thresholdsIntro")}
               <ul className="mt-1 mb-0 list-disc pl-5">
                 <li>
-                  <strong>High (≥)</strong>: Treat as full competitor comparison -&gt; uses &quot;Competitor
-                  comparison&quot; policy
+                  <strong>{t("contentFilter.competitorIntent.highLabel")}</strong>
+                  {t("contentFilter.competitorIntent.highHint")}
                 </li>
                 <li>
-                  <strong>Medium (≥)</strong>: Treat as possible comparison -&gt; uses &quot;Possible competitor
-                  comparison&quot; policy
+                  <strong>{t("contentFilter.competitorIntent.mediumLabel")}</strong>
+                  {t("contentFilter.competitorIntent.mediumHint")}
                 </li>
                 <li>
-                  <strong>Low (≥)</strong>: Log only; allow request. Below Low -&gt; allow with no action
+                  <strong>{t("contentFilter.competitorIntent.lowLabel")}</strong>
+                  {t("contentFilter.competitorIntent.lowHint")}
                 </li>
               </ul>
-              Raise thresholds to be more permissive; lower them to be stricter.
+              {t("contentFilter.competitorIntent.thresholdsFooter")}
             </FieldDescription>
           </Field>
         </FieldGroup>
