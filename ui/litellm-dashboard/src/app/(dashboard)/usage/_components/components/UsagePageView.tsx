@@ -9,6 +9,7 @@
 import { ChevronDown, ChevronRight, Download, Info, Sparkles, X } from "lucide-react";
 import type { DateRangePickerValue } from "@/components/shared/date_picker_types";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Trans, useTranslation } from "react-i18next";
 
 import { BarChart } from "@/components/shared/charts";
 import { Alert, AlertAction, AlertDescription, AlertTitle } from "@/components/shared/Alert";
@@ -72,6 +73,7 @@ interface UsagePageProps {
 }
 
 const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
+  const { t } = useTranslation("usage");
   const { accessToken, userRole, userId: userID, premiumUser } = useAuthorized();
   // Aggregated endpoint: try first, fall back to paginated if unavailable
   const [aggregatedData, setAggregatedData] = useState<FetchedForRange<{
@@ -497,7 +499,7 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
             <>
               {isAdmin && usageView === "global" && (
                 <div className="mb-4">
-                  <p className="mb-2 text-sm text-foreground">Filter by user</p>
+                  <p className="mb-2 text-sm text-foreground">{t("view.filterByUser")}</p>
                   <UserDropdown value={selectedUserId} onChange={setSelectedUserId} />
                 </div>
               )}
@@ -505,29 +507,29 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                 <div className="flex justify-between items-center">
                   <TabsList className="mt-1">
                     <TabsTrigger value="cost" className="flex-none px-3">
-                      Cost
+                      {t("view.tabs.cost")}
                     </TabsTrigger>
                     <TabsTrigger value="models" className="flex-none px-3">
-                      Model Activity
+                      {t("view.tabs.modelActivity")}
                     </TabsTrigger>
                     <TabsTrigger value="keys" className="flex-none px-3">
-                      Key Activity
+                      {t("view.tabs.keyActivity")}
                     </TabsTrigger>
                     <TabsTrigger value="mcp" className="flex-none px-3">
-                      MCP Server Activity
+                      {t("view.tabs.mcpServerActivity")}
                     </TabsTrigger>
                     <TabsTrigger value="endpoints" className="flex-none px-3">
-                      Endpoint Activity
+                      {t("view.tabs.endpointActivity")}
                     </TabsTrigger>
                   </TabsList>
                   <div className="flex items-center gap-2">
                     <Button variant="outline" onClick={() => setIsAiChatOpen(true)}>
                       <Sparkles />
-                      Ask AI
+                      {t("view.ai.title")}
                     </Button>
                     <Button variant="outline" onClick={() => setIsGlobalExportModalOpen(true)}>
                       <Download />
-                      Export Data
+                      {t("view.exportData")}
                     </Button>
                   </div>
                 </div>
@@ -538,7 +540,7 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                     <div className="col-span-2">
                       <div className="flex items-center gap-4 mt-2 mb-2">
                         <p className="text-lg text-muted-foreground">
-                          Project Spend{" "}
+                          {t("view.projectSpend")}{" "}
                           {dateValue.from && dateValue.to && (
                             <>
                               {dateValue.from.toLocaleDateString("en-US", {
@@ -568,11 +570,13 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                     <div className="col-span-2">
                       <ShadcnCard>
                         <CardContent>
-                          <h3 className="text-lg font-medium text-foreground">Usage Metrics</h3>
+                          <h3 className="text-lg font-medium text-foreground">{t("view.usageMetrics")}</h3>
                           <div className="grid grid-cols-5 gap-4 mt-4">
                             <ShadcnCard>
                               <CardContent>
-                                <h3 className="text-lg font-medium text-foreground">Total Requests</h3>
+                                <h3 className="text-lg font-medium text-foreground">
+                                  {t("view.metric.totalRequests")}
+                                </h3>
                                 <p className="text-2xl font-bold mt-2">
                                   {(gatewayActivity
                                     ? gatewayActivity.total_successful_requests + gatewayActivity.total_failed_requests
@@ -584,16 +588,15 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                             <ShadcnCard>
                               <CardContent>
                                 <div className="flex items-center gap-2">
-                                  <h3 className="text-lg font-medium text-foreground">Successful Requests</h3>
+                                  <h3 className="text-lg font-medium text-foreground">
+                                    {t("view.metric.successfulRequests")}
+                                  </h3>
                                   {gatewayActivity && (
                                     <Tooltip>
                                       <TooltipTrigger
                                         render={<Info className="size-4 text-muted-foreground hover:text-foreground" />}
                                       />
-                                      <TooltipContent>
-                                        Counted by the gateway when it answers a request, independent of spend logging.
-                                        Deployment-wide, so it will not match the per-key or per-model breakdowns below.
-                                      </TooltipContent>
+                                      <TooltipContent>{t("view.tooltip.gatewayCounted")}</TooltipContent>
                                     </Tooltip>
                                   )}
                                 </div>
@@ -614,15 +617,17 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                             <ShadcnCard>
                               <CardContent>
                                 <div className="flex items-center gap-2">
-                                  <h3 className="text-lg font-medium text-foreground">Failed Requests</h3>
+                                  <h3 className="text-lg font-medium text-foreground">
+                                    {t("view.metric.failedRequests")}
+                                  </h3>
                                   <Tooltip>
                                     <TooltipTrigger
                                       render={<Info className="size-4 text-muted-foreground hover:text-foreground" />}
                                     />
                                     <TooltipContent>
                                       {gatewayActivity
-                                        ? "Counted by the gateway when it answers a request, independent of spend logging. Deployment-wide, so it will not match the per-key or per-model breakdowns below."
-                                        : "Includes requests that failed to route to a provider, tool usage failures, and other request errors where the provider cannot be determined."}
+                                        ? t("view.tooltip.gatewayCounted")
+                                        : t("view.tooltip.failedRequests")}
                                     </TooltipContent>
                                   </Tooltip>
                                 </div>
@@ -638,7 +643,9 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                             </ShadcnCard>
                             <ShadcnCard>
                               <CardContent>
-                                <h3 className="text-lg font-medium text-foreground">Average Cost per Request</h3>
+                                <h3 className="text-lg font-medium text-foreground">
+                                  {t("view.metric.averageCostPerRequest")}
+                                </h3>
                                 <p className="text-2xl font-bold mt-2">
                                   $
                                   {formatNumberWithCommas(
@@ -654,7 +661,9 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                             >
                               <CardContent>
                                 <div className="flex items-center gap-2">
-                                  <h3 className="text-lg font-medium text-foreground">Total Tokens</h3>
+                                  <h3 className="text-lg font-medium text-foreground">
+                                    {t("view.metric.totalTokens")}
+                                  </h3>
                                   {showTokenBreakdown ? (
                                     <ChevronDown className="size-3 text-muted-foreground" />
                                   ) : (
@@ -671,7 +680,9 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                             <div className="grid grid-cols-4 gap-4 mt-4">
                               <ShadcnCard>
                                 <CardContent>
-                                  <h3 className="text-lg font-medium text-foreground">Input Tokens</h3>
+                                  <h3 className="text-lg font-medium text-foreground">
+                                    {t("view.metric.inputTokens")}
+                                  </h3>
                                   <p className="text-2xl font-bold mt-2 text-info">
                                     {(userSpendData.metadata?.total_prompt_tokens || 0).toLocaleString()}
                                   </p>
@@ -679,7 +690,9 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                               </ShadcnCard>
                               <ShadcnCard>
                                 <CardContent>
-                                  <h3 className="text-lg font-medium text-foreground">Output Tokens</h3>
+                                  <h3 className="text-lg font-medium text-foreground">
+                                    {t("view.metric.outputTokens")}
+                                  </h3>
                                   <p className="text-2xl font-bold mt-2 text-info">
                                     {userSpendData.metadata?.total_completion_tokens?.toLocaleString() || 0}
                                   </p>
@@ -687,7 +700,9 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                               </ShadcnCard>
                               <ShadcnCard>
                                 <CardContent>
-                                  <h3 className="text-lg font-medium text-foreground">Cache Read Tokens</h3>
+                                  <h3 className="text-lg font-medium text-foreground">
+                                    {t("view.metric.cacheReadTokens")}
+                                  </h3>
                                   <p className="text-2xl font-bold mt-2 text-success">
                                     {userSpendData.metadata?.total_cache_read_input_tokens?.toLocaleString() || 0}
                                   </p>
@@ -695,7 +710,9 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                               </ShadcnCard>
                               <ShadcnCard>
                                 <CardContent>
-                                  <h3 className="text-lg font-medium text-foreground">Cache Write Tokens</h3>
+                                  <h3 className="text-lg font-medium text-foreground">
+                                    {t("view.metric.cacheWriteTokens")}
+                                  </h3>
                                   <p className="text-2xl font-bold mt-2 text-purple-600">
                                     {userSpendData.metadata?.total_cache_creation_input_tokens?.toLocaleString() || 0}
                                   </p>
@@ -711,7 +728,7 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                     <div className="col-span-2">
                       <ShadcnCard>
                         <CardHeader>
-                          <CardTitle className="text-base font-semibold">Daily Spend</CardTitle>
+                          <CardTitle className="text-base font-semibold">{t("view.chart.dailySpend")}</CardTitle>
                         </CardHeader>
                         <CardContent>
                           {loading ? (
@@ -731,13 +748,23 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                                 return (
                                   <div className="bg-card p-4 shadow-lg rounded-lg border">
                                     <p className="font-bold">{data.date}</p>
-                                    <p className="text-info">Spend: ${formatNumberWithCommas(data.metrics.spend, 2)}</p>
-                                    <p className="text-muted-foreground">Requests: {data.metrics.api_requests}</p>
-                                    <p className="text-muted-foreground">
-                                      Successful: {data.metrics.successful_requests}
+                                    <p className="text-info">
+                                      {t("view.tooltip.spend", {
+                                        value: formatNumberWithCommas(data.metrics.spend, 2),
+                                      })}
                                     </p>
-                                    <p className="text-muted-foreground">Failed: {data.metrics.failed_requests}</p>
-                                    <p className="text-muted-foreground">Tokens: {data.metrics.total_tokens}</p>
+                                    <p className="text-muted-foreground">
+                                      {t("view.tooltip.requests", { value: data.metrics.api_requests })}
+                                    </p>
+                                    <p className="text-muted-foreground">
+                                      {t("view.tooltip.successful", { value: data.metrics.successful_requests })}
+                                    </p>
+                                    <p className="text-muted-foreground">
+                                      {t("view.tooltip.failed", { value: data.metrics.failed_requests })}
+                                    </p>
+                                    <p className="text-muted-foreground">
+                                      {t("view.tooltip.tokens", { value: data.metrics.total_tokens })}
+                                    </p>
                                   </div>
                                 );
                               }}
@@ -752,17 +779,14 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                         <ShadcnCard data-testid="gateway-requests-by-endpoint">
                           <CardHeader>
                             <CardTitle className="text-base font-semibold">
-                              Gateway Requests by Endpoint
+                              {t("view.chart.gatewayByEndpoint")}
                               <Tooltip>
                                 <TooltipTrigger
                                   render={
                                     <Info className="ml-2 inline size-4 text-muted-foreground hover:text-foreground" />
                                   }
                                 />
-                                <TooltipContent>
-                                  Counted by the gateway middleware as each request is answered. Covers LLM, MCP and A2A
-                                  endpoints across the whole deployment.
-                                </TooltipContent>
+                                <TooltipContent>{t("view.tooltip.gatewayByEndpoint")}</TooltipContent>
                               </Tooltip>
                             </CardTitle>
                           </CardHeader>
@@ -784,7 +808,7 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                     <div>
                       <ShadcnCard className="h-full">
                         <CardContent>
-                          <h3 className="text-lg font-medium text-foreground">Top Virtual Keys</h3>
+                          <h3 className="text-lg font-medium text-foreground">{t("view.topVirtualKeys")}</h3>
                           <TopKeyView
                             topKeys={topKeys}
                             teams={null}
@@ -800,7 +824,7 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                       <ShadcnCard className="h-full">
                         <CardContent>
                           <h3 className="text-lg font-medium text-foreground">
-                            {modelViewType === "groups" ? "Top Public Model Names" : "Top Litellm Models"}
+                            {modelViewType === "groups" ? t("view.topPublicModelNames") : t("view.topLitellmModels")}
                           </h3>
                           <div className="flex justify-between items-center mb-4">
                             <Tabs
@@ -841,18 +865,28 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
                                       return (
                                         <div className="bg-card p-4 shadow-lg rounded-lg border">
                                           <p className="font-bold">{data.key}</p>
-                                          <p className="text-info">Spend: ${formatNumberWithCommas(data.spend, 2)}</p>
+                                          <p className="text-info">
+                                            {t("view.tooltip.spend", {
+                                              value: formatNumberWithCommas(data.spend, 2),
+                                            })}
+                                          </p>
                                           <p className="text-muted-foreground">
-                                            Total Requests: {data.requests.toLocaleString()}
+                                            {t("view.tooltip.totalRequests", {
+                                              value: data.requests.toLocaleString(),
+                                            })}
                                           </p>
                                           <p className="text-success">
-                                            Successful: {data.successful_requests.toLocaleString()}
+                                            {t("view.tooltip.successful", {
+                                              value: data.successful_requests.toLocaleString(),
+                                            })}
                                           </p>
                                           <p className="text-destructive">
-                                            Failed: {data.failed_requests.toLocaleString()}
+                                            {t("view.tooltip.failed", {
+                                              value: data.failed_requests.toLocaleString(),
+                                            })}
                                           </p>
                                           <p className="text-muted-foreground">
-                                            Tokens: {data.tokens.toLocaleString()}
+                                            {t("view.tooltip.tokens", { value: data.tokens.toLocaleString() })}
                                           </p>
                                         </div>
                                       );
@@ -958,17 +992,19 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
             <>
               {showCredentialBanner && (
                 <Alert variant="info" className="mb-5">
-                  <AlertTitle>Reusable credentials are automatically tracked as tags</AlertTitle>
+                  <AlertTitle>{t("view.tagBanner.title")}</AlertTitle>
                   <AlertDescription className="text-inherit">
-                    When a reusable credential is used, it will appear as a tag prefixed with{" "}
-                    <code className="rounded bg-black/5 px-1 py-0.5 font-mono text-xs">Credential: </code>
-                    in this view.
+                    <Trans
+                      ns="usage"
+                      i18nKey="view.tagBanner.body"
+                      components={{ code: <code className="rounded bg-black/5 px-1 py-0.5 font-mono text-xs" /> }}
+                    />
                   </AlertDescription>
                   <AlertAction>
                     <Button
                       variant="ghost"
                       size="icon-xs"
-                      aria-label="Close"
+                      aria-label={t("view.tagBanner.close")}
                       onClick={() => setShowCredentialBanner(false)}
                     >
                       <X />
@@ -1037,7 +1073,7 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations }) => {
         }}
         dateRange={dateValue}
         selectedFilters={[]}
-        customTitle="Export Usage Data"
+        customTitle={t("view.exportModalTitle")}
       />
 
       {/* AI Chat Panel */}

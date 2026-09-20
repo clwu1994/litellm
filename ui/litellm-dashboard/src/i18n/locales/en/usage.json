@@ -1,0 +1,254 @@
+{
+  "view": {
+    "title": "Usage View",
+    "description": "Select the usage data you want to view",
+    "options": {
+      "global": {
+        "label": "Global Usage",
+        "labelNonAdmin": "Your Usage",
+        "description": "View usage across all resources",
+        "descriptionNonAdmin": "View your usage"
+      },
+      "myUsage": {
+        "label": "Your Usage",
+        "description": "View your own usage"
+      },
+      "organization": {
+        "label": "Organization Usage",
+        "description": "View usage across all organizations"
+      },
+      "team": {
+        "label": "Team Usage",
+        "description": "View usage by team"
+      },
+      "customer": {
+        "label": "Customer Usage",
+        "description": "View usage by customer accounts"
+      },
+      "tag": {
+        "label": "Tag Usage",
+        "description": "View usage grouped by tags"
+      },
+      "agent": {
+        "label": "Agent Usage (A2A)",
+        "description": "View usage by AI agents"
+      },
+      "user": {
+        "label": "User Usage",
+        "description": "View usage by individual users"
+      },
+      "userAgentActivity": {
+        "label": "User Agent Activity",
+        "description": "View detailed user agent activity logs"
+      }
+    },
+    "filterByUser": "Filter by user",
+    "tabs": {
+      "cost": "Cost",
+      "modelActivity": "Model Activity",
+      "keyActivity": "Key Activity",
+      "mcpServerActivity": "MCP Server Activity",
+      "endpointActivity": "Endpoint Activity"
+    },
+    "exportData": "Export Data",
+    "exportModalTitle": "Export Usage Data",
+    "projectSpend": "Project Spend",
+    "usageMetrics": "Usage Metrics",
+    "metric": {
+      "totalRequests": "Total Requests",
+      "successfulRequests": "Successful Requests",
+      "failedRequests": "Failed Requests",
+      "averageCostPerRequest": "Average Cost per Request",
+      "totalTokens": "Total Tokens",
+      "inputTokens": "Input Tokens",
+      "outputTokens": "Output Tokens",
+      "cacheReadTokens": "Cache Read Tokens",
+      "cacheWriteTokens": "Cache Write Tokens"
+    },
+    "chart": {
+      "dailySpend": "Daily Spend",
+      "gatewayByEndpoint": "Gateway Requests by Endpoint"
+    },
+    "tooltip": {
+      "gatewayCounted": "Counted by the gateway when it answers a request, independent of spend logging. Deployment-wide, so it will not match the per-key or per-model breakdowns below.",
+      "failedRequests": "Includes requests that failed to route to a provider, tool usage failures, and other request errors where the provider cannot be determined.",
+      "gatewayByEndpoint": "Counted by the gateway middleware as each request is answered. Covers LLM, MCP and A2A endpoints across the whole deployment.",
+      "spend": "Spend: ${{value}}",
+      "requests": "Requests: {{value}}",
+      "successful": "Successful: {{value}}",
+      "failed": "Failed: {{value}}",
+      "tokens": "Tokens: {{value}}",
+      "totalRequests": "Total Requests: {{value}}"
+    },
+    "topVirtualKeys": "Top Virtual Keys",
+    "topPublicModelNames": "Top Public Model Names",
+    "topLitellmModels": "Top Litellm Models",
+    "tagBanner": {
+      "title": "Reusable credentials are automatically tracked as tags",
+      "body": "When a reusable credential is used, it will appear as a tag prefixed with <code>Credential: </code> in this view.",
+      "close": "Close"
+    },
+    "ai": {
+      "title": "Ask AI",
+      "subtitle": "Ask about your spend, models, keys, and trends",
+      "modelPlaceholder": "Select a model (optional, defaults to gpt-4o-mini)",
+      "loadingModels": "Loading models…",
+      "emptyTitle": "Ask a question about your usage",
+      "emptyExample": "e.g. \"Which model costs me the most?\"",
+      "thinking": "Thinking...",
+      "inputPlaceholder": "Ask about your usage...",
+      "send": "Send",
+      "clear": "Clear chat",
+      "enterToSend": "Enter to send",
+      "filter": "Filter: {{value}}",
+      "error": "Error: {{message}}",
+      "errorFallback": "Failed to get response. Please try again."
+    }
+  },
+  "entity": {
+    "type": {
+      "tag": "Tag",
+      "team": "Team",
+      "organization": "Organization",
+      "customer": "Customer",
+      "agent": "Agent",
+      "user": "User"
+    },
+    "typeLower": {
+      "tag": "tag",
+      "team": "team",
+      "organization": "organization",
+      "customer": "customer",
+      "agent": "agent",
+      "user": "user"
+    },
+    "filterLabel": "Filter by {{entity}}",
+    "filterPlaceholder": "Select {{entity}} to filter...",
+    "spendOverview": "{{entity}} Spend Overview",
+    "spendPerEntity": "Spend Per {{entity}}",
+    "getStarted": "Get Started by Tracking cost per {{entity}}",
+    "getStartedLink": "here",
+    "showingTop5": "Showing Top 5 by Spend",
+    "table": {
+      "spend": "Spend",
+      "successful": "Successful",
+      "failed": "Failed",
+      "tokens": "Tokens"
+    },
+    "chart": {
+      "dailySpend": "Daily Spend",
+      "requestCost": "Request cost",
+      "flatCost": "Flat cost",
+      "requestCostLine": "Request cost: ${{value}}",
+      "flatCostLine": "Flat cost: ${{value}}",
+      "totalCostLine": "Total cost: ${{value}}",
+      "totalSpendLine": "Total Spend: ${{value}}",
+      "totalRequestsLine": "Total Requests: {{value}}",
+      "successfulLine": "Successful: {{value}}",
+      "failedLine": "Failed: {{value}}",
+      "totalTokensLine": "Total Tokens: {{value}}",
+      "totalEntities": "Total {{entity}}s: {{total}}",
+      "spendByEntity": "Spend by {{entity}}:",
+      "moreEntities": "...and {{total}} more",
+      "spendLine": "Spend: ${{value}}",
+      "requestsLine": "Requests: {{value}}",
+      "tokensLine": "Tokens: {{value}}"
+    },
+    "summary": {
+      "totalCost": "Total Cost",
+      "totalSpend": "Total Spend",
+      "totalRequests": "Total Requests",
+      "successfulRequests": "Successful Requests",
+      "failedRequests": "Failed Requests",
+      "totalTokens": "Total Tokens",
+      "requestCost": "Request Cost",
+      "flatCost": "Flat Cost",
+      "tooltip": {
+        "totalCost": "Request cost plus flat cost for reserved capacity. Select this tile to see the breakdown.",
+        "requestCost": "Usage-based cost of the requests this entity sent during the selected period, priced per token.",
+        "flatCost": "Reserved provisioned throughput, billed per hour whether or not requests are sent. Reported here only; it does not count toward team, key, user, or organization budgets."
+      }
+    },
+    "topVirtualKeys": "Top Virtual Keys",
+    "topAgents": "Top Agents",
+    "topAgentsDrivingSpend": "Top Agents Driving Spend",
+    "providerUsage": "Provider Usage",
+    "provider": {
+      "title": "Spend by Provider",
+      "showZeroSpend": "Show Zero Spend",
+      "showUnknown": "Show Unknown",
+      "unknownTooltip": "Requests that failed to route to a provider",
+      "table": {
+        "provider": "Provider",
+        "spend": "Spend",
+        "successful": "Successful",
+        "failed": "Failed",
+        "tokens": "Tokens"
+      }
+    },
+    "tabs": {
+      "cost": "Cost",
+      "modelActivity": "Model Activity",
+      "requestTokenConsumption": "Request / Token Consumption",
+      "agentActivity": "Agent Activity",
+      "keyActivity": "Key Activity",
+      "endpointActivity": "Endpoint Activity"
+    },
+    "paginationSubject": "agent data",
+    "teamUserSpend": {
+      "title": "Spend Per User Within Team",
+      "description": "Attributed per request from spend logs, so it includes JWT/SSO traffic that does not use a virtual key",
+      "download": "Download CSV",
+      "noUser": "(no user)",
+      "table": {
+        "team": "Team",
+        "user": "User",
+        "spend": "Spend",
+        "requests": "Requests",
+        "successful": "Successful",
+        "failed": "Failed",
+        "tokens": "Tokens"
+      }
+    },
+    "topModels": {
+      "table": {
+        "model": "Model",
+        "spendUsd": "Spend (USD)",
+        "successful": "Successful",
+        "failed": "Failed",
+        "tokens": "Tokens"
+      },
+      "limitAria": "Number of models to show",
+      "viewModeAria": "Top model view mode",
+      "tableView": "Table View",
+      "chartView": "Chart View"
+    },
+    "modelView": {
+      "groups": "Public Model Name",
+      "individual": "Litellm Model Name"
+    }
+  },
+  "endpoint": {
+    "table": {
+      "endpoint": "Endpoint",
+      "successfulFailed": "Successful / Failed",
+      "totalRequest": "Total Request",
+      "successRate": "Success Rate",
+      "totalTokens": "Total Tokens",
+      "spend": "Spend",
+      "successfulRequestsAria": "Successful requests"
+    },
+    "chart": {
+      "successVsFailed": "Success vs Failed Requests by Endpoint",
+      "trends": "Endpoint Usage Trends"
+    }
+  },
+  "empty": {
+    "noSpendData": "No {{entity}} spend data",
+    "noProviderUsageData": "No provider usage data",
+    "noEndpointUsageData": "No endpoint usage data",
+    "selectTeamForUserSpend": "Select a team to see spend per user",
+    "noUserSpendInRange": "No user spend in this range",
+    "noModels": "No models found"
+  }
+}

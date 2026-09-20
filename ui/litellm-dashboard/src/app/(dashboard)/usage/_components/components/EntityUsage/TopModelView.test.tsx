@@ -1,6 +1,7 @@
-import { render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import i18n from "@/i18n/bootstrapI18n";
 import TopModelView from "./TopModelView";
 
 describe("TopModelView", () => {
@@ -305,5 +306,56 @@ describe("TopModelView", () => {
       />,
     );
     expect(screen.getByText("-")).toBeInTheDocument();
+  });
+
+  describe("Chinese copy", () => {
+    beforeEach(async () => {
+      await i18n.changeLanguage("zh");
+    });
+
+    afterEach(async () => {
+      cleanup();
+      await i18n.changeLanguage("en");
+    });
+
+    it("renders the Chinese view-mode tabs, table headers and control labels and hides the English ones", () => {
+      render(<TopModelView topModels={[]} topModelsLimit={5} setTopModelsLimit={mockSetTopModelsLimit} />);
+
+      expect(screen.getByText("表格视图")).toBeInTheDocument();
+      expect(screen.getByText("图表视图")).toBeInTheDocument();
+      expect(screen.getByText("模型")).toBeInTheDocument();
+      expect(screen.getByText("支出（USD）")).toBeInTheDocument();
+      expect(screen.getByText("成功")).toBeInTheDocument();
+      expect(screen.getByText("失败")).toBeInTheDocument();
+      expect(screen.getByText("Token 数")).toBeInTheDocument();
+      expect(screen.getByRole("tablist", { name: "要显示的模型数量" })).toBeInTheDocument();
+      expect(screen.getByRole("tablist", { name: "Top 模型视图模式" })).toBeInTheDocument();
+
+      expect(screen.queryByText("Table View")).not.toBeInTheDocument();
+      expect(screen.queryByText("Chart View")).not.toBeInTheDocument();
+      expect(screen.queryByText("Model")).not.toBeInTheDocument();
+      expect(screen.queryByText("Spend (USD)")).not.toBeInTheDocument();
+      expect(screen.queryByText("Successful")).not.toBeInTheDocument();
+      expect(screen.queryByText("Failed")).not.toBeInTheDocument();
+      expect(screen.queryByText("Tokens")).not.toBeInTheDocument();
+      expect(screen.queryByRole("tablist", { name: "Number of models to show" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("tablist", { name: "Top model view mode" })).not.toBeInTheDocument();
+    });
+
+    it("switches to the Chinese chart view control", async () => {
+      const user = userEvent.setup();
+      const { container } = render(
+        <TopModelView
+          topModels={[{ key: "gpt-4", spend: 150.5, successful_requests: 100, failed_requests: 5, tokens: 50000 }]}
+          topModelsLimit={5}
+          setTopModelsLimit={mockSetTopModelsLimit}
+        />,
+      );
+
+      await user.click(screen.getByText("图表视图"));
+
+      expect(showsChart(container)).toBe(true);
+      expect(screen.queryByText("Spend (USD)")).not.toBeInTheDocument();
+    });
   });
 });

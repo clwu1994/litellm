@@ -1,0 +1,254 @@
+{
+  "view": {
+    "title": "用量视图",
+    "description": "选择要查看的用量数据",
+    "options": {
+      "global": {
+        "label": "全局用量",
+        "labelNonAdmin": "你的用量",
+        "description": "查看所有资源的用量",
+        "descriptionNonAdmin": "查看你的用量"
+      },
+      "myUsage": {
+        "label": "你的用量",
+        "description": "查看你自己的用量"
+      },
+      "organization": {
+        "label": "组织用量",
+        "description": "查看所有组织的用量"
+      },
+      "team": {
+        "label": "团队用量",
+        "description": "按团队查看用量"
+      },
+      "customer": {
+        "label": "客户用量",
+        "description": "按客户账户查看用量"
+      },
+      "tag": {
+        "label": "标签用量",
+        "description": "按标签分组查看用量"
+      },
+      "agent": {
+        "label": "Agent 用量（A2A）",
+        "description": "按 AI Agent 查看用量"
+      },
+      "user": {
+        "label": "用户用量",
+        "description": "按单个用户查看用量"
+      },
+      "userAgentActivity": {
+        "label": "用户 Agent 活动",
+        "description": "查看详细的用户 Agent 活动日志"
+      }
+    },
+    "filterByUser": "按用户筛选",
+    "tabs": {
+      "cost": "成本",
+      "modelActivity": "模型活动",
+      "keyActivity": "密钥活动",
+      "mcpServerActivity": "MCP Server 活动",
+      "endpointActivity": "Endpoint 活动"
+    },
+    "exportData": "导出数据",
+    "exportModalTitle": "导出用量数据",
+    "projectSpend": "项目支出",
+    "usageMetrics": "用量指标",
+    "metric": {
+      "totalRequests": "总请求数",
+      "successfulRequests": "成功请求",
+      "failedRequests": "失败请求",
+      "averageCostPerRequest": "平均每请求成本",
+      "totalTokens": "总 Token 数",
+      "inputTokens": "输入 Token",
+      "outputTokens": "输出 Token",
+      "cacheReadTokens": "缓存读取 Token",
+      "cacheWriteTokens": "缓存写入 Token"
+    },
+    "chart": {
+      "dailySpend": "每日支出",
+      "gatewayByEndpoint": "按 Endpoint 统计的网关请求"
+    },
+    "tooltip": {
+      "gatewayCounted": "由网关在响应请求时统计，与支出日志无关。该数据覆盖整个部署，因此不会与下方按密钥或按模型的明细一致。",
+      "failedRequests": "包括无法路由到提供商的请求、工具调用失败，以及无法确定提供商的其他请求错误。",
+      "gatewayByEndpoint": "由网关中间件在响应每个请求时统计，覆盖整个部署的 LLM、MCP 和 A2A Endpoint。",
+      "spend": "支出：${{value}}",
+      "requests": "请求数：{{value}}",
+      "successful": "成功：{{value}}",
+      "failed": "失败：{{value}}",
+      "tokens": "Token 数：{{value}}",
+      "totalRequests": "总请求数：{{value}}"
+    },
+    "topVirtualKeys": "Top Virtual Keys",
+    "topPublicModelNames": "Top 公开模型名称",
+    "topLitellmModels": "Top Litellm 模型",
+    "tagBanner": {
+      "title": "可复用凭证会自动作为标签跟踪",
+      "body": "使用可复用凭证时，它会在此视图中显示为以 <code>Credential: </code> 为前缀的标签。",
+      "close": "关闭"
+    },
+    "ai": {
+      "title": "询问 AI",
+      "subtitle": "询问你的支出、模型、密钥和趋势",
+      "modelPlaceholder": "选择模型（可选，默认为 gpt-4o-mini）",
+      "loadingModels": "正在加载模型…",
+      "emptyTitle": "询问有关你的用量的问题",
+      "emptyExample": "例如：“哪个模型花费最多？”",
+      "thinking": "思考中...",
+      "inputPlaceholder": "询问你的用量...",
+      "send": "发送",
+      "clear": "清空对话",
+      "enterToSend": "按 Enter 发送",
+      "filter": "筛选条件：{{value}}",
+      "error": "错误：{{message}}",
+      "errorFallback": "获取回复失败，请重试。"
+    }
+  },
+  "entity": {
+    "type": {
+      "tag": "标签",
+      "team": "团队",
+      "organization": "组织",
+      "customer": "客户",
+      "agent": "Agent",
+      "user": "用户"
+    },
+    "typeLower": {
+      "tag": "标签",
+      "team": "团队",
+      "organization": "组织",
+      "customer": "客户",
+      "agent": "Agent",
+      "user": "用户"
+    },
+    "filterLabel": "按{{entity}}筛选",
+    "filterPlaceholder": "选择{{entity}}进行筛选...",
+    "spendOverview": "{{entity}}支出概览",
+    "spendPerEntity": "按{{entity}}支出",
+    "getStarted": "开始按{{entity}}跟踪成本",
+    "getStartedLink": "这里",
+    "showingTop5": "按支出显示前 5 名",
+    "table": {
+      "spend": "支出",
+      "successful": "成功",
+      "failed": "失败",
+      "tokens": "Token 数"
+    },
+    "chart": {
+      "dailySpend": "每日支出",
+      "requestCost": "请求成本",
+      "flatCost": "固定成本",
+      "requestCostLine": "请求成本：${{value}}",
+      "flatCostLine": "固定成本：${{value}}",
+      "totalCostLine": "总成本：${{value}}",
+      "totalSpendLine": "总支出：${{value}}",
+      "totalRequestsLine": "总请求数：{{value}}",
+      "successfulLine": "成功：{{value}}",
+      "failedLine": "失败：{{value}}",
+      "totalTokensLine": "总 Token 数：{{value}}",
+      "totalEntities": "{{entity}}总数：{{total}}",
+      "spendByEntity": "按{{entity}}支出：",
+      "moreEntities": "...还有 {{total}} 个",
+      "spendLine": "支出：${{value}}",
+      "requestsLine": "请求数：{{value}}",
+      "tokensLine": "Token 数：{{value}}"
+    },
+    "summary": {
+      "totalCost": "总成本",
+      "totalSpend": "总支出",
+      "totalRequests": "总请求数",
+      "successfulRequests": "成功请求",
+      "failedRequests": "失败请求",
+      "totalTokens": "总 Token 数",
+      "requestCost": "请求成本",
+      "flatCost": "固定成本",
+      "tooltip": {
+        "totalCost": "请求成本加上预留容量的固定成本。选择此卡片可查看明细。",
+        "requestCost": "所选时间段内此实体发送的请求按 Token 计费的用量成本。",
+        "flatCost": "预留的预置吞吐量，无论是否发送请求都按小时计费。此处仅作展示，不计入团队、密钥、用户或组织预算。"
+      }
+    },
+    "topVirtualKeys": "Top Virtual Keys",
+    "topAgents": "Top Agent",
+    "topAgentsDrivingSpend": "支出最高的 Agent",
+    "providerUsage": "提供商用量",
+    "provider": {
+      "title": "按提供商统计支出",
+      "showZeroSpend": "显示零支出",
+      "showUnknown": "显示未知",
+      "unknownTooltip": "无法路由到提供商的请求",
+      "table": {
+        "provider": "提供商",
+        "spend": "支出",
+        "successful": "成功",
+        "failed": "失败",
+        "tokens": "Token 数"
+      }
+    },
+    "tabs": {
+      "cost": "成本",
+      "modelActivity": "模型活动",
+      "requestTokenConsumption": "请求 / Token 消耗",
+      "agentActivity": "Agent 活动",
+      "keyActivity": "密钥活动",
+      "endpointActivity": "Endpoint 活动"
+    },
+    "paginationSubject": "Agent 数据",
+    "teamUserSpend": {
+      "title": "团队内按用户统计支出",
+      "description": "按请求从支出日志归属，因此包含不使用 Virtual Key 的 JWT/SSO 流量",
+      "download": "下载 CSV",
+      "noUser": "（无用户）",
+      "table": {
+        "team": "团队",
+        "user": "用户",
+        "spend": "支出",
+        "requests": "请求数",
+        "successful": "成功",
+        "failed": "失败",
+        "tokens": "Token 数"
+      }
+    },
+    "topModels": {
+      "table": {
+        "model": "模型",
+        "spendUsd": "支出（USD）",
+        "successful": "成功",
+        "failed": "失败",
+        "tokens": "Token 数"
+      },
+      "limitAria": "要显示的模型数量",
+      "viewModeAria": "Top 模型视图模式",
+      "tableView": "表格视图",
+      "chartView": "图表视图"
+    },
+    "modelView": {
+      "groups": "公开模型名称",
+      "individual": "Litellm 模型名称"
+    }
+  },
+  "endpoint": {
+    "table": {
+      "endpoint": "Endpoint",
+      "successfulFailed": "成功 / 失败",
+      "totalRequest": "总请求数",
+      "successRate": "成功率",
+      "totalTokens": "总 Token 数",
+      "spend": "支出",
+      "successfulRequestsAria": "成功请求"
+    },
+    "chart": {
+      "successVsFailed": "按 Endpoint 统计成功与失败请求",
+      "trends": "Endpoint 用量趋势"
+    }
+  },
+  "empty": {
+    "noSpendData": "没有{{entity}}支出数据",
+    "noProviderUsageData": "没有提供商用量数据",
+    "noEndpointUsageData": "没有 Endpoint 用量数据",
+    "selectTeamForUserSpend": "选择团队以查看按用户统计的支出",
+    "noUserSpendInRange": "此时间范围内没有用户支出",
+    "noModels": "未找到模型"
+  }
+}

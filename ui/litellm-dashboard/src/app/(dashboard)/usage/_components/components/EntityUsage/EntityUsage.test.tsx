@@ -1,10 +1,11 @@
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ReactNode } from "react";
 import { useInfiniteUsers } from "@/app/(dashboard)/hooks/users/useUsers";
 import useTeams from "@/app/(dashboard)/hooks/useTeams";
 import * as networking from "@/components/networking";
+import i18n from "@/i18n/bootstrapI18n";
 import EntityUsage from "./EntityUsage";
 
 beforeAll(() => {
@@ -72,16 +73,19 @@ vi.mock("@/components/EntityUsageExport/EntityUsageExportModal", () => ({
 vi.mock("@/components/EntityUsageExport", () => ({
   UsageExportHeader: ({
     filterLabel,
+    filterPlaceholder,
     filterSlot,
     showFilters,
   }: {
     filterLabel?: string;
+    filterPlaceholder?: string;
     filterSlot?: ReactNode;
     showFilters?: boolean;
   }) => (
     <div>
       <span>Usage Export Header</span>
       <span>{filterLabel}</span>
+      <span>{filterPlaceholder}</span>
       <span>{`show-filters:${showFilters === true}`}</span>
       {filterSlot}
     </div>
@@ -662,6 +666,19 @@ describe("EntityUsage", () => {
     expect(await screen.findByText("$0.00")).toBeInTheDocument();
     expect(screen.getByText("Total Spend")).toBeInTheDocument();
     expect(screen.getAllByText("0")[0]).toBeInTheDocument();
+    expect(screen.getByText("No tag spend data")).toBeInTheDocument();
+  });
+
+  it("keeps the English entity filter labels in their original lowercase wording", async () => {
+    render(<EntityUsage {...defaultProps} />);
+
+    await waitFor(() => {
+      expect(mockTagDailyActivityCall).toHaveBeenCalled();
+    });
+
+    expect(screen.getByText("Filter by tag")).toBeInTheDocument();
+    expect(screen.getByText("Select tag to filter...")).toBeInTheDocument();
+    expect(screen.queryByText("Filter by Tag")).not.toBeInTheDocument();
   });
 
   it("should display Model Activity tab for non-agent entity types", async () => {
@@ -1184,6 +1201,357 @@ describe("EntityUsage", () => {
           1,
           null,
         );
+      });
+    });
+  });
+
+  /* eslint-disable testing-library/no-node-access -- Tooltip triggers are icon-only and the recharts wrapper exposes no role, so these assertions need the portal and the SVG */
+  describe("Chinese copy", () => {
+    beforeEach(async () => {
+      await i18n.changeLanguage("zh");
+    });
+
+    afterEach(async () => {
+      cleanup();
+      await i18n.changeLanguage("en");
+    });
+
+    it("renders the Chinese entity chrome, tables and tabs and hides the English ones", async () => {
+      render(<EntityUsage {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(mockTagDailyActivityCall).toHaveBeenCalled();
+      });
+
+      expect(screen.getByText("标签支出概览")).toBeInTheDocument();
+      expect(screen.getByText("总支出")).toBeInTheDocument();
+      expect(screen.getByText("每日支出")).toBeInTheDocument();
+      expect(screen.getByText("按标签支出")).toBeInTheDocument();
+      expect(screen.getByText("按支出显示前 5 名")).toBeInTheDocument();
+      expect(screen.getByText("开始按标签跟踪成本")).toBeInTheDocument();
+      expect(screen.getByText("这里")).toBeInTheDocument();
+      expect(screen.getByText("Top Virtual Keys")).toBeInTheDocument();
+      expect(screen.getByText("Top 公开模型名称")).toBeInTheDocument();
+      expect(screen.getByText("提供商用量")).toBeInTheDocument();
+      expect(screen.getByText("按标签筛选")).toBeInTheDocument();
+      expect(screen.getByText("选择标签进行筛选...")).toBeInTheDocument();
+      expect(screen.getAllByText("公开模型名称").length).toBeGreaterThan(0);
+      expect(screen.getAllByText("Litellm 模型名称").length).toBeGreaterThan(0);
+
+      for (const tab of ["成本", "模型活动", "密钥活动", "Endpoint 活动"]) {
+        expect(screen.getByText(tab)).toBeInTheDocument();
+      }
+      for (const tile of ["总请求数", "成功请求", "失败请求", "总 Token 数"]) {
+        expect(screen.getByText(tile)).toBeInTheDocument();
+      }
+      for (const header of ["标签", "提供商"]) {
+        expect(screen.getAllByText(header).length).toBeGreaterThan(0);
+      }
+      for (const header of ["支出", "成功", "失败", "Token 数"]) {
+        expect(screen.getAllByText(header).length).toBeGreaterThan(0);
+      }
+
+      expect(screen.queryByText("Tag Spend Overview")).not.toBeInTheDocument();
+      expect(screen.queryByText("Total Spend")).not.toBeInTheDocument();
+      expect(screen.queryByText("Daily Spend")).not.toBeInTheDocument();
+      expect(screen.queryByText("Spend Per Tag")).not.toBeInTheDocument();
+      expect(screen.queryByText("Showing Top 5 by Spend")).not.toBeInTheDocument();
+      expect(screen.queryByText("here")).not.toBeInTheDocument();
+      expect(screen.queryByText("Top Public Model Names")).not.toBeInTheDocument();
+      expect(screen.queryByText("Provider Usage")).not.toBeInTheDocument();
+      expect(screen.queryByText("Filter by tag")).not.toBeInTheDocument();
+      expect(screen.queryByText("Select tag to filter...")).not.toBeInTheDocument();
+      expect(screen.queryByText("Public Model Name")).not.toBeInTheDocument();
+      expect(screen.queryByText("Litellm Model Name")).not.toBeInTheDocument();
+      for (const tab of ["Cost", "Model Activity", "Key Activity", "Endpoint Activity"]) {
+        expect(screen.queryByText(tab)).not.toBeInTheDocument();
+      }
+      for (const tile of ["Total Requests", "Successful Requests", "Failed Requests", "Total Tokens"]) {
+        expect(screen.queryByText(tile)).not.toBeInTheDocument();
+      }
+      for (const header of ["Spend", "Successful", "Failed", "Tokens"]) {
+        expect(screen.queryByText(header)).not.toBeInTheDocument();
+      }
+    });
+
+    it("renders the Chinese agent entity headings and hides the English ones", async () => {
+      render(<EntityUsage {...defaultProps} entityType="agent" />);
+
+      await waitFor(() => {
+        expect(mockAgentDailyActivityCall).toHaveBeenCalled();
+      });
+
+      expect(screen.getByText("Agent支出概览")).toBeInTheDocument();
+      expect(screen.getByText("Top Agent")).toBeInTheDocument();
+      expect(screen.getByText("请求 / Token 消耗")).toBeInTheDocument();
+      expect(screen.queryByText("Agent Spend Overview")).not.toBeInTheDocument();
+      expect(screen.queryByText("Top Agents")).not.toBeInTheDocument();
+      expect(screen.queryByText("Request / Token Consumption")).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese team headings and hides the English ones", async () => {
+      render(<EntityUsage {...defaultProps} entityType="team" />);
+
+      await waitFor(() => {
+        expect(mockTeamDailyActivityAggregatedCall).toHaveBeenCalled();
+      });
+
+      expect(screen.getByText("团队支出概览")).toBeInTheDocument();
+      expect(screen.getByText("Agent 活动")).toBeInTheDocument();
+      expect(screen.getByText("支出最高的 Agent")).toBeInTheDocument();
+      expect(screen.getByText("按团队筛选")).toBeInTheDocument();
+      expect(screen.queryByText("Team Spend Overview")).not.toBeInTheDocument();
+      expect(screen.queryByText("Agent Activity")).not.toBeInTheDocument();
+      expect(screen.queryByText("Top Agents Driving Spend")).not.toBeInTheDocument();
+      expect(screen.queryByText("Filter by team")).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese empty spend and provider states and hides the English ones", async () => {
+      mockTagDailyActivityCall.mockResolvedValue({
+        results: [],
+        metadata: {
+          total_spend: 0,
+          total_api_requests: 0,
+          total_successful_requests: 0,
+          total_failed_requests: 0,
+          total_tokens: 0,
+        },
+      });
+
+      render(<EntityUsage {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(mockTagDailyActivityCall).toHaveBeenCalled();
+      });
+
+      expect(await screen.findByText("没有标签支出数据")).toBeInTheDocument();
+      expect(screen.getByText("没有提供商用量数据")).toBeInTheDocument();
+      expect(screen.queryByText("No tag spend data")).not.toBeInTheDocument();
+      expect(screen.queryByText("No provider usage data")).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese cost-breakdown tiles and summary tooltips and hides the English ones", async () => {
+      const user = userEvent.setup();
+      mockTeamDailyActivityAggregatedCall.mockResolvedValue({
+        ...mockSpendData,
+        metadata: { ...mockSpendData.metadata, total_flat_cost: 40 },
+      });
+
+      render(<EntityUsage {...defaultProps} entityType="team" />);
+
+      await waitFor(() => {
+        expect(mockTeamDailyActivityAggregatedCall).toHaveBeenCalled();
+      });
+
+      expect(screen.getByText("总成本")).toBeInTheDocument();
+      expect(screen.queryByText("Total Cost")).not.toBeInTheDocument();
+
+      // The daily-spend legend carries the two series labels whenever flat cost is shown.
+      expect(screen.getAllByText("请求成本").length).toBeGreaterThan(0);
+      expect(screen.getAllByText("固定成本").length).toBeGreaterThan(0);
+
+      const totalCostHeading = screen.getByText("总成本");
+      const trigger = totalCostHeading.parentElement?.querySelector("svg");
+      expect(trigger).toBeTruthy();
+      await user.hover(trigger as SVGElement);
+
+      expect(await screen.findByText("请求成本加上预留容量的固定成本。选择此卡片可查看明细。")).toBeInTheDocument();
+      expect(
+        screen.queryByText("Request cost plus flat cost for reserved capacity. Select this tile to see the breakdown."),
+      ).not.toBeInTheDocument();
+
+      await user.click(totalCostHeading);
+
+      const flatCostHeading = (await screen.findAllByText("固定成本")).find((element) => element.tagName === "H3");
+      expect(flatCostHeading).toBeDefined();
+      expect(screen.queryByText("Request Cost")).not.toBeInTheDocument();
+      expect(screen.queryByText("Flat Cost")).not.toBeInTheDocument();
+
+      const flatTrigger = flatCostHeading?.parentElement?.querySelector("svg");
+      expect(flatTrigger).toBeTruthy();
+      await user.hover(flatTrigger as SVGElement);
+
+      expect(await screen.findByText(/不计入团队、密钥、用户或组织预算/)).toBeInTheDocument();
+      expect(
+        screen.queryByText(/does not count toward team, key, user, or organization budgets/),
+      ).not.toBeInTheDocument();
+
+      await user.unhover(flatTrigger as SVGElement);
+
+      const requestCostHeading = screen.getAllByText("请求成本").find((element) => element.tagName === "H3");
+      const requestCostTrigger = requestCostHeading?.parentElement?.querySelector("svg");
+      expect(requestCostTrigger).toBeTruthy();
+      await user.hover(requestCostTrigger as SVGElement);
+
+      expect(await screen.findByText("所选时间段内此实体发送的请求按 Token 计费的用量成本。")).toBeInTheDocument();
+      expect(
+        screen.queryByText(/Usage-based cost of the requests this entity sent during the selected period/),
+      ).not.toBeInTheDocument();
+    });
+
+    it.each([
+      ["organization", "组织支出概览", "按组织筛选"],
+      ["customer", "客户支出概览", "按客户筛选"],
+      ["user", "用户支出概览", "按用户筛选"],
+    ] as const)(
+      "renders the Chinese %s entity headings and hides the English ones",
+      async (entityType, heading, filterLabel) => {
+        render(<EntityUsage {...defaultProps} entityType={entityType} />);
+
+        expect(await screen.findByText(heading)).toBeInTheDocument();
+        expect(screen.getByText(filterLabel)).toBeInTheDocument();
+        expect(screen.queryByText("Tag Spend Overview")).not.toBeInTheDocument();
+        expect(screen.queryByText("Filter by tag")).not.toBeInTheDocument();
+      },
+    );
+
+    const chartWrapperFor = (heading: string): Element | null => {
+      let node: HTMLElement | null = screen.getByText(heading);
+      while (node && !node.querySelector(".recharts-wrapper")) {
+        node = node.parentElement;
+      }
+      return node?.querySelector(".recharts-wrapper") ?? null;
+    };
+
+    const hoverChart = (heading: string) => {
+      const wrapper = chartWrapperFor(heading);
+      expect(wrapper).toBeTruthy();
+      fireEvent.mouseEnter(wrapper as Element);
+      fireEvent.mouseMove(wrapper as Element, { clientX: 400, clientY: 200 });
+    };
+
+    it("renders the Chinese daily-spend chart tooltip and hides the English one", async () => {
+      render(<EntityUsage {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(mockTagDailyActivityCall).toHaveBeenCalled();
+      });
+      await waitFor(() => {
+        expect(document.querySelectorAll("path.recharts-rectangle").length).toBeGreaterThan(0);
+      });
+
+      hoverChart("每日支出");
+
+      expect(await screen.findByText(/^总支出：\$/)).toBeInTheDocument();
+      expect(screen.getByText(/^总请求数：/)).toBeInTheDocument();
+      expect(screen.getByText(/^成功：/)).toBeInTheDocument();
+      expect(screen.getByText(/^失败：/)).toBeInTheDocument();
+      expect(screen.getByText(/^总 Token 数：/)).toBeInTheDocument();
+      expect(screen.getByText(/^标签总数：/)).toBeInTheDocument();
+      expect(screen.getByText(/^按标签支出：$/)).toBeInTheDocument();
+
+      expect(screen.queryByText(/^Total Spend: \$/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/^Total Requests: /)).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese per-entity chart tooltip and hides the English one", async () => {
+      render(<EntityUsage {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(mockTagDailyActivityCall).toHaveBeenCalled();
+      });
+      await waitFor(() => {
+        expect(document.querySelectorAll("path.recharts-rectangle").length).toBeGreaterThan(0);
+      });
+
+      hoverChart("按标签支出");
+
+      expect(await screen.findByText(/^支出：\$/)).toBeInTheDocument();
+      expect(screen.getByText(/^请求数：/)).toBeInTheDocument();
+      expect(screen.getByText(/^成功：/)).toBeInTheDocument();
+      expect(screen.getByText(/^失败：/)).toBeInTheDocument();
+      expect(screen.getByText(/^Token 数：/)).toBeInTheDocument();
+
+      expect(screen.queryByText(/^Spend: \$/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/^Requests: /)).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese flat-cost chart tooltip and hides the English one", async () => {
+      mockTeamDailyActivityAggregatedCall.mockResolvedValue({
+        ...mockSpendData,
+        metadata: { ...mockSpendData.metadata, total_flat_cost: 40 },
+      });
+
+      render(<EntityUsage {...defaultProps} entityType="team" />);
+
+      await waitFor(() => {
+        expect(mockTeamDailyActivityAggregatedCall).toHaveBeenCalled();
+      });
+      await waitFor(() => {
+        expect(document.querySelectorAll("path.recharts-rectangle").length).toBeGreaterThan(0);
+      });
+
+      hoverChart("每日支出");
+
+      expect(await screen.findByText(/^请求成本：\$/)).toBeInTheDocument();
+      expect(screen.getByText(/^固定成本：\$/)).toBeInTheDocument();
+      expect(screen.getByText(/^总成本：\$/)).toBeInTheDocument();
+
+      expect(screen.queryByText(/^Request cost: \$/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/^Flat cost: \$/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/^Total cost: \$/)).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese overflow line when the daily breakdown exceeds five entities", async () => {
+      const sixEntities = Object.fromEntries(
+        Array.from({ length: 6 }, (_, index) => [
+          `tag-${index + 1}`,
+          {
+            metrics: mockSpendData.results[0].breakdown.entities["tag-1"].metrics,
+            metadata: { team_alias: `Tag ${index + 1}` },
+            api_key_breakdown: {},
+          },
+        ]),
+      );
+      mockTagDailyActivityCall.mockResolvedValue({
+        ...mockSpendData,
+        results: [
+          {
+            ...mockSpendData.results[0],
+            breakdown: { ...mockSpendData.results[0].breakdown, entities: sixEntities },
+          },
+        ],
+      });
+
+      render(<EntityUsage {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(mockTagDailyActivityCall).toHaveBeenCalled();
+      });
+      await waitFor(() => {
+        expect(document.querySelectorAll("path.recharts-rectangle").length).toBeGreaterThan(0);
+      });
+
+      hoverChart("每日支出");
+
+      expect(await screen.findByText("...还有 1 个")).toBeInTheDocument();
+      expect(screen.queryByText("...and 1 more")).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese agent pagination subject and hides the English one", async () => {
+      let releaseSecondPage: (value: unknown) => void = () => {};
+      mockAgentDailyActivityCall
+        .mockResolvedValueOnce({
+          ...mockAgentSpendData,
+          metadata: { ...mockAgentSpendData.metadata, total_pages: 2, page: 1 },
+        })
+        .mockImplementationOnce(
+          () =>
+            new Promise((resolve) => {
+              releaseSecondPage = resolve;
+            }),
+        );
+
+      render(<EntityUsage {...defaultProps} entityType="team" />);
+
+      expect(await screen.findByText(/Agent 数据/)).toBeInTheDocument();
+      expect(screen.queryByText(/agent data/)).not.toBeInTheDocument();
+
+      await act(async () => {
+        releaseSecondPage({
+          ...mockAgentSpendData,
+          metadata: { ...mockAgentSpendData.metadata, total_pages: 2, page: 2 },
+        });
       });
     });
   });

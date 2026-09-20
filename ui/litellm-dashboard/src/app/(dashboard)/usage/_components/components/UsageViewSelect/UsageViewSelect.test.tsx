@@ -1,7 +1,8 @@
-import { render, screen, within } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { chooseSelectOption } from "@/../tests/test-utils";
+import i18n from "@/i18n/bootstrapI18n";
 import { UsageViewSelect } from "./UsageViewSelect";
 
 const openMenu = async (user: ReturnType<typeof userEvent.setup>) => {
@@ -104,5 +105,105 @@ describe("UsageViewSelect", () => {
 
     await openMenu(user);
     expect(offers(container, optionName)).toBe(true);
+  });
+});
+
+describe("UsageViewSelect Chinese copy", () => {
+  const mockOnChange = vi.fn();
+
+  beforeEach(async () => {
+    await i18n.changeLanguage("zh");
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  it("renders the Chinese title and description and hides the English ones", () => {
+    render(<UsageViewSelect value="global" onChange={mockOnChange} userRole="Internal User" />);
+
+    expect(screen.getByText("用量视图")).toBeInTheDocument();
+    expect(screen.getByText("选择要查看的用量数据")).toBeInTheDocument();
+    expect(screen.queryByText("Usage View")).not.toBeInTheDocument();
+    expect(screen.queryByText("Select the usage data you want to view")).not.toBeInTheDocument();
+  });
+
+  it("offers every option label and description in Chinese to an admin and hides the English ones", async () => {
+    const user = userEvent.setup();
+    const { container } = render(
+      <UsageViewSelect value="global" onChange={mockOnChange} userRole="Admin" canViewTagUsage={true} />,
+    );
+
+    await openMenu(user);
+
+    expect(await screen.findAllByRole("option")).toHaveLength(9);
+
+    for (const label of [
+      "全局用量",
+      "你的用量",
+      "组织用量",
+      "团队用量",
+      "客户用量",
+      "标签用量",
+      "Agent 用量（A2A）",
+      "用户用量",
+      "用户 Agent 活动",
+    ]) {
+      expect(offers(container, label)).toBe(true);
+    }
+    for (const description of [
+      "查看所有资源的用量",
+      "查看你自己的用量",
+      "查看所有组织的用量",
+      "按团队查看用量",
+      "按客户账户查看用量",
+      "按标签分组查看用量",
+      "按 AI Agent 查看用量",
+      "按单个用户查看用量",
+      "查看详细的用户 Agent 活动日志",
+    ]) {
+      expect(offers(container, description)).toBe(true);
+    }
+
+    for (const label of [
+      "Global Usage",
+      "Organization Usage",
+      "Team Usage",
+      "Customer Usage",
+      "Tag Usage",
+      "Agent Usage (A2A)",
+      "User Usage",
+      "User Agent Activity",
+    ]) {
+      expect(offers(container, label)).toBe(false);
+    }
+    for (const description of [
+      "View usage across all resources",
+      "View your own usage",
+      "View usage across all organizations",
+      "View usage by team",
+      "View usage by customer accounts",
+      "View usage grouped by tags",
+      "View usage by AI agents",
+      "View usage by individual users",
+      "View detailed user agent activity logs",
+    ]) {
+      expect(offers(container, description)).toBe(false);
+    }
+  });
+
+  it("offers the non-admin global label and description in Chinese and hides the English ones", async () => {
+    const user = userEvent.setup();
+    const { container } = render(<UsageViewSelect value="global" onChange={mockOnChange} userRole="Internal User" />);
+
+    expect(screen.getByText("你的用量")).toBeInTheDocument();
+    await openMenu(user);
+    expect(offers(container, "查看你的用量")).toBe(true);
+
+    expect(screen.queryByText("Your Usage")).not.toBeInTheDocument();
+    expect(offers(container, "View your usage")).toBe(false);
+    expect(offers(container, "Global Usage")).toBe(false);
+    expect(offers(container, "View usage across all resources")).toBe(false);
   });
 });

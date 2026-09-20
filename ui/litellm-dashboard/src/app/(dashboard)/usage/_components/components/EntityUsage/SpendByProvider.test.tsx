@@ -1,5 +1,7 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import i18n from "@/i18n/bootstrapI18n";
 import SpendByProvider from "./SpendByProvider";
 
 vi.mock("@/components/shared/chart_loader", () => ({
@@ -284,5 +286,57 @@ describe("SpendByProvider", () => {
     render(<SpendByProvider loading={false} isDateChanging={false} providerSpend={providerSpendWithMixed} />);
     expect(screen.getAllByText("provider1").length).toBeGreaterThan(0);
     expect(screen.queryByText("provider2")).not.toBeInTheDocument();
+  });
+
+  /* eslint-disable testing-library/no-node-access -- The tooltip trigger is an icon with no accessible name, so reaching its portal needs the DOM */
+  describe("Chinese copy", () => {
+    beforeEach(async () => {
+      await i18n.changeLanguage("zh");
+    });
+
+    afterEach(async () => {
+      cleanup();
+      await i18n.changeLanguage("en");
+    });
+
+    it("renders the Chinese title, toggle labels and table headers and hides the English ones", () => {
+      render(<SpendByProvider loading={false} isDateChanging={false} providerSpend={mockProviderSpend} />);
+
+      expect(screen.getByText("按提供商统计支出")).toBeInTheDocument();
+      expect(screen.getByText("显示零支出")).toBeInTheDocument();
+      expect(screen.getByText("显示未知")).toBeInTheDocument();
+      expect(screen.getByText("提供商")).toBeInTheDocument();
+      expect(screen.getByText("支出")).toBeInTheDocument();
+      expect(screen.getByText("成功")).toBeInTheDocument();
+      expect(screen.getByText("失败")).toBeInTheDocument();
+      expect(screen.getByText("Token 数")).toBeInTheDocument();
+
+      expect(screen.queryByText("Spend by Provider")).not.toBeInTheDocument();
+      expect(screen.queryByText("Show Zero Spend")).not.toBeInTheDocument();
+      expect(screen.queryByText("Show Unknown")).not.toBeInTheDocument();
+      expect(screen.queryByText("Provider")).not.toBeInTheDocument();
+      expect(screen.queryByText("Successful")).not.toBeInTheDocument();
+      expect(screen.queryByText("Failed")).not.toBeInTheDocument();
+      expect(screen.queryByText("Tokens")).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese unknown-provider tooltip and hides the English one", async () => {
+      const user = userEvent.setup();
+      render(<SpendByProvider loading={false} isDateChanging={false} providerSpend={mockProviderSpend} />);
+
+      const trigger = screen.getByText("显示未知").parentElement?.querySelector("svg");
+      expect(trigger).toBeTruthy();
+      await user.hover(trigger as SVGElement);
+
+      expect(await screen.findByText("无法路由到提供商的请求")).toBeInTheDocument();
+      expect(screen.queryByText("Requests that failed to route to a provider")).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese empty state and hides the English one", () => {
+      render(<SpendByProvider loading={false} isDateChanging={false} providerSpend={[]} />);
+
+      expect(screen.getByText("没有提供商用量数据")).toBeInTheDocument();
+      expect(screen.queryByText("No provider usage data")).not.toBeInTheDocument();
+    });
   });
 });

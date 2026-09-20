@@ -1,10 +1,12 @@
+import type { ParseKeys } from "i18next";
+
 import { formatNumberWithCommas } from "@/utils/dataUtils";
 
 export interface SummaryTile {
-  title: string;
+  titleKey: ParseKeys<"usage">;
   value: string;
   className?: string;
-  tooltip?: string;
+  tooltipKey?: ParseKeys<"usage">;
   expandable?: boolean;
 }
 
@@ -17,14 +19,11 @@ interface SpendSummaryMetadata {
   total_tokens: number;
 }
 
-export const TOTAL_COST_TOOLTIP =
-  "Request cost plus flat cost for reserved capacity. Select this tile to see the breakdown.";
+export const TOTAL_COST_TOOLTIP_KEY: ParseKeys<"usage"> = "entity.summary.tooltip.totalCost";
 
-export const REQUEST_COST_TOOLTIP =
-  "Usage-based cost of the requests this entity sent during the selected period, priced per token.";
+export const REQUEST_COST_TOOLTIP_KEY: ParseKeys<"usage"> = "entity.summary.tooltip.requestCost";
 
-export const FLAT_COST_TOOLTIP =
-  "Reserved provisioned throughput, billed per hour whether or not requests are sent. Reported here only; it does not count toward team, key, user, or organization budgets.";
+export const FLAT_COST_TOOLTIP_KEY: ParseKeys<"usage"> = "entity.summary.tooltip.flatCost";
 
 export const hasFlatCost = (metadata: SpendSummaryMetadata): boolean => (metadata.total_flat_cost ?? 0) > 0;
 
@@ -33,34 +32,38 @@ export const buildSummaryTiles = (metadata: SpendSummaryMetadata, showFlatCost: 
   return [
     showFlatCost
       ? {
-          title: "Total Cost",
+          titleKey: "entity.summary.totalCost",
           value: `$${formatNumberWithCommas(metadata.total_spend + flatCost, 2)}`,
-          tooltip: TOTAL_COST_TOOLTIP,
+          tooltipKey: TOTAL_COST_TOOLTIP_KEY,
           expandable: true,
         }
-      : { title: "Total Spend", value: `$${formatNumberWithCommas(metadata.total_spend, 2)}` },
-    { title: "Total Requests", value: metadata.total_api_requests.toLocaleString() },
+      : { titleKey: "entity.summary.totalSpend", value: `$${formatNumberWithCommas(metadata.total_spend, 2)}` },
+    { titleKey: "entity.summary.totalRequests", value: metadata.total_api_requests.toLocaleString() },
     {
-      title: "Successful Requests",
+      titleKey: "entity.summary.successfulRequests",
       value: metadata.total_successful_requests.toLocaleString(),
       className: "text-success",
     },
-    { title: "Failed Requests", value: metadata.total_failed_requests.toLocaleString(), className: "text-destructive" },
-    { title: "Total Tokens", value: metadata.total_tokens.toLocaleString() },
+    {
+      titleKey: "entity.summary.failedRequests",
+      value: metadata.total_failed_requests.toLocaleString(),
+      className: "text-destructive",
+    },
+    { titleKey: "entity.summary.totalTokens", value: metadata.total_tokens.toLocaleString() },
   ];
 };
 
 export const buildCostBreakdownTiles = (metadata: SpendSummaryMetadata): SummaryTile[] => [
   {
-    title: "Request Cost",
+    titleKey: "entity.summary.requestCost",
     value: `$${formatNumberWithCommas(metadata.total_spend, 2)}`,
     className: "text-info",
-    tooltip: REQUEST_COST_TOOLTIP,
+    tooltipKey: REQUEST_COST_TOOLTIP_KEY,
   },
   {
-    title: "Flat Cost",
+    titleKey: "entity.summary.flatCost",
     value: `$${formatNumberWithCommas(metadata.total_flat_cost ?? 0, 2)}`,
     className: "text-violet-600",
-    tooltip: FLAT_COST_TOOLTIP,
+    tooltipKey: FLAT_COST_TOOLTIP_KEY,
   },
 ];

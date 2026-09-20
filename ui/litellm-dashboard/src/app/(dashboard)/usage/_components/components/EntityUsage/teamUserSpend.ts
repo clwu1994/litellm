@@ -1,14 +1,15 @@
+import type { ParseKeys } from "i18next";
 import Papa from "papaparse";
 
 import type { TeamUserSpendResponse } from "@/components/networking";
 
 export type TeamUserSpendRow = TeamUserSpendResponse["results"][number];
 
-export const NO_USER_LABEL = "(no user)";
+export const NO_USER_LABEL_KEY: ParseKeys<"usage"> = "entity.teamUserSpend.noUser";
 
-export const userLabel = (row: TeamUserSpendRow): string => {
+export const userLabel = (row: TeamUserSpendRow, noUserLabel: string): string => {
   const identity = row.user_email || row.user_alias;
-  return identity || row.user_id || NO_USER_LABEL;
+  return identity || row.user_id || noUserLabel;
 };
 
 export const teamLabel = (row: TeamUserSpendRow): string => row.team_alias || row.team_id;
@@ -18,14 +19,14 @@ export const teamUserSpendRowId = (row: TeamUserSpendRow): string => `${row.team
 export const sortBySpendDesc = (rows: readonly TeamUserSpendRow[]): TeamUserSpendRow[] =>
   [...rows].sort((a, b) => b.spend - a.spend || teamLabel(a).localeCompare(teamLabel(b)));
 
-export const buildTeamUserSpendCsv = (response: TeamUserSpendResponse): string =>
+export const buildTeamUserSpendCsv = (response: TeamUserSpendResponse, noUserLabel: string): string =>
   Papa.unparse(
     sortBySpendDesc(response.results).map((row) => ({
       "Start Date": response.start_date,
       "End Date": response.end_date,
       Team: teamLabel(row),
       "Team ID": row.team_id,
-      User: userLabel(row),
+      User: userLabel(row, noUserLabel),
       "User ID": row.user_id,
       "User Email": row.user_email ?? "",
       "Spend (USD)": row.spend,

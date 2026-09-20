@@ -1,6 +1,7 @@
-import { screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { cleanup, screen } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { renderWithProviders } from "@/../tests/test-utils";
+import i18n from "@/i18n/bootstrapI18n";
 import { MetricWithMetadata } from "@/components/UsagePage/types";
 import EndpointUsageBarChart from "./EndpointUsageBarChart";
 
@@ -66,5 +67,23 @@ describe("EndpointUsageBarChart", () => {
 
     expect(screen.getByText("Success vs Failed Requests by Endpoint")).toBeInTheDocument();
     expect(container.querySelectorAll("path.recharts-rectangle")).toHaveLength(0);
+  });
+
+  describe("Chinese copy", () => {
+    beforeEach(async () => {
+      await i18n.changeLanguage("zh");
+    });
+
+    afterEach(async () => {
+      cleanup();
+      await i18n.changeLanguage("en");
+    });
+
+    it("renders the Chinese chart title and hides the English one", () => {
+      renderWithProviders(<EndpointUsageBarChart endpointData={endpointData} />);
+
+      expect(screen.getByText("按 Endpoint 统计成功与失败请求")).toBeInTheDocument();
+      expect(screen.queryByText("Success vs Failed Requests by Endpoint")).not.toBeInTheDocument();
+    });
   });
 });

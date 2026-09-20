@@ -1,6 +1,7 @@
-import { screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { cleanup, screen } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { renderWithProviders } from "@/../tests/test-utils";
+import i18n from "@/i18n/bootstrapI18n";
 import { DailyData, MetricWithMetadata, SpendMetrics } from "@/components/UsagePage/types";
 import EndpointUsageLineChart from "./EndpointUsageLineChart";
 
@@ -99,5 +100,23 @@ describe("EndpointUsageLineChart", () => {
 
     expect(screen.getByText("Endpoint Usage Trends")).toBeInTheDocument();
     expect(container.querySelectorAll("path.recharts-line-curve")).toHaveLength(0);
+  });
+
+  describe("Chinese copy", () => {
+    beforeEach(async () => {
+      await i18n.changeLanguage("zh");
+    });
+
+    afterEach(async () => {
+      cleanup();
+      await i18n.changeLanguage("en");
+    });
+
+    it("renders the Chinese chart title and hides the English one", () => {
+      renderWithProviders(<EndpointUsageLineChart dailyData={dailyData} />);
+
+      expect(screen.getByText("Endpoint 用量趋势")).toBeInTheDocument();
+      expect(screen.queryByText("Endpoint Usage Trends")).not.toBeInTheDocument();
+    });
   });
 });

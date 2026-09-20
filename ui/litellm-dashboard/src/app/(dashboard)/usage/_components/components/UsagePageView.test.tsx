@@ -4,10 +4,11 @@ import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import useIsOrgAdmin from "@/app/(dashboard)/hooks/useIsOrgAdmin";
 import { useCurrentUser } from "@/app/(dashboard)/hooks/users/useCurrentUser";
 import { useInfiniteUsers } from "@/app/(dashboard)/hooks/users/useUsers";
-import { act, fireEvent, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, fireEvent, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "@/../tests/test-utils";
+import i18n from "@/i18n/bootstrapI18n";
 import type { Organization } from "@/components/networking";
 import * as networking from "@/components/networking";
 import UsagePage from "./UsagePageView";
@@ -122,7 +123,7 @@ vi.mock("@/components/cloudzero_export_modal", () => ({
 }));
 
 vi.mock("@/components/EntityUsageExport", () => ({
-  default: () => <div>Entity Usage Export Modal</div>,
+  default: ({ customTitle }: { customTitle?: string }) => <div>{customTitle}</div>,
 }));
 
 vi.mock("./UsageAIChatPanel", () => ({
@@ -1363,6 +1364,227 @@ describe("UsagePage", () => {
       expect(screen.getByText("Key Activity")).toBeInTheDocument();
       expect(screen.getByText("MCP Server Activity")).toBeInTheDocument();
       expect(screen.getByText("Endpoint Activity")).toBeInTheDocument();
+    });
+  });
+
+  /* eslint-disable testing-library/no-node-access, testing-library/no-container -- Tooltip triggers are icon-only and the recharts wrapper exposes no role, so these assertions need the portal and the SVG */
+  describe("Chinese copy", () => {
+    beforeEach(async () => {
+      await i18n.changeLanguage("zh");
+    });
+
+    afterEach(async () => {
+      cleanup();
+      await i18n.changeLanguage("en");
+    });
+
+    it("renders the Chinese global-view chrome and hides the English ones", async () => {
+      renderWithProviders(<UsagePage {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
+      });
+
+      expect(screen.getByText("按用户筛选")).toBeInTheDocument();
+      for (const tab of ["成本", "模型活动", "密钥活动", "MCP Server 活动", "Endpoint 活动"]) {
+        expect(screen.getByText(tab)).toBeInTheDocument();
+      }
+      expect(screen.getByText("询问 AI")).toBeInTheDocument();
+      expect(screen.getByText("导出数据")).toBeInTheDocument();
+      expect(screen.getByText("导出用量数据")).toBeInTheDocument();
+      expect(screen.getByText(/项目支出/)).toBeInTheDocument();
+      expect(screen.getByText("用量指标")).toBeInTheDocument();
+      for (const metric of ["总请求数", "成功请求", "失败请求", "平均每请求成本", "总 Token 数"]) {
+        expect(screen.getByText(metric)).toBeInTheDocument();
+      }
+      expect(screen.getByText("每日支出")).toBeInTheDocument();
+      expect(screen.getByText("按 Endpoint 统计的网关请求")).toBeInTheDocument();
+      expect(screen.getByText("Top Virtual Keys")).toBeInTheDocument();
+      expect(screen.getByText("Top 公开模型名称")).toBeInTheDocument();
+      expect(screen.getAllByText("公开模型名称").length).toBeGreaterThan(0);
+      expect(screen.getAllByText("Litellm 模型名称").length).toBeGreaterThan(0);
+
+      expect(screen.queryByText("Filter by user")).not.toBeInTheDocument();
+      for (const tab of ["Cost", "Model Activity", "Key Activity", "MCP Server Activity", "Endpoint Activity"]) {
+        expect(screen.queryByText(tab)).not.toBeInTheDocument();
+      }
+      expect(screen.queryByText("Export Data")).not.toBeInTheDocument();
+      expect(screen.queryByText(/Project Spend/)).not.toBeInTheDocument();
+      expect(screen.queryByText("Usage Metrics")).not.toBeInTheDocument();
+      for (const metric of [
+        "Total Requests",
+        "Successful Requests",
+        "Failed Requests",
+        "Average Cost per Request",
+        "Total Tokens",
+      ]) {
+        expect(screen.queryByText(metric)).not.toBeInTheDocument();
+      }
+      expect(screen.queryByText("Daily Spend")).not.toBeInTheDocument();
+      expect(screen.queryByText("Gateway Requests by Endpoint")).not.toBeInTheDocument();
+      expect(screen.queryByText("Top Public Model Names")).not.toBeInTheDocument();
+      expect(screen.queryByText("Public Model Name")).not.toBeInTheDocument();
+      expect(screen.queryByText("Litellm Model Name")).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese token-breakdown labels and hides the English ones", async () => {
+      renderWithProviders(<UsagePage {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
+      });
+
+      act(() => {
+        fireEvent.click(screen.getByText("总 Token 数"));
+      });
+
+      for (const label of ["输入 Token", "输出 Token", "缓存读取 Token", "缓存写入 Token"]) {
+        expect(await screen.findByText(label)).toBeInTheDocument();
+      }
+      for (const label of ["Input Tokens", "Output Tokens", "Cache Read Tokens", "Cache Write Tokens"]) {
+        expect(screen.queryByText(label)).not.toBeInTheDocument();
+      }
+    });
+
+    it("renders the Chinese tag banner and close label and hides the English ones", async () => {
+      renderWithProviders(<UsagePage {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
+      });
+
+      act(() => {
+        fireEvent.change(screen.getByTestId("usage-view-select"), { target: { value: "tag" } });
+      });
+
+      expect(await screen.findByText("可复用凭证会自动作为标签跟踪")).toBeInTheDocument();
+      expect(screen.getByText(/使用可复用凭证时/)).toBeInTheDocument();
+      expect(screen.getByText("Credential:")).toBeInTheDocument();
+      expect(screen.getByText(/为前缀的标签/)).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "关闭" })).toBeInTheDocument();
+
+      expect(screen.queryByText("Reusable credentials are automatically tracked as tags")).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Close" })).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese gateway-counted tooltip and hides the English one", async () => {
+      const user = userEvent.setup();
+      renderWithProviders(<UsagePage {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(screen.getByTestId("gateway-requests-by-endpoint")).toBeInTheDocument();
+      });
+
+      const trigger = screen.getByText("成功请求").parentElement?.querySelector("svg");
+      expect(trigger).toBeTruthy();
+      await user.hover(trigger as SVGElement);
+
+      expect(await screen.findByText(/由网关在响应请求时统计/)).toBeInTheDocument();
+      expect(screen.queryByText(/Counted by the gateway when it answers a request/)).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese failed-request tooltip without gateway counts and hides the English one", async () => {
+      const user = userEvent.setup();
+      mockGatewayDailyActivityCall.mockRejectedValue(new Error("gateway activity unavailable"));
+      renderWithProviders(<UsagePage {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(mockGatewayDailyActivityCall).toHaveBeenCalled();
+      });
+
+      const trigger = screen.getByText("失败请求").parentElement?.querySelector("svg");
+      expect(trigger).toBeTruthy();
+      await user.hover(trigger as SVGElement);
+
+      expect(await screen.findByText(/包括无法路由到提供商的请求/)).toBeInTheDocument();
+      expect(screen.queryByText(/Includes requests that failed to route to a provider/)).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese gateway endpoint tooltip and hides the English one", async () => {
+      const user = userEvent.setup();
+      renderWithProviders(<UsagePage {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(screen.getByTestId("gateway-requests-by-endpoint")).toBeInTheDocument();
+      });
+
+      const trigger = screen.getByText("按 Endpoint 统计的网关请求").parentElement?.querySelector("svg");
+      expect(trigger).toBeTruthy();
+      await user.hover(trigger as SVGElement);
+
+      expect(await screen.findByText(/由网关中间件在响应每个请求时统计/)).toBeInTheDocument();
+      expect(screen.queryByText(/Counted by the gateway middleware/)).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese daily-spend chart tooltip and hides the English one", async () => {
+      const { container } = renderWithProviders(<UsagePage {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
+      });
+      await waitFor(() => {
+        expect(container.querySelectorAll("path.recharts-rectangle").length).toBeGreaterThan(0);
+      });
+
+      const gatewayCard = container.querySelector('[data-testid="gateway-requests-by-endpoint"]');
+      const spendBar = Array.from(container.querySelectorAll("path.recharts-rectangle")).find(
+        (rect) => !gatewayCard?.contains(rect),
+      );
+      expect(spendBar).toBeDefined();
+      const surface = spendBar?.closest(".recharts-wrapper") ?? spendBar;
+      fireEvent.mouseEnter(surface as Element);
+      fireEvent.mouseMove(surface as Element, { clientX: 400, clientY: 200 });
+
+      expect(await screen.findByText(/^支出：\$/)).toBeInTheDocument();
+      expect(screen.getByText(/^请求数：/)).toBeInTheDocument();
+      expect(screen.getByText(/^成功：/)).toBeInTheDocument();
+      expect(screen.getByText(/^失败：/)).toBeInTheDocument();
+      expect(screen.getByText(/^Token 数：/)).toBeInTheDocument();
+
+      expect(screen.queryByText(/^Spend: \$/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/^Requests: /)).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese top-model chart tooltip and hides the English one", async () => {
+      renderWithProviders(<UsagePage {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
+      });
+
+      let node: HTMLElement | null = screen.getByText("Top 公开模型名称");
+      while (node && !node.querySelector(".recharts-wrapper")) {
+        node = node.parentElement;
+      }
+      const wrapper = node?.querySelector(".recharts-wrapper");
+      expect(wrapper).toBeTruthy();
+      fireEvent.mouseEnter(wrapper as Element);
+      fireEvent.mouseMove(wrapper as Element, { clientX: 400, clientY: 200 });
+
+      expect(await screen.findByText(/^总请求数：/)).toBeInTheDocument();
+      expect(screen.getByText(/^支出：\$/)).toBeInTheDocument();
+      expect(screen.getByText(/^成功：/)).toBeInTheDocument();
+      expect(screen.getByText(/^失败：/)).toBeInTheDocument();
+      expect(screen.getByText(/^Token 数：/)).toBeInTheDocument();
+
+      expect(screen.queryByText(/^Total Requests: /)).not.toBeInTheDocument();
+    });
+
+    it("renders the Chinese litellm-model heading and hides the English one", async () => {
+      renderWithProviders(<UsagePage {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(mockUserDailyActivityAggregatedCall).toHaveBeenCalled();
+      });
+
+      act(() => {
+        fireEvent.click(screen.getAllByText("Litellm 模型名称")[0]);
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText("Top Litellm 模型")).toBeInTheDocument();
+      });
+      expect(screen.queryByText("Top Litellm Models")).not.toBeInTheDocument();
     });
   });
 });

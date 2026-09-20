@@ -4,12 +4,15 @@ import type { TeamUserSpendResponse } from "@/components/networking";
 
 import {
   buildTeamUserSpendCsv,
+  NO_USER_LABEL_KEY,
   sortBySpendDesc,
   teamUserSpendCsvFileName,
   teamUserSpendRowId,
   userLabel,
   type TeamUserSpendRow,
 } from "./teamUserSpend";
+
+const NO_USER = "(no user)";
 
 const row = (overrides: Partial<TeamUserSpendRow>): TeamUserSpendRow => ({
   team_id: "team-alpha",
@@ -54,11 +57,15 @@ describe("teamUserSpend", () => {
     expect(ids[0]).not.toBe(ids[1]);
   });
 
-  it("labels a user by email, then alias, then id, then a placeholder", () => {
-    expect(userLabel(row({}))).toBe("alice@example.com");
-    expect(userLabel(row({ user_email: null, user_alias: "Bob", user_id: "u1" }))).toBe("Bob");
-    expect(userLabel(row({ user_email: null, user_alias: null, user_id: "u1" }))).toBe("u1");
-    expect(userLabel(row({ user_email: null, user_alias: null, user_id: "" }))).toBe("(no user)");
+  it("labels a user by email, then alias, then id, then the caller's placeholder", () => {
+    expect(userLabel(row({}), NO_USER)).toBe("alice@example.com");
+    expect(userLabel(row({ user_email: null, user_alias: "Bob", user_id: "u1" }), NO_USER)).toBe("Bob");
+    expect(userLabel(row({ user_email: null, user_alias: null, user_id: "u1" }), NO_USER)).toBe("u1");
+    expect(userLabel(row({ user_email: null, user_alias: null, user_id: "" }), NO_USER)).toBe(NO_USER);
+  });
+
+  it("stores the placeholder under the usage namespace so render sites can resolve it", () => {
+    expect(NO_USER_LABEL_KEY).toBe("entity.teamUserSpend.noUser");
   });
 
   it("sorts by spend descending without mutating the input", () => {
@@ -68,7 +75,7 @@ describe("teamUserSpend", () => {
   });
 
   it("writes one CSV line per (team, user) with the team kept on every line", () => {
-    const lines = buildTeamUserSpendCsv(response).split(/\r?\n/);
+    const lines = buildTeamUserSpendCsv(response, NO_USER).split(/\r?\n/);
     expect(lines[0]).toBe(
       "Start Date,End Date,Team,Team ID,User,User ID,User Email,Spend (USD),Requests,Successful,Failed,Prompt Tokens,Completion Tokens,Total Tokens",
     );
@@ -79,11 +86,22 @@ describe("teamUserSpend", () => {
     ]);
   });
 
+  it("writes the caller's placeholder for a row with no user identity", () => {
+    const csv = buildTeamUserSpendCsv(
+      { ...response, results: [row({ user_id: "", user_email: null, user_alias: null })] },
+      "（无用户）",
+    );
+    expect(csv.split(/\r?\n/)[1]).toContain("（无用户）");
+  });
+
   it("neutralises spreadsheet formulas in user-controlled cells", () => {
-    const csv = buildTeamUserSpendCsv({
-      ...response,
-      results: [row({ user_alias: null, user_email: "=HYPERLINK(1)" })],
-    });
+    const csv = buildTeamUserSpendCsv(
+      {
+        ...response,
+        results: [row({ user_alias: null, user_email: "=HYPERLINK(1)" })],
+      },
+      NO_USER,
+    );
     expect(csv).toContain("'=HYPERLINK(1)");
   });
 
