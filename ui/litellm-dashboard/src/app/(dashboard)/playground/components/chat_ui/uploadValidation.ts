@@ -1,4 +1,10 @@
-export type UploadValidationResult = { ok: true } | { ok: false; error: string };
+import type { ParseKeys } from "i18next";
+
+export type UploadValidationParams = Record<string, string | number>;
+
+export type UploadValidationResult =
+  | { ok: true }
+  | { ok: false; errorKey: ParseKeys<"playground">; errorParams: UploadValidationParams };
 
 export const CHAT_ATTACHMENT_ACCEPT = "image/png,image/jpeg,image/jpg,image/gif,image/webp,application/pdf,.pdf";
 export const IMAGE_EDIT_ACCEPT = "image/png,image/jpeg,image/jpg,image/gif,image/webp";
@@ -56,7 +62,8 @@ function validateSize(file: File, maxBytes: number): UploadValidationResult {
   }
   return {
     ok: false,
-    error: `"${file.name}" is too large. Maximum size is ${formatMb(maxBytes)}.`,
+    errorKey: "validation.tooLarge",
+    errorParams: { name: file.name, maxSize: formatMb(maxBytes) },
   };
 }
 
@@ -64,7 +71,8 @@ export function validateChatAttachment(file: File): UploadValidationResult {
   if (!isImageFile(file) && !isPdfFile(file)) {
     return {
       ok: false,
-      error: `"${file.name}" is not a supported attachment. Use PNG, JPEG, GIF, WebP, or PDF.`,
+      errorKey: "validation.unsupportedAttachment",
+      errorParams: { name: file.name },
     };
   }
   return validateSize(file, MAX_CHAT_ATTACHMENT_BYTES);
@@ -74,13 +82,15 @@ export function validateImageEditFile(file: File, currentCount: number): UploadV
   if (currentCount >= MAX_IMAGE_EDIT_COUNT) {
     return {
       ok: false,
-      error: `You can upload at most ${MAX_IMAGE_EDIT_COUNT} images.`,
+      errorKey: "validation.tooManyImages",
+      errorParams: { count: MAX_IMAGE_EDIT_COUNT },
     };
   }
   if (!isImageFile(file)) {
     return {
       ok: false,
-      error: `"${file.name}" is not a supported image. Use PNG, JPEG, GIF, or WebP.`,
+      errorKey: "validation.unsupportedImage",
+      errorParams: { name: file.name },
     };
   }
   return validateSize(file, MAX_IMAGE_EDIT_BYTES);
@@ -90,7 +100,8 @@ export function validateAudioFile(file: File): UploadValidationResult {
   if (!isAudioFile(file)) {
     return {
       ok: false,
-      error: `"${file.name}" is not a supported audio file. Use MP3, MP4, MPEG, MPGA, M4A, WAV, or WEBM.`,
+      errorKey: "validation.unsupportedAudio",
+      errorParams: { name: file.name },
     };
   }
   return validateSize(file, MAX_AUDIO_BYTES);

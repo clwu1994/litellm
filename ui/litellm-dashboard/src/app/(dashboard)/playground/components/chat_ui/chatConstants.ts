@@ -1,3 +1,4 @@
+import type { ParseKeys, TFunction } from "i18next";
 import { EndpointType } from "@/components/chat_ui/mode_endpoint_mapping";
 
 export const OPEN_AI_VOICES = {
@@ -15,23 +16,24 @@ export const OPEN_AI_VOICES = {
 
 export type OpenAIVoice = (typeof OPEN_AI_VOICES)[keyof typeof OPEN_AI_VOICES];
 
-export const OPEN_AI_VOICE_LABELS = {
-  ALLOY: "Alloy - Professional and confident",
-  ASH: "Ash - Casual and relaxed",
-  BALAD: "Ballad - Smooth and melodic",
-  CORAL: "Coral - Warm and engaging",
-  ECHO: "Echo - Friendly and conversational",
-  FABLE: "Fable - Wise and measured",
-  NOVA: "Nova - Friendly and conversational",
-  ONYX: "Onyx - Deep and authoritative",
-  SAGE: "Sage - Wise and measured",
-  SHIMMER: "Shimmer - Bright and cheerful",
-};
+const OPEN_AI_VOICE_LABEL_KEYS = {
+  ALLOY: "settings.voices.alloy",
+  ASH: "settings.voices.ash",
+  BALAD: "settings.voices.ballad",
+  CORAL: "settings.voices.coral",
+  ECHO: "settings.voices.echo",
+  FABLE: "settings.voices.fable",
+  NOVA: "settings.voices.nova",
+  ONYX: "settings.voices.onyx",
+  SAGE: "settings.voices.sage",
+  SHIMMER: "settings.voices.shimmer",
+} as const satisfies Record<keyof typeof OPEN_AI_VOICES, ParseKeys<"playground">>;
 
-export const OPEN_AI_VOICE_SELECT_OPTIONS = Object.entries(OPEN_AI_VOICES).map(([key, voice]) => ({
-  value: voice,
-  label: OPEN_AI_VOICE_LABELS[key as keyof typeof OPEN_AI_VOICE_LABELS],
-}));
+export const openAIVoiceOptions = (t: TFunction<"playground">) =>
+  Object.entries(OPEN_AI_VOICES).map(([key, voice]) => ({
+    value: voice,
+    label: t(OPEN_AI_VOICE_LABEL_KEYS[key as keyof typeof OPEN_AI_VOICE_LABEL_KEYS]),
+  }));
 
 export const ENDPOINT_OPTIONS = [
   { value: EndpointType.CHAT, label: "/v1/chat/completions" },

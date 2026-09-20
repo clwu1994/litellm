@@ -29,7 +29,8 @@ describe("validateChatAttachment", () => {
     const result = validateChatAttachment(makeFile("notes.txt", "text/plain"));
     expect(result.ok).toBe(false);
     if (!result.ok) {
-      expect(result.error).toContain("not a supported attachment");
+      expect(result.errorKey).toBe("validation.unsupportedAttachment");
+      expect(result.errorParams).toEqual({ name: "notes.txt" });
     }
   });
 
@@ -37,7 +38,8 @@ describe("validateChatAttachment", () => {
     const result = validateChatAttachment(makeFile("huge.png", "image/png", MAX_CHAT_ATTACHMENT_BYTES + 1));
     expect(result.ok).toBe(false);
     if (!result.ok) {
-      expect(result.error).toContain("too large");
+      expect(result.errorKey).toBe("validation.tooLarge");
+      expect(result.errorParams).toEqual({ name: "huge.png", maxSize: "20 MB" });
     }
   });
 });
@@ -51,7 +53,8 @@ describe("validateImageEditFile", () => {
     const result = validateImageEditFile(makeFile("a.png", "image/png"), MAX_IMAGE_EDIT_COUNT);
     expect(result.ok).toBe(false);
     if (!result.ok) {
-      expect(result.error).toContain(`at most ${MAX_IMAGE_EDIT_COUNT}`);
+      expect(result.errorKey).toBe("validation.tooManyImages");
+      expect(result.errorParams).toEqual({ count: MAX_IMAGE_EDIT_COUNT });
     }
   });
 
@@ -59,7 +62,8 @@ describe("validateImageEditFile", () => {
     const result = validateImageEditFile(makeFile("doc.pdf", "application/pdf"), 0);
     expect(result.ok).toBe(false);
     if (!result.ok) {
-      expect(result.error).toContain("not a supported image");
+      expect(result.errorKey).toBe("validation.unsupportedImage");
+      expect(result.errorParams).toEqual({ name: "doc.pdf" });
     }
   });
 });
@@ -74,5 +78,21 @@ describe("validateAudioFile", () => {
   it("rejects non-audio files and oversized files", () => {
     expect(validateAudioFile(makeFile("a.png", "image/png")).ok).toBe(false);
     expect(validateAudioFile(makeFile("a.mp3", "audio/mpeg", MAX_AUDIO_BYTES + 1)).ok).toBe(false);
+  });
+
+  it("names the unsupported audio file and the size limit", () => {
+    const unsupported = validateAudioFile(makeFile("a.png", "image/png"));
+    expect(unsupported.ok).toBe(false);
+    if (!unsupported.ok) {
+      expect(unsupported.errorKey).toBe("validation.unsupportedAudio");
+      expect(unsupported.errorParams).toEqual({ name: "a.png" });
+    }
+
+    const oversized = validateAudioFile(makeFile("a.mp3", "audio/mpeg", MAX_AUDIO_BYTES + 1));
+    expect(oversized.ok).toBe(false);
+    if (!oversized.ok) {
+      expect(oversized.errorKey).toBe("validation.tooLarge");
+      expect(oversized.errorParams).toEqual({ name: "a.mp3", maxSize: "25 MB" });
+    }
   });
 });

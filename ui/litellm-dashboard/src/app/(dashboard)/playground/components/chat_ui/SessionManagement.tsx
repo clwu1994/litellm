@@ -1,5 +1,7 @@
 import React from "react";
 import { Copy, Info } from "lucide-react";
+import type { TFunction } from "i18next";
+import { useTranslation } from "react-i18next";
 import { EndpointType } from "@/components/chat_ui/mode_endpoint_mapping";
 import { toast } from "@/lib/toast";
 import { Button } from "@/components/ui/button";
@@ -19,6 +21,8 @@ const SessionManagement: React.FC<SessionManagementProps> = ({
   useApiSessionManagement,
   onToggleSessionManagement,
 }) => {
+  const { t } = useTranslation("playground");
+
   if (endpointType !== EndpointType.RESPONSES) {
     return null;
   }
@@ -27,33 +31,29 @@ const SessionManagement: React.FC<SessionManagementProps> = ({
     if (responsesSessionId) {
       try {
         await navigator.clipboard.writeText(responsesSessionId);
-        toast.success("Response ID copied to clipboard!");
+        toast.success(t("sessions.copySuccess"));
       } catch {
-        toast.error("Unable to copy response ID");
+        toast.error(t("sessions.copyFailed"));
       }
     }
   };
 
-  const getSessionDisplay = () => {
+  const getSessionDisplay = (translate: TFunction<"playground">) => {
     if (!responsesSessionId) {
-      return useApiSessionManagement ? "API Session: Ready" : "UI Session: Ready";
+      return useApiSessionManagement ? translate("sessions.apiReady") : translate("sessions.uiReady");
     }
 
-    const sessionPrefix = useApiSessionManagement ? "Response ID" : "UI Session";
+    const sessionPrefix = useApiSessionManagement ? translate("sessions.responseId") : translate("sessions.uiSession");
     const truncatedId = responsesSessionId.slice(0, 10);
     return `${sessionPrefix}: ${truncatedId}...`;
   };
 
-  const getSessionDescription = () => {
+  const getSessionDescription = (translate: TFunction<"playground">) => {
     if (!responsesSessionId) {
-      return useApiSessionManagement
-        ? "LiteLLM will manage session using previous_response_id"
-        : "UI will manage session using chat history";
+      return useApiSessionManagement ? translate("sessions.apiReadyHint") : translate("sessions.uiReadyHint");
     }
 
-    return useApiSessionManagement
-      ? "LiteLLM API session active - context maintained server-side"
-      : "UI session active - context maintained client-side";
+    return useApiSessionManagement ? translate("sessions.apiActiveHint") : translate("sessions.uiActiveHint");
   };
 
   return (
@@ -61,26 +61,23 @@ const SessionManagement: React.FC<SessionManagementProps> = ({
       {/* Session Management Toggle */}
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-foreground">Session Management</span>
+          <span className="text-sm font-medium text-foreground">{t("sessions.title")}</span>
           <Tooltip>
-            <TooltipTrigger aria-label="About session management">
+            <TooltipTrigger aria-label={t("sessions.aboutAria")}>
               <Info className="size-3 text-muted-foreground" />
             </TooltipTrigger>
-            <TooltipContent>
-              Choose between LiteLLM API session management (using previous_response_id) or UI-based session management
-              (using chat history)
-            </TooltipContent>
+            <TooltipContent>{t("sessions.aboutTooltip")}</TooltipContent>
           </Tooltip>
         </div>
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <span aria-hidden="true">UI</span>
+          <span aria-hidden="true">{t("sessions.ui")}</span>
           <Switch
             checked={useApiSessionManagement}
             onCheckedChange={onToggleSessionManagement}
-            aria-label="Use API session management"
+            aria-label={t("sessions.useApiAria")}
             size="sm"
           />
-          <span aria-hidden="true">API</span>
+          <span aria-hidden="true">{t("sessions.api")}</span>
         </div>
       </div>
 
@@ -95,7 +92,7 @@ const SessionManagement: React.FC<SessionManagementProps> = ({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1">
             <Info className="size-3" />
-            {getSessionDisplay()}
+            {getSessionDisplay(t)}
           </div>
           {responsesSessionId && (
             <Tooltip>
@@ -106,7 +103,7 @@ const SessionManagement: React.FC<SessionManagementProps> = ({
                     variant="ghost"
                     size="icon-xs"
                     onClick={handleCopySessionId}
-                    aria-label="Copy response ID"
+                    aria-label={t("sessions.copyResponseIdAria")}
                     className="ml-2 hover:bg-success/15"
                   />
                 }
@@ -115,7 +112,7 @@ const SessionManagement: React.FC<SessionManagementProps> = ({
               </TooltipTrigger>
               <TooltipContent className="max-w-lg">
                 <div className="text-xs">
-                  <div className="mb-1">Copy response ID to continue session:</div>
+                  <div className="mb-1">{t("sessions.copyHint")}</div>
                   <div className="bg-gray-800 text-gray-100 p-2 rounded-sm font-mono text-xs whitespace-pre-wrap">
                     {`curl -X POST "your-proxy-url/v1/responses" \\
   -H "Authorization: Bearer your-api-key" \\
@@ -132,7 +129,7 @@ const SessionManagement: React.FC<SessionManagementProps> = ({
             </Tooltip>
           )}
         </div>
-        <div className="text-xs opacity-75 mt-1">{getSessionDescription()}</div>
+        <div className="text-xs opacity-75 mt-1">{getSessionDescription(t)}</div>
       </div>
     </div>
   );

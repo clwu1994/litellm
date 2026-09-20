@@ -7,6 +7,7 @@ import enKeys from "./locales/en/keys.json";
 import enLogs from "./locales/en/logs.json";
 import enNav from "./locales/en/nav.json";
 import enOrganizations from "./locales/en/organizations.json";
+import enPlayground from "./locales/en/playground.json";
 import enTeams from "./locales/en/teams.json";
 import enUsage from "./locales/en/usage.json";
 import enUsers from "./locales/en/users.json";
@@ -19,6 +20,7 @@ import zhKeys from "./locales/zh/keys.json";
 import zhLogs from "./locales/zh/logs.json";
 import zhNav from "./locales/zh/nav.json";
 import zhOrganizations from "./locales/zh/organizations.json";
+import zhPlayground from "./locales/zh/playground.json";
 import zhTeams from "./locales/zh/teams.json";
 import zhUsage from "./locales/zh/usage.json";
 import zhUsers from "./locales/zh/users.json";
@@ -36,6 +38,7 @@ export const resources = {
     teams: enTeams,
     users: enUsers,
     organizations: enOrganizations,
+    playground: enPlayground,
     usage: enUsage,
   },
   zh: {
@@ -50,6 +53,7 @@ export const resources = {
     teams: zhTeams,
     users: zhUsers,
     organizations: zhOrganizations,
+    playground: zhPlayground,
     usage: zhUsage,
   },
 };
