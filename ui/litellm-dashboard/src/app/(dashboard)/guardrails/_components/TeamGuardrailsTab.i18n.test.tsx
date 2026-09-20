@@ -144,6 +144,9 @@ describe("TeamGuardrailsTab Chinese copy", () => {
     expect(screen.queryByRole("button", { name: "Approve" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Reject" })).not.toBeInTheDocument();
     expect(screen.queryByText("Static headers")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Add Guardrail/ })).not.toBeInTheDocument();
+    expect(screen.queryByText("Model:")).not.toBeInTheDocument();
+    expect(screen.queryByText("Submitted:")).not.toBeInTheDocument();
   });
 
   it("renders the Chinese close label on the selected card", async () => {
@@ -205,6 +208,26 @@ describe("TeamGuardrailsTab Chinese copy", () => {
     ).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /LiteLLM Generic Guardrail API 文档/ })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "测试 Endpoint" })).toBeInTheDocument();
+    expect(screen.queryByText("Sent with every request to the guardrail.")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        "Allowed header names to forward from the client request to the guardrail (e.g. x-request-id).",
+      ),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        hasTextContent(
+          "When enabled, the caller's LiteLLM API key is forwarded as an Authorization header to your guardrail endpoint. This allows your guardrail to authenticate model calls using the original caller's credentials.",
+        ),
+      ),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        hasTextContent(
+          "This guardrail runs on a separate instance. It receives the user request and forwards the result to the next step in the pipeline. See LiteLLM Generic Guardrail API docs for configuration details.",
+        ),
+      ),
+    ).not.toBeInTheDocument();
 
     expect(screen.queryByText("Submitted by dev@example.com on 2026-05-09")).not.toBeInTheDocument();
     expect(screen.queryByLabelText("Close detail panel")).not.toBeInTheDocument();
@@ -279,6 +302,7 @@ describe("TeamGuardrailsTab Chinese copy", () => {
     await user.click(screen.getByRole("combobox", { name: "模式" }));
     expect(await screen.findByRole("option", { name: "调用后" })).toBeInTheDocument();
     expect(screen.getByRole("option", { name: "调用中" })).toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: "Pre Call" })).not.toBeInTheDocument();
 
     expect(screen.queryByText("Submit Guardrail for Review")).not.toBeInTheDocument();
     expect(
@@ -310,6 +334,11 @@ describe("TeamGuardrailsTab Chinese copy", () => {
         "合并到 litellm_params 的 JSON 对象。例如 forward_api_key、headers、model、unreachable_fallback",
       ),
     ).toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        "JSON object merged into litellm_params. e.g. forward_api_key, headers, model, unreachable_fallback",
+      ),
+    ).not.toBeInTheDocument();
   });
 
   it("renders the Chinese validation messages and hides the English", async () => {

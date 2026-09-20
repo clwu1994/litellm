@@ -184,6 +184,13 @@ describe("Guardrail test surfaces Chinese copy", () => {
       ),
     ).toBeInTheDocument();
 
+    expect(screen.queryByText("Press Enter to submit. Use Shift+Enter for new line.")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        "JSON object forwarded to the guardrail as request_data['metadata']. Custom guardrails can read per-request configuration from it.",
+      ),
+    ).not.toBeInTheDocument();
+
     expect(screen.queryByText("Test Guardrails:")).not.toBeInTheDocument();
     expect(screen.queryByText("Test 1 guardrail and compare results")).not.toBeInTheDocument();
     expect(screen.queryByText("Input Text")).not.toBeInTheDocument();
@@ -196,7 +203,9 @@ describe("Guardrail test surfaces Chinese copy", () => {
     renderPanel(["guardrail-one"]);
 
     expect(screen.getByText(hasTextContent("按 Enter 提交 • 按 Shift+Enter 换行"))).toBeInTheDocument();
-    expect(screen.queryByText(/Press Enter to submit/)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(hasTextContent("Press Enter to submit • Shift+Enter for new line")),
+    ).not.toBeInTheDocument();
   });
 
   it("renders the Chinese panel copy button and characters count", async () => {
@@ -208,6 +217,8 @@ describe("Guardrail test surfaces Chinese copy", () => {
     await user.type(screen.getByPlaceholderText("输入要使用 Guardrail 测试的文本..."), "hello");
     expect(screen.getByRole("button", { name: "复制输入" })).toBeInTheDocument();
     expect(screen.getByText(hasTextContent("字符数：5"))).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Copy Input" })).not.toBeInTheDocument();
+    expect(screen.queryByText("Characters: 5")).not.toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "复制输入" }));
     await vi.waitFor(() => expect(toast.success).toHaveBeenCalledWith("输入已复制到剪贴板"));
@@ -255,6 +266,7 @@ describe("Guardrail test surfaces Chinese copy", () => {
     expect(await screen.findByText("元数据必须是 JSON 对象")).toBeInTheDocument();
     await vi.waitFor(() => expect(toast.fromError).toHaveBeenCalledWith("元数据：元数据必须是 JSON 对象"));
     expect(screen.queryByText("Metadata must be a JSON object")).not.toBeInTheDocument();
+    expect(toast.fromError).not.toHaveBeenCalledWith("Metadata: 元数据必须是 JSON 对象");
     unmount();
 
     renderPanel(["guardrail-one"]);
@@ -265,6 +277,7 @@ describe("Guardrail test surfaces Chinese copy", () => {
     expect(await screen.findByText("无效的 JSON")).toBeInTheDocument();
     await vi.waitFor(() => expect(toast.fromError).toHaveBeenCalledWith("元数据：无效的 JSON"));
     expect(screen.queryByText("Invalid JSON")).not.toBeInTheDocument();
+    expect(toast.fromError).not.toHaveBeenCalledWith("Metadata: 无效的 JSON");
   });
 
   it("emits the Chinese enter-text validation toast", async () => {
@@ -293,6 +306,7 @@ describe("Guardrail test surfaces Chinese copy", () => {
     expect(screen.getByText(hasTextContent("字符数："))).toBeInTheDocument();
     expect(screen.getByText("13")).toBeInTheDocument();
     expect(screen.getByText("err-guardrail - 错误")).toBeInTheDocument();
+    expect(screen.queryByText("Characters:")).not.toBeInTheDocument();
 
     expect(screen.queryByText("Results")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Copy" })).not.toBeInTheDocument();
