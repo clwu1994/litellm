@@ -524,5 +524,343 @@
     "removeConstraint": "Remove constraint",
     "addConstraint": "+ Add another constraint",
     "violationMessage": "Violation message (optional)"
+  },
+  "garden": {
+    "searchPlaceholder": "Search guardrails",
+    "showAll": "Show all ({{count}})",
+    "showLess": "Show less",
+    "testCases": "test cases",
+    "sections": {
+      "litellmTitle": "LiteLLM Content Filter",
+      "litellmDescription": "Built-in guardrails powered by LiteLLM. Zero latency, no external dependencies, no additional cost.",
+      "partnerTitle": "Partner Guardrails",
+      "partnerDescription": "Third-party guardrail integrations from leading AI security providers."
+    },
+    "detail": {
+      "createGuardrail": "Create Guardrail",
+      "provider": "Provider",
+      "litellmProvider": "LiteLLM Content Filter",
+      "partnerProvider": "Partner Guardrail",
+      "subcategory": "Subcategory",
+      "cost": "Cost",
+      "costValue": "$0 / request",
+      "externalDependencies": "External Dependencies",
+      "none": "None",
+      "latency": "Latency",
+      "latencyFallback": "<1ms",
+      "guardrailDetails": "Guardrail Details",
+      "detailsAsFollows": "Details are as follows",
+      "property": "Property",
+      "guardrailId": "Guardrail ID",
+      "type": "Type",
+      "contentFilter": "Content Filter",
+      "partner": "Partner",
+      "tags": "Tags",
+      "overview": "Overview",
+      "evalResults": "Eval Results",
+      "metric": "Metric",
+      "value": "Value",
+      "precision": "Precision",
+      "recall": "Recall",
+      "f1Score": "F1 Score",
+      "testCases": "Test Cases",
+      "falsePositives": "False Positives",
+      "falseNegatives": "False Negatives",
+      "latencyP50": "Latency (p50)"
+    },
+    "cards": {
+      "cf_denied_financial": {
+        "name": "Denied Financial Advice",
+        "description": "Detects requests for personalized financial advice, investment recommendations, or financial planning."
+      },
+      "cf_denied_insults": {
+        "name": "Insults & Personal Attacks",
+        "description": "Detects insults, name-calling, and personal attacks directed at the chatbot, staff, or other people."
+      },
+      "cf_denied_legal": {
+        "name": "Denied Legal Advice",
+        "description": "Detects requests for unauthorized legal advice, case analysis, or legal recommendations."
+      },
+      "cf_denied_medical": {
+        "name": "Denied Medical Advice",
+        "description": "Detects requests for medical diagnosis, treatment recommendations, or health advice."
+      },
+      "cf_harmful_violence": {
+        "name": "Harmful Violence",
+        "description": "Detects content related to violence, criminal planning, attacks, and violent threats."
+      },
+      "cf_harmful_self_harm": {
+        "name": "Harmful Self-Harm",
+        "description": "Detects content related to self-harm, suicide, and dangerous self-destructive behavior."
+      },
+      "cf_harmful_child_safety": {
+        "name": "Harmful Child Safety",
+        "description": "Detects content that could endanger child safety or exploit minors."
+      },
+      "cf_harmful_illegal_weapons": {
+        "name": "Harmful Illegal Weapons",
+        "description": "Detects content related to illegal weapons manufacturing, distribution, or acquisition."
+      },
+      "cf_bias_gender": {
+        "name": "Bias: Gender",
+        "description": "Detects gender-based discrimination, stereotypes, and biased language."
+      },
+      "cf_bias_racial": {
+        "name": "Bias: Racial",
+        "description": "Detects racial discrimination, stereotypes, and racially biased content."
+      },
+      "cf_bias_religious": {
+        "name": "Bias: Religious",
+        "description": "Detects religious discrimination, intolerance, and religiously biased content."
+      },
+      "cf_bias_sexual_orientation": {
+        "name": "Bias: Sexual Orientation",
+        "description": "Detects discrimination based on sexual orientation and related biased content."
+      },
+      "cf_prompt_injection_jailbreak": {
+        "name": "Prompt Injection: Jailbreak",
+        "description": "Detects jailbreak attempts designed to bypass AI safety guidelines and restrictions."
+      },
+      "cf_prompt_injection_data_exfil": {
+        "name": "Prompt Injection: Data Exfiltration",
+        "description": "Detects attempts to extract sensitive data through prompt manipulation."
+      },
+      "cf_prompt_injection_sql": {
+        "name": "Prompt Injection: SQL",
+        "description": "Detects SQL injection attempts embedded in prompts."
+      },
+      "cf_prompt_injection_malicious_code": {
+        "name": "Prompt Injection: Malicious Code",
+        "description": "Detects attempts to inject malicious code through prompts."
+      },
+      "cf_prompt_injection_system_prompt": {
+        "name": "Prompt Injection: System Prompt",
+        "description": "Detects attempts to extract or override system prompts."
+      },
+      "cf_toxic_abuse": {
+        "name": "Toxic & Abusive Language",
+        "description": "Detects toxic, abusive, and hateful language across multiple languages (EN, AU, DE, ES, FR)."
+      },
+      "cf_patterns": {
+        "name": "Pattern Matching",
+        "description": "Detect and block sensitive data patterns like SSNs, credit card numbers, API keys, and custom regex patterns."
+      },
+      "cf_keywords": {
+        "name": "Keyword Blocking",
+        "description": "Block or mask content containing specific keywords or phrases. Upload custom word lists or add individual terms."
+      },
+      "block_code_execution": {
+        "name": "Block Code Execution",
+        "description": "Detects markdown fenced code blocks in requests and responses. Block or mask executable code (e.g. Python, JavaScript, Bash) by language with configurable confidence."
+      },
+      "cf_competitor_intent": {
+        "name": "Competitor Name Blocking",
+        "description": "Block or reframe competitor comparison and ranking intent. Detect when users ask to compare or recommend competitors (airline or generic competitor lists)."
+      },
+      "presidio": {
+        "name": "Presidio PII",
+        "description": "Microsoft Presidio for PII detection and anonymization. Supports 30+ entity types with configurable actions."
+      },
+      "bedrock": {
+        "name": "Bedrock Guardrail",
+        "description": "AWS Bedrock Guardrails for content filtering, topic avoidance, and sensitive information detection."
+      },
+      "lakera": {
+        "name": "Lakera",
+        "description": "AI security platform protecting against prompt injections, data leakage, and harmful content."
+      },
+      "openai_moderation": {
+        "name": "OpenAI Moderation",
+        "description": "OpenAI's content moderation API for detecting harmful content across multiple categories."
+      },
+      "google_model_armor": {
+        "name": "Google Cloud Model Armor",
+        "description": "Google Cloud's model protection service for safe and responsible AI deployments."
+      },
+      "guardrails_ai": {
+        "name": "Guardrails AI",
+        "description": "Open-source framework for adding structural, type, and quality guarantees to LLM outputs."
+      },
+      "zscaler": {
+        "name": "Zscaler AI Guard",
+        "description": "Enterprise AI security from Zscaler for monitoring and protecting AI/ML workloads."
+      },
+      "panw": {
+        "name": "PANW Prisma AIRS",
+        "description": "Palo Alto Networks Prisma AI Runtime Security for securing AI applications in production."
+      },
+      "cisco_ai_defense": {
+        "name": "Cisco AI Defense",
+        "description": "Cisco AI Defense Inspection API for runtime protection: prompt injection, PII/PCI/PHI, harassment, hate speech, profanity, violence, and code detection."
+      },
+      "noma": {
+        "name": "Noma Security",
+        "description": "AI security platform for detecting and preventing AI-specific threats and vulnerabilities."
+      },
+      "aporia": {
+        "name": "Aporia AI",
+        "description": "Real-time AI guardrails for hallucination detection, topic control, and policy enforcement."
+      },
+      "aim": {
+        "name": "AIM Guardrail",
+        "description": "AIM Security guardrails for comprehensive AI threat detection and mitigation."
+      },
+      "cato_networks": {
+        "name": "Cato Networks Guardrail",
+        "description": "Cato Networks guardrails for comprehensive AI threat detection and mitigation."
+      },
+      "prompt_security": {
+        "name": "Prompt Security",
+        "description": "Protect against prompt injection attacks, data leakage, and other LLM security threats."
+      },
+      "lasso": {
+        "name": "Lasso Guardrail",
+        "description": "Content moderation and safety guardrails for responsible AI deployments."
+      },
+      "pangea": {
+        "name": "Pangea Guardrail",
+        "description": "Pangea's AI guardrails for secure, compliant, and trustworthy AI applications."
+      },
+      "enkryptai": {
+        "name": "EnkryptAI",
+        "description": "AI security and governance platform for enterprise AI safety and compliance."
+      },
+      "javelin": {
+        "name": "Javelin Guardrails",
+        "description": "AI gateway with built-in guardrails for secure and compliant AI operations."
+      },
+      "pillar": {
+        "name": "Pillar Guardrail",
+        "description": "AI safety platform for monitoring, testing, and securing AI systems."
+      },
+      "akto": {
+        "name": "Akto Guardrail",
+        "description": "AI security platform from Akto.io with automatic monitoring and guardrails for AI/ML applications."
+      },
+      "promptguard": {
+        "name": "PromptGuard",
+        "description": "AI security gateway with prompt injection detection, PII redaction, topic filtering, entity blocklists, and hallucination detection. Self-hostable with drop-in proxy integration."
+      },
+      "xecguard": {
+        "name": "XecGuard",
+        "description": "CyCraft XecGuard AI security gateway. Multi-policy scanning (prompt injection, harmful content, PII, system-prompt enforcement) plus RAG context grounding."
+      },
+      "deepkeep": {
+        "name": "DeepKeep AI Firewall",
+        "description": "DeepKeep AI Firewall for comprehensive LLM security — prompt injection detection, PII protection, content moderation, and policy enforcement with configurable guardrail pipelines."
+      },
+      "repelloai": {
+        "name": "RepelloAI Argus",
+        "description": "RepelloAI Argus scans prompts and responses against policies configured per asset in the Repello dashboard."
+      },
+      "straiker": {
+        "name": "Straiker",
+        "description": "Defend AI Agentic Guardrails: Indirect/Direct Prompt Injection, Tool Misuse, Malicious MCP and Skills"
+      },
+      "alice": {
+        "name": "Alice",
+        "description": "Policy-based guardrails for prompts and model responses, evaluated per application so one proxy can enforce a different policy set per team or product."
+      },
+      "conduct": {
+        "name": "Conduct Guard",
+        "description": "Conduct Guard evaluates prompts against workspace rules before the model call: prompt injection, PII, and custom policies, with block, warning, and approval verdicts."
+      }
+    },
+    "subcategories": {
+      "contentCategory": "Content Category",
+      "patterns": "Patterns",
+      "keywords": "Keywords",
+      "codeSafety": "Code Safety"
+    },
+    "tags": {
+      "contentCategory": "Content Category",
+      "topicBlocker": "Topic Blocker",
+      "safety": "Safety",
+      "bias": "Bias",
+      "promptInjection": "Prompt Injection",
+      "toxicity": "Toxicity",
+      "pii": "PII",
+      "regex": "Regex",
+      "dataProtection": "Data Protection",
+      "keywords": "Keywords",
+      "blocklist": "Blocklist",
+      "code": "Code",
+      "competitor": "Competitor",
+      "microsoft": "Microsoft",
+      "aws": "AWS",
+      "contentSafety": "Content Safety",
+      "security": "Security",
+      "contentModeration": "Content Moderation",
+      "openai": "OpenAI",
+      "googleCloud": "Google Cloud",
+      "openSource": "Open Source",
+      "validation": "Validation",
+      "enterprise": "Enterprise",
+      "threatDetection": "Threat Detection",
+      "hallucination": "Hallucination",
+      "policy": "Policy",
+      "compliance": "Compliance",
+      "governance": "Governance",
+      "gateway": "Gateway",
+      "monitoring": "Monitoring",
+      "agentic": "Agentic",
+      "toolMisuse": "Tool Misuse",
+      "mcp": "MCP",
+      "skills": "Skills",
+      "grounding": "Grounding",
+      "rag": "RAG",
+      "firewall": "Firewall"
+    },
+    "presetNames": {
+      "cf_denied_financial": "Denied Financial Advice",
+      "cf_denied_legal": "Denied Legal Advice",
+      "cf_denied_medical": "Denied Medical Advice",
+      "cf_denied_insults": "Insults & Personal Attacks",
+      "cf_harmful_violence": "Harmful Violence",
+      "cf_harmful_self_harm": "Harmful Self-Harm",
+      "cf_harmful_child_safety": "Harmful Child Safety",
+      "cf_harmful_illegal_weapons": "Harmful Illegal Weapons",
+      "cf_bias_gender": "Bias: Gender",
+      "cf_bias_racial": "Bias: Racial",
+      "cf_bias_religious": "Bias: Religious",
+      "cf_bias_sexual_orientation": "Bias: Sexual Orientation",
+      "cf_prompt_injection_jailbreak": "Prompt Injection: Jailbreak",
+      "cf_prompt_injection_data_exfil": "Prompt Injection: Data Exfiltration",
+      "cf_prompt_injection_sql": "Prompt Injection: SQL",
+      "cf_prompt_injection_malicious_code": "Prompt Injection: Malicious Code",
+      "cf_prompt_injection_system_prompt": "Prompt Injection: System Prompt",
+      "cf_toxic_abuse": "Toxic & Abusive Language",
+      "cf_patterns": "Pattern Matching",
+      "cf_keywords": "Keyword Blocking",
+      "block_code_execution": "Block Code Execution",
+      "cf_competitor_intent": "Competitor Name Blocking",
+      "presidio": "Presidio PII",
+      "bedrock": "Bedrock Guardrail",
+      "lakera": "Lakera",
+      "openai_moderation": "OpenAI Moderation",
+      "google_model_armor": "Google Cloud Model Armor",
+      "guardrails_ai": "Guardrails AI",
+      "zscaler": "Zscaler AI Guard",
+      "panw": "PANW Prisma AIRS",
+      "cisco_ai_defense": "Cisco AI Defense",
+      "noma": "Noma Security",
+      "aporia": "Aporia AI",
+      "aim": "AIM Guardrail",
+      "cato_networks": "Cato Networks Guardrail",
+      "prompt_security": "Prompt Security",
+      "lasso": "Lasso Guardrail",
+      "pangea": "Pangea Guardrail",
+      "enkryptai": "EnkryptAI",
+      "javelin": "Javelin Guardrails",
+      "pillar": "Pillar Guardrail",
+      "akto": "Akto Guardrail",
+      "promptguard": "PromptGuard",
+      "xecguard": "XecGuard",
+      "deepkeep": "DeepKeep AI Firewall",
+      "repelloai": "RepelloAI Argus",
+      "straiker": "Straiker Guardrail",
+      "alice": "Alice",
+      "conduct": "Conduct Guard"
+    }
   }
 }

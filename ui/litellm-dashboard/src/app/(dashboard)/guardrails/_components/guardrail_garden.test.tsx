@@ -1,14 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import enGuardrails from "@/i18n/locales/en/guardrails.json";
 import GuardrailGarden from "./guardrail_garden";
-import { ALL_CARDS } from "./guardrail_garden_data";
+import { ALL_CARDS, type GuardrailCardInfo } from "./guardrail_garden_data";
 
 vi.mock("./guardrail_garden_detail", () => ({
   __esModule: true,
-  default: ({ card, onBack }: { card: { name: string }; onBack: () => void }) => (
+  default: ({ card, onBack }: { card: { id: string }; onBack: () => void }) => (
     <div>
-      <span>Detail for {card.name}</span>
+      <span>Detail for {card.id}</span>
       <button onClick={onBack}>Back to garden</button>
     </div>
   ),
@@ -16,6 +17,9 @@ vi.mock("./guardrail_garden_detail", () => ({
 
 const LITELLM_CARDS = ALL_CARDS.filter((c) => c.category === "litellm");
 const PARTNER_CARDS = ALL_CARDS.filter((c) => c.category === "partner");
+
+const enName = (card: GuardrailCardInfo) =>
+  enGuardrails.garden.cards[card.id as keyof typeof enGuardrails.garden.cards].name;
 
 describe("GuardrailGarden", () => {
   beforeEach(() => {
@@ -44,20 +48,20 @@ describe("GuardrailGarden", () => {
     renderGarden();
 
     expect(screen.getByText(`Show all (${LITELLM_CARDS.length})`)).toBeInTheDocument();
-    expect(screen.getByText(LITELLM_CARDS[0].name)).toBeInTheDocument();
-    expect(screen.queryByText(LITELLM_CARDS[LITELLM_CARDS.length - 1].name)).not.toBeInTheDocument();
+    expect(screen.getByText(enName(LITELLM_CARDS[0]))).toBeInTheDocument();
+    expect(screen.queryByText(enName(LITELLM_CARDS[LITELLM_CARDS.length - 1]))).not.toBeInTheDocument();
 
     await user.click(screen.getByText(`Show all (${LITELLM_CARDS.length})`));
 
     expect(screen.getByText("Show less")).toBeInTheDocument();
-    expect(screen.getByText(LITELLM_CARDS[LITELLM_CARDS.length - 1].name)).toBeInTheDocument();
+    expect(screen.getByText(enName(LITELLM_CARDS[LITELLM_CARDS.length - 1]))).toBeInTheDocument();
   });
 
   it("should always render every partner card", () => {
     renderGarden();
 
     PARTNER_CARDS.forEach((card) => {
-      expect(screen.getByText(card.name)).toBeInTheDocument();
+      expect(screen.getByText(enName(card))).toBeInTheDocument();
     });
   });
 
@@ -66,12 +70,12 @@ describe("GuardrailGarden", () => {
     renderGarden();
 
     const target = PARTNER_CARDS[0];
-    await user.type(screen.getByPlaceholderText("Search guardrails"), target.name);
+    await user.type(screen.getByPlaceholderText("Search guardrails"), enName(target));
 
-    expect(await screen.findByText(target.name)).toBeInTheDocument();
-    const otherPartner = PARTNER_CARDS.find((c) => c.name !== target.name);
+    expect(await screen.findByText(enName(target))).toBeInTheDocument();
+    const otherPartner = PARTNER_CARDS.find((c) => c.id !== target.id);
     if (otherPartner) {
-      expect(screen.queryByText(otherPartner.name)).not.toBeInTheDocument();
+      expect(screen.queryByText(enName(otherPartner))).not.toBeInTheDocument();
     }
   });
 
@@ -83,7 +87,7 @@ describe("GuardrailGarden", () => {
 
     expect(screen.getByText("Show all (0)")).toBeInTheDocument();
     PARTNER_CARDS.forEach((card) => {
-      expect(screen.queryByText(card.name)).not.toBeInTheDocument();
+      expect(screen.queryByText(enName(card))).not.toBeInTheDocument();
     });
   });
 
@@ -92,9 +96,9 @@ describe("GuardrailGarden", () => {
     renderGarden();
 
     const target = PARTNER_CARDS[0];
-    await user.click(screen.getByText(target.name));
+    await user.click(screen.getByText(enName(target)));
 
-    expect(await screen.findByText(`Detail for ${target.name}`)).toBeInTheDocument();
+    expect(await screen.findByText(`Detail for ${target.id}`)).toBeInTheDocument();
     expect(screen.queryByPlaceholderText("Search guardrails")).not.toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Back to garden" }));

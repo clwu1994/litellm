@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import i18n from "@/i18n/bootstrapI18n";
 import { toast } from "@/lib/toast";
 import AddGuardrailForm from "./add_guardrail_form";
+import { GUARDRAIL_PRESETS } from "./guardrail_garden_configs";
 
 vi.mock("@/components/networking", () => ({
   createGuardrailCall: vi.fn(),
@@ -502,5 +503,20 @@ describe("AddGuardrailForm fully Chinese configuration editors", () => {
     expect(screen.queryByText("Optional Parameters")).not.toBeInTheDocument();
     expect(screen.queryByText("No configuration fields available for this provider.")).not.toBeInTheDocument();
     expect(screen.queryByText("Loading provider parameters...")).not.toBeInTheDocument();
+  });
+
+  it("applies the Chinese preset name suggestion to the guardrail name field", async () => {
+    renderWithProviders(
+      <AddGuardrailForm
+        visible
+        onClose={vi.fn()}
+        accessToken="test-token"
+        onSuccess={vi.fn()}
+        preset={GUARDRAIL_PRESETS.cf_denied_financial}
+      />,
+    );
+
+    expect(await screen.findByDisplayValue("拒绝财务建议")).toBeInTheDocument();
+    expect(screen.queryByDisplayValue("Denied Financial Advice")).not.toBeInTheDocument();
   });
 });

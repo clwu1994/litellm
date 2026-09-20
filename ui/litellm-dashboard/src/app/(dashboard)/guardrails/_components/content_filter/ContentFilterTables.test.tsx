@@ -232,6 +232,26 @@ describe("content filter tables", () => {
     expect(screen.queryByText("Block")).not.toBeInTheDocument();
   });
 
+  it("should keep the read-only low severity badge on the raw wire value", () => {
+    renderWithProviders(
+      <CategoryTable
+        categories={[
+          {
+            id: "category-1",
+            category: "self_harm",
+            display_name: "Self Harm",
+            action: "BLOCK",
+            severity_threshold: "low",
+          },
+        ]}
+        readOnly
+      />,
+    );
+
+    expect(screen.getByText("LOW")).toBeInTheDocument();
+    expect(screen.queryByText("Low")).not.toBeInTheDocument();
+  });
+
   it("should keep the blocked-topic action option badges on the raw wire values", async () => {
     const user = userEvent.setup();
 
@@ -366,6 +386,26 @@ describe("content filter tables Chinese copy", () => {
     expect(screen.getByText("阻止")).toBeInTheDocument();
     expect(screen.queryByText("MEDIUM")).not.toBeInTheDocument();
     expect(screen.queryByText("BLOCK")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese read-only low severity badge and hides the raw value", () => {
+    renderWithProviders(
+      <CategoryTable
+        categories={[
+          {
+            id: "category-1",
+            category: "violence",
+            display_name: "Violence",
+            action: "BLOCK",
+            severity_threshold: "low",
+          },
+        ]}
+        readOnly
+      />,
+    );
+
+    expect(screen.getByText("低")).toBeInTheDocument();
+    expect(screen.queryByText("LOW")).not.toBeInTheDocument();
   });
 
   it("renders the Chinese blocked-topic action option badges", async () => {

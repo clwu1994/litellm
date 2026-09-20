@@ -524,5 +524,343 @@
     "removeConstraint": "移除约束",
     "addConstraint": "+ 添加另一个约束",
     "violationMessage": "违规消息（可选）"
+  },
+  "garden": {
+    "searchPlaceholder": "搜索 Guardrail",
+    "showAll": "显示全部（{{count}}）",
+    "showLess": "收起",
+    "testCases": "个测试用例",
+    "sections": {
+      "litellmTitle": "LiteLLM 内容过滤",
+      "litellmDescription": "由 LiteLLM 提供的内置 Guardrail。零延迟、无外部依赖、无额外费用。",
+      "partnerTitle": "合作伙伴 Guardrails",
+      "partnerDescription": "来自领先 AI 安全提供商的第三方 Guardrail 集成。"
+    },
+    "detail": {
+      "createGuardrail": "创建 Guardrail",
+      "provider": "提供商",
+      "litellmProvider": "LiteLLM 内容过滤",
+      "partnerProvider": "合作伙伴 Guardrail",
+      "subcategory": "子类别",
+      "cost": "费用",
+      "costValue": "$0 / 次请求",
+      "externalDependencies": "外部依赖",
+      "none": "无",
+      "latency": "延迟",
+      "latencyFallback": "<1ms",
+      "guardrailDetails": "Guardrail 详情",
+      "detailsAsFollows": "详情如下",
+      "property": "属性",
+      "guardrailId": "Guardrail ID",
+      "type": "类型",
+      "contentFilter": "内容过滤",
+      "partner": "合作伙伴",
+      "tags": "标签",
+      "overview": "概览",
+      "evalResults": "评估结果",
+      "metric": "指标",
+      "value": "数值",
+      "precision": "精确率",
+      "recall": "召回率",
+      "f1Score": "F1 分数",
+      "testCases": "测试用例数",
+      "falsePositives": "误报",
+      "falseNegatives": "漏报",
+      "latencyP50": "延迟（p50）"
+    },
+    "cards": {
+      "cf_denied_financial": {
+        "name": "拒绝财务建议",
+        "description": "检测针对个性化财务建议、投资推荐或理财规划的请求。"
+      },
+      "cf_denied_insults": {
+        "name": "侮辱与人身攻击",
+        "description": "检测针对聊天机器人、员工或其他人的侮辱、辱骂和人身攻击。"
+      },
+      "cf_denied_legal": {
+        "name": "拒绝法律建议",
+        "description": "检测未经授权的法律建议、案件分析或法律推荐请求。"
+      },
+      "cf_denied_medical": {
+        "name": "拒绝医疗建议",
+        "description": "检测医疗诊断、治疗建议或健康建议请求。"
+      },
+      "cf_harmful_violence": {
+        "name": "有害暴力内容",
+        "description": "检测与暴力、犯罪策划、攻击和暴力威胁相关的内容。"
+      },
+      "cf_harmful_self_harm": {
+        "name": "有害自残内容",
+        "description": "检测与自残、自杀和危险的自毁行为相关的内容。"
+      },
+      "cf_harmful_child_safety": {
+        "name": "危害儿童安全内容",
+        "description": "检测可能危及儿童安全或剥削未成年人的内容。"
+      },
+      "cf_harmful_illegal_weapons": {
+        "name": "有害非法武器内容",
+        "description": "检测与非法武器制造、分销或获取相关的内容。"
+      },
+      "cf_bias_gender": {
+        "name": "偏见：性别",
+        "description": "检测基于性别的歧视、刻板印象和偏见性语言。"
+      },
+      "cf_bias_racial": {
+        "name": "偏见：种族",
+        "description": "检测种族歧视、刻板印象和种族偏见内容。"
+      },
+      "cf_bias_religious": {
+        "name": "偏见：宗教",
+        "description": "检测宗教歧视、不宽容和宗教偏见内容。"
+      },
+      "cf_bias_sexual_orientation": {
+        "name": "偏见：性取向",
+        "description": "检测基于性取向的歧视及相关偏见内容。"
+      },
+      "cf_prompt_injection_jailbreak": {
+        "name": "提示注入：越狱",
+        "description": "检测旨在绕过 AI 安全准则和限制的越狱尝试。"
+      },
+      "cf_prompt_injection_data_exfil": {
+        "name": "提示注入：数据外泄",
+        "description": "检测通过提示词操纵提取敏感数据的尝试。"
+      },
+      "cf_prompt_injection_sql": {
+        "name": "提示注入：SQL",
+        "description": "检测嵌入提示词中的 SQL 注入尝试。"
+      },
+      "cf_prompt_injection_malicious_code": {
+        "name": "提示注入：恶意代码",
+        "description": "检测通过提示词注入恶意代码的尝试。"
+      },
+      "cf_prompt_injection_system_prompt": {
+        "name": "提示注入：系统提示词",
+        "description": "检测提取或覆盖系统提示词的尝试。"
+      },
+      "cf_toxic_abuse": {
+        "name": "有毒与辱骂性语言",
+        "description": "检测多种语言（EN、AU、DE、ES、FR）中的有毒、辱骂和仇恨性语言。"
+      },
+      "cf_patterns": {
+        "name": "匹配模式",
+        "description": "检测并阻止 SSN、信用卡号、API Key 和自定义正则表达式等敏感数据模式。"
+      },
+      "cf_keywords": {
+        "name": "关键词拦截",
+        "description": "阻止或屏蔽包含特定关键词或短语的内容。可上传自定义词表或逐个添加词语。"
+      },
+      "block_code_execution": {
+        "name": "阻止代码执行",
+        "description": "检测请求和响应中的 Markdown 围栏代码块。可按语言阻止或屏蔽可执行代码（例如 Python、JavaScript、Bash），并支持配置置信度。"
+      },
+      "cf_competitor_intent": {
+        "name": "竞品名称拦截",
+        "description": "阻止或改写竞品对比和排名意图。检测用户要求对比或推荐竞品（航空公司或通用竞品列表）的情况。"
+      },
+      "presidio": {
+        "name": "Presidio PII",
+        "description": "Microsoft Presidio 用于 PII 检测和匿名化。支持 30 多种实体类型，可配置操作。"
+      },
+      "bedrock": {
+        "name": "Bedrock Guardrail",
+        "description": "AWS Bedrock Guardrails 用于内容过滤、主题规避和敏感信息检测。"
+      },
+      "lakera": {
+        "name": "Lakera",
+        "description": "AI 安全平台，防御提示注入、数据泄露和有害内容。"
+      },
+      "openai_moderation": {
+        "name": "OpenAI Moderation",
+        "description": "OpenAI 的内容审核 API，可跨多个类别检测有害内容。"
+      },
+      "google_model_armor": {
+        "name": "Google Cloud Model Armor",
+        "description": "Google Cloud 的模型保护服务，助力安全、负责任的 AI 部署。"
+      },
+      "guardrails_ai": {
+        "name": "Guardrails AI",
+        "description": "开源框架，为 LLM 输出增加结构、类型和质量保证。"
+      },
+      "zscaler": {
+        "name": "Zscaler AI Guard",
+        "description": "Zscaler 提供的企业级 AI 安全，用于监控和保护 AI/ML 工作负载。"
+      },
+      "panw": {
+        "name": "PANW Prisma AIRS",
+        "description": "Palo Alto Networks Prisma AI Runtime Security，保障生产环境中的 AI 应用安全。"
+      },
+      "cisco_ai_defense": {
+        "name": "Cisco AI Defense",
+        "description": "Cisco AI Defense Inspection API 提供运行时保护：提示注入、PII/PCI/PHI、骚扰、仇恨言论、亵渎、暴力和代码检测。"
+      },
+      "noma": {
+        "name": "Noma Security",
+        "description": "AI 安全平台，用于检测和防范 AI 特有的威胁和漏洞。"
+      },
+      "aporia": {
+        "name": "Aporia AI",
+        "description": "实时 AI Guardrail，用于幻觉检测、主题控制和策略执行。"
+      },
+      "aim": {
+        "name": "AIM Guardrail",
+        "description": "AIM Security Guardrail，提供全面的 AI 威胁检测和缓解。"
+      },
+      "cato_networks": {
+        "name": "Cato Networks Guardrail",
+        "description": "Cato Networks Guardrail，提供全面的 AI 威胁检测和缓解。"
+      },
+      "prompt_security": {
+        "name": "Prompt Security",
+        "description": "防御提示注入攻击、数据泄露和其他 LLM 安全威胁。"
+      },
+      "lasso": {
+        "name": "Lasso Guardrail",
+        "description": "内容审核和安全 Guardrail，助力负责任的 AI 部署。"
+      },
+      "pangea": {
+        "name": "Pangea Guardrail",
+        "description": "Pangea 的 AI Guardrail，打造安全、合规、可信的 AI 应用。"
+      },
+      "enkryptai": {
+        "name": "EnkryptAI",
+        "description": "AI 安全与治理平台，助力企业 AI 安全与合规。"
+      },
+      "javelin": {
+        "name": "Javelin Guardrails",
+        "description": "内置 Guardrail 的 AI 网关，保障安全合规的 AI 运营。"
+      },
+      "pillar": {
+        "name": "Pillar Guardrail",
+        "description": "AI 安全平台，用于监控、测试和保护 AI 系统。"
+      },
+      "akto": {
+        "name": "Akto Guardrail",
+        "description": "Akto.io 的 AI 安全平台，为 AI/ML 应用提供自动监控和 Guardrail。"
+      },
+      "promptguard": {
+        "name": "PromptGuard",
+        "description": "AI 安全网关，具备提示注入检测、PII 脱敏、主题过滤、实体黑名单和幻觉检测能力。可自托管，并支持即插即用的代理集成。"
+      },
+      "xecguard": {
+        "name": "XecGuard",
+        "description": "CyCraft XecGuard AI 安全网关。支持多策略扫描（提示注入、有害内容、PII、系统提示词强制）以及 RAG 上下文锚定。"
+      },
+      "deepkeep": {
+        "name": "DeepKeep AI Firewall",
+        "description": "DeepKeep AI Firewall 提供全面的 LLM 安全防护：提示注入检测、PII 保护、内容审核和策略执行，并支持可配置的 Guardrail 流水线。"
+      },
+      "repelloai": {
+        "name": "RepelloAI Argus",
+        "description": "RepelloAI Argus 会根据 Repello 仪表盘中按资产配置的策略扫描提示词和响应。"
+      },
+      "straiker": {
+        "name": "Straiker",
+        "description": "Defend AI 智能体 Guardrail：间接/直接提示注入、工具滥用、恶意 MCP 和技能"
+      },
+      "alice": {
+        "name": "Alice",
+        "description": "基于策略的 Guardrail，针对提示词和模型响应按应用进行评估，因此同一个代理可为不同团队或产品执行不同的策略集。"
+      },
+      "conduct": {
+        "name": "Conduct Guard",
+        "description": "Conduct Guard 在模型调用前根据工作区规则评估提示词：提示注入、PII 和自定义策略，并给出阻止、警告或批准结论。"
+      }
+    },
+    "subcategories": {
+      "contentCategory": "内容类别",
+      "patterns": "匹配模式",
+      "keywords": "关键词",
+      "codeSafety": "代码安全"
+    },
+    "tags": {
+      "contentCategory": "内容类别",
+      "topicBlocker": "主题拦截",
+      "safety": "安全",
+      "bias": "偏见",
+      "promptInjection": "提示注入",
+      "toxicity": "毒性内容",
+      "pii": "PII",
+      "regex": "正则",
+      "dataProtection": "数据保护",
+      "keywords": "关键词",
+      "blocklist": "黑名单",
+      "code": "代码",
+      "competitor": "竞品",
+      "microsoft": "Microsoft",
+      "aws": "AWS",
+      "contentSafety": "内容安全",
+      "security": "安全",
+      "contentModeration": "内容审核",
+      "openai": "OpenAI",
+      "googleCloud": "Google Cloud",
+      "openSource": "开源",
+      "validation": "校验",
+      "enterprise": "企业级",
+      "threatDetection": "威胁检测",
+      "hallucination": "幻觉检测",
+      "policy": "策略",
+      "compliance": "合规",
+      "governance": "治理",
+      "gateway": "网关",
+      "monitoring": "监控",
+      "agentic": "智能体",
+      "toolMisuse": "工具滥用",
+      "mcp": "MCP",
+      "skills": "技能",
+      "grounding": "事实锚定",
+      "rag": "RAG",
+      "firewall": "防火墙"
+    },
+    "presetNames": {
+      "cf_denied_financial": "拒绝财务建议",
+      "cf_denied_insults": "侮辱与人身攻击",
+      "cf_denied_legal": "拒绝法律建议",
+      "cf_denied_medical": "拒绝医疗建议",
+      "cf_harmful_violence": "有害暴力内容",
+      "cf_harmful_self_harm": "有害自残内容",
+      "cf_harmful_child_safety": "危害儿童安全内容",
+      "cf_harmful_illegal_weapons": "有害非法武器内容",
+      "cf_bias_gender": "偏见：性别",
+      "cf_bias_racial": "偏见：种族",
+      "cf_bias_religious": "偏见：宗教",
+      "cf_bias_sexual_orientation": "偏见：性取向",
+      "cf_prompt_injection_jailbreak": "提示注入：越狱",
+      "cf_prompt_injection_data_exfil": "提示注入：数据外泄",
+      "cf_prompt_injection_sql": "提示注入：SQL",
+      "cf_prompt_injection_malicious_code": "提示注入：恶意代码",
+      "cf_prompt_injection_system_prompt": "提示注入：系统提示词",
+      "cf_toxic_abuse": "有毒与辱骂性语言",
+      "cf_patterns": "匹配模式",
+      "cf_keywords": "关键词拦截",
+      "block_code_execution": "阻止代码执行",
+      "cf_competitor_intent": "竞品名称拦截",
+      "presidio": "Presidio PII",
+      "bedrock": "Bedrock Guardrail",
+      "lakera": "Lakera",
+      "openai_moderation": "OpenAI Moderation",
+      "google_model_armor": "Google Cloud Model Armor",
+      "guardrails_ai": "Guardrails AI",
+      "zscaler": "Zscaler AI Guard",
+      "panw": "PANW Prisma AIRS",
+      "cisco_ai_defense": "Cisco AI Defense",
+      "noma": "Noma Security",
+      "aporia": "Aporia AI",
+      "aim": "AIM Guardrail",
+      "cato_networks": "Cato Networks Guardrail",
+      "prompt_security": "Prompt Security",
+      "lasso": "Lasso Guardrail",
+      "pangea": "Pangea Guardrail",
+      "enkryptai": "EnkryptAI",
+      "javelin": "Javelin Guardrails",
+      "pillar": "Pillar Guardrail",
+      "akto": "Akto Guardrail",
+      "promptguard": "PromptGuard",
+      "xecguard": "XecGuard",
+      "deepkeep": "DeepKeep AI Firewall",
+      "repelloai": "RepelloAI Argus",
+      "straiker": "Straiker Guardrail",
+      "alice": "Alice",
+      "conduct": "Conduct Guard"
+    }
   }
 }

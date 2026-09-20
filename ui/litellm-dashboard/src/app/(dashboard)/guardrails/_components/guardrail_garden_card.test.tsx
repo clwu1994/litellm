@@ -5,23 +5,27 @@ import GuardrailCard from "./guardrail_garden_card";
 import type { GuardrailCardInfo } from "./guardrail_garden_data";
 
 const baseCard: GuardrailCardInfo = {
-  id: "test-guard",
-  name: "Test Guardrail",
-  description: "A guardrail for testing purposes",
+  id: "bedrock",
+  nameKey: "garden.cards.bedrock.name",
+  descriptionKey: "garden.cards.bedrock.description",
   category: "litellm",
   logo: "/logos/test.svg",
-  tags: ["safety"],
+  tagKeys: ["garden.tags.safety"],
 };
 
 describe("GuardrailCard", () => {
   it("should render", () => {
     render(<GuardrailCard card={baseCard} onClick={vi.fn()} />);
-    expect(screen.getByText("Test Guardrail")).toBeInTheDocument();
+    expect(screen.getByText("Bedrock Guardrail")).toBeInTheDocument();
   });
 
   it("should display the card description", () => {
     render(<GuardrailCard card={baseCard} onClick={vi.fn()} />);
-    expect(screen.getByText("A guardrail for testing purposes")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "AWS Bedrock Guardrails for content filtering, topic avoidance, and sensitive information detection.",
+      ),
+    ).toBeInTheDocument();
   });
 
   it("should call onClick when the card is clicked", async () => {
@@ -29,7 +33,7 @@ describe("GuardrailCard", () => {
     const user = userEvent.setup();
     render(<GuardrailCard card={baseCard} onClick={onClick} />);
 
-    await user.click(screen.getByText("Test Guardrail"));
+    await user.click(screen.getByText("Bedrock Guardrail"));
 
     expect(onClick).toHaveBeenCalled();
   });
@@ -51,31 +55,31 @@ describe("GuardrailCard", () => {
 
   it("should render the logo through the shared Logo component with the card src", () => {
     render(<GuardrailCard card={baseCard} onClick={vi.fn()} />);
-    const img = screen.getByAltText("Test Guardrail logo");
+    const img = screen.getByAltText("Bedrock Guardrail logo");
     expect(img).toHaveAttribute("src", expect.stringContaining("/logos/test.svg"));
   });
 
   it("should pass a bundled static-import src through unchanged", () => {
     const bundledCard: GuardrailCardInfo = { ...baseCard, logo: "/_next/static/media/akto.svg" };
     render(<GuardrailCard card={bundledCard} onClick={vi.fn()} />);
-    expect(screen.getByAltText("Test Guardrail logo")).toHaveAttribute("src", "/_next/static/media/akto.svg");
+    expect(screen.getByAltText("Bedrock Guardrail logo")).toHaveAttribute("src", "/_next/static/media/akto.svg");
   });
 
   it("should show fallback initial when logo fails to load", () => {
     render(<GuardrailCard card={baseCard} onClick={vi.fn()} />);
-    const img = screen.getByAltText("Test Guardrail logo");
+    const img = screen.getByAltText("Bedrock Guardrail logo");
 
     act(() => {
       fireEvent.error(img);
     });
 
-    expect(screen.getByText("T")).toBeInTheDocument();
-    expect(screen.queryByAltText("Test Guardrail logo")).not.toBeInTheDocument();
+    expect(screen.getByText("B")).toBeInTheDocument();
+    expect(screen.queryByAltText("Bedrock Guardrail logo")).not.toBeInTheDocument();
   });
 
   it("should show fallback initial when logo src is empty", () => {
     const cardNoLogo: GuardrailCardInfo = { ...baseCard, logo: "" };
     render(<GuardrailCard card={cardNoLogo} onClick={vi.fn()} />);
-    expect(screen.getByText("T")).toBeInTheDocument();
+    expect(screen.getByText("B")).toBeInTheDocument();
   });
 });

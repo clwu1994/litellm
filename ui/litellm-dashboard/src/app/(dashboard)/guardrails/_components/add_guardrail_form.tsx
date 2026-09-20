@@ -78,7 +78,7 @@ const modeDescription = (mode: string, t: TFunction<"guardrails">): string | und
 interface GuardrailPreset {
   provider: string;
   categoryName?: string;
-  guardrailNameSuggestion: string;
+  nameSuggestionKey: ParseKeys<"guardrails">;
   mode: string;
   defaultOn: boolean;
 }
@@ -283,7 +283,7 @@ const AddGuardrailForm: React.FC<AddGuardrailFormProps> = ({ visible, onClose, a
     setSelectedProvider(preset.provider);
     const baseValues: Record<string, unknown> = {
       provider: preset.provider,
-      guardrail_name: preset.guardrailNameSuggestion,
+      guardrail_name: t(preset.nameSuggestionKey),
       mode: preset.mode,
       default_on: preset.defaultOn,
       skip_system_message_choice: "inherit",
@@ -311,7 +311,7 @@ const AddGuardrailForm: React.FC<AddGuardrailFormProps> = ({ visible, onClose, a
         ]);
       }
     }
-  }, [preset, visible, guardrailSettings, form]);
+  }, [preset, visible, guardrailSettings, form, t]);
 
   const handleProviderChange = (value: string) => {
     setSelectedProvider(value);

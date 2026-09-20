@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { ArrowRight, Search } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import { GuardrailCardInfo, ALL_CARDS } from "./guardrail_garden_data";
 import GuardrailCard from "./guardrail_garden_card";
@@ -11,6 +12,7 @@ interface GuardrailGardenProps {
 }
 
 const GuardrailGarden: React.FC<GuardrailGardenProps> = ({ accessToken, onGuardrailCreated }) => {
+  const { t } = useTranslation("guardrails");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCard, setSelectedCard] = useState<GuardrailCardInfo | null>(null);
   const [showAllLitellm, setShowAllLitellm] = useState(false);
@@ -21,9 +23,9 @@ const GuardrailGarden: React.FC<GuardrailGardenProps> = ({ accessToken, onGuardr
     if (!searchQuery) return true;
     const q = searchQuery.toLowerCase();
     return (
-      card.name.toLowerCase().includes(q) ||
-      card.description.toLowerCase().includes(q) ||
-      card.tags.some((t) => t.toLowerCase().includes(q))
+      t(card.nameKey).toLowerCase().includes(q) ||
+      t(card.descriptionKey).toLowerCase().includes(q) ||
+      card.tagKeys.some((tagKey) => t(tagKey).toLowerCase().includes(q))
     );
   });
 
@@ -49,7 +51,7 @@ const GuardrailGarden: React.FC<GuardrailGardenProps> = ({ accessToken, onGuardr
             <Search className="size-4 text-muted-foreground" />
           </InputGroupAddon>
           <InputGroupInput
-            placeholder="Search guardrails"
+            placeholder={t("garden.searchPlaceholder")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -58,24 +60,22 @@ const GuardrailGarden: React.FC<GuardrailGardenProps> = ({ accessToken, onGuardr
 
       <div className="mb-10">
         <div className="mb-1 flex items-center justify-between">
-          <h2 className="m-0 text-xl font-semibold text-foreground">LiteLLM Content Filter</h2>
+          <h2 className="m-0 text-xl font-semibold text-foreground">{t("garden.sections.litellmTitle")}</h2>
           <span
             className="inline-flex cursor-pointer items-center gap-1.5 text-sm text-primary"
             onClick={() => setShowAllLitellm(!showAllLitellm)}
           >
             {showAllLitellm ? (
-              <>Show less</>
+              <>{t("garden.showLess")}</>
             ) : (
               <>
                 <ArrowRight className="size-3" />
-                {`Show all (${litellmCards.length})`}
+                {t("garden.showAll", { count: litellmCards.length })}
               </>
             )}
           </span>
         </div>
-        <p className="mt-1 mb-5 text-[13px] text-muted-foreground">
-          Built-in guardrails powered by LiteLLM. Zero latency, no external dependencies, no additional cost.
-        </p>
+        <p className="mt-1 mb-5 text-[13px] text-muted-foreground">{t("garden.sections.litellmDescription")}</p>
         <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-4">
           {(showAllLitellm ? litellmCards : litellmCards.slice(0, CARDS_PER_ROW * VISIBLE_ROWS)).map((card) => (
             <GuardrailCard key={card.id} card={card} onClick={() => setSelectedCard(card)} />
@@ -84,10 +84,8 @@ const GuardrailGarden: React.FC<GuardrailGardenProps> = ({ accessToken, onGuardr
       </div>
 
       <div className="mb-10">
-        <h2 className="mt-0 mb-1 text-xl font-semibold text-foreground">Partner Guardrails</h2>
-        <p className="mt-1 mb-5 text-[13px] text-muted-foreground">
-          Third-party guardrail integrations from leading AI security providers.
-        </p>
+        <h2 className="mt-0 mb-1 text-xl font-semibold text-foreground">{t("garden.sections.partnerTitle")}</h2>
+        <p className="mt-1 mb-5 text-[13px] text-muted-foreground">{t("garden.sections.partnerDescription")}</p>
         <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-4">
           {partnerCards.map((card) => (
             <GuardrailCard key={card.id} card={card} onClick={() => setSelectedCard(card)} />

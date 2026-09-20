@@ -7,11 +7,11 @@ vi.mock("./add_guardrail_form", () => ({ default: () => null }));
 
 const makeCard = (overrides: Partial<GuardrailCardInfo> = {}): GuardrailCardInfo => ({
   id: "bedrock",
-  name: "Bedrock Guardrail",
-  description: "AWS Bedrock Guardrails for content filtering.",
+  nameKey: "garden.cards.bedrock.name",
+  descriptionKey: "garden.cards.bedrock.description",
   category: "partner",
   logo: "/_next/static/media/bedrock.svg",
-  tags: ["AWS"],
+  tagKeys: ["garden.tags.aws"],
   ...overrides,
 });
 
