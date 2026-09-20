@@ -2,12 +2,13 @@
  * Core tests for Tools section
  */
 
-import { render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect } from "vitest";
+import { afterEach, beforeEach, describe, it, expect } from "vitest";
 import { parseToolsFromLog } from "./utils";
 import { ToolsSection } from "./ToolsSection";
 import { LogEntry } from "../columns";
+import i18n from "@/i18n/bootstrapI18n";
 
 const logWithTools = (toolNames: string[], calledName?: string): LogEntry => ({
   request_id: "render-1",
@@ -197,5 +198,74 @@ describe("ToolsSection rendering", () => {
     await userEvent.click(screen.getByText("Tools"));
 
     await waitFor(() => expect(isShown("Description")).toBe(true));
+  });
+});
+
+const logWithParameterizedTool = (): LogEntry => ({
+  ...logWithTools(["get_weather"], "get_weather"),
+  messages: JSON.stringify({
+    model: "gpt-4",
+    messages: [{ role: "user", content: "hi" }],
+    tools: [
+      {
+        type: "function",
+        function: {
+          name: "get_weather",
+          description: "Get the current weather",
+          parameters: {
+            type: "object",
+            required: ["location"],
+            properties: { location: { type: "string", description: "City name" } },
+          },
+        },
+      },
+    ],
+  }),
+});
+
+describe("ToolsSection Chinese copy", () => {
+  beforeEach(async () => {
+    await i18n.changeLanguage("zh");
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  it("renders the Chinese summary and call badges and hides the English ones", async () => {
+    render(<ToolsSection log={logWithTools(["get_weather", "search_web"], "get_weather")} />);
+
+    expect(screen.getByText("工具")).toBeInTheDocument();
+    expect(screen.getByText("提供 2 个，调用 1 个")).toBeInTheDocument();
+
+    await userEvent.click(screen.getByText("工具"));
+
+    expect(isShown("已调用")).toBe(true);
+    expect(isShown("未调用")).toBe(true);
+    expect(screen.queryByText("Tools")).not.toBeInTheDocument();
+    expect(screen.queryByText("2 provided, 1 called")).not.toBeInTheDocument();
+    expect(screen.queryByText("called")).not.toBeInTheDocument();
+    expect(screen.queryByText("not called")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese tool detail chrome and hides the English one", async () => {
+    render(<ToolsSection log={logWithParameterizedTool()} />);
+
+    await userEvent.click(screen.getByText("工具"));
+    await userEvent.click(await screen.findByText(/1\. get_weather/));
+
+    expect(isShown("描述")).toBe(true);
+    expect(isShown("格式化")).toBe(true);
+    expect(isShown("JSON")).toBe(true);
+    expect(isShown("参数")).toBe(true);
+    expect(isShown("类型")).toBe(true);
+    expect(isShown("调用参数")).toBe(true);
+
+    expect(screen.queryByText("Description")).not.toBeInTheDocument();
+    expect(screen.queryByText("Formatted")).not.toBeInTheDocument();
+    expect(screen.queryByText("Parameters")).not.toBeInTheDocument();
+    expect(screen.queryByText("Parameter")).not.toBeInTheDocument();
+    expect(screen.queryByText("Called With")).not.toBeInTheDocument();
   });
 });

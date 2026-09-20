@@ -1,8 +1,9 @@
 import React from "react";
-import { describe, it, expect } from "vitest";
+import { afterEach, beforeEach, describe, it, expect } from "vitest";
 import userEvent from "@testing-library/user-event";
-import { renderWithProviders, screen } from "../../../tests/test-utils";
+import { cleanup, renderWithProviders, screen } from "../../../tests/test-utils";
 import { CostBreakdownViewer, CostBreakdown } from "./CostBreakdownViewer";
+import i18n from "@/i18n/bootstrapI18n";
 
 async function expandCostBreakdown() {
   const user = userEvent.setup();
@@ -236,5 +237,122 @@ describe("CostBreakdownViewer", () => {
 
     expect(screen.getByText(/Margin \(15\.00%\)/)).toBeInTheDocument();
     expect(screen.getByText("Final Calculated Cost:")).toBeInTheDocument();
+  });
+});
+
+describe("CostBreakdownViewer Chinese copy", () => {
+  beforeEach(async () => {
+    await i18n.changeLanguage("zh");
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  it("renders the Chinese title, totals and base cost labels and hides the English ones", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(
+      <CostBreakdownViewer
+        costBreakdown={{ input_cost: 0.001, output_cost: 0.002, original_cost: 0.003 }}
+        totalSpend={0.003}
+        promptTokens={500}
+        completionTokens={200}
+      />,
+    );
+
+    expect(screen.getByText("成本明细")).toBeInTheDocument();
+    expect(screen.getByText("总计：")).toBeInTheDocument();
+    await user.click(screen.getByText("成本明细"));
+
+    expect(screen.getByText("输入成本：")).toBeInTheDocument();
+    expect(screen.getByText("输出成本：")).toBeInTheDocument();
+    expect(screen.getByText("（500 个提示词 Token）")).toBeInTheDocument();
+    expect(screen.getByText("（200 个补全 Token）")).toBeInTheDocument();
+    expect(screen.getByText("原始 LLM 成本：")).toBeInTheDocument();
+    expect(screen.getByText("最终计算成本：")).toBeInTheDocument();
+
+    expect(screen.queryByText("Cost Breakdown")).not.toBeInTheDocument();
+    expect(screen.queryByText("Total:")).not.toBeInTheDocument();
+    expect(screen.queryByText("Input Cost:")).not.toBeInTheDocument();
+    expect(screen.queryByText("Output Cost:")).not.toBeInTheDocument();
+    expect(screen.queryByText(/prompt tokens/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/completion tokens/)).not.toBeInTheDocument();
+    expect(screen.queryByText("Original LLM Cost:")).not.toBeInTheDocument();
+    expect(screen.queryByText("Final Calculated Cost:")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese prompt cache labels and token counts and hides the English ones", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(
+      <CostBreakdownViewer
+        costBreakdown={{ input_cost: 0.01, output_cost: 0.02, cache_read_cost: 0.001, cache_creation_cost: 0.002 }}
+        totalSpend={0.03}
+        rawInputTokens={100}
+        cacheReadTokens={40}
+        cacheCreationTokens={10}
+      />,
+    );
+
+    await user.click(screen.getByText("成本明细"));
+
+    expect(screen.getByText("提示词缓存读取成本：")).toBeInTheDocument();
+    expect(screen.getByText("提示词缓存写入成本：")).toBeInTheDocument();
+    expect(screen.getByText("（100 个 Token）")).toBeInTheDocument();
+    expect(screen.getByText("（40 个 Token）")).toBeInTheDocument();
+    expect(screen.getByText("（10 个 Token）")).toBeInTheDocument();
+
+    expect(screen.queryByText("Prompt Cache Read Cost:")).not.toBeInTheDocument();
+    expect(screen.queryByText("Prompt Cache Write Cost:")).not.toBeInTheDocument();
+    expect(screen.queryByText(/100 tokens/)).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese adjustments, tool cost and cached chrome and hides the English ones", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(
+      <CostBreakdownViewer
+        costBreakdown={{
+          input_cost: 0.01,
+          output_cost: 0.02,
+          tool_usage_cost: 0.002,
+          discount_percent: 0.1,
+          discount_amount: 0.003,
+          margin_percent: 0.15,
+          margin_total_amount: 0.005,
+        }}
+        totalSpend={0.035}
+        cacheHit="true"
+      />,
+    );
+
+    await user.click(screen.getByText("成本明细"));
+
+    expect(screen.getAllByText(/（已缓存）/)).toHaveLength(2);
+    expect(screen.getByText("工具使用成本：")).toBeInTheDocument();
+    expect(screen.getByText("折扣（10.00%）：")).toBeInTheDocument();
+    expect(screen.getByText("加价（15.00%）：")).toBeInTheDocument();
+
+    expect(screen.queryByText(/\(Cached\)/)).not.toBeInTheDocument();
+    expect(screen.queryByText("Tool Usage Cost:")).not.toBeInTheDocument();
+    expect(screen.queryByText(/Discount \(10\.00%\)/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Margin \(15\.00%\)/)).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese flat discount and margin labels and hides the English ones", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(
+      <CostBreakdownViewer
+        costBreakdown={{ input_cost: 0.01, output_cost: 0.02, discount_amount: 0.003, margin_fixed_amount: 0.005 }}
+        totalSpend={0.035}
+      />,
+    );
+
+    await user.click(screen.getByText("成本明细"));
+
+    expect(screen.getByText("折扣金额：")).toBeInTheDocument();
+    expect(screen.getByText("加价：")).toBeInTheDocument();
+
+    expect(screen.queryByText("Discount Amount:")).not.toBeInTheDocument();
+    expect(screen.queryByText("Margin:")).not.toBeInTheDocument();
   });
 });

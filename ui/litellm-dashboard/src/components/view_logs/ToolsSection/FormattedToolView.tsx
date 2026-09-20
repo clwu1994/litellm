@@ -2,6 +2,7 @@
  * Formatted view of tool definition with parameters table and call data
  */
 
+import { useTranslation } from "react-i18next";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ParsedTool, ParameterRow } from "./types";
 
@@ -10,6 +11,7 @@ interface FormattedToolViewProps {
 }
 
 export function FormattedToolView({ tool }: FormattedToolViewProps) {
+  const { t } = useTranslation("logs");
   // Parse parameters for table display
   const parameterRows: ParameterRow[] = Object.entries(tool.parameters?.properties || {}).map(
     ([name, schema]: [string, any]) => ({
@@ -33,13 +35,13 @@ export function FormattedToolView({ tool }: FormattedToolViewProps) {
       {/* Parameters Table */}
       {parameterRows.length > 0 && (
         <div>
-          <span className="mb-2 block text-xs text-muted-foreground">Parameters</span>
+          <span className="mb-2 block text-xs text-muted-foreground">{t("tools.parameters")}</span>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Parameter</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Description</TableHead>
+                <TableHead>{t("tools.parameter")}</TableHead>
+                <TableHead>{t("tools.type")}</TableHead>
+                <TableHead>{t("tools.description")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -67,7 +69,7 @@ export function FormattedToolView({ tool }: FormattedToolViewProps) {
       {/* If tool was called, show the arguments used */}
       {tool.called && tool.callData && (
         <div className="mt-4">
-          <span className="mb-2 block text-xs text-muted-foreground">Called With</span>
+          <span className="mb-2 block text-xs text-muted-foreground">{t("tools.calledWith")}</span>
           <div className="rounded border border-success/30 bg-success/10 p-3">
             <pre className="m-0 whitespace-pre-wrap break-words text-xs text-foreground">
               {JSON.stringify(tool.callData.arguments, null, 2)}
