@@ -546,6 +546,7 @@
       "actions": "Actions:",
       "blocked": "{{value}} blocked",
       "masked": "{{value}} masked",
+      "passed": "passed",
       "byType": "By Type:",
       "patternsCount": "{{value}} patterns",
       "keywordsCount": "{{value}} keywords",

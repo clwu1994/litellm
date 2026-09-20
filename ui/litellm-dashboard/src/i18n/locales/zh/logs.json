@@ -546,6 +546,7 @@
       "actions": "操作：",
       "blocked": "已阻止 {{value}} 项",
       "masked": "已屏蔽 {{value}} 项",
+      "passed": "通过",
       "byType": "按类型：",
       "patternsCount": "{{value}} 个模式",
       "keywordsCount": "{{value}} 个关键词",

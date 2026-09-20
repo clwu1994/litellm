@@ -117,5 +117,16 @@ describe("ContentFilterDetails", () => {
       expect(screen.getByText("未知")).toBeInTheDocument();
       expect(screen.queryByText("unknown")).not.toBeInTheDocument();
     });
+
+    it("renders the Chinese passed chip for a detection with no action and hides the English one", () => {
+      render(
+        <ContentFilterDetails
+          response={[{ type: "competitor_intent", action_hint: "allow" } as unknown as ContentFilterDetection]}
+        />,
+      );
+
+      expect(screen.getByText("通过")).toBeInTheDocument();
+      expect(screen.queryByText("passed")).not.toBeInTheDocument();
+    });
   });
 });

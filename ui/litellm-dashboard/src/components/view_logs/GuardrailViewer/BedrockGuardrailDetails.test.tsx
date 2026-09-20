@@ -143,8 +143,8 @@ describe("BedrockGuardrailDetails Chinese copy", () => {
     expect(screen.getByText("词语策略")).toBeInTheDocument();
     expect(screen.getByText("内容策略")).toBeInTheDocument();
     expect(screen.getByText("主题策略")).toBeInTheDocument();
-    expect(screen.getAllByText("敏感信息").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("上下文依据").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("敏感信息")).toHaveLength(2);
+    expect(screen.getAllByText("上下文依据")).toHaveLength(2);
     expect(screen.getByText("自定义词语")).toBeInTheDocument();
     expect(screen.getByText("托管词表")).toBeInTheDocument();
     expect(screen.getByText("PII 实体")).toBeInTheDocument();
@@ -168,6 +168,8 @@ describe("BedrockGuardrailDetails Chinese copy", () => {
     expect(screen.queryByText("Topic Policy")).not.toBeInTheDocument();
     expect(screen.queryByText("Sensitive Information")).not.toBeInTheDocument();
     expect(screen.queryByText("Contextual Grounding")).not.toBeInTheDocument();
+    expect(screen.queryByText("sensitive-info")).not.toBeInTheDocument();
+    expect(screen.queryByText("contextual-grounding")).not.toBeInTheDocument();
     expect(screen.queryByText("Custom Words")).not.toBeInTheDocument();
     expect(screen.queryByText("Managed Word Lists")).not.toBeInTheDocument();
     expect(screen.queryByText("PII Entities")).not.toBeInTheDocument();

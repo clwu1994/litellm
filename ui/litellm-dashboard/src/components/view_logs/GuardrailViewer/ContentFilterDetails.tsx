@@ -127,7 +127,7 @@ const ContentFilterDetails: React.FC<ContentFilterDetailsProps> = ({ response })
               <div className="flex flex-wrap gap-2">
                 {blockedCount > 0 && chip(t("guardrail.contentFilter.blocked", { value: blockedCount }), "red")}
                 {maskedCount > 0 && chip(t("guardrail.contentFilter.masked", { value: maskedCount }), "blue")}
-                {blockedCount === 0 && maskedCount === 0 && chip("passed", "green")}
+                {blockedCount === 0 && maskedCount === 0 && chip(t("guardrail.contentFilter.passed"), "green")}
               </div>
             </KV>
           </div>
