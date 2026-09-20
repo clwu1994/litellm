@@ -176,6 +176,7 @@ describe("Guardrail test surfaces Chinese copy", () => {
 
     await hoverLabelHint(user, "输入文本");
     expect(await screen.findByText("按 Enter 提交，按 Shift+Enter 换行。")).toBeInTheDocument();
+    expect(screen.queryByText("Press Enter to submit. Use Shift+Enter for new line.")).not.toBeInTheDocument();
 
     await hoverLabelHint(user, "元数据（可选）");
     expect(
@@ -184,7 +185,6 @@ describe("Guardrail test surfaces Chinese copy", () => {
       ),
     ).toBeInTheDocument();
 
-    expect(screen.queryByText("Press Enter to submit. Use Shift+Enter for new line.")).not.toBeInTheDocument();
     expect(
       screen.queryByText(
         "JSON object forwarded to the guardrail as request_data['metadata']. Custom guardrails can read per-request configuration from it.",
