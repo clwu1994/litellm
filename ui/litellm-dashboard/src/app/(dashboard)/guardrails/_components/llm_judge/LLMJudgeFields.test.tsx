@@ -63,21 +63,28 @@ describe("LLMJudgeFields Chinese copy", () => {
 
     await hoverHint(user, "评判模型");
     expect(await screen.findByText(/读取并评分每条响应的 LLM/)).toBeInTheDocument();
+    expect(screen.queryByText(/The LLM that reads each response and grades it/)).not.toBeInTheDocument();
     await hoverHint(user, "通过的最低分数");
     expect(await screen.findByText(/若各标准得分的加权平均分低于此值/)).toBeInTheDocument();
+    expect(
+      screen.queryByText(/0–100\. If the weighted average of criterion scores falls below this/),
+    ).not.toBeInTheDocument();
     await hoverHint(user, "失败时");
     expect(
       await screen.findByText("阻止：分数过低时返回 HTTP 422。记录日志：记录结果但放行响应。"),
     ).toBeInTheDocument();
     await hoverHint(user, "评判标准");
     expect(await screen.findByText(/每条标准都是评判模型要检查的内容/)).toBeInTheDocument();
+    expect(screen.queryByText(/Each criterion is something the judge checks/)).not.toBeInTheDocument();
     await hoverHint(user, "权重");
     expect(await screen.findByText(/此标准在最终得分中所占的比重/)).toBeInTheDocument();
+    expect(screen.queryByText(/How much this criterion counts toward the final score/)).not.toBeInTheDocument();
 
     await user.click(screen.getByRole("combobox", { name: "失败时" }));
     expect(await screen.findByRole("option", { name: "阻止（返回 422）" })).toBeInTheDocument();
     expect(screen.getByRole("option", { name: "仅记录日志" })).toBeInTheDocument();
     expect(screen.queryByRole("option", { name: "Block (return 422)" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: "Log only" })).not.toBeInTheDocument();
     await user.keyboard("{Escape}");
 
     expect(screen.queryByText("Judge Model")).not.toBeInTheDocument();
@@ -85,6 +92,18 @@ describe("LLMJudgeFields Chinese copy", () => {
     expect(screen.queryByText("Evaluation Criteria")).not.toBeInTheDocument();
     expect(screen.queryByText("Add Criterion")).not.toBeInTheDocument();
     expect(screen.queryByText("Weights total: 100%")).not.toBeInTheDocument();
+    expect(screen.queryByText("On Failure")).not.toBeInTheDocument();
+    expect(screen.queryByText("Weight")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Remove criterion" })).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("Select a model")).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("Criterion name (e.g. Policy accuracy)")).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("What should the judge check for this criterion?")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        "Block: return HTTP 422 when the score is too low. Log: record the result but let the response through.",
+      ),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/After each LLM response/)).not.toBeInTheDocument();
   });
 
   it("renders the Chinese judge-model empty state and validation and the weight total states", async () => {

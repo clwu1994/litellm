@@ -138,6 +138,9 @@ describe("KeywordModal Chinese copy", () => {
 
     expect(screen.queryByText("Add blocked keyword")).not.toBeInTheDocument();
     expect(screen.queryByText("Description (optional)")).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("Enter sensitive keyword or phrase")).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("Explain why this keyword is sensitive")).not.toBeInTheDocument();
+    expect(screen.queryByText("Action")).not.toBeInTheDocument();
     expect(
       screen.queryByText("Choose what action the guardrail should take when this keyword is detected"),
     ).not.toBeInTheDocument();

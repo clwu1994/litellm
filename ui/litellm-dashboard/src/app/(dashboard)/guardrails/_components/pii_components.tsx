@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { EyeOff, Filter, Info, Ban, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { PiiEntityCategory } from "@/components/guardrails/types";
@@ -143,10 +143,6 @@ export const PiiEntityList: React.FC<PiiEntityListProps> = ({
   entityToCategoryMap,
 }) => {
   const { t } = useTranslation("guardrails");
-  const actionItems = useMemo(
-    () => actions.map((action) => ({ value: action, label: formatPiiAction(action, t) })),
-    [actions, t],
-  );
   return (
     <div className="overflow-hidden rounded-lg border border-border shadow-xs">
       <div className="flex border-b border-border bg-muted/40 px-5 py-3">
@@ -179,7 +175,6 @@ export const PiiEntityList: React.FC<PiiEntityListProps> = ({
                 </div>
                 <div className="w-32">
                   <Select
-                    items={actionItems}
                     value={isSelected ? selectedActions[entity] || "MASK" : "MASK"}
                     onValueChange={(value: string | null) => value && onActionSelect(entity, value)}
                     disabled={!isSelected}
@@ -188,7 +183,7 @@ export const PiiEntityList: React.FC<PiiEntityListProps> = ({
                       className={`w-[120px] ${isSelected ? "" : "opacity-50"}`}
                       aria-label={t("pii.action")}
                     >
-                      <SelectValue />
+                      <SelectValue>{(value: string) => formatPiiAction(value, t)}</SelectValue>
                     </SelectTrigger>
                     <SelectContent>
                       {actions.map((action) => (

@@ -209,6 +209,63 @@ describe("content filter tables", () => {
 
     expect(onActionChange).toHaveBeenCalledWith("category-1", "MASK");
   });
+
+  it("should keep the read-only severity and action badges on the raw wire values", () => {
+    renderWithProviders(
+      <CategoryTable
+        categories={[
+          {
+            id: "category-1",
+            category: "self_harm",
+            display_name: "Self Harm",
+            action: "BLOCK",
+            severity_threshold: "high",
+          },
+        ]}
+        readOnly
+      />,
+    );
+
+    expect(screen.getByText("HIGH")).toBeInTheDocument();
+    expect(screen.getByText("BLOCK")).toBeInTheDocument();
+    expect(screen.queryByText("High")).not.toBeInTheDocument();
+    expect(screen.queryByText("Block")).not.toBeInTheDocument();
+  });
+
+  it("should keep the blocked-topic action option badges on the raw wire values", async () => {
+    const user = userEvent.setup();
+
+    renderWithProviders(
+      <ContentCategoryConfiguration
+        availableCategories={[
+          {
+            name: "violence",
+            display_name: "Violence",
+            description: "Violent content",
+            default_action: "BLOCK",
+          },
+        ]}
+        selectedCategories={[
+          {
+            id: "category-1",
+            category: "violence",
+            display_name: "Violence",
+            action: "BLOCK",
+            severity_threshold: "medium",
+          },
+        ]}
+        onCategoryAdd={vi.fn()}
+        onCategoryRemove={vi.fn()}
+        onCategoryUpdate={vi.fn()}
+      />,
+    );
+
+    await user.click(screen.getByRole("combobox", { name: "Action" }));
+
+    expect(await screen.findByRole("option", { name: "BLOCK" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "MASK" })).toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: "Block" })).not.toBeInTheDocument();
+  });
 });
 
 const ZH_CATEGORIES = [
@@ -268,7 +325,29 @@ describe("content filter tables Chinese copy", () => {
 
     expect(screen.queryByText("Severity Threshold")).not.toBeInTheDocument();
     expect(screen.queryByText("Category")).not.toBeInTheDocument();
+    expect(screen.queryByText("Action")).not.toBeInTheDocument();
     expect(screen.queryByText("Delete")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese severity options and hides the English ones", async () => {
+    const user = userEvent.setup({ delay: null });
+    renderWithProviders(
+      <CategoryTable
+        categories={[ZH_SELECTED[0]]}
+        onActionChange={vi.fn()}
+        onSeverityChange={vi.fn()}
+        onRemove={vi.fn()}
+      />,
+    );
+
+    await user.click(screen.getByRole("combobox", { name: "严重程度阈值" }));
+
+    expect(await screen.findByRole("option", { name: "高" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "中" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "低" })).toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: "High" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: "Medium" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: "Low" })).not.toBeInTheDocument();
   });
 
   it("renders the Chinese category table empty state", () => {
@@ -287,6 +366,18 @@ describe("content filter tables Chinese copy", () => {
     expect(screen.getByText("阻止")).toBeInTheDocument();
     expect(screen.queryByText("MEDIUM")).not.toBeInTheDocument();
     expect(screen.queryByText("BLOCK")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese blocked-topic action option badges", async () => {
+    const user = userEvent.setup({ delay: null });
+    renderCategoryConfig();
+
+    await user.click(screen.getByRole("combobox", { name: "操作" }));
+
+    expect(await screen.findByRole("option", { name: "阻止" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "屏蔽" })).toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: "BLOCK" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: "Block" })).not.toBeInTheDocument();
   });
 
   it("renders the Chinese keyword table chrome and empty state", () => {
@@ -329,6 +420,7 @@ describe("content filter tables Chinese copy", () => {
     expect(screen.queryByText("Prebuilt")).not.toBeInTheDocument();
     expect(screen.queryByText("Pattern name")).not.toBeInTheDocument();
     expect(screen.queryByText("Regex pattern")).not.toBeInTheDocument();
+    expect(screen.queryByText("Type")).not.toBeInTheDocument();
 
     unmount();
     renderWithProviders(
@@ -366,6 +458,7 @@ describe("content filter tables Chinese copy", () => {
     expect(screen.getByText("尚未选择屏蔽主题。添加主题以检测并屏蔽有害内容。")).toBeInTheDocument();
     expect(screen.queryByText("Blocked topics")).not.toBeInTheDocument();
     expect(screen.queryByText("Select a content category")).not.toBeInTheDocument();
+    expect(screen.queryByText("Select topics to block using keyword and semantic analysis")).not.toBeInTheDocument();
     expect(
       screen.queryByText("No blocked topics selected. Add topics to detect and block harmful content."),
     ).not.toBeInTheDocument();

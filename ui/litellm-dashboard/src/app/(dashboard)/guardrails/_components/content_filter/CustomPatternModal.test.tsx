@@ -102,6 +102,10 @@ describe("CustomPatternModal Chinese copy", () => {
     expect(screen.queryByText("Add custom regex pattern")).not.toBeInTheDocument();
     expect(screen.queryByText("Pattern name")).not.toBeInTheDocument();
     expect(screen.queryByText("Enter a valid regular expression to match sensitive data")).not.toBeInTheDocument();
+    expect(screen.queryByText("Action")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Choose what action the guardrail should take when this pattern is detected"),
+    ).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Cancel" })).not.toBeInTheDocument();
   });
 });

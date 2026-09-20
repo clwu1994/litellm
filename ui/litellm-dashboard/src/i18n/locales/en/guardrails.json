@@ -225,6 +225,15 @@
       "medium": "Medium",
       "low": "Low"
     },
+    "actionBadge": {
+      "block": "BLOCK",
+      "mask": "MASK"
+    },
+    "severityBadge": {
+      "high": "HIGH",
+      "medium": "MEDIUM",
+      "low": "LOW"
+    },
     "tables": {
       "type": "Type",
       "patternName": "Pattern name",
@@ -450,7 +459,8 @@
       "textUtilities": "Text Utilities"
     },
     "validation": {
-      "codeRequired": "Please enter custom code"
+      "codeRequired": "Please enter custom code",
+      "noAccessToken": "No access token available"
     },
     "toast": {
       "updated": "Custom code guardrail updated successfully",

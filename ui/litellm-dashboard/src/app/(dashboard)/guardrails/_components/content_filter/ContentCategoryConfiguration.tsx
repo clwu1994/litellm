@@ -17,7 +17,7 @@ import {
   ComboboxList,
 } from "@/components/ui/combobox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { actionItems, severityItems } from "./action_options";
+import { actionBadgeLabel, actionItems, severityItems } from "./action_options";
 
 interface ContentCategory {
   name: string;
@@ -206,7 +206,9 @@ const ContentCategoryConfiguration: React.FC<ContentCategoryConfigurationProps> 
           <SelectContent>
             {items.map((item) => (
               <SelectItem key={item.value} value={item.value}>
-                <Badge variant={item.value === "BLOCK" ? "destructive" : "secondary"}>{item.label}</Badge>
+                <Badge variant={item.value === "BLOCK" ? "destructive" : "secondary"}>
+                  {actionBadgeLabel(item.value, t)}
+                </Badge>
               </SelectItem>
             ))}
           </SelectContent>

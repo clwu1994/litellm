@@ -96,6 +96,9 @@ describe("ToolPermissionRulesEditor Chinese copy", () => {
     expect(screen.queryByText("No tool rules added yet")).not.toBeInTheDocument();
     expect(screen.queryByText("Default action")).not.toBeInTheDocument();
     expect(screen.queryByText("Violation message (optional)")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Add Rule" })).not.toBeInTheDocument();
+    expect(screen.queryByText("On disallowed action")).not.toBeInTheDocument();
+    expect(screen.queryByText(/Provide regex patterns/)).not.toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "添加规则" }));
 
@@ -107,7 +110,9 @@ describe("ToolPermissionRulesEditor Chinese copy", () => {
     expect(screen.getByRole("button", { name: "移除" })).toBeInTheDocument();
     expect(screen.queryByText("Rule ID")).not.toBeInTheDocument();
     expect(screen.queryByText("Tool Name (optional)")).not.toBeInTheDocument();
+    expect(screen.queryByText("Tool Type (optional)")).not.toBeInTheDocument();
     expect(screen.queryByText("Decision")).not.toBeInTheDocument();
+    expect(screen.queryByText("Rule 1")).not.toBeInTheDocument();
 
     await user.click(screen.getByRole("combobox", { name: "决策" }));
     expect(await screen.findByRole("option", { name: "允许" })).toBeInTheDocument();
@@ -139,6 +144,11 @@ describe("ToolPermissionRulesEditor Chinese copy", () => {
     expect(
       await screen.findByText("阻止：调用被禁止的工具时返回错误。改写：移除该工具调用，但让响应的其余部分继续。"),
     ).toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        "Block returns an error when a forbidden tool is invoked. Rewrite strips the tool call but lets the rest of the response continue.",
+      ),
+    ).not.toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "+ 限制工具参数（可选）" }));
     expect(screen.getByText("参数约束（点号或数组路径）")).toBeInTheDocument();

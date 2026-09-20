@@ -1,6 +1,7 @@
+import { useState } from "react";
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, beforeEach, describe, it, expect } from "vitest";
+import { afterEach, beforeEach, describe, it, expect, vi } from "vitest";
 import i18n from "@/i18n/bootstrapI18n";
 import { CategoryFilter, QuickActions, PiiEntityList } from "./pii_components";
 import type { PiiEntityCategory } from "@/components/guardrails/types";
@@ -34,6 +35,37 @@ describe("PiiEntityList", () => {
       />,
     );
     expect(screen.getByText("No PII types match your filter criteria")).toBeInTheDocument();
+  });
+
+  it("should show the selected action on the trigger and report the wire value on change", async () => {
+    const user = userEvent.setup({ delay: null });
+    const onActionSelect = vi.fn();
+    const Harness = () => {
+      const [selectedActions, setSelectedActions] = useState<Record<string, string>>({ PERSON: "MASK" });
+      return (
+        <PiiEntityList
+          entities={["PERSON"]}
+          selectedEntities={["PERSON"]}
+          selectedActions={selectedActions}
+          actions={["MASK", "BLOCK"]}
+          onEntitySelect={() => {}}
+          onActionSelect={(entity, action) => {
+            onActionSelect(entity, action);
+            setSelectedActions((previous) => ({ ...previous, [entity]: action }));
+          }}
+          entityToCategoryMap={new Map()}
+        />
+      );
+    };
+    render(<Harness />);
+
+    expect(screen.getByRole("combobox", { name: "Action" })).toHaveTextContent("MASK");
+
+    await user.click(screen.getByRole("combobox", { name: "Action" }));
+    await user.click(await screen.findByRole("option", { name: "BLOCK" }));
+
+    expect(onActionSelect).toHaveBeenCalledWith("PERSON", "BLOCK");
+    expect(screen.getByRole("combobox", { name: "Action" })).toHaveTextContent("BLOCK");
   });
 });
 
@@ -83,6 +115,7 @@ describe("PII components Chinese copy", () => {
     await user.hover(trigger);
     expect(await screen.findByText("一次性对所有 PII 类型应用操作")).toBeInTheDocument();
 
+    expect(screen.queryByText("Apply action to all PII types at once")).not.toBeInTheDocument();
     expect(screen.queryByText("Quick Actions")).not.toBeInTheDocument();
     expect(screen.queryByText("Unselect All")).not.toBeInTheDocument();
     expect(screen.queryByText("Select All & Mask")).not.toBeInTheDocument();
@@ -108,6 +141,7 @@ describe("PII components Chinese copy", () => {
     expect(screen.getByText("屏蔽")).toBeInTheDocument();
     expect(screen.queryByText("MASK")).not.toBeInTheDocument();
     expect(screen.queryByText("Mask")).not.toBeInTheDocument();
+    expect(screen.queryByText("Action")).not.toBeInTheDocument();
     expect(screen.queryByText("PII Type")).not.toBeInTheDocument();
 
     await user.click(screen.getByRole("combobox", { name: "操作" }));

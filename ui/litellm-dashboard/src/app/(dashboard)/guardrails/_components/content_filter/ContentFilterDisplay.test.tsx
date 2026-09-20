@@ -74,8 +74,8 @@ describe("ContentFilterDisplay", () => {
       <ContentFilterDisplay patterns={[PATTERN]} blockedWords={[KEYWORD]} categories={[CATEGORY]} readOnly={true} />,
     );
 
-    expect(screen.getAllByText("High").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("Block").length).toBeGreaterThan(0);
+    expect(screen.getByText("HIGH")).toBeInTheDocument();
+    expect(screen.getByText("BLOCK")).toBeInTheDocument();
     expect(screen.getAllByRole("button", { name: /delete/i })).toHaveLength(2);
   });
 

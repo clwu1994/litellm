@@ -258,6 +258,44 @@ describe("CompetitorIntentConfiguration Chinese copy", () => {
     expect(screen.queryByText("Confidence thresholds")).not.toBeInTheDocument();
     expect(screen.queryByText("Your Brand (brand_self)")).not.toBeInTheDocument();
     expect(screen.queryByText("Policy: Competitor comparison")).not.toBeInTheDocument();
+    expect(screen.queryByText("Type")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        "Block or reframe competitor comparison questions. Airline type uses major airlines (excluding your brand); generic requires manual competitor list.",
+      ),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Airline (auto-load competitors from IATA)")).not.toBeInTheDocument();
+    expect(screen.queryByText("Generic (specify competitors manually)")).not.toBeInTheDocument();
+    expect(screen.queryByText("Policy: Possible competitor comparison")).not.toBeInTheDocument();
+    expect(screen.queryByText("Refuse (block request)")).not.toBeInTheDocument();
+    expect(screen.queryByText("Reframe (suggest alternative)")).not.toBeInTheDocument();
+    expect(screen.queryByText("Reframe (suggest alternative to backend LLM)")).not.toBeInTheDocument();
+    expect(screen.queryByText("Medium")).not.toBeInTheDocument();
+    expect(screen.queryByText("Low")).not.toBeInTheDocument();
+    expect(screen.queryByText("High (≥)")).not.toBeInTheDocument();
+    expect(screen.queryByText("Medium (≥)")).not.toBeInTheDocument();
+    expect(screen.queryByText("Low (≥)")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(': Treat as full competitor comparison -> uses "Competitor comparison" policy'),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(': Treat as possible comparison -> uses "Possible competitor comparison" policy'),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText(": Log only; allow request. Below Low -> allow with no action")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Raise thresholds to be more permissive; lower them to be stricter."),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Classify competitor intent by confidence (0–1). Higher confidence -> stronger intent."),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Select your airline from the list (excluded from competitors) or type to add a custom term"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Countries, cities, airports for disambiguation (e.g. qatar, doha)"),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("Search or select airline, or type to add custom")).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("Type and press Enter to add")).not.toBeInTheDocument();
   });
 
   it("renders the Chinese generic-type chrome and the disabled explanation", async () => {
@@ -272,6 +310,8 @@ describe("CompetitorIntentConfiguration Chinese copy", () => {
     expect(screen.getByText("用户用于指代你品牌的名称或代码")).toBeInTheDocument();
     expect(screen.queryByText("地点（可选）")).not.toBeInTheDocument();
     expect(screen.queryByText("Competitors")).not.toBeInTheDocument();
+    expect(screen.queryByText("Names/codes users use for your brand")).not.toBeInTheDocument();
+    expect(screen.queryByText("Competitor names to detect (required for generic type)")).not.toBeInTheDocument();
 
     unmount();
     render(<Harness initialEnabled={false} />);

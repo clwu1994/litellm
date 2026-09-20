@@ -251,7 +251,7 @@ const CustomCodeModal: React.FC<CustomCodeModalProps> = ({ visible, onClose, onS
       return;
     }
     if (!accessToken) {
-      toast.fromError("No access token available");
+      toast.fromError(t("customCode.validation.noAccessToken"));
       return;
     }
 
@@ -313,7 +313,7 @@ const CustomCodeModal: React.FC<CustomCodeModalProps> = ({ visible, onClose, onS
   // Test guardrail using backend endpoint
   const handleTest = async () => {
     if (!accessToken) {
-      setTestResult({ error: "No access token available" });
+      setTestResult({ error: t("customCode.validation.noAccessToken") });
       return;
     }
 

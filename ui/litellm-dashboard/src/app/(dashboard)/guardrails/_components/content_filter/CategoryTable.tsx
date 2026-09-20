@@ -6,7 +6,7 @@ import { DataTable } from "@/components/shared/DataTable";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { actionItems, actionLabel, severityItems, severityLabel } from "./action_options";
+import { actionBadgeLabel, actionItems, severityBadgeLabel, severityItems } from "./action_options";
 
 interface ContentCategory {
   id: string;
@@ -56,7 +56,7 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
         const { id, severity_threshold: severity } = row.original;
         if (readOnly) {
           return (
-            <Badge variant={severity === "high" ? "destructive" : "secondary"}>{severityLabel(severity, t)}</Badge>
+            <Badge variant={severity === "high" ? "destructive" : "secondary"}>{severityBadgeLabel(severity, t)}</Badge>
           );
         }
         return (
@@ -88,7 +88,9 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
       cell: ({ row }) => {
         const { action, id } = row.original;
         if (readOnly) {
-          return <Badge variant={action === "BLOCK" ? "destructive" : "secondary"}>{actionLabel(action, t)}</Badge>;
+          return (
+            <Badge variant={action === "BLOCK" ? "destructive" : "secondary"}>{actionBadgeLabel(action, t)}</Badge>
+          );
         }
         return (
           <Select

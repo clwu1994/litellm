@@ -197,6 +197,10 @@ describe("PatternModal Chinese copy", () => {
     expect(screen.queryByText("Add prebuilt pattern")).not.toBeInTheDocument();
     expect(screen.queryByText("Pattern type")).not.toBeInTheDocument();
     expect(screen.queryByText("Choose pattern type")).not.toBeInTheDocument();
+    expect(screen.queryByText("Action")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Choose what action the guardrail should take when this pattern is detected"),
+    ).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Cancel" })).not.toBeInTheDocument();
 
     await user.click(screen.getAllByRole("combobox")[0]);

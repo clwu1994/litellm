@@ -182,7 +182,18 @@ describe("ContentFilterConfiguration Chinese copy", () => {
 
     expect(screen.queryByText("Pattern Detection")).not.toBeInTheDocument();
     expect(screen.queryByText("Blocked Keywords")).not.toBeInTheDocument();
+    expect(screen.queryByText("Block or mask specific sensitive terms and phrases")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        "Configure patterns, keywords, and content categories to detect and filter sensitive information in requests and responses.",
+      ),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Detect sensitive information using regex patterns (SSN, credit cards, API keys, etc.)"),
+    ).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /Add prebuilt pattern/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Add custom regex/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Add keyword/i })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /Upload YAML file/i })).not.toBeInTheDocument();
   });
 

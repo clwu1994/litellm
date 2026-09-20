@@ -225,6 +225,15 @@
       "medium": "中",
       "low": "低"
     },
+    "actionBadge": {
+      "block": "阻止",
+      "mask": "屏蔽"
+    },
+    "severityBadge": {
+      "high": "高",
+      "medium": "中",
+      "low": "低"
+    },
     "tables": {
       "type": "类型",
       "patternName": "匹配模式名称",
@@ -450,7 +459,8 @@
       "textUtilities": "文本工具"
     },
     "validation": {
-      "codeRequired": "请输入自定义代码"
+      "codeRequired": "请输入自定义代码",
+      "noAccessToken": "没有可用的访问 Token"
     },
     "toast": {
       "updated": "自定义代码 Guardrail 更新成功",

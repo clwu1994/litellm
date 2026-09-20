@@ -218,6 +218,23 @@ describe("CustomCodeModal Chinese copy", () => {
     expect(screen.queryByText("Browse Community templates")).not.toBeInTheDocument();
     expect(screen.queryByText("Python Logic")).not.toBeInTheDocument();
     expect(screen.queryByText("Available Primitives")).not.toBeInTheDocument();
+    expect(screen.queryByText("Restricted environment (no imports)")).not.toBeInTheDocument();
+    expect(screen.queryByText("Test Your Guardrail")).not.toBeInTheDocument();
+    expect(screen.queryByText("Click to copy functions to clipboard")).not.toBeInTheDocument();
+    expect(screen.queryByText("Changes are auto-saved to local draft")).not.toBeInTheDocument();
+    expect(screen.queryByText("Reject with message")).not.toBeInTheDocument();
+    expect(screen.queryByText("Let through, record a non-blocking violation")).not.toBeInTheDocument();
+    expect(screen.queryByText("Transform content")).not.toBeInTheDocument();
+    for (const category of [
+      "HTTP Requests (async)",
+      "Regex Functions",
+      "JSON Functions",
+      "URL Functions",
+      "Code Detection",
+      "Text Utilities",
+    ]) {
+      expect(screen.queryByRole("button", { name: category })).not.toBeInTheDocument();
+    }
     expect(screen.queryByRole("button", { name: /Save Guardrail/ })).not.toBeInTheDocument();
   });
 
@@ -248,6 +265,11 @@ describe("CustomCodeModal Chinese copy", () => {
     expect(screen.getByText("during_mcp_call（MCP 工具调用期间）")).toBeInTheDocument();
     expect(screen.getByText("logging_only")).toBeInTheDocument();
     expect(screen.queryByText("pre_mcp_call (Before MCP Tool Call)")).not.toBeInTheDocument();
+    expect(screen.queryByText("pre_call (Request)")).not.toBeInTheDocument();
+    expect(screen.queryByText("post_call (Response)")).not.toBeInTheDocument();
+    expect(screen.queryByText("during_call (Parallel)")).not.toBeInTheDocument();
+    expect(screen.queryByText("post_mcp_call (After MCP Tool Call)")).not.toBeInTheDocument();
+    expect(screen.queryByText("during_mcp_call (During MCP Tool Call)")).not.toBeInTheDocument();
 
     await user.keyboard("zzz");
     expect(await screen.findByText("没有匹配的模式")).toBeInTheDocument();
@@ -281,6 +303,15 @@ describe("CustomCodeModal Chinese copy", () => {
     expect(screen.queryByText("STANDARD")).not.toBeInTheDocument();
     expect(screen.queryByText("Empty Template")).not.toBeInTheDocument();
     expect(screen.queryByText("Browse Community templates")).not.toBeInTheDocument();
+    for (const name of [
+      "Block SSN",
+      "Redact Emails",
+      "Block SQL Injection",
+      "Validate JSON",
+      "External API Check (async)",
+    ]) {
+      expect(screen.queryByText(name)).not.toBeInTheDocument();
+    }
   });
 
   it("renders the Chinese test input chrome and field descriptions", async () => {
@@ -307,6 +338,15 @@ describe("CustomCodeModal Chinese copy", () => {
     expect(screen.queryByText("Load example:")).not.toBeInTheDocument();
     expect(screen.queryByText(/Message content \(always\)/)).not.toBeInTheDocument();
     expect(screen.queryByText(/Model name \(always\)/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Base64 images \(vision\)/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Tool definitions/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/, MCP as OpenAI tool/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/LLM tool calls/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Full messages/)).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Pre-call" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Pre MCP" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Post-call" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Run Test/ })).not.toBeInTheDocument();
   });
 
   it.each([
@@ -384,18 +424,51 @@ describe("CustomCodeModal Chinese copy", () => {
     expect(screen.getByText("放行并记录非阻断违规")).toBeInTheDocument();
     expect(screen.getByText("转换内容")).toBeInTheDocument();
 
-    const categories: Array<[string, string[]]> = [
-      ["HTTP 请求（异步）", ["发起异步 HTTP 请求", "异步 GET 请求", "异步 POST 请求"]],
-      ["正则函数", ["找到匹配模式时返回 True", "替换所有匹配项", "返回匹配项列表"]],
-      ["JSON 函数", ["解析 JSON 字符串，出错时返回 None", "转换为 JSON 字符串", "根据 JSON schema 校验"]],
-      ["URL 函数", ["从文本中提取所有 URL", "检查 URL 是否有效", "检查文本中所有 URL 是否有效"]],
-      ["代码检测", ["检测到代码时返回 True", "返回检测到的语言列表", "检查特定语言"]],
-      ["文本工具", ["检查子字符串是否存在", "检查是否存在任一子字符串", "统计单词数", "统计字符数", "字符串转换"]],
+    const categories: Array<[string, string[], string[]]> = [
+      [
+        "HTTP 请求（异步）",
+        ["发起异步 HTTP 请求", "异步 GET 请求", "异步 POST 请求"],
+        ["Make async HTTP request", "Async GET request", "Async POST request"],
+      ],
+      [
+        "正则函数",
+        ["找到匹配模式时返回 True", "替换所有匹配项", "返回匹配项列表"],
+        ["Returns True if pattern found", "Replace all matches", "Return list of matches"],
+      ],
+      [
+        "JSON 函数",
+        ["解析 JSON 字符串，出错时返回 None", "转换为 JSON 字符串", "根据 JSON schema 校验"],
+        ["Parse JSON string, returns None on error", "Convert to JSON string", "Validate against JSON schema"],
+      ],
+      [
+        "URL 函数",
+        ["从文本中提取所有 URL", "检查 URL 是否有效", "检查文本中所有 URL 是否有效"],
+        ["Extract all URLs from text", "Check if URL is valid", "Check all URLs in text are valid"],
+      ],
+      [
+        "代码检测",
+        ["检测到代码时返回 True", "返回检测到的语言列表", "检查特定语言"],
+        ["Returns True if code detected", "Returns list of detected languages", "Check for specific languages"],
+      ],
+      [
+        "文本工具",
+        ["检查子字符串是否存在", "检查是否存在任一子字符串", "统计单词数", "统计字符数", "字符串转换"],
+        [
+          "Check if substring exists",
+          "Check if any substring exists",
+          "Count words",
+          "Count characters",
+          "String transforms",
+        ],
+      ],
     ];
-    for (const [category, descriptions] of categories) {
+    for (const [category, descriptions, englishDescriptions] of categories) {
       await user.click(screen.getByRole("button", { name: category }));
       for (const description of descriptions) {
         expect(await screen.findByText(description)).toBeInTheDocument();
+      }
+      for (const englishDescription of englishDescriptions) {
+        expect(screen.queryByText(englishDescription)).not.toBeInTheDocument();
       }
     }
 
@@ -406,6 +479,8 @@ describe("CustomCodeModal Chinese copy", () => {
     expect(screen.queryByText("Built a useful guardrail?")).not.toBeInTheDocument();
     expect(screen.queryByText("Return Values")).not.toBeInTheDocument();
     expect(screen.queryByText("Let request/response through")).not.toBeInTheDocument();
+    expect(screen.queryByText("Share it with the community and help others build faster")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Contribute Template/ })).not.toBeInTheDocument();
   });
 
   it("renders the Chinese code validation and save toasts and hides the English ones", async () => {
@@ -436,6 +511,23 @@ describe("CustomCodeModal Chinese copy", () => {
     await user.click(screen.getByRole("button", { name: /更新 Guardrail/ }));
     await waitFor(() => expect(toast.success).toHaveBeenCalledWith("自定义代码 Guardrail 更新成功"));
     expect(toast.success).not.toHaveBeenCalledWith("Custom code guardrail updated successfully");
+  });
+
+  it("renders the Chinese missing-token errors and hides the English one", async () => {
+    const user = userEvent.setup({ delay: null });
+    renderZhModal({ accessToken: null });
+
+    await expandZhTest(user);
+    await user.click(await screen.findByRole("button", { name: /运行测试/ }));
+    expect(await screen.findByText("没有可用的访问 Token")).toBeInTheDocument();
+    expect(screen.queryByText("No access token available")).not.toBeInTheDocument();
+    expect(mockTest).not.toHaveBeenCalled();
+
+    await user.type(screen.getByPlaceholderText("e.g., block-pii-custom"), "my-code");
+    await user.click(screen.getByRole("button", { name: /保存 Guardrail/ }));
+    await waitFor(() => expect(toast.fromError).toHaveBeenCalledWith("没有可用的访问 Token"));
+    expect(toast.fromError).not.toHaveBeenCalledWith("No access token available");
+    expect(mockCreate).not.toHaveBeenCalled();
   });
 
   it("renders the Chinese save-failure toasts and hides the English ones", async () => {
