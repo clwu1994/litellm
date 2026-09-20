@@ -191,4 +191,15 @@ describe("UsageAIChatPanel Chinese copy", () => {
     expect(await screen.findByText("错误：获取回复失败，请重试。")).toBeInTheDocument();
     expect(screen.queryByText("Failed to get response. Please try again.")).not.toBeInTheDocument();
   });
+
+  it("renders the Chinese thinking indicator while a status-less stream is open and hides the English one", async () => {
+    vi.mocked(usageAiChatStream).mockImplementationOnce(() => new Promise<void>(() => {}));
+    renderWithProviders(<UsageAIChatPanel {...defaultProps} />);
+
+    fireEvent.change(screen.getByPlaceholderText("询问你的用量..."), { target: { value: "how much?" } });
+    fireEvent.click(screen.getByRole("button", { name: "发送" }));
+
+    expect(await screen.findByText("思考中...")).toBeInTheDocument();
+    expect(screen.queryByText("Thinking...")).not.toBeInTheDocument();
+  });
 });

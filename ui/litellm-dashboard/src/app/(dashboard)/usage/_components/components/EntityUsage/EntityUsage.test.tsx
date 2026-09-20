@@ -1282,9 +1282,13 @@ describe("EntityUsage", () => {
       });
 
       expect(screen.getByText("Agent支出概览")).toBeInTheDocument();
+      expect(screen.getByText("按Agent筛选")).toBeInTheDocument();
+      expect(screen.getByText("选择Agent进行筛选...")).toBeInTheDocument();
       expect(screen.getByText("Top Agent")).toBeInTheDocument();
       expect(screen.getByText("请求 / Token 消耗")).toBeInTheDocument();
       expect(screen.queryByText("Agent Spend Overview")).not.toBeInTheDocument();
+      expect(screen.queryByText("Filter by agent")).not.toBeInTheDocument();
+      expect(screen.queryByText("Select agent to filter...")).not.toBeInTheDocument();
       expect(screen.queryByText("Top Agents")).not.toBeInTheDocument();
       expect(screen.queryByText("Request / Token Consumption")).not.toBeInTheDocument();
     });
