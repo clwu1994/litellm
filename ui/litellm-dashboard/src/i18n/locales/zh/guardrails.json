@@ -81,7 +81,7 @@
     "editCode": "编辑代码",
     "settingsTitle": "Guardrail 设置",
     "configEditHint": "Guardrail 在配置文件中定义，无法编辑。",
-    "configAria": "Config Guardrail 详情",
+    "configAria": "配置项 Guardrail 详情",
     "editSettings": "编辑设置",
     "guardrailId": "Guardrail ID",
     "guardrailName": "Guardrail 名称",

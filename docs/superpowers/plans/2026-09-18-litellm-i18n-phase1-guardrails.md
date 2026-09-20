@@ -41,15 +41,18 @@ Design reference: `docs/superpowers/specs/2026-09-14-litellm-i18n-design.md` (se
 - [ ] Behavioral coverage: every key that reaches the DOM must have a discriminating assertion under `zh`.
 - [ ] Gates: the area's tests, `npx vitest run --project unit src/i18n/`, eslint with before/after warning counts, prettier. Commit and push.
 
-### Task 2: Guardrail garden
+### Task 2: Configuration editors
+
+**Files:** `_components/content_filter/ContentFilterConfiguration.tsx` (~36), `_components/custom_code/CustomCodeModal.tsx` (~71), `_components/llm_judge/LLMJudgeFields.tsx` (~17), `_components/tool_permission/ToolPermissionRulesEditor.tsx` (~19), plus the provider editors `guardrail_provider_fields.tsx`, `guardrail_optional_params.tsx`, `pii_configuration.tsx`, `pii_components.tsx`, and sibling editor files
+
+**Ordering note (recorded because Task 1's review raised it as Critical):** these editors render inside the add/edit form that Task 1 translated, so until this task lands a user sees a half-Chinese form. Task 1's review established the importer evidence: all of them are consumed only by `add_guardrail_form.tsx` and `guardrail_info.tsx`, both Task 1 files, so this is an intra-increment seam rather than the cross-increment deferral that got the Budgets increment sent back. This task was moved ahead of the garden specifically to close that window one task sooner. The increment is not complete until this task lands.
+
+- [ ] Same shape, extending `guardrails`. Editor field labels, help text, empty states and validation messages are chrome; code samples, JSON keys, regex examples and backend-supplied provider `description` values are data. The step-0 `guardrail_provider_fields` chrome (`Loading provider parameters...`, the load-failure message, the no-fields message, the invalid-JSON message, the required-field message, True/False) and the step-1 titles belong to this task.
+
+### Task 3: Guardrail garden
 
 **Files:** `_components/guardrail_garden_data.ts` (~204), `_components/guardrail_garden_configs.ts` (~85), `_components/guardrail_garden_detail.tsx` (~28), plus the garden list view
 - [ ] Same shape, extending `guardrails`. **Triage the two data files first**: provider and vendor names, guardrail type identifiers and endpoint identifiers are data and stay English; display names, descriptions, category labels and feature copy are chrome. Report the split explicitly with counts, since this is where a careless pass would translate a provider name or leave a description English.
-
-### Task 3: Configuration editors
-
-**Files:** `_components/content_filter/ContentFilterConfiguration.tsx` (~36), `_components/custom_code/CustomCodeModal.tsx` (~71), `_components/llm_judge/LLMJudgeFields.tsx` (~17), `_components/tool_permission/ToolPermissionRulesEditor.tsx` (~19), plus sibling editor files
-- [ ] Same shape, extending `guardrails`. Editor field labels and help text are chrome; code samples, JSON keys and regex examples are data.
 
 ### Task 4: Team guardrails and remaining surfaces
 

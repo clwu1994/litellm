@@ -116,12 +116,15 @@ describe("GuardrailTable Chinese copy", () => {
       />,
     );
 
-    for (const header of ["Guardrail ID", "名称", "提供商", "模式", "默认开启", "创建时间", "更新时间", "操作"]) {
-      expect(screen.getAllByText(header).length).toBeGreaterThan(0);
+    for (const header of ["Guardrail ID", "名称", "提供商", "模式", "创建时间", "更新时间", "操作"]) {
+      expect(screen.getByRole("columnheader", { name: header })).toBeInTheDocument();
     }
-    expect(screen.getAllByText("默认关闭").length).toBeGreaterThan(0);
+    expect(screen.getByRole("columnheader", { name: "默认开启" })).toBeInTheDocument();
+    expect(screen.getByRole("cell", { name: "默认开启" })).toBeInTheDocument();
+    expect(screen.getByRole("cell", { name: "默认关闭" })).toBeInTheDocument();
     expect(screen.queryByText("Name")).not.toBeInTheDocument();
     expect(screen.queryByText("Provider")).not.toBeInTheDocument();
+    expect(screen.queryByText("Default On")).not.toBeInTheDocument();
     expect(screen.queryByText("Default Off")).not.toBeInTheDocument();
     expect(screen.queryByText("Actions")).not.toBeInTheDocument();
 

@@ -472,13 +472,15 @@ describe("Guardrail Info Chinese copy", () => {
     expect(screen.queryByText("Guardrail Name")).not.toBeInTheDocument();
   });
 
-  it("renders the Chinese No label for a guardrail that is not default on and hides the English one", async () => {
+  it("renders the Chinese No and Default Off labels for a guardrail that is not default on and hides the English ones", async () => {
     vi.mocked(networking.getGuardrailInfo).mockResolvedValue(zhGuardrail({ default_on: false }));
 
     renderZhInfo();
     await openZhSettings();
 
+    expect(screen.getByText("默认关闭")).toBeInTheDocument();
     expect(screen.getAllByText("否").length).toBeGreaterThan(0);
+    expect(screen.queryByText("Default Off")).not.toBeInTheDocument();
     expect(screen.queryByText("No")).not.toBeInTheDocument();
   });
 
@@ -547,7 +549,7 @@ describe("Guardrail Info Chinese copy", () => {
     renderZhInfo();
     await openZhSettings();
 
-    await user.hover(screen.getByRole("img", { name: "Config Guardrail 详情" }));
+    await user.hover(screen.getByRole("img", { name: "配置项 Guardrail 详情" }));
     expect(await screen.findByText("Guardrail 在配置文件中定义，无法编辑。")).toBeInTheDocument();
     expect(screen.queryByRole("img", { name: "Config guardrail details" })).not.toBeInTheDocument();
   });
