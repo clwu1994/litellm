@@ -149,7 +149,8 @@ describe("chat widgets Chinese copy", () => {
     expect(screen.queryByText("Show sources (2)")).not.toBeInTheDocument();
   });
 
-  it("renders the Chinese singular result count", () => {
+  it("renders the English singular result count, the zh-unreachable results_one leaf", async () => {
+    await i18n.changeLanguage("en");
     const results: VectorStoreSearchResponse[] = [
       {
         object: "search",
@@ -159,8 +160,8 @@ describe("chat widgets Chinese copy", () => {
     ];
     render(<SearchResultsDisplay searchResults={results} />);
 
-    expect(screen.getByText("1 条结果")).toBeInTheDocument();
-    expect(screen.queryByText("1 result")).not.toBeInTheDocument();
+    expect(screen.getByText("1 result")).toBeInTheDocument();
+    expect(screen.queryByText("1 results")).not.toBeInTheDocument();
   });
 
   it("aliases the message role and renders the Chinese generated image alt", () => {
