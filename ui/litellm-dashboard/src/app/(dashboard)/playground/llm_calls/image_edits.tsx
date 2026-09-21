@@ -1,4 +1,5 @@
 import openai from "openai";
+import type { TFunction } from "i18next";
 import { getProxyBaseUrl } from "@/components/networking";
 import { deferToGlobalFetch } from "@/lib/http/globalFetch";
 import { toast } from "@/lib/toast";
@@ -9,6 +10,7 @@ export async function makeOpenAIImageEditsRequest(
   updateUI: (imageUrl: string, model: string) => void,
   selectedModel: string,
   accessToken: string,
+  t: TFunction<"playground">,
   tags?: string[],
   signal?: AbortSignal,
   customBaseUrl?: string,
@@ -65,14 +67,14 @@ export async function makeOpenAIImageEditsRequest(
     }
 
     if (results.length > 1) {
-      toast.success(`Successfully processed ${results.length} images`);
+      toast.success(t("llmCalls.toast.imageEditSuccess", { count: results.length }));
     }
   } catch (error: any) {
     console.error("Error making image edit request:", error);
 
     if (signal?.aborted) {
     } else {
-      let errorMessage = "Failed to edit image(s)";
+      let errorMessage = t("llmCalls.error.imageEditFallback");
 
       if (error?.error?.message) {
         errorMessage = error.error.message;
@@ -80,7 +82,7 @@ export async function makeOpenAIImageEditsRequest(
         errorMessage = error.message;
       }
 
-      toast.fromError(`Image edit failed: ${errorMessage}`);
+      toast.fromError(t("llmCalls.toast.imageEditFailed", { error: errorMessage }));
     }
     throw error; // Re-throw to allow the caller to handle the error
   }

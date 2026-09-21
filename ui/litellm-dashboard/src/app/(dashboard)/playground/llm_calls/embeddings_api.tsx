@@ -1,3 +1,4 @@
+import type { TFunction } from "i18next";
 import { toast } from "@/lib/toast";
 import { getProxyBaseUrl, getGlobalLitellmHeaderName } from "@/components/networking";
 
@@ -6,11 +7,12 @@ export async function makeOpenAIEmbeddingsRequest(
   updateEmbeddingsUI: (embeddings: string, model?: string) => void,
   selectedModel: string,
   accessToken: string,
+  t: TFunction<"playground">,
   tags?: string[],
   customBaseUrl?: string,
 ) {
   if (!accessToken) {
-    throw new Error("Virtual Key is required");
+    throw new Error(t("llmCalls.error.virtualKeyRequired"));
   }
 
   // Base URL should be the current base_url
@@ -52,12 +54,12 @@ export async function makeOpenAIEmbeddingsRequest(
     const embedding = responseData?.data?.[0]?.embedding;
 
     if (!embedding) {
-      throw new Error("No embedding returned from server");
+      throw new Error(t("llmCalls.error.noEmbedding"));
     }
 
     updateEmbeddingsUI(JSON.stringify(embedding), responseData?.model ?? selectedModel);
   } catch (error: unknown) {
-    toast.fromError(`Error occurred while making embeddings request. Please try again. Error: ${error}`);
+    toast.fromError(t("llmCalls.toast.embeddingsError", { error }));
 
     throw error; // Re-throw to allow the caller to handle the error
   }

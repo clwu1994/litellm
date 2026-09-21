@@ -1,4 +1,5 @@
 import openai from "openai";
+import type { TFunction } from "i18next";
 import { getProxyBaseUrl } from "@/components/networking";
 import { deferToGlobalFetch } from "@/lib/http/globalFetch";
 import { toast } from "@/lib/toast";
@@ -10,6 +11,7 @@ export async function makeOpenAIAudioSpeechRequest(
   updateUI: (audioUrl: string, model: string) => void,
   selectedModel: string,
   accessToken: string,
+  t: TFunction<"playground">,
   tags?: string[],
   signal?: AbortSignal,
   responseFormat?: string,
@@ -51,7 +53,7 @@ export async function makeOpenAIAudioSpeechRequest(
   } catch (error) {
     if (signal?.aborted) {
     } else {
-      toast.fromError(`Error occurred while generating speech. Please try again. Error: ${error}`);
+      toast.fromError(t("llmCalls.toast.speechError", { error }));
     }
     throw error; // Re-throw to allow the caller to handle the error
   }

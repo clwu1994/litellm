@@ -602,6 +602,7 @@ export default function CompareUI({ accessToken, disabledPersonalKeyCreation }: 
               );
             },
             effectiveApiKey,
+            t,
             undefined,
             (time) => updateTimingDataForComparison(prepared.id, time),
             (latency) => updateTotalLatencyForComparison(prepared.id, latency),

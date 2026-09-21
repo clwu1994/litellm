@@ -312,6 +312,11 @@
       "keyCreateFailed": "Failed to create key for agent",
       "deleted": "Agent deleted",
       "deleteFailed": "Failed to delete agent"
+    },
+    "emptyState": {
+      "saveFirst": "Save an agent first to test in Chat.",
+      "selectForBatch": "Select an agent to run batch tests.",
+      "selectForConnect": "Select an agent to see how to connect."
     }
   },
   "realtime": {
@@ -518,6 +523,41 @@
       "poem": "Write me a poem",
       "quantum": "Explain quantum computing",
       "email": "Draft a polite email requesting a meeting"
+    }
+  },
+  "page": {
+    "accessDeniedTitle": "Access Denied",
+    "accessDeniedBody": "Your role does not have access to the Playground. Ask your proxy admin for access to test models.",
+    "tabs": {
+      "chat": "Chat",
+      "compare": "Compare",
+      "compliance": "Compliance",
+      "agentBuilder": "Agent Builder (Experimental)"
+    }
+  },
+  "llmCalls": {
+    "toast": {
+      "anthropicError": "Error occurred while generating model response. Please try again. Error: {{error}}",
+      "speechError": "Error occurred while generating speech. Please try again. Error: {{error}}",
+      "transcriptionSuccess": "Audio transcribed successfully",
+      "transcriptionFailed": "Audio transcription failed: {{error}}",
+      "embeddingsError": "Error occurred while making embeddings request. Please try again. Error: {{error}}",
+      "imageEditSuccess": "Successfully processed {{count}} images",
+      "imageEditFailed": "Image edit failed: {{error}}",
+      "imageGenerationError": "Error occurred while generating image. Please try again. Error: {{error}}",
+      "interactionsError": "Error occurred while making Interactions API request. Error: {{error}}"
+    },
+    "error": {
+      "virtualKeyRequired": "Virtual Key is required",
+      "noTranscriptionText": "No transcription text in response",
+      "transcriptionFallback": "Failed to transcribe audio",
+      "noEmbedding": "No embedding returned from server",
+      "noImageData": "No image data found in response",
+      "invalidResponseFormat": "Invalid response format",
+      "noResponseBodyReceived": "No response body received",
+      "noResponseBody": "No response body",
+      "unknownA2AError": "Unknown A2A error",
+      "imageEditFallback": "Failed to edit image(s)"
     }
   }
 }

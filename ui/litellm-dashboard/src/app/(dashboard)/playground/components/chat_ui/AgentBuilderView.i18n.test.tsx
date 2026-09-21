@@ -158,6 +158,25 @@ describe("AgentBuilderView Chinese copy", () => {
     expect(screen.queryByRole("button", { name: "Save Agent" })).not.toBeInTheDocument();
   });
 
+  it("renders the Chinese empty states of the visited agent tabs after starting a new agent", async () => {
+    const user = userEvent.setup({ delay: null });
+    renderView();
+    await waitForRoster();
+    await screen.findByDisplayValue("support-agent");
+
+    await user.click(screen.getByRole("tab", { name: "对话" }));
+    await user.click(screen.getByRole("tab", { name: "批量测试" }));
+    await user.click(screen.getByRole("tab", { name: "接入" }));
+    await user.click(screen.getByText("新建 Agent"));
+
+    expect(screen.getByText("请先保存一个 Agent，再在对话中测试。")).toBeInTheDocument();
+    expect(screen.queryByText("Save an agent first to test in Chat.")).not.toBeInTheDocument();
+    expect(screen.getByText("请选择一个 Agent 以运行批量测试。")).toBeInTheDocument();
+    expect(screen.queryByText("Select an agent to run batch tests.")).not.toBeInTheDocument();
+    expect(screen.getByText("请选择一个 Agent 以查看如何接入。")).toBeInTheDocument();
+    expect(screen.queryByText("Select an agent to see how to connect.")).not.toBeInTheDocument();
+  });
+
   it("renders the Chinese delete confirmation dialog", async () => {
     const user = userEvent.setup({ delay: null });
     renderView();

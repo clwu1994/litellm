@@ -1,4 +1,5 @@
 import openai from "openai";
+import type { TFunction } from "i18next";
 import { getProxyBaseUrl } from "@/components/networking";
 import { deferToGlobalFetch } from "@/lib/http/globalFetch";
 import { toast } from "@/lib/toast";
@@ -8,6 +9,7 @@ export async function makeOpenAIImageGenerationRequest(
   updateUI: (imageUrl: string, model: string) => void,
   selectedModel: string,
   accessToken: string,
+  t: TFunction<"playground">,
   tags?: string[],
   signal?: AbortSignal,
   customBaseUrl?: string,
@@ -45,15 +47,15 @@ export async function makeOpenAIImageGenerationRequest(
         const base64Data = response.data[0].b64_json;
         updateUI(`data:image/png;base64,${base64Data}`, selectedModel);
       } else {
-        throw new Error("No image data found in response");
+        throw new Error(t("llmCalls.error.noImageData"));
       }
     } else {
-      throw new Error("Invalid response format");
+      throw new Error(t("llmCalls.error.invalidResponseFormat"));
     }
   } catch (error) {
     if (signal?.aborted) {
     } else {
-      toast.fromError(`Error occurred while generating image. Please try again. Error: ${error}`);
+      toast.fromError(t("llmCalls.toast.imageGenerationError", { error }));
     }
     throw error; // Re-throw to allow the caller to handle the error
   }

@@ -312,6 +312,11 @@
       "keyCreateFailed": "为此 Agent 创建密钥失败",
       "deleted": "Agent 已删除",
       "deleteFailed": "删除 Agent 失败"
+    },
+    "emptyState": {
+      "saveFirst": "请先保存一个 Agent，再在对话中测试。",
+      "selectForBatch": "请选择一个 Agent 以运行批量测试。",
+      "selectForConnect": "请选择一个 Agent 以查看如何接入。"
     }
   },
   "realtime": {
@@ -518,6 +523,41 @@
       "poem": "为我写一首诗",
       "quantum": "解释量子计算",
       "email": "起草一封请求开会的礼貌邮件"
+    }
+  },
+  "page": {
+    "accessDeniedTitle": "访问被拒绝",
+    "accessDeniedBody": "你的角色无权访问 Playground。请联系代理管理员开通测试模型的权限。",
+    "tabs": {
+      "chat": "对话",
+      "compare": "对比",
+      "compliance": "合规",
+      "agentBuilder": "Agent Builder（实验性）"
+    }
+  },
+  "llmCalls": {
+    "toast": {
+      "anthropicError": "生成模型响应时出错。请重试。错误：{{error}}",
+      "speechError": "生成语音时出错。请重试。错误：{{error}}",
+      "transcriptionSuccess": "音频转写成功",
+      "transcriptionFailed": "音频转写失败：{{error}}",
+      "embeddingsError": "发起 Embeddings 请求时出错。请重试。错误：{{error}}",
+      "imageEditSuccess": "成功处理 {{count}} 张图片",
+      "imageEditFailed": "图片编辑失败：{{error}}",
+      "imageGenerationError": "生成图片时出错。请重试。错误：{{error}}",
+      "interactionsError": "发起 Interactions API 请求时出错。错误：{{error}}"
+    },
+    "error": {
+      "virtualKeyRequired": "Virtual Key 为必填项",
+      "noTranscriptionText": "响应中没有转写文本",
+      "transcriptionFallback": "转写音频失败",
+      "noEmbedding": "服务器未返回 Embedding",
+      "noImageData": "响应中未找到图片数据",
+      "invalidResponseFormat": "响应格式无效",
+      "noResponseBodyReceived": "未收到响应体",
+      "noResponseBody": "没有响应体",
+      "unknownA2AError": "未知的 A2A 错误",
+      "imageEditFallback": "编辑图片失败"
     }
   }
 }

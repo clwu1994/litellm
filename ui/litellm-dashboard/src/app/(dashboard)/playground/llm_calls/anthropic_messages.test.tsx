@@ -1,6 +1,9 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import i18n from "@/i18n/bootstrapI18n";
 import { makeAnthropicMessagesRequest } from "./anthropic_messages";
 import type { TokenUsage } from "@/components/chat_ui/ResponseMetrics";
+
+const t = i18n.getFixedT("en", "playground");
 
 vi.mock("@/components/networking", () => ({
   getProxyBaseUrl: vi.fn(() => "https://example.com"),
@@ -44,6 +47,7 @@ describe("anthropic_messages prompt cache usage", () => {
       vi.fn(),
       "claude-haiku-4-5",
       "test-token",
+      t,
       undefined,
       undefined,
       undefined,
@@ -96,6 +100,7 @@ describe("anthropic_messages non-streaming", () => {
       updateTextUI,
       "claude-haiku-4-5",
       "test-token",
+      t,
       undefined,
       undefined,
       onReasoningContent,
@@ -117,7 +122,13 @@ describe("anthropic_messages non-streaming", () => {
     async function* emptyStream() {}
     mockMessagesStream.mockReturnValue(emptyStream());
 
-    await makeAnthropicMessagesRequest([{ role: "user", content: "Hello" }], vi.fn(), "claude-haiku-4-5", "test-token");
+    await makeAnthropicMessagesRequest(
+      [{ role: "user", content: "Hello" }],
+      vi.fn(),
+      "claude-haiku-4-5",
+      "test-token",
+      t,
+    );
 
     expect(mockMessagesCreate).not.toHaveBeenCalled();
     expect(mockMessagesStream.mock.calls[0][0]).toMatchObject({ stream: true });

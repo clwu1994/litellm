@@ -37,8 +37,8 @@ beforeEach(() => {
 
 const CHAT_REQUEST_ARG_COUNT = 26;
 const STREAMING_ENABLED_ARG_INDEX = 25;
-const MESSAGES_REQUEST_ARG_COUNT = 19;
-const MESSAGES_STREAMING_ENABLED_ARG_INDEX = 18;
+const MESSAGES_REQUEST_ARG_COUNT = 20;
+const MESSAGES_STREAMING_ENABLED_ARG_INDEX = 19;
 
 async function openComboboxByPlaceholder(placeholder: string) {
   const user = userEvent.setup();

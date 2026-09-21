@@ -1,5 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import i18n from "@/i18n/bootstrapI18n";
 import { makeOpenAIEmbeddingsRequest } from "./embeddings_api";
+
+const t = i18n.getFixedT("en", "playground");
 
 vi.mock("@/components/networking", () => ({
   getProxyBaseUrl: vi.fn(() => "https://example.com"),
@@ -41,6 +44,7 @@ describe("embeddings_api", () => {
       mockUpdateEmbeddingsUI,
       "text-embedding-3-small",
       "1234567890",
+      t,
       [],
     );
 
@@ -63,7 +67,7 @@ describe("embeddings_api", () => {
   });
 
   it("should not include encoding_format when making the request", async () => {
-    await makeOpenAIEmbeddingsRequest("Sample text", mockUpdateEmbeddingsUI, "text-embedding-3-small", "abcdef", []);
+    await makeOpenAIEmbeddingsRequest("Sample text", mockUpdateEmbeddingsUI, "text-embedding-3-small", "abcdef", t, []);
 
     const fetchCall = mockFetch.mock.calls[0];
     const options = fetchCall[1] as RequestInit;

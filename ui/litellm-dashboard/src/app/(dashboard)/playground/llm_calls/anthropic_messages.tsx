@@ -1,4 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
+import type { TFunction } from "i18next";
 import { MessageType } from "@/components/chat_ui/types";
 import { TokenUsage } from "@/components/chat_ui/ResponseMetrics";
 import { buildMcpToolBlocks } from "@/components/llm_calls/mcp_tool_blocks";
@@ -19,6 +20,7 @@ export async function makeAnthropicMessagesRequest(
   updateTextUI: (role: string, delta: string, model?: string) => void,
   selectedModel: string,
   accessToken: string | null,
+  t: TFunction<"playground">,
   tags: string[] = [],
   signal?: AbortSignal,
   onReasoningContent?: (content: string) => void,
@@ -36,7 +38,7 @@ export async function makeAnthropicMessagesRequest(
   streamingEnabled: boolean = true,
 ) {
   if (!accessToken) {
-    throw new Error("Virtual Key is required");
+    throw new Error(t("llmCalls.error.virtualKeyRequired"));
   }
 
   const isLocal = process.env.NODE_ENV === "development";
@@ -133,7 +135,7 @@ export async function makeAnthropicMessagesRequest(
   } catch (error) {
     if (signal?.aborted) {
     } else {
-      toast.fromError(`Error occurred while generating model response. Please try again. Error: ${error}`);
+      toast.fromError(t("llmCalls.toast.anthropicError", { error }));
     }
     throw error;
   }

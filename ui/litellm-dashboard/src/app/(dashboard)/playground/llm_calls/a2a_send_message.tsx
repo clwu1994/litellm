@@ -2,6 +2,7 @@
 // A2A Protocol (JSON-RPC 2.0) implementation for sending messages to agents
 
 import { v4 as uuidv4 } from "uuid";
+import type { TFunction } from "i18next";
 import { getProxyBaseUrl, getGlobalLitellmHeaderName } from "@/components/networking";
 import { A2ATaskMetadata } from "@/components/chat_ui/types";
 
@@ -242,6 +243,7 @@ export const makeA2AStreamMessageRequest = async (
   message: string,
   onTextUpdate: (chunk: string, model?: string) => void,
   accessToken: string,
+  t: TFunction<"playground">,
   signal?: AbortSignal,
   onTimingData?: (timeToFirstToken: number) => void,
   onTotalLatency?: (totalLatency: number) => void,
@@ -291,7 +293,7 @@ export const makeA2AStreamMessageRequest = async (
 
     const reader = response.body?.getReader();
     if (!reader) {
-      throw new Error("No response body");
+      throw new Error(t("llmCalls.error.noResponseBody"));
     }
 
     const decoder = new TextDecoder();
@@ -379,7 +381,7 @@ export const makeA2AStreamMessageRequest = async (
 
           // Handle JSON-RPC error response
           if (chunk.error) {
-            const errorMessage = chunk.error.message || "Unknown A2A error";
+            const errorMessage = chunk.error.message || t("llmCalls.error.unknownA2AError");
             throw new Error(errorMessage);
           }
         } catch (parseError) {

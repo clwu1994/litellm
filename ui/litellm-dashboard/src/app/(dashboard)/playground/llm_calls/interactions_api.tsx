@@ -1,3 +1,4 @@
+import type { TFunction } from "i18next";
 import { toast } from "@/lib/toast";
 import { getGlobalLitellmHeaderName, getProxyBaseUrl } from "@/components/networking";
 
@@ -6,13 +7,14 @@ export async function makeInteractionsRequest(
   updateUI: (text: string, model?: string) => void,
   selectedModel: string,
   accessToken: string,
+  t: TFunction<"playground">,
   tags?: string[],
   signal?: AbortSignal,
   customBaseUrl?: string,
   previousInteractionId?: string,
 ): Promise<void> {
   if (!accessToken) {
-    throw new Error("Virtual Key is required");
+    throw new Error(t("llmCalls.error.virtualKeyRequired"));
   }
 
   const isLocal = process.env.NODE_ENV === "development";
@@ -55,7 +57,7 @@ export async function makeInteractionsRequest(
     }
 
     if (!response.body) {
-      throw new Error("No response body received");
+      throw new Error(t("llmCalls.error.noResponseBodyReceived"));
     }
 
     const reader = response.body.getReader();
@@ -115,7 +117,7 @@ export async function makeInteractionsRequest(
     if (signal?.aborted) {
       throw error;
     }
-    toast.fromError(`Error occurred while making Interactions API request. Error: ${error}`);
+    toast.fromError(t("llmCalls.toast.interactionsError", { error }));
     throw error;
   }
 }

@@ -1,4 +1,5 @@
 import openai from "openai";
+import type { TFunction } from "i18next";
 import { getProxyBaseUrl } from "@/components/networking";
 import { deferToGlobalFetch } from "@/lib/http/globalFetch";
 import { toast } from "@/lib/toast";
@@ -8,6 +9,7 @@ export async function makeOpenAIAudioTranscriptionRequest(
   updateUI: (transcription: string, model: string) => void,
   selectedModel: string,
   accessToken: string,
+  t: TFunction<"playground">,
   tags?: string[],
   signal?: AbortSignal,
   language?: string,
@@ -47,16 +49,16 @@ export async function makeOpenAIAudioTranscriptionRequest(
     // The response is a transcription object with a text field
     if (response && response.text) {
       updateUI(response.text, selectedModel);
-      toast.success(`Audio transcribed successfully`);
+      toast.success(t("llmCalls.toast.transcriptionSuccess"));
     } else {
-      throw new Error("No transcription text in response");
+      throw new Error(t("llmCalls.error.noTranscriptionText"));
     }
   } catch (error: any) {
     console.error("Error making audio transcription request:", error);
 
     if (signal?.aborted) {
     } else {
-      let errorMessage = "Failed to transcribe audio";
+      let errorMessage = t("llmCalls.error.transcriptionFallback");
 
       if (error?.error?.message) {
         errorMessage = error.error.message;
@@ -64,7 +66,7 @@ export async function makeOpenAIAudioTranscriptionRequest(
         errorMessage = error.message;
       }
 
-      toast.fromError(`Audio transcription failed: ${errorMessage}`);
+      toast.fromError(t("llmCalls.toast.transcriptionFailed", { error: errorMessage }));
     }
     throw error; // Re-throw to allow the caller to handle the error
   }

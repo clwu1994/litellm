@@ -718,7 +718,7 @@ export default function AgentBuilderView({
                       />
                     ) : (
                       <div className="flex flex-1 items-center justify-center text-muted-foreground">
-                        Save an agent first to test in Chat.
+                        {t("agentBuilder.emptyState.saveFirst")}
                       </div>
                     )}
                   </div>
@@ -735,7 +735,7 @@ export default function AgentBuilderView({
                       />
                     ) : (
                       <div className="flex flex-1 items-center justify-center text-muted-foreground">
-                        Select an agent to run batch tests.
+                        {t("agentBuilder.emptyState.selectForBatch")}
                       </div>
                     )}
                   </div>
@@ -756,7 +756,7 @@ export default function AgentBuilderView({
                       />
                     ) : (
                       <div className="flex flex-1 items-center justify-center text-muted-foreground">
-                        Select an agent to see how to connect.
+                        {t("agentBuilder.emptyState.selectForConnect")}
                       </div>
                     )}
                   </div>
