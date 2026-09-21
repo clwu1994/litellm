@@ -44,7 +44,7 @@ describe("endpoint_config", () => {
     const config = getEndpointConfig(EndpointId.CHAT_COMPLETIONS);
     expect(config.id).toBe(EndpointId.CHAT_COMPLETIONS);
     expect(config.selectorType).toBe("model");
-    expect(config.selectorLabel).toBe("Model");
+    expect(config.selectorLabelKey).toBe("compare.selector.modelLabel");
   });
 
   it("should check if endpoint is agent endpoint", () => {

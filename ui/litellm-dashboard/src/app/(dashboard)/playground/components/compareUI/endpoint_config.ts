@@ -3,6 +3,7 @@
  * Add new endpoints here to extend the comparison functionality.
  */
 
+import type { ParseKeys } from "i18next";
 import { Agent } from "../../llm_calls/fetch_agents";
 
 // Endpoint identifiers
@@ -23,11 +24,11 @@ export interface EndpointConfig {
   id: EndpointIdType;
   label: string;
   selectorType: SelectorType;
-  selectorLabel: string;
-  selectorPlaceholder: string;
-  inputPlaceholder: string;
-  loadingMessage: string;
-  validationMessage: string;
+  selectorLabelKey: ParseKeys<"playground">;
+  selectorPlaceholderKey: ParseKeys<"playground">;
+  inputPlaceholderKey: ParseKeys<"playground">;
+  loadingMessageKey: ParseKeys<"playground">;
+  validationMessageKey: ParseKeys<"playground">;
 }
 
 // Endpoint configurations
@@ -36,21 +37,21 @@ export const ENDPOINT_CONFIGS: Record<EndpointIdType, EndpointConfig> = {
     id: EndpointId.CHAT_COMPLETIONS,
     label: "/v1/chat/completions",
     selectorType: "model",
-    selectorLabel: "Model",
-    selectorPlaceholder: "Select a model",
-    inputPlaceholder: "Send a prompt to compare models",
-    loadingMessage: "Gathering responses from all models...",
-    validationMessage: "Select a model before sending a message.",
+    selectorLabelKey: "compare.selector.modelLabel",
+    selectorPlaceholderKey: "compare.selector.modelPlaceholder",
+    inputPlaceholderKey: "compare.input.modelPlaceholder",
+    loadingMessageKey: "compare.loading.models",
+    validationMessageKey: "compare.validation.model",
   },
   [EndpointId.A2A_AGENTS]: {
     id: EndpointId.A2A_AGENTS,
     label: "/a2a (Agents)",
     selectorType: "agent",
-    selectorLabel: "Agent",
-    selectorPlaceholder: "Select an agent",
-    inputPlaceholder: "Send a message to compare agents",
-    loadingMessage: "Gathering responses from all agents...",
-    validationMessage: "Select an agent before sending a message.",
+    selectorLabelKey: "compare.selector.agentLabel",
+    selectorPlaceholderKey: "compare.selector.agentPlaceholder",
+    inputPlaceholderKey: "compare.input.agentPlaceholder",
+    loadingMessageKey: "compare.loading.agents",
+    validationMessageKey: "compare.validation.agent",
   },
 };
 
@@ -127,10 +128,10 @@ export const hasValidSelection = (
  *   id: EndpointId.RESPONSES,
  *   label: "/v1/responses",
  *   selectorType: "model",
- *   selectorLabel: "Model",
- *   selectorPlaceholder: "Select a model",
- *   inputPlaceholder: "Send a prompt to compare responses",
- *   loadingMessage: "Gathering responses...",
- *   validationMessage: "Select a model before sending.",
+ *   selectorLabelKey: "compare.selector.modelLabel",
+ *   selectorPlaceholderKey: "compare.selector.modelPlaceholder",
+ *   inputPlaceholderKey: "compare.input.modelPlaceholder",
+ *   loadingMessageKey: "compare.loading.models",
+ *   validationMessageKey: "compare.validation.model",
  * }
  */
