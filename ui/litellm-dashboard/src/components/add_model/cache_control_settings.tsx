@@ -14,13 +14,6 @@ export const CACHE_CONTROL_LABEL = "Cache Control Injection Points";
 export const CACHE_CONTROL_TOOLTIP =
   "Tell litellm where to inject cache control checkpoints. You can specify either by role (to apply to all messages of that role) or by specific message index.";
 
-export const CACHE_CONTROL_DESCRIPTION =
-  "Providers like Anthropic, Bedrock API require users to specify where to inject cache control checkpoints, litellm can automatically add them for you as a cost saving feature.";
-
-export const CACHE_CONTROL_ROLE_HINT = "LiteLLM will mark all messages of this role as cacheable";
-
-export const CACHE_CONTROL_INDEX_HINT = "(Optional) If set litellm will mark the message at this index as cacheable";
-
 export type CacheControlRole = "user" | "system" | "assistant";
 
 export interface CacheControlInjectionPoint {

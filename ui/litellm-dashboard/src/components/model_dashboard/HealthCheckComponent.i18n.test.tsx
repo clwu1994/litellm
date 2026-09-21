@@ -85,4 +85,61 @@ describe("HealthCheckComponent Chinese copy", () => {
     expect(screen.getByRole("button", { name: "清除选择" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Clear Selection" })).not.toBeInTheDocument();
   });
+
+  it("renders the Chinese fallback error message when a check fails without an endpoint error", async () => {
+    const user = userEvent.setup();
+    mockIndividualModelHealthCheckCall.mockResolvedValue({
+      unhealthy_count: 1,
+      unhealthy_endpoints: [{}],
+    });
+    await renderHealthCheck(["gpt-4", "claude-3"]);
+
+    await user.click(screen.getAllByRole("button", { name: "运行健康检查" })[0]);
+
+    expect(await screen.findByText("健康检查失败")).toBeInTheDocument();
+    expect(screen.queryByText("Health check failed")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese error dialog inside the open state", async () => {
+    const user = userEvent.setup();
+    mockLatestHealthChecksCall.mockResolvedValue({
+      latest_health_checks: {
+        "1": {
+          status: "unhealthy",
+          checked_at: "2024-01-01T00:00:00Z",
+          error_message: "AuthenticationError: 401 invalid key",
+        },
+      },
+    });
+    await renderHealthCheck(["gpt-4", "claude-3"]);
+
+    await user.click(await screen.findByRole("button", { name: "查看完整错误详情" }));
+
+    expect(await screen.findByText("健康检查错误 - gpt-4")).toBeInTheDocument();
+    expect(screen.queryByText(/Health Check Error/)).not.toBeInTheDocument();
+    expect(screen.getByText("错误：")).toBeInTheDocument();
+    expect(screen.queryByText("Error:")).not.toBeInTheDocument();
+    expect(screen.getByText("完整错误详情：")).toBeInTheDocument();
+    expect(screen.queryByText("Full Error Details:")).not.toBeInTheDocument();
+    expect(screen.getByText("模型健康检查返回的详细信息。")).toBeInTheDocument();
+    expect(screen.queryByText("Details returned by the model health check.")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese success dialog inside the open state", async () => {
+    const user = userEvent.setup();
+    mockLatestHealthChecksCall.mockResolvedValue({
+      latest_health_checks: { "1": { status: "healthy", checked_at: "2024-01-01T00:00:00Z" } },
+    });
+    await renderHealthCheck(["gpt-4", "claude-3"]);
+
+    await user.click(await screen.findByRole("button", { name: "查看响应详情" }));
+
+    expect(await screen.findByText("健康检查响应 - gpt-4")).toBeInTheDocument();
+    expect(screen.queryByText(/Health Check Response/)).not.toBeInTheDocument();
+    expect(screen.getByText("成功的模型健康检查返回的响应。")).toBeInTheDocument();
+    expect(screen.queryByText("Response returned by the successful model health check.")).not.toBeInTheDocument();
+    expect(screen.getByText("健康检查已通过")).toBeInTheDocument();
+    expect(screen.queryByText("Health check passed successfully")).not.toBeInTheDocument();
+    expect(screen.getByText("响应详情：")).toBeInTheDocument();
+  });
 });

@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -16,6 +16,20 @@ describe("CacheControlInjectionPoints Chinese copy", () => {
   afterEach(async () => {
     cleanup();
     await i18n.changeLanguage("en");
+  });
+
+  it("renders the Chinese role placeholder and the Chinese none option in the open listbox", async () => {
+    const user = userEvent.setup();
+    render(<CacheControlInjectionPoints value={ONE_POINT} onChange={vi.fn()} />);
+
+    expect(screen.getByText("选择角色")).toBeInTheDocument();
+    expect(screen.queryByText("Select a role")).not.toBeInTheDocument();
+
+    await user.click(screen.getByText("选择角色"));
+
+    const listbox = await screen.findByRole("listbox");
+    expect(within(listbox).getByText("无")).toBeInTheDocument();
+    expect(within(listbox).queryByText("None")).not.toBeInTheDocument();
   });
 
   it("renders the Chinese description, field labels and add button", () => {

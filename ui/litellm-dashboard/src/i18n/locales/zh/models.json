@@ -319,7 +319,7 @@
       "healthCheckModel": "健康检查模型",
       "healthCheckModelPlaceholder": "选择现有的健康检查模型",
       "inputCostLabel": "输入成本（每 1M Token）",
-      "inputCostPlaceholder": "输入输入成本",
+      "inputCostPlaceholder": "请输入成本",
       "knowledgeBases": "已附加的知识库（RAG）",
       "knowledgeBasesHint": "用于 RAG 的向量存储。对此模型的每次请求都会自动从这些知识库中检索上下文。",
       "knowledgeBasesPlaceholder": "选择知识库（可选）",

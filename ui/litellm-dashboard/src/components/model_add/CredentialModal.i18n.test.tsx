@@ -5,7 +5,15 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import i18n from "@/i18n/bootstrapI18n";
 
+import { findTooltipTrigger } from "@/../tests/i18nTooltip";
+
 import CredentialModal from "./CredentialModal";
+
+const EXISTING_CREDENTIAL = {
+  credential_name: "openai-key",
+  credential_values: { api_key: "sk-existing" },
+  credential_info: { custom_llm_provider: "openai" },
+};
 
 vi.mock("../networking", async () => {
   const actual = await vi.importActual("../networking");
@@ -75,5 +83,34 @@ describe("CredentialModal Chinese copy", () => {
 
     expect(await screen.findByText("必须填写凭证名称")).toBeInTheDocument();
     expect(screen.queryByText("Credential name is required")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese edit title and submit button", () => {
+    renderModal({ mode: "edit", existingCredential: EXISTING_CREDENTIAL });
+
+    expect(screen.getByText("编辑凭证")).toBeInTheDocument();
+    expect(screen.queryByText("Edit Credential")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "更新凭证" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Update Credential" })).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese provider hint inside the open tooltip", async () => {
+    const user = userEvent.setup();
+    renderModal();
+
+    await user.hover(findTooltipTrigger(screen.getByText("提供商：")));
+
+    expect(await screen.findByText("用于自动填充提供商特定字段的辅助信息")).toBeInTheDocument();
+    expect(screen.queryByText("Helper to auto-populate provider specific fields")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese help tooltip inside the open state", async () => {
+    const user = userEvent.setup();
+    renderModal();
+
+    await user.hover(screen.getByText("需要帮助？"));
+
+    expect(await screen.findByText("在我们的 GitHub 上获取帮助")).toBeInTheDocument();
+    expect(screen.queryByText("Get help on our github")).not.toBeInTheDocument();
   });
 });

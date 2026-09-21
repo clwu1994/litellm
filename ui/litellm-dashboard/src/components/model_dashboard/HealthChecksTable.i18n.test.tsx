@@ -1,6 +1,6 @@
 /* @vitest-environment jsdom */
 import type { PaginationState, RowSelectionState } from "@tanstack/react-table";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import { useState } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -20,6 +20,13 @@ const makeRow = (overrides: Partial<HealthCheckData> & { id: string }): HealthCh
     health_loading: false,
     ...rest,
   };
+};
+
+const STATUS_NONE_ROW = {
+  id: "status-none",
+  health_status: "none",
+  last_check: "2024-01-01T00:00:00Z",
+  last_success: "2024-01-01T00:00:00Z",
 };
 
 function Harness({
@@ -122,7 +129,6 @@ describe("HealthChecksTable Chinese copy", () => {
       />,
     );
 
-    expect(screen.getAllByText("无").length).toBeGreaterThan(0);
     expect(screen.queryByText("None")).not.toBeInTheDocument();
     expect(screen.getByText("从未检查")).toBeInTheDocument();
     expect(screen.queryByText("Never checked")).not.toBeInTheDocument();
@@ -130,11 +136,43 @@ describe("HealthChecksTable Chinese copy", () => {
     expect(screen.queryByText("Never succeeded")).not.toBeInTheDocument();
   });
 
-  it("renders the Chinese checking sentinel while a row is loading", () => {
+  it("renders the Chinese none sentinel for the status badge and the timestamp column separately", () => {
+    render(
+      <Harness
+        data={[makeRow(STATUS_NONE_ROW), makeRow({ id: "stamp-none", health_status: "healthy", last_check: "None" })]}
+        modelHealthStatuses={{
+          "status-none": {
+            status: "none",
+            lastCheck: "2024-01-01T00:00:00Z",
+            lastSuccess: "2024-01-01T00:00:00Z",
+            loading: false,
+          },
+          "stamp-none": {
+            status: "healthy",
+            lastCheck: "None",
+            lastSuccess: "Never succeeded",
+            loading: false,
+          },
+        }}
+      />,
+    );
+
+    const statusRow = screen.getByRole("row", { name: /model-status-none/ });
+    expect(within(statusRow).getByText("无")).toBeInTheDocument();
+    expect(within(statusRow).queryByText("None")).not.toBeInTheDocument();
+
+    const stampRow = screen.getByRole("row", { name: /model-stamp-none/ });
+    expect(within(stampRow).getByText("无")).toBeInTheDocument();
+    expect(within(stampRow).queryByText("None")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese checking label on the status cell and the run action", () => {
     render(<Harness data={[makeRow({ id: "loading", health_loading: true })]} />);
 
     expect(screen.getByText("正在检查...")).toBeInTheDocument();
     expect(screen.queryByText("Check in progress...")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "检查中..." })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Checking..." })).not.toBeInTheDocument();
   });
 
   it("renders the Chinese run and rerun aria labels on the row action", () => {

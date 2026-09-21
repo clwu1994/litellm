@@ -1,8 +1,9 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import i18n from "@/i18n/bootstrapI18n";
+import { toast } from "@/lib/toast";
 
 import UpdateModelCredentialsModal from "./update_model_credentials_modal";
 
@@ -10,6 +11,9 @@ vi.mock("./networking", async () => {
   const actual = await vi.importActual("./networking");
   return { ...actual, modelPatchUpdateCall: vi.fn().mockResolvedValue({}) };
 });
+vi.mock("@/lib/toast", () => ({
+  toast: { success: vi.fn(), error: vi.fn(), info: vi.fn(), warning: vi.fn(), fromError: vi.fn(), dismiss: vi.fn() },
+}));
 
 beforeAll(() => {
   Object.defineProperty(window, "matchMedia", {
@@ -40,13 +44,15 @@ const renderModal = () =>
 
 describe("UpdateModelCredentialsModal Chinese copy", () => {
   beforeEach(async () => {
+    vi.clearAllMocks();
+    vi.spyOn(console, "error").mockImplementation(() => {});
     await i18n.changeLanguage("zh");
   });
 
   afterEach(async () => {
     cleanup();
     await i18n.changeLanguage("en");
-    vi.clearAllMocks();
+    vi.restoreAllMocks();
   });
 
   it("renders the Chinese title, description, note and field copy", () => {
@@ -80,5 +86,28 @@ describe("UpdateModelCredentialsModal Chinese copy", () => {
 
     expect(await screen.findByText("请输入新的 API Key")).toBeInTheDocument();
     expect(screen.queryByText("Enter a new API key")).not.toBeInTheDocument();
+  });
+
+  it("reports the Chinese updated toast on success and the Chinese failure toast", async () => {
+    const user = userEvent.setup();
+    const networking = await import("./networking");
+    renderModal();
+
+    await user.type(screen.getByPlaceholderText("输入新的 API Key"), "sk-new");
+    await user.click(screen.getByRole("button", { name: "更新 API Key" }));
+
+    await waitFor(() => expect(toast.success).toHaveBeenCalledWith("API Key 已更新"));
+    expect(toast.success).not.toHaveBeenCalledWith("API key updated");
+
+    cleanup();
+    vi.mocked(networking.modelPatchUpdateCall).mockRejectedValue(new Error("nope"));
+    renderModal();
+
+    await user.type(screen.getByPlaceholderText("输入新的 API Key"), "sk-new");
+    await user.click(screen.getByRole("button", { name: "更新 API Key" }));
+
+    await waitFor(() => expect(console.error).toHaveBeenCalledWith("更新 API Key 失败", expect.anything()));
+    expect(toast.fromError).toHaveBeenCalledWith("更新 API Key 失败");
+    expect(toast.fromError).not.toHaveBeenCalledWith("Failed to update API key");
   });
 });
