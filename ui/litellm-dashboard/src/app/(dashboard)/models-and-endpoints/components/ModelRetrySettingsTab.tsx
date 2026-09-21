@@ -29,11 +29,11 @@ interface ModelRetrySettingsTabProps {
   isSaving?: boolean;
 }
 
-const RETRY_POLICY_ROWS: ReadonlyArray<{
-  retryPolicyKey: string;
-  labelKey?: ParseKeys<"models">;
-  label?: string;
-}> = [
+type RetryPolicyRow =
+  | { retryPolicyKey: string; label: string }
+  | { retryPolicyKey: string; labelKey: ParseKeys<"models"> };
+
+const RETRY_POLICY_ROWS: ReadonlyArray<RetryPolicyRow> = [
   { label: "BadRequestError (400)", retryPolicyKey: "BadRequestErrorRetries" },
   { label: "AuthenticationError  (401)", retryPolicyKey: "AuthenticationErrorRetries" },
   { label: "TimeoutError (408)", retryPolicyKey: "TimeoutErrorRetries" },
@@ -126,8 +126,9 @@ const ModelRetrySettingsTab = ({
       )}
       <table className="w-full">
         <tbody>
-          {RETRY_POLICY_ROWS.map(({ retryPolicyKey, labelKey, label }) => {
-            const exceptionLabel = labelKey ? t(labelKey) : label;
+          {RETRY_POLICY_ROWS.map((row) => {
+            const { retryPolicyKey } = row;
+            const exceptionLabel = "labelKey" in row ? t(row.labelKey) : row.label;
             const inheritedValue = globalRetryPolicy?.[retryPolicyKey] ?? defaultRetry;
             const override = isGlobalScope ? undefined : modelGroupRetryPolicy?.[selectedModelGroup!]?.[retryPolicyKey];
             const hasOverride = override != null;
@@ -146,7 +147,7 @@ const ModelRetrySettingsTab = ({
                   <Input
                     className="w-28"
                     type="number"
-                    aria-label={t("retry.countAria", { exception: exceptionLabel ?? "" })}
+                    aria-label={t("retry.countAria", { exception: exceptionLabel })}
                     min={0}
                     step={1}
                     value={isGlobalScope ? inheritedValue : hasOverride ? override : ""}

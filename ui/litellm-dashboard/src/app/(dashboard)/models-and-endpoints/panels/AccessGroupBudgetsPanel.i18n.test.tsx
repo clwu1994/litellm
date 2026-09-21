@@ -223,11 +223,9 @@ describe("AccessGroupBudgetsPanel Chinese copy", () => {
         "通过名称授予此访问组的每个 Virtual Key 共用这一个预算。通过通配符或访问该组模型的 Virtual Key 不计入此预算。",
       ),
     ).toBeInTheDocument();
-    expect(
-      within(dialog).queryByText(
-        "Every key granted this access group by name draws from this one budget. A key that reaches the group's models through a wildcard or is not charged against it.",
-      ),
-    ).not.toBeInTheDocument();
+    expect(dialog).not.toHaveTextContent(
+      "Every key granted this access group by name draws from this one budget. A key that reaches the group's models through a wildcard or all-proxy-models is not charged against it.",
+    );
 
     for (const [zh, en] of [
       ["最大预算（USD）", "Max Budget (USD)"],

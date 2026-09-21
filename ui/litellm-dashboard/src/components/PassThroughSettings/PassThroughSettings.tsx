@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -38,6 +39,7 @@ export interface passThroughItem {
 }
 
 const PassThroughSettings: React.FC<PassThroughSettingsProps> = ({ accessToken, userRole, userID, premiumUser }) => {
+  const { t } = useTranslation("models");
   const [generalSettings, setGeneralSettings] = useState<passThroughItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedEndpointId, setSelectedEndpointId] = useState<string | null>(null);
@@ -84,10 +86,10 @@ const PassThroughSettings: React.FC<PassThroughSettingsProps> = ({ accessToken, 
       const updatedSettings = generalSettings.filter((setting) => setting.id !== endpointToDelete);
       setGeneralSettings(updatedSettings);
 
-      toast.success("Endpoint deleted successfully.");
+      toast.success(t("passThrough.deletedToast"));
     } catch (error) {
       console.error("Error deleting the endpoint:", error);
-      toast.fromError("Error deleting the endpoint: " + error);
+      toast.fromError(t("passThrough.deleteFailedToast", { error: String(error) }));
     }
 
     setIsDeleteModalOpen(false);
@@ -107,7 +109,7 @@ const PassThroughSettings: React.FC<PassThroughSettingsProps> = ({ accessToken, 
     const selectedEndpoint = generalSettings.find((endpoint) => endpoint.id === selectedEndpointId);
 
     if (!selectedEndpoint) {
-      return <div>Endpoint not found</div>;
+      return <div>{t("passThrough.notFound")}</div>;
     }
 
     return (
@@ -125,8 +127,8 @@ const PassThroughSettings: React.FC<PassThroughSettingsProps> = ({ accessToken, 
   return (
     <div>
       <div className="mb-4">
-        <h2 className="text-lg font-semibold text-foreground">Pass Through Endpoints</h2>
-        <p className="text-sm text-muted-foreground">Configure and manage your pass-through endpoints</p>
+        <h2 className="text-lg font-semibold text-foreground">{t("passThrough.title")}</h2>
+        <p className="text-sm text-muted-foreground">{t("passThrough.description")}</p>
       </div>
 
       <AddPassThroughEndpoint
@@ -146,15 +148,13 @@ const PassThroughSettings: React.FC<PassThroughSettingsProps> = ({ accessToken, 
       <AlertDialog open={isDeleteModalOpen} onOpenChange={(open) => !open && cancelDelete()}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Pass-Through Endpoint</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete this pass-through endpoint? This action cannot be undone.
-            </AlertDialogDescription>
+            <AlertDialogTitle>{t("passThrough.deleteTitle")}</AlertDialogTitle>
+            <AlertDialogDescription>{t("passThrough.deleteMessage")}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t("passThrough.cancel")}</AlertDialogCancel>
             <Button variant="destructive" onClick={confirmDelete}>
-              Delete
+              {t("passThrough.delete")}
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
