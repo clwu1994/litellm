@@ -1,3 +1,5 @@
+import type { ParseKeys } from "i18next";
+
 import { AutoRouterDeployment } from "@/app/(dashboard)/hooks/models/useModels";
 import {
   AutoRouterKind,
@@ -18,7 +20,7 @@ export interface AutoRouterRow {
   id: string;
   name: string;
   kind: AutoRouterKind;
-  typeLabel: string;
+  typeLabelKey: ParseKeys<"models">;
   /** Edit needs an API-created row AND a strategy the dashboard has a form for. */
   canEdit: boolean;
   /**
@@ -55,32 +57,33 @@ const asStringArray = (value: unknown): string[] =>
 
 const dedupe = (models: string[]): string[] => Array.from(new Set(models));
 
-const COMPLEXITY_TYPE_LABELS: Record<string, string> = {
-  llm: "LLM Classifier",
-  heuristic_first: "Heuristic first",
-  hybrid: "Hybrid",
-  custom: "Custom classifier",
+const COMPLEXITY_TYPE_LABEL_KEYS: Record<string, ParseKeys<"models">> = {
+  llm: "autoRouters.type.llmClassifier",
+  heuristic_first: "autoRouters.type.heuristicFirst",
+  hybrid: "autoRouters.type.hybrid",
+  custom: "autoRouters.type.customClassifier",
 };
 
-export const complexityTypeLabel = (config: Record<string, unknown>): string =>
-  (typeof config.classifier_type === "string" && COMPLEXITY_TYPE_LABELS[config.classifier_type]) || "Heuristic";
+export const complexityTypeLabelKey = (config: Record<string, unknown>): ParseKeys<"models"> =>
+  (typeof config.classifier_type === "string" && COMPLEXITY_TYPE_LABEL_KEYS[config.classifier_type]) ||
+  "autoRouters.type.heuristic";
 
 interface Presentation {
-  typeLabel: string;
+  typeLabelKey: ParseKeys<"models">;
   targets: string[];
 }
 
 // Adaptive and quality both declare a flat pool and have no editor here, so the row reports
 // what is configured rather than interpreting it.
-const configManaged = (label: string, config: Record<string, unknown>): Presentation => ({
-  typeLabel: label,
+const configManaged = (labelKey: ParseKeys<"models">, config: Record<string, unknown>): Presentation => ({
+  typeLabelKey: labelKey,
   targets: asStringArray(config.available_models),
 });
 
 /** How each strategy renders itself, given its own config object. */
 const PRESENTERS: Record<AutoRouterKind, (config: Record<string, unknown>) => Presentation> = {
   complexity: (config) => ({
-    typeLabel: complexityTypeLabel(config),
+    typeLabelKey: complexityTypeLabelKey(config),
     targets: dedupe(Object.values(asRecord(config.tiers)).flatMap(normalizeTierModels)),
   }),
   semantic: (config) => {
@@ -89,10 +92,10 @@ const PRESENTERS: Record<AutoRouterKind, (config: Record<string, unknown>) => Pr
         .map((route) => asRecord(route).name)
         .filter((name): name is string => typeof name === "string" && name.length > 0),
     );
-    return { typeLabel: "Semantic", targets: routes };
+    return { typeLabelKey: "autoRouters.type.semantic", targets: routes };
   },
-  adaptive: (config) => configManaged("Adaptive", config),
-  quality: (config) => configManaged("Quality", config),
+  adaptive: (config) => configManaged("autoRouters.type.adaptive", config),
+  quality: (config) => configManaged("autoRouters.type.quality", config),
 };
 
 export const toAutoRouterRow = (

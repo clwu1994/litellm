@@ -104,5 +104,113 @@
     "provider": "提供方",
     "createdBy": "创建者",
     "notSet": "未设置"
+  },
+  "retry": {
+    "scopeLabel": "重试策略范围：",
+    "globalDefault": "全局默认",
+    "globalHeading": "全局重试策略",
+    "globalDescription": "应用于所有模型组的默认重试设置，除非被覆盖",
+    "modelHeading": "{{model}} 的重试策略",
+    "modelDescription": "针对特定模型的重试设置。未设置时回退到全局默认值。",
+    "inherited": "（全局：{{value}}）",
+    "reset": "重置",
+    "save": "保存",
+    "countAria": "{{exception}} 重试次数",
+    "allOtherErrors": "所有其他错误",
+    "toastSaved": "重试设置保存成功",
+    "toastFailed": "保存重试设置失败"
+  },
+  "priceData": {
+    "title": "价格数据管理",
+    "description": "管理模型价格数据并配置自动重载计划",
+    "reloadButton": "重载价格数据"
+  },
+  "autoRouters": {
+    "panel": {
+      "heading": "自动路由",
+      "description": "自动路由位于部署之上，为每个请求挑选模型。它们像其他模型一样被调用，因此客户端始终使用同一个模型名称。",
+      "addAutoRouter": "添加自动路由",
+      "addDialogDescription": "通过判断请求的复杂度将其路由到相应模型。它像其他模型一样被调用，因此客户端始终使用同一个模型名称。",
+      "deleteToast": "已删除自动路由：{{name}}",
+      "deleteFailedToast": "删除自动路由失败：{{error}}",
+      "deleteTitle": "删除自动路由",
+      "deleteMessage": "确定要删除“{{name}}”吗？任何仍在调用此模型名称的客户端都将开始失败。",
+      "deleteResourceTitle": "自动路由"
+    },
+    "table": {
+      "noRouters": "暂无自动路由",
+      "emptyCreate": "创建自动路由，为每个请求挑选合适的模型，而不是固定使用一个模型。",
+      "emptyReadOnly": "自动路由为每个请求挑选合适的模型，而不是固定使用一个模型。",
+      "loading": "正在加载自动路由…",
+      "openActionsAria": "打开 {{name}} 的操作",
+      "deleteAction": "删除自动路由",
+      "name": "名称",
+      "type": "类型",
+      "id": "ID",
+      "routesTo": "路由至",
+      "defaultModel": "默认模型",
+      "created": "创建时间"
+    },
+    "type": {
+      "llmClassifier": "LLM 分类器",
+      "heuristicFirst": "启发式优先",
+      "hybrid": "混合",
+      "customClassifier": "自定义分类器",
+      "heuristic": "启发式",
+      "semantic": "语义",
+      "adaptive": "自适应",
+      "quality": "质量"
+    }
+  },
+  "accessGroupBudgets": {
+    "columns": {
+      "accessGroup": "访问组",
+      "models": "模型",
+      "deployments": "部署",
+      "sharedSpend": "共享支出",
+      "resets": "重置周期",
+      "actions": "操作",
+      "openActionsAria": "打开 {{name}} 的预算操作",
+      "editBudget": "编辑预算",
+      "setBudget": "设置预算",
+      "clearBudget": "清除预算",
+      "noBudgetToClear": "此访问组没有可清除的预算",
+      "writeBlockedAdmin": "只有代理管理员可以更改访问组预算",
+      "writeBlockedSlash": "无法为名称包含斜杠的访问组设置预算"
+    },
+    "duration": {
+      "notSet": "未设置",
+      "hourly": "每小时",
+      "daily": "每天",
+      "weekly": "每周",
+      "monthly": "每月"
+    },
+    "modal": {
+      "editTitle": "编辑“{{name}}”的预算",
+      "setTitle": "设置“{{name}}”的预算",
+      "description": "通过名称授予此访问组的每个 Virtual Key 共用这一个预算。通过通配符或<code>all-proxy-models</code>访问该组模型的 Virtual Key 不计入此预算。",
+      "maxBudget": "最大预算（USD）",
+      "maxBudgetHint": "整个访问组的总支出上限。当共享支出达到此值时，所有从该组扣费的 Virtual Key 都会被拒绝",
+      "softBudget": "软预算（USD）",
+      "softBudgetHint": "当该组支出达到此值时触发告警。请求仍会继续成功",
+      "resetBudget": "重置预算",
+      "resetBudgetHint": "该组支出的重置频率。留空表示预算永不重置",
+      "blankHint": "留空的字段会保留预算原有的值。使用“清除预算”可移除预算本身。",
+      "cancel": "取消",
+      "saving": "保存中…",
+      "save": "保存预算",
+      "validation": "请至少设置最大预算、软预算或重置周期中的一项"
+    },
+    "panel": {
+      "emptyTitle": "暂无模型访问组",
+      "emptyDescription": "在部署的模型设置中将其加入访问组，然后在这里为该组设置共享预算。",
+      "description": "一个模型访问组可以有一个预算，通过名称授予该组的每个 Virtual Key 共同从其中扣费。通过通配符或 all-proxy-models 访问该组模型的 Virtual Key 不计入此预算。",
+      "loading": "正在加载模型访问组…",
+      "savedToast": "已为“{{name}}”保存预算",
+      "clearedToast": "已为“{{name}}”清除预算",
+      "clearTitle": "清除预算",
+      "clearMessage": "确定要清除此访问组的预算吗？已记录的共享支出会一并清除，该组的模型仍可继续使用。",
+      "maxBudgetLabel": "最大预算"
+    }
   }
 }

@@ -47,7 +47,7 @@ describe("autoRouterRows", () => {
     const row = toAutoRouterRow(complexityDeployment, 0, ADMIN, null);
 
     expect(row.kind).toBe("complexity");
-    expect(row.typeLabel).toBe("Heuristic");
+    expect(row.typeLabelKey).toBe("autoRouters.type.heuristic");
     // Union across tiers, de-duplicated: gpt-4o-mini appears in both SIMPLE and COMPLEX.
     expect(row.targets).toEqual(["gpt-4o-mini", "anthropic-sonnet-4-6", "anthropic-opus-4-6"]);
     expect(row.defaultModel).toBe("gpt-4o-mini");
@@ -58,7 +58,7 @@ describe("autoRouterRows", () => {
     const row = toAutoRouterRow(semanticDeployment, 0, ADMIN, null);
 
     expect(row.kind).toBe("semantic");
-    expect(row.typeLabel).toBe("Semantic");
+    expect(row.typeLabelKey).toBe("autoRouters.type.semantic");
     expect(row.targets).toEqual(["gpt-4o-mini", "anthropic-opus-4-6"]);
     expect(row.defaultModel).toBe("gpt-4o-mini");
   });
@@ -97,7 +97,7 @@ describe("autoRouterRows", () => {
       null,
     );
 
-    expect(row.typeLabel).toBe("LLM Classifier");
+    expect(row.typeLabelKey).toBe("autoRouters.type.llmClassifier");
   });
 
   it("treats a deployment carrying complexity_router_config as complexity even off the canonical model string", () => {
@@ -151,7 +151,7 @@ describe("autoRouterRows", () => {
     );
 
     expect(row.kind).toBe("adaptive");
-    expect(row.typeLabel).toBe("Adaptive");
+    expect(row.typeLabelKey).toBe("autoRouters.type.adaptive");
     expect(row.targets).toEqual(["gpt-4o", "gpt-4o-mini"]);
     expect(row.defaultModel).toBe("gpt-4o-mini");
   });
@@ -173,7 +173,7 @@ describe("autoRouterRows", () => {
     );
 
     expect(row.kind).toBe("quality");
-    expect(row.typeLabel).toBe("Quality");
+    expect(row.typeLabelKey).toBe("autoRouters.type.quality");
     expect(row.targets).toEqual(["gpt-4o"]);
   });
 

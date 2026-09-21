@@ -104,5 +104,113 @@
     "provider": "Provider",
     "createdBy": "Created By",
     "notSet": "Not Set"
+  },
+  "retry": {
+    "scopeLabel": "Retry Policy Scope:",
+    "globalDefault": "Global Default",
+    "globalHeading": "Global Retry Policy",
+    "globalDescription": "Default retry settings applied to all model groups unless overridden",
+    "modelHeading": "Retry Policy for {{model}}",
+    "modelDescription": "Model-specific retry settings. Falls back to global defaults if not set.",
+    "inherited": "(Global: {{value}})",
+    "reset": "Reset",
+    "save": "Save",
+    "countAria": "{{exception}} retry count",
+    "allOtherErrors": "All other errors",
+    "toastSaved": "Retry settings saved successfully",
+    "toastFailed": "Failed to save retry settings"
+  },
+  "priceData": {
+    "title": "Price Data Management",
+    "description": "Manage model pricing data and configure automatic reload schedules",
+    "reloadButton": "Reload Price Data"
+  },
+  "autoRouters": {
+    "panel": {
+      "heading": "Auto routers",
+      "description": "Auto routers sit above your deployments and pick a model per request. They are called like any other model, so clients keep using a single model name.",
+      "addAutoRouter": "Add Auto Router",
+      "addDialogDescription": "Routes each request to a model by classifying its complexity. Called like any other model, so clients keep using a single model name.",
+      "deleteToast": "Deleted auto router: {{name}}",
+      "deleteFailedToast": "Failed to delete auto router: {{error}}",
+      "deleteTitle": "Delete Auto Router",
+      "deleteMessage": "Are you sure you want to delete \"{{name}}\"? Any client still calling this model name will start failing.",
+      "deleteResourceTitle": "Auto router"
+    },
+    "table": {
+      "noRouters": "No auto routers yet",
+      "emptyCreate": "Create an auto router to pick the right model per request instead of pinning one.",
+      "emptyReadOnly": "An auto router picks the right model per request instead of pinning one.",
+      "loading": "Loading auto routers…",
+      "openActionsAria": "Open actions for {{name}}",
+      "deleteAction": "Delete auto router",
+      "name": "Name",
+      "type": "Type",
+      "id": "ID",
+      "routesTo": "Routes to",
+      "defaultModel": "Default model",
+      "created": "Created"
+    },
+    "type": {
+      "llmClassifier": "LLM Classifier",
+      "heuristicFirst": "Heuristic first",
+      "hybrid": "Hybrid",
+      "customClassifier": "Custom classifier",
+      "heuristic": "Heuristic",
+      "semantic": "Semantic",
+      "adaptive": "Adaptive",
+      "quality": "Quality"
+    }
+  },
+  "accessGroupBudgets": {
+    "columns": {
+      "accessGroup": "Access Group",
+      "models": "Models",
+      "deployments": "Deployments",
+      "sharedSpend": "Shared Spend",
+      "resets": "Resets",
+      "actions": "Actions",
+      "openActionsAria": "Open budget actions for {{name}}",
+      "editBudget": "Edit budget",
+      "setBudget": "Set budget",
+      "clearBudget": "Clear budget",
+      "noBudgetToClear": "This access group has no budget to clear",
+      "writeBlockedAdmin": "Only a proxy admin can change an access group budget",
+      "writeBlockedSlash": "A budget cannot be set on a group whose name contains a slash"
+    },
+    "duration": {
+      "notSet": "Not set",
+      "hourly": "hourly",
+      "daily": "daily",
+      "weekly": "weekly",
+      "monthly": "monthly"
+    },
+    "modal": {
+      "editTitle": "Edit budget for \"{{name}}\"",
+      "setTitle": "Set budget for \"{{name}}\"",
+      "description": "Every key granted this access group by name draws from this one budget. A key that reaches the group's models through a wildcard or <code>all-proxy-models</code> is not charged against it.",
+      "maxBudget": "Max Budget (USD)",
+      "maxBudgetHint": "Total the whole group may spend. Once its shared spend reaches this, every key that draws from the group is refused",
+      "softBudget": "Soft Budget (USD)",
+      "softBudgetHint": "Fires an alert when the group's spend reaches this. Requests keep succeeding",
+      "resetBudget": "Reset Budget",
+      "resetBudgetHint": "How often the group's spend resets. Leave empty for a budget that never resets",
+      "blankHint": "A field left blank keeps whatever the budget already has. Use Clear budget to remove the budget itself.",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "save": "Save Budget",
+      "validation": "Set at least one of max budget, soft budget or reset window"
+    },
+    "panel": {
+      "emptyTitle": "No model access groups yet",
+      "emptyDescription": "Put a deployment in an access group from its model settings, then give the group a shared budget here.",
+      "description": "A model access group can carry one budget that every key granted the group by name draws from together. Keys that reach the group's models through a wildcard or all-proxy-models are not charged against it.",
+      "loading": "Loading model access groups…",
+      "savedToast": "Budget saved for \"{{name}}\"",
+      "clearedToast": "Budget cleared for \"{{name}}\"",
+      "clearTitle": "Clear Budget",
+      "clearMessage": "Are you sure you want to clear this access group's budget? The recorded shared spend is cleared with it, and the group's models stay available.",
+      "maxBudgetLabel": "Max Budget"
+    }
   }
 }

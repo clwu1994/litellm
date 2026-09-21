@@ -2,6 +2,7 @@
 
 import { Plus } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { useAutoRouters, useInvalidateAutoRouters } from "@/app/(dashboard)/hooks/models/useModels";
 import { useModelDetailRouting } from "@/app/(dashboard)/models-and-endpoints/detailNavigation";
@@ -35,6 +36,7 @@ export function AutoRoutersPanel({
   teams,
   createScope,
 }: AutoRoutersPanelProps) {
+  const { t } = useTranslation("models");
   const canCreate = createScope !== "forbidden";
   const { data: deployments, isLoading } = useAutoRouters();
   const invalidateAutoRouters = useInvalidateAutoRouters();
@@ -61,11 +63,11 @@ export function AutoRoutersPanel({
     setIsDeleting(true);
     try {
       await modelDeleteCall(accessToken, deletingRouter.id);
-      toast.success(`Deleted auto router: ${deletingRouter.name}`);
+      toast.success(t("autoRouters.panel.deleteToast", { name: deletingRouter.name }));
       setDeletingRouter(null);
       await invalidateAutoRouters();
     } catch (error) {
-      toast.fromError(`Failed to delete auto router: ${error}`);
+      toast.fromError(t("autoRouters.panel.deleteFailedToast", { error: String(error) }));
     } finally {
       setIsDeleting(false);
     }
@@ -75,16 +77,13 @@ export function AutoRoutersPanel({
     <div className="w-full space-y-4">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h2 className="text-base font-semibold text-foreground">Auto routers</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Auto routers sit above your deployments and pick a model per request. They are called like any other model,
-            so clients keep using a single model name.
-          </p>
+          <h2 className="text-base font-semibold text-foreground">{t("autoRouters.panel.heading")}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">{t("autoRouters.panel.description")}</p>
         </div>
         {canCreate && (
           <Button onClick={() => setIsCreating(true)} className="shrink-0">
             <Plus />
-            Add Auto Router
+            {t("autoRouters.panel.addAutoRouter")}
           </Button>
         )}
       </div>
@@ -102,11 +101,8 @@ export function AutoRoutersPanel({
             growing past the viewport. */}
         <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-4xl">
           <DialogHeader>
-            <DialogTitle>Add Auto Router</DialogTitle>
-            <DialogDescription>
-              Routes each request to a model by classifying its complexity. Called like any other model, so clients keep
-              using a single model name.
-            </DialogDescription>
+            <DialogTitle>{t("autoRouters.panel.addAutoRouter")}</DialogTitle>
+            <DialogDescription>{t("autoRouters.panel.addDialogDescription")}</DialogDescription>
           </DialogHeader>
           <AddAutoRouterTab
             handleOk={handleCreated}
@@ -121,13 +117,13 @@ export function AutoRoutersPanel({
       {deletingRouter && (
         <DeleteResourceModal
           isOpen
-          title="Delete Auto Router"
-          message={`Are you sure you want to delete "${deletingRouter.name}"? Any client still calling this model name will start failing.`}
-          resourceInformationTitle="Auto router"
+          title={t("autoRouters.panel.deleteTitle")}
+          message={t("autoRouters.panel.deleteMessage", { name: deletingRouter.name })}
+          resourceInformationTitle={t("autoRouters.panel.deleteResourceTitle")}
           resourceInformation={[
-            { label: "Name", value: deletingRouter.name },
-            { label: "Type", value: deletingRouter.typeLabel },
-            { label: "ID", value: deletingRouter.id },
+            { label: t("autoRouters.table.name"), value: deletingRouter.name },
+            { label: t("autoRouters.table.type"), value: t(deletingRouter.typeLabelKey) },
+            { label: t("autoRouters.table.id"), value: deletingRouter.id },
           ]}
           onCancel={() => setDeletingRouter(null)}
           onOk={handleConfirmDelete}
