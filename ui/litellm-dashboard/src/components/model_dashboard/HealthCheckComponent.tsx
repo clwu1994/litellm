@@ -1,5 +1,6 @@
 import { OnChangeFn, PaginationState, RowSelectionState } from "@tanstack/react-table";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -167,6 +168,7 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
   onPaginationChange,
   rowCount,
 }) => {
+  const { t } = useTranslation("models");
   const [modelHealthStatuses, setModelHealthStatuses] = useState<{ [key: string]: HealthStatus }>({});
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [errorModalVisible, setErrorModalVisible] = useState(false);
@@ -262,7 +264,7 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
         const currentTime = new Date().toLocaleString();
 
         if (response.unhealthy_count > 0 && response.unhealthy_endpoints && response.unhealthy_endpoints.length > 0) {
-          const rawError = response.unhealthy_endpoints[0]?.error || "Health check failed";
+          const rawError = response.unhealthy_endpoints[0]?.error || t("health.checkFailed");
           const errorMessage = extractMeaningfulError(rawError);
           setModelHealthStatuses((prev) => ({
             ...prev,
@@ -325,7 +327,7 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
         }));
       }
     },
-    [accessToken],
+    [accessToken, t],
   );
 
   const selectedModelIds = useMemo(
@@ -501,10 +503,8 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
       <div className="mb-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-foreground">Model Health Status</h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Run health checks on individual models to verify they are working correctly
-            </p>
+            <h2 className="text-lg font-semibold text-foreground">{t("health.title")}</h2>
+            <p className="mt-1 text-sm text-muted-foreground">{t("health.description")}</p>
           </div>
           <div className="flex items-center gap-3">
             {selectedModelIds.length > 0 && (
@@ -514,7 +514,7 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
                 onClick={() => setRowSelection({})}
                 data-testid="clear-health-selection"
               >
-                Clear Selection
+                {t("health.clearSelection")}
               </Button>
             )}
             <Button
@@ -524,7 +524,7 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
               disabled={anyCheckRunning}
               data-testid="run-health-checks"
             >
-              {isPartialSelection ? "Run Selected Checks" : "Run All Checks"}
+              {isPartialSelection ? t("health.runSelected") : t("health.runAll")}
             </Button>
           </div>
         </div>
@@ -556,21 +556,23 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
         <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-3xl">
           <DialogHeader>
             <DialogTitle>
-              {selectedErrorDetails ? `Health Check Error - ${selectedErrorDetails.modelName}` : "Error Details"}
+              {selectedErrorDetails
+                ? t("health.errorDialogTitle", { name: selectedErrorDetails.modelName })
+                : t("health.columns.errorDetails")}
             </DialogTitle>
-            <DialogDescription>Details returned by the model health check.</DialogDescription>
+            <DialogDescription>{t("health.responseDetailsDescription")}</DialogDescription>
           </DialogHeader>
           {selectedErrorDetails && (
             <div className="space-y-4">
               <div>
-                <span className="font-medium">Error:</span>
+                <span className="font-medium">{t("health.errorLabel")}</span>
                 <div className="mt-2 rounded-md border border-destructive/30 bg-destructive/10 p-3">
                   <span className="text-destructive">{selectedErrorDetails.cleanedError}</span>
                 </div>
               </div>
 
               <div>
-                <span className="font-medium">Full Error Details:</span>
+                <span className="font-medium">{t("health.fullErrorDetails")}</span>
                 <div className="mt-2 max-h-96 overflow-y-auto rounded-md border bg-muted/50 p-3">
                   <pre className="whitespace-pre-wrap text-sm text-foreground">{selectedErrorDetails.fullError}</pre>
                 </div>
@@ -579,7 +581,7 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
           )}
           <DialogFooter>
             <Button type="button" variant="outline" onClick={closeErrorModal}>
-              Close
+              {t("health.close")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -595,22 +597,22 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
           <DialogHeader>
             <DialogTitle>
               {selectedSuccessDetails
-                ? `Health Check Response - ${selectedSuccessDetails.modelName}`
-                : "Response Details"}
+                ? t("health.responseDialogTitle", { name: selectedSuccessDetails.modelName })
+                : t("health.responseDetails")}
             </DialogTitle>
-            <DialogDescription>Response returned by the successful model health check.</DialogDescription>
+            <DialogDescription>{t("health.responseDescription")}</DialogDescription>
           </DialogHeader>
           {selectedSuccessDetails && (
             <div className="space-y-4">
               <div>
-                <span className="font-medium">Status:</span>
+                <span className="font-medium">{t("health.statusLabel")}</span>
                 <div className="mt-2 rounded-md border border-primary/30 bg-primary/5 p-3">
-                  <span className="text-foreground">Health check passed successfully</span>
+                  <span className="text-foreground">{t("health.passed")}</span>
                 </div>
               </div>
 
               <div>
-                <span className="font-medium">Response Details:</span>
+                <span className="font-medium">{t("health.responseDetails")}</span>
                 <div className="mt-2 max-h-96 overflow-y-auto rounded-md border bg-muted/50 p-3">
                   <pre className="whitespace-pre-wrap text-sm text-foreground">
                     {JSON.stringify(selectedSuccessDetails.response, null, 2)}
@@ -621,7 +623,7 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
           )}
           <DialogFooter>
             <Button type="button" variant="outline" onClick={closeSuccessModal}>
-              Close
+              {t("health.close")}
             </Button>
           </DialogFooter>
         </DialogContent>

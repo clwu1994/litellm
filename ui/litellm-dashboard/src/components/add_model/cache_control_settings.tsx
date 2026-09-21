@@ -1,5 +1,6 @@
 import { CircleHelp, Minus, Plus } from "lucide-react";
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -38,27 +39,30 @@ const ROLE_ITEMS = [
   { value: "assistant", label: "Assistant" },
 ] as const;
 
-const LabelWithHint: React.FC<{ label: string; hint: string }> = ({ label, hint }) => (
-  <div className="flex items-center">
-    <Label>{label}</Label>
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger
-          render={
-            <button
-              type="button"
-              aria-label={`${label} help`}
-              className="ml-1 inline-flex cursor-help items-center rounded-sm text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            />
-          }
-        >
-          <CircleHelp aria-hidden className="size-4" />
-        </TooltipTrigger>
-        <TooltipContent className="max-w-xs whitespace-normal">{hint}</TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
-  </div>
-);
+const LabelWithHint: React.FC<{ label: string; hint: string }> = ({ label, hint }) => {
+  const { t } = useTranslation("models");
+  return (
+    <div className="flex items-center">
+      <Label>{label}</Label>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <button
+                type="button"
+                aria-label={t("addModel.cacheControl.helpAria", { label })}
+                className="ml-1 inline-flex cursor-help items-center rounded-sm text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              />
+            }
+          >
+            <CircleHelp aria-hidden className="size-4" />
+          </TooltipTrigger>
+          <TooltipContent className="max-w-xs whitespace-normal">{hint}</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    </div>
+  );
+};
 
 interface CacheControlInjectionPointsProps {
   value?: CacheControlInjectionPoint[];
@@ -71,6 +75,7 @@ interface CacheControlInjectionPointsProps {
  * independently; both hand a child exactly `value` and `onChange`.
  */
 const CacheControlInjectionPoints: React.FC<CacheControlInjectionPointsProps> = ({ value, onChange }) => {
+  const { t } = useTranslation("models");
   const points = value ?? [];
 
   const replaceAt = (index: number, point: CacheControlInjectionPoint) =>
@@ -78,12 +83,12 @@ const CacheControlInjectionPoints: React.FC<CacheControlInjectionPointsProps> = 
 
   return (
     <div className="ml-6 border-l-2 border-border pl-4">
-      <p className="mb-4 block text-sm text-muted-foreground">{CACHE_CONTROL_DESCRIPTION}</p>
+      <p className="mb-4 block text-sm text-muted-foreground">{t("addModel.cacheControl.description")}</p>
 
       {points.map((point, index) => (
         <div key={index} className="mb-4 flex items-end gap-4">
           <div className="w-[180px] space-y-1">
-            <Label>Type</Label>
+            <Label>{t("addModel.cacheControl.type")}</Label>
             <Select items={LOCATION_ITEMS} value={point.location} disabled>
               <SelectTrigger className="w-full">
                 <SelectValue />
@@ -99,7 +104,7 @@ const CacheControlInjectionPoints: React.FC<CacheControlInjectionPointsProps> = 
           </div>
 
           <div className="w-[180px] space-y-1">
-            <LabelWithHint label="Role" hint={CACHE_CONTROL_ROLE_HINT} />
+            <LabelWithHint label={t("addModel.cacheControl.role")} hint={t("addModel.cacheControl.roleHint")} />
             <Select
               items={ROLE_ITEMS}
               value={point.role ?? null}
@@ -108,10 +113,10 @@ const CacheControlInjectionPoints: React.FC<CacheControlInjectionPointsProps> = 
               }
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select a role" />
+                <SelectValue placeholder={t("addModel.cacheControl.rolePlaceholder")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={null}>None</SelectItem>
+                <SelectItem value={null}>{t("addModel.none")}</SelectItem>
                 {ROLE_ITEMS.map((item) => (
                   <SelectItem key={item.value} value={item.value}>
                     {item.label}
@@ -122,10 +127,10 @@ const CacheControlInjectionPoints: React.FC<CacheControlInjectionPointsProps> = 
           </div>
 
           <div className="w-[180px] space-y-1">
-            <LabelWithHint label="Index" hint={CACHE_CONTROL_INDEX_HINT} />
+            <LabelWithHint label={t("addModel.cacheControl.index")} hint={t("addModel.cacheControl.indexHint")} />
             <NumericalInput
               type="number"
-              placeholder="Optional"
+              placeholder={t("addModel.optional")}
               step={1}
               value={point.index ?? ""}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
@@ -142,7 +147,7 @@ const CacheControlInjectionPoints: React.FC<CacheControlInjectionPointsProps> = 
               type="button"
               variant="ghost"
               size="icon"
-              aria-label={`Remove injection point ${index + 1}`}
+              aria-label={t("addModel.cacheControl.removePointAria", { index: index + 1 })}
               className="text-destructive"
               onClick={() => onChange?.(points.filter((_, position) => position !== index))}
             >
@@ -159,7 +164,7 @@ const CacheControlInjectionPoints: React.FC<CacheControlInjectionPointsProps> = 
         onClick={() => onChange?.([...points, NEW_CACHE_CONTROL_POINT])}
       >
         <Plus className="mr-2 size-4" />
-        Add Injection Point
+        {t("addModel.cacheControl.addPoint")}
       </Button>
     </div>
   );
