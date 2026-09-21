@@ -5,6 +5,7 @@ import type zhCostTracking from "./locales/zh/costTracking.json";
 import type zhGuardrails from "./locales/zh/guardrails.json";
 import type zhKeys from "./locales/zh/keys.json";
 import type zhLogs from "./locales/zh/logs.json";
+import type zhModels from "./locales/zh/models.json";
 import type zhNav from "./locales/zh/nav.json";
 import type zhOrganizations from "./locales/zh/organizations.json";
 import type zhPlayground from "./locales/zh/playground.json";
@@ -24,6 +25,7 @@ declare module "i18next" {
       guardrails: typeof zhGuardrails;
       keys: typeof zhKeys;
       logs: typeof zhLogs;
+      models: typeof zhModels;
       teams: typeof zhTeams;
       users: typeof zhUsers;
       organizations: typeof zhOrganizations;
