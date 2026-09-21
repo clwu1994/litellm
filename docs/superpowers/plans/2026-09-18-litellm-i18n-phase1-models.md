@@ -71,6 +71,17 @@ Process note: the controller's first grep missed these because the pattern only 
 
 - [ ] Same shape, extending `models`. **This task exists because these trees render inside the Models page**: until it lands, the add-model form, the credentials panel, the health panel and the model settings modal are English inside an otherwise Chinese page. Sweep all four trees and report any file deliberately skipped with importer evidence.
 
+### Task 4: The `add_model` tree (deferred, increment NOT closed until it lands)
+
+**Files:** `src/components/add_model/*` — 54 production files, 523-585 user-facing sites
+
+**Why this is its own task and not a fix round:** the plan's ~138-site estimate for this tree was wrong by roughly 4x. The reviewer measured 54 production files and 523 prose sites independently, and confirmed the structural difficulty is real: `TIER_DESCRIPTIONS`, `CLASSIFICATION_RUBRIC_DESCRIPTIONS`, `GROUPS` and `TEST_MODES` are module-level data consumed by logic (one comparison reads `TIER_DESCRIPTIONS[tier].label`), and the `getTierLabelsError` / `getMissingTiersError` / `getPlanModeTierError` / `customDimensionsError` family returns English strings that need `{key, values}` contracts. That is ~500-600 sites, ~500-600 per-key assertions, and contract changes across about ten logic modules plus their existing unit tests. `AUTO_ROUTER_MODES` is genuinely dead and can be deleted.
+
+**Known gap until this lands:** `page.tsx` renders `AddModelPanel`, which renders `AddModelForm`, and `AutoRoutersPanel` pulls in `add_auto_router_tab`. The Add Model tab is admin-gated, so a non-admin sees a fully Chinese page, but an admin sees a Chinese tab label over an entirely English form. The Models page is therefore knowingly half-Chinese for admins, and this increment is not complete until this task lands.
+
+- [ ] Translate `add_model/*` into `models` keys, converting the module-level label data and the error-returning helpers to key-plus-values contracts resolved at render.
+- [ ] Every key that reaches the DOM gets its own discriminating assertion; the increment's bar is not lowered for this task.
+
 ---
 
 ## Later increments
