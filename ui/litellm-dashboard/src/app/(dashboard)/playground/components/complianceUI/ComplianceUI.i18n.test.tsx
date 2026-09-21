@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -53,8 +53,11 @@ vi.mock("@/components/llm_calls/chat_completion", () => ({
   makeOpenAIChatCompletionRequest: vi.fn().mockResolvedValue(undefined),
 }));
 
-const renderCompliance = (props: Partial<ComponentProps<typeof ComplianceUI>> = {}) =>
-  render(<ComplianceUI accessToken="test-token" disabledPersonalKeyCreation={false} {...props} />);
+const renderCompliance = async (props: Partial<ComponentProps<typeof ComplianceUI>> = {}) => {
+  const view = render(<ComplianceUI accessToken="test-token" disabledPersonalKeyCreation={false} {...props} />);
+  await act(async () => {});
+  return view;
+};
 
 const csvFile = () => new File(["x"], "data.csv", { type: "text/csv" });
 
@@ -107,8 +110,8 @@ describe("ComplianceUI Chinese copy", () => {
     await i18n.changeLanguage("en");
   });
 
-  it("renders the Chinese test configuration and prompt library chrome", () => {
-    renderCompliance();
+  it("renders the Chinese test configuration and prompt library chrome", async () => {
+    await renderCompliance();
 
     expect(screen.getByText("测试配置")).toBeInTheDocument();
     expect(screen.queryByText("Test Configuration")).not.toBeInTheDocument();
@@ -154,9 +157,9 @@ describe("ComplianceUI Chinese copy", () => {
     expect(screen.queryByRole("button", { name: "Test" })).not.toBeInTheDocument();
   });
 
-  it("renders the guardrails-only introduction when policies are not viewable", () => {
+  it("renders the guardrails-only introduction when policies are not viewable", async () => {
     mockAccess.viewPolicies = false;
-    renderCompliance();
+    await renderCompliance();
 
     expect(screen.getByText("选择要测试的 Guardrails。")).toBeInTheDocument();
     expect(screen.queryByText("Select guardrails to test against.")).not.toBeInTheDocument();
@@ -167,7 +170,7 @@ describe("ComplianceUI Chinese copy", () => {
   it("renders the Chinese empty guardrail dropdown", async () => {
     (getGuardrailsList as ReturnType<typeof vi.fn>).mockResolvedValueOnce({ guardrails: [] });
     const user = userEvent.setup({ delay: null });
-    renderCompliance();
+    await renderCompliance();
 
     await user.click(screen.getByRole("button", { name: /未选择/ }));
 
@@ -179,7 +182,7 @@ describe("ComplianceUI Chinese copy", () => {
 
   it("renders the Chinese selected-guardrail chrome", async () => {
     const user = userEvent.setup({ delay: null });
-    renderCompliance();
+    await renderCompliance();
 
     await user.click(screen.getByRole("button", { name: /未选择/ }));
     await user.click(await screen.findByRole("button", { name: /g-one/ }));
@@ -194,10 +197,10 @@ describe("ComplianceUI Chinese copy", () => {
     expect(screen.queryByRole("button", { name: "Test 1 guardrail" })).not.toBeInTheDocument();
   });
 
-  it("renders the Chinese singular policy count under the locale that selects it", async () => {
+  it("renders the English singular policy count under the locale that selects it", async () => {
     await i18n.changeLanguage("en");
     const user = userEvent.setup({ delay: null });
-    renderCompliance();
+    await renderCompliance();
 
     await user.click(screen.getByRole("button", { name: "pick-one-policy" }));
 
@@ -205,9 +208,20 @@ describe("ComplianceUI Chinese copy", () => {
     expect(screen.queryByRole("button", { name: "Test 1 policies" })).not.toBeInTheDocument();
   });
 
+  it("renders the English plural policy count under the locale that selects it", async () => {
+    await i18n.changeLanguage("en");
+    const user = userEvent.setup({ delay: null });
+    await renderCompliance();
+
+    await user.click(screen.getByRole("button", { name: "pick-two-policies" }));
+
+    expect(screen.getByRole("button", { name: "Test 2 policies" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Test 2 policy" })).not.toBeInTheDocument();
+  });
+
   it("renders the Chinese plural policy count", async () => {
     const user = userEvent.setup({ delay: null });
-    renderCompliance();
+    await renderCompliance();
 
     await user.click(screen.getByRole("button", { name: "pick-two-policies" }));
 
@@ -217,7 +231,7 @@ describe("ComplianceUI Chinese copy", () => {
 
   it("renders the Chinese combined policy and guardrail count", async () => {
     const user = userEvent.setup({ delay: null });
-    renderCompliance();
+    await renderCompliance();
 
     await user.click(screen.getByRole("button", { name: "pick-one-policy" }));
     await user.click(screen.getByRole("button", { name: /未选择/ }));
@@ -227,10 +241,10 @@ describe("ComplianceUI Chinese copy", () => {
     expect(screen.queryByRole("button", { name: "Test 1 policy & 1 guardrail" })).not.toBeInTheDocument();
   });
 
-  it("renders the Chinese singular guardrail count under the locale that selects it", async () => {
+  it("renders the English singular guardrail count under the locale that selects it", async () => {
     await i18n.changeLanguage("en");
     const user = userEvent.setup({ delay: null });
-    renderCompliance();
+    await renderCompliance();
 
     await user.click(screen.getByRole("button", { name: /None selected/ }));
     await user.click(await screen.findByRole("button", { name: /g-one/ }));
@@ -239,9 +253,22 @@ describe("ComplianceUI Chinese copy", () => {
     expect(screen.queryByRole("button", { name: "Test 1 guardrails" })).not.toBeInTheDocument();
   });
 
+  it("renders the English plural guardrail count under the locale that selects it", async () => {
+    await i18n.changeLanguage("en");
+    const user = userEvent.setup({ delay: null });
+    await renderCompliance();
+
+    await user.click(screen.getByRole("button", { name: /None selected/ }));
+    await user.click(await screen.findByRole("button", { name: /g-one/ }));
+    await user.click(await screen.findByRole("button", { name: /g-two/ }));
+
+    expect(screen.getByRole("button", { name: "Test 2 guardrails" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Test 2 guardrail" })).not.toBeInTheDocument();
+  });
+
   it("renders the Chinese custom-prompt form and the added custom prompt", async () => {
     const user = userEvent.setup({ delay: null });
-    renderCompliance();
+    await renderCompliance();
 
     await user.click(screen.getByRole("button", { name: "添加" }));
 
@@ -272,9 +299,37 @@ describe("ComplianceUI Chinese copy", () => {
     expect(screen.queryByLabelText("Delete")).not.toBeInTheDocument();
   });
 
+  it("keeps one custom prompt group across a language switch", async () => {
+    const user = userEvent.setup({ delay: null });
+    await renderCompliance();
+
+    await user.click(screen.getByRole("button", { name: "添加" }));
+    fireEvent.change(screen.getByPlaceholderText("输入测试提示词..."), { target: { value: "prompt-zh" } });
+    await user.click(screen.getAllByRole("button", { name: "添加" })[1]);
+
+    expect(screen.getByText("自定义")).toBeInTheDocument();
+
+    await act(async () => {
+      await i18n.changeLanguage("en");
+    });
+
+    await user.click(screen.getByRole("button", { name: "Add" }));
+    fireEvent.change(screen.getByPlaceholderText("Enter your test prompt..."), { target: { value: "prompt-en" } });
+    await user.click(screen.getAllByRole("button", { name: "Add" })[1]);
+
+    expect(screen.getAllByText("Custom")).toHaveLength(1);
+    expect(screen.queryByText("自定义")).not.toBeInTheDocument();
+    expect(screen.getByText("Custom Prompts")).toBeInTheDocument();
+    expect(screen.queryByText("自定义提示词")).not.toBeInTheDocument();
+    expect(screen.getByText("Custom prompts added this session.")).toBeInTheDocument();
+    expect(screen.getByText("2 prompts")).toBeInTheDocument();
+    expect(screen.getByText("prompt-zh")).toBeInTheDocument();
+    expect(screen.getByText("prompt-en")).toBeInTheDocument();
+  });
+
   it("renders the Chinese CSV upload chrome", async () => {
     const user = userEvent.setup({ delay: null });
-    renderCompliance();
+    await renderCompliance();
 
     await openCsvPanel(user);
 
@@ -296,7 +351,7 @@ describe("ComplianceUI Chinese copy", () => {
 
   it("renders the Chinese CSV validation errors", async () => {
     const user = userEvent.setup({ delay: null });
-    const { container } = renderCompliance();
+    const { container } = await renderCompliance();
     await openCsvPanel(user);
 
     fireEvent.change(csvInput(container), { target: { files: [new File(["x"], "data.txt", { type: "text/plain" })] } });
@@ -355,9 +410,21 @@ describe("ComplianceUI Chinese copy", () => {
     expect(screen.queryByText("Failed to parse CSV file.")).not.toBeInTheDocument();
   });
 
+  it("renders the English CSV-uploaded library copy under en", async () => {
+    await i18n.changeLanguage("en");
+    const user = userEvent.setup({ delay: null });
+    const { container } = await renderCompliance();
+
+    await uploadCsv(user, container, [{ prompt: "p1", expected_result: "fail" }]);
+
+    expect(await screen.findByText("CSV Upload")).toBeInTheDocument();
+    expect(screen.getByText("Uploaded Prompts")).toBeInTheDocument();
+    expect(screen.getByText("Prompts uploaded from CSV — Uploaded Prompts.")).toBeInTheDocument();
+  });
+
   it("renders the Chinese CSV-uploaded library and the batch result chrome", async () => {
     const user = userEvent.setup({ delay: null });
-    const { container } = renderCompliance();
+    const { container } = await renderCompliance();
 
     await uploadCsv(user, container, [
       { prompt: "p1", expected_result: "fail" },
@@ -440,7 +507,7 @@ describe("ComplianceUI Chinese copy", () => {
 
   it("renders the Chinese empty batch results", async () => {
     const user = userEvent.setup({ delay: null });
-    renderCompliance();
+    await renderCompliance();
 
     await user.click(screen.getByRole("button", { name: "批量结果" }));
 
@@ -452,7 +519,7 @@ describe("ComplianceUI Chinese copy", () => {
 
   it("renders the Chinese running chrome while a batch is in flight", async () => {
     const user = userEvent.setup({ delay: null });
-    const { container } = renderCompliance();
+    const { container } = await renderCompliance();
     await uploadCsv(user, container, [{ prompt: "p1", expected_result: "fail" }]);
 
     let release: (value: unknown) => void = () => {};
@@ -469,12 +536,14 @@ describe("ComplianceUI Chinese copy", () => {
     expect(screen.getByText("运行中...")).toBeInTheDocument();
     expect(screen.queryByText("Running...")).not.toBeInTheDocument();
 
-    release({ results: [] });
+    await act(async () => {
+      release({ results: [] });
+    });
   });
 
   it("renders the Chinese quick-test allowed response from a model", async () => {
     const user = userEvent.setup({ delay: null });
-    renderCompliance({ backendMode: "chat_completions", fixedModel: "gpt-4" });
+    await renderCompliance({ backendMode: "chat_completions", fixedModel: "gpt-4" });
 
     fireEvent.change(screen.getByPlaceholderText("输入要测试的文本..."), { target: { value: "hello" } });
     await user.click(screen.getByRole("button", { name: "测试" }));
@@ -489,7 +558,7 @@ describe("ComplianceUI Chinese copy", () => {
 
   it("renders the Chinese quick-test blocked and allowed verdicts", async () => {
     const user = userEvent.setup({ delay: null });
-    renderCompliance();
+    await renderCompliance();
 
     (testPoliciesAndGuardrails as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
       inputs: { texts: ["processed"] },
@@ -516,7 +585,7 @@ describe("ComplianceUI Chinese copy", () => {
 
   it("renders the Chinese quick-test error", async () => {
     const user = userEvent.setup({ delay: null });
-    renderCompliance();
+    await renderCompliance();
 
     (testPoliciesAndGuardrails as ReturnType<typeof vi.fn>).mockRejectedValueOnce(new Error("kaboom"));
     fireEvent.change(screen.getByPlaceholderText("输入要测试的文本..."), { target: { value: "hello" } });

@@ -36,21 +36,21 @@ describe("UnifiedSelector Chinese copy", () => {
     expect(screen.queryByPlaceholderText("Select an agent")).not.toBeInTheDocument();
   });
 
-  it("renders the Chinese loading placeholder built from the model label", () => {
+  it("renders the Chinese model loading placeholder", () => {
     render(<UnifiedSelector value="" options={[]} loading config={CHAT} onChange={vi.fn()} />);
 
     expect(screen.getByPlaceholderText("正在加载模型...")).toBeInTheDocument();
     expect(screen.queryByPlaceholderText("Loading models...")).not.toBeInTheDocument();
   });
 
-  it("renders the Chinese loading placeholder built from the agent label", () => {
+  it("renders the Chinese agent loading placeholder", () => {
     render(<UnifiedSelector value="" options={[]} loading config={AGENTS} onChange={vi.fn()} />);
 
     expect(screen.getByPlaceholderText("正在加载Agent...")).toBeInTheDocument();
     expect(screen.queryByPlaceholderText("Loading agents...")).not.toBeInTheDocument();
   });
 
-  it("renders the Chinese empty list built from the model label", async () => {
+  it("renders the Chinese model empty list", async () => {
     const user = userEvent.setup({ delay: null });
     render(<UnifiedSelector value="" options={[]} loading={false} config={CHAT} onChange={vi.fn()} />);
 
@@ -60,7 +60,7 @@ describe("UnifiedSelector Chinese copy", () => {
     expect(screen.queryByText("No models available")).not.toBeInTheDocument();
   });
 
-  it("renders the Chinese empty list built from the agent label", async () => {
+  it("renders the Chinese agent empty list", async () => {
     const user = userEvent.setup({ delay: null });
     render(<UnifiedSelector value="" options={[]} loading={false} config={AGENTS} onChange={vi.fn()} />);
 

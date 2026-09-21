@@ -468,6 +468,7 @@
     "uploadPreview": "Upload preview",
     "pdf": "PDF",
     "image": "Image",
+    "filePdfAria": "file-pdf",
     "removeAttachmentAria": "Remove attachment",
     "errorFetchingResponse": "Error fetching response: {{error}}",
     "validation": {
@@ -476,12 +477,12 @@
       "agent": "Select an agent before sending a message."
     },
     "selector": {
-      "modelLabel": "Model",
-      "agentLabel": "Agent",
       "modelPlaceholder": "Select a model",
       "agentPlaceholder": "Select an agent",
-      "loading": "Loading {{label}}s...",
-      "noOptions": "No {{label}}s available"
+      "loadingModels": "Loading models...",
+      "loadingAgents": "Loading agents...",
+      "noModels": "No models available",
+      "noAgents": "No agents available"
     },
     "input": {
       "modelPlaceholder": "Send a prompt to compare models",

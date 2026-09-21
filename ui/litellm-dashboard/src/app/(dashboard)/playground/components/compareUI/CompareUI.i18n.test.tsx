@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -230,6 +230,21 @@ describe("CompareUI Chinese copy", () => {
 
     expect(await screen.findByText("PDF")).toBeInTheDocument();
     expect(screen.getByText("附件已就绪，可以发送")).toBeInTheDocument();
+    expect(screen.getByLabelText("file-pdf")).toBeInTheDocument();
+  });
+
+  it("keeps the PDF icon aria-label in English under en", async () => {
+    await i18n.changeLanguage("en");
+    renderCompare();
+    await waitForModels();
+
+    await waitFor(() => expect(capturedOnImageUpload).not.toBeNull());
+    await act(async () => {
+      capturedOnImageUpload?.(new File(["x"], "report.pdf", { type: "application/pdf" }));
+    });
+
+    expect(await screen.findByLabelText("file-pdf")).toBeInTheDocument();
+    expect(screen.queryByLabelText("file-pdf-mutated")).not.toBeInTheDocument();
   });
 
   it("renders the Chinese add-comparison tooltip while a slot is free", async () => {

@@ -1,15 +1,11 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type { ParseKeys } from "i18next";
 import { describe, expect, it, vi } from "vitest";
-import i18n from "@/i18n/bootstrapI18n";
 import { UnifiedSelector } from "./UnifiedSelector";
 import { EndpointId, ENDPOINT_CONFIGS } from "../endpoint_config";
 
 const CHAT = ENDPOINT_CONFIGS[EndpointId.CHAT_COMPLETIONS];
 const AGENTS = ENDPOINT_CONFIGS[EndpointId.A2A_AGENTS];
-
-const copy = (key: ParseKeys<"playground">) => i18n.t(key, { ns: "playground" });
 
 const promptIsVisible = (text: string) =>
   screen.queryByText(text) !== null || screen.queryByPlaceholderText(text) !== null;
@@ -36,21 +32,25 @@ describe("UnifiedSelector", () => {
   it("prompts with the endpoint's own selector copy", () => {
     render(<UnifiedSelector value="" options={[]} loading={false} config={CHAT} onChange={vi.fn()} />);
 
-    expect(promptIsVisible(copy(CHAT.selectorPlaceholderKey))).toBe(true);
+    expect(promptIsVisible("Select a model")).toBe(true);
   });
 
   it("prompts with the agent endpoint's copy when configured for agents", () => {
     render(<UnifiedSelector value="" options={[]} loading={false} config={AGENTS} onChange={vi.fn()} />);
 
-    expect(promptIsVisible(copy(AGENTS.selectorPlaceholderKey))).toBe(true);
+    expect(promptIsVisible("Select an agent")).toBe(true);
   });
 
-  it("swaps the prompt for a loading message while options are in flight", () => {
+  it("swaps the prompt for the model loading message while options are in flight", () => {
     render(<UnifiedSelector value="" options={[]} loading config={CHAT} onChange={vi.fn()} />);
 
-    expect(
-      promptIsVisible(i18n.t("compare.selector.loading", { ns: "playground", label: copy(CHAT.selectorLabelKey) })),
-    ).toBe(true);
+    expect(promptIsVisible("Loading models...")).toBe(true);
+  });
+
+  it("uses the agent loading message for the agent endpoint", () => {
+    render(<UnifiedSelector value="" options={[]} loading config={AGENTS} onChange={vi.fn()} />);
+
+    expect(promptIsVisible("Loading agents...")).toBe(true);
   });
 
   it("reports the chosen option's value, not its label", async () => {
@@ -122,10 +122,15 @@ describe("UnifiedSelector", () => {
 
     await openList(user);
 
-    expect(
-      await screen.findByText(
-        i18n.t("compare.selector.noOptions", { ns: "playground", label: copy(CHAT.selectorLabelKey) }),
-      ),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("No models available")).toBeInTheDocument();
+  });
+
+  it("says so for the agent endpoint too", async () => {
+    const user = userEvent.setup();
+    render(<UnifiedSelector value="" options={[]} loading={false} config={AGENTS} onChange={vi.fn()} />);
+
+    await openList(user);
+
+    expect(await screen.findByText("No agents available")).toBeInTheDocument();
   });
 });

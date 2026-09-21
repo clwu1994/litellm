@@ -44,7 +44,11 @@ describe("endpoint_config", () => {
     const config = getEndpointConfig(EndpointId.CHAT_COMPLETIONS);
     expect(config.id).toBe(EndpointId.CHAT_COMPLETIONS);
     expect(config.selectorType).toBe("model");
-    expect(config.selectorLabelKey).toBe("compare.selector.modelLabel");
+    expect(config.selectorLoadingKey).toBe("compare.selector.loadingModels");
+    expect(config.selectorNoOptionsKey).toBe("compare.selector.noModels");
+    const agentConfig = getEndpointConfig(EndpointId.A2A_AGENTS);
+    expect(agentConfig.selectorLoadingKey).toBe("compare.selector.loadingAgents");
+    expect(agentConfig.selectorNoOptionsKey).toBe("compare.selector.noAgents");
   });
 
   it("should check if endpoint is agent endpoint", () => {

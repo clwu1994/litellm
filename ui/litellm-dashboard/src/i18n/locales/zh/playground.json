@@ -468,6 +468,7 @@
     "uploadPreview": "上传预览",
     "pdf": "PDF",
     "image": "图片",
+    "filePdfAria": "file-pdf",
     "removeAttachmentAria": "移除附件",
     "errorFetchingResponse": "获取响应出错：{{error}}",
     "validation": {
@@ -476,12 +477,12 @@
       "agent": "发送消息前请先选择一个 Agent。"
     },
     "selector": {
-      "modelLabel": "模型",
-      "agentLabel": "Agent",
       "modelPlaceholder": "选择一个模型",
       "agentPlaceholder": "选择一个 Agent",
-      "loading": "正在加载{{label}}...",
-      "noOptions": "没有可用的{{label}}"
+      "loadingModels": "正在加载模型...",
+      "loadingAgents": "正在加载Agent...",
+      "noModels": "没有可用的模型",
+      "noAgents": "没有可用的Agent"
     },
     "input": {
       "modelPlaceholder": "发送提示词以对比模型",

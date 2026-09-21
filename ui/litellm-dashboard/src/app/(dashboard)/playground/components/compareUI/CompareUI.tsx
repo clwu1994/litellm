@@ -830,7 +830,7 @@ export default function CompareUI({ accessToken, disabledPersonalKeyCreation }: 
                     <div className="relative inline-block">
                       {isUploadedFilePdf ? (
                         <div className="w-10 h-10 rounded-md bg-destructive flex items-center justify-center text-destructive-foreground">
-                          <FileText className="size-4" aria-label="file-pdf" />
+                          <FileText className="size-4" aria-label={t("compare.filePdfAria")} />
                         </div>
                       ) : (
                         <img

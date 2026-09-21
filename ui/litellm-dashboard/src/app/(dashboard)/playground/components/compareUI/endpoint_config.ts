@@ -24,7 +24,8 @@ export interface EndpointConfig {
   id: EndpointIdType;
   label: string;
   selectorType: SelectorType;
-  selectorLabelKey: ParseKeys<"playground">;
+  selectorLoadingKey: ParseKeys<"playground">;
+  selectorNoOptionsKey: ParseKeys<"playground">;
   selectorPlaceholderKey: ParseKeys<"playground">;
   inputPlaceholderKey: ParseKeys<"playground">;
   loadingMessageKey: ParseKeys<"playground">;
@@ -37,7 +38,8 @@ export const ENDPOINT_CONFIGS: Record<EndpointIdType, EndpointConfig> = {
     id: EndpointId.CHAT_COMPLETIONS,
     label: "/v1/chat/completions",
     selectorType: "model",
-    selectorLabelKey: "compare.selector.modelLabel",
+    selectorLoadingKey: "compare.selector.loadingModels",
+    selectorNoOptionsKey: "compare.selector.noModels",
     selectorPlaceholderKey: "compare.selector.modelPlaceholder",
     inputPlaceholderKey: "compare.input.modelPlaceholder",
     loadingMessageKey: "compare.loading.models",
@@ -47,7 +49,8 @@ export const ENDPOINT_CONFIGS: Record<EndpointIdType, EndpointConfig> = {
     id: EndpointId.A2A_AGENTS,
     label: "/a2a (Agents)",
     selectorType: "agent",
-    selectorLabelKey: "compare.selector.agentLabel",
+    selectorLoadingKey: "compare.selector.loadingAgents",
+    selectorNoOptionsKey: "compare.selector.noAgents",
     selectorPlaceholderKey: "compare.selector.agentPlaceholder",
     inputPlaceholderKey: "compare.input.agentPlaceholder",
     loadingMessageKey: "compare.loading.agents",
@@ -128,7 +131,8 @@ export const hasValidSelection = (
  *   id: EndpointId.RESPONSES,
  *   label: "/v1/responses",
  *   selectorType: "model",
- *   selectorLabelKey: "compare.selector.modelLabel",
+ *   selectorLoadingKey: "compare.selector.loadingModels",
+ *   selectorNoOptionsKey: "compare.selector.noModels",
  *   selectorPlaceholderKey: "compare.selector.modelPlaceholder",
  *   inputPlaceholderKey: "compare.input.modelPlaceholder",
  *   loadingMessageKey: "compare.loading.models",

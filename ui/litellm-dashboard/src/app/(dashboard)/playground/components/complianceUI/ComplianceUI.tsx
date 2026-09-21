@@ -112,6 +112,22 @@ const RESULT_FILTER_KEYS: Record<ResultFilter, ParseKeys<"playground">> = {
   pending: "compliance.filter.pending",
 };
 
+const CUSTOM_FRAMEWORK_ID: ParseKeys<"playground"> = "compliance.library.customFramework";
+const CUSTOM_CATEGORY_ID: ParseKeys<"playground"> = "compliance.library.customCategory";
+const CUSTOM_CATEGORY_DESCRIPTION_ID: ParseKeys<"playground"> = "compliance.library.customCategoryDescription";
+const CSV_FRAMEWORK_ID: ParseKeys<"playground"> = "compliance.library.uploadFramework";
+const CSV_CATEGORY_ID: ParseKeys<"playground"> = "compliance.library.uploadCategory";
+const CSV_CATEGORY_DESCRIPTION_ID: ParseKeys<"playground"> = "compliance.library.uploadCategoryDescription";
+
+const LIBRARY_NAME_IDS: ReadonlySet<string> = new Set([
+  CUSTOM_FRAMEWORK_ID,
+  CUSTOM_CATEGORY_ID,
+  CSV_FRAMEWORK_ID,
+  CSV_CATEGORY_ID,
+]);
+
+const isLibraryName = (name: string): name is ParseKeys<"playground"> => LIBRARY_NAME_IDS.has(name);
+
 interface GuardrailOption {
   id: string;
   name: string;
@@ -142,8 +158,6 @@ export default function ComplianceUI({
   const { t } = useTranslation("playground");
   const canViewPolicies = useCan("viewPolicies");
   const frameworks = getFrameworks();
-  const customFramework = t("compliance.library.customFramework");
-  const customCategory = t("compliance.library.customCategory");
 
   const [policyValueToLabel, setPolicyValueToLabel] = useState<Map<string, string>>(new Map());
   const [guardrailOptions, setGuardrailOptions] = useState<GuardrailOption[]>([]);
@@ -292,10 +306,10 @@ export default function ComplianceUI({
     const id = `custom-${Date.now()}`;
     const newPrompt: CompliancePrompt = {
       id,
-      framework: customFramework,
-      category: customCategory,
+      framework: CUSTOM_FRAMEWORK_ID,
+      category: CUSTOM_CATEGORY_ID,
       categoryIcon: "pencil",
-      categoryDescription: t("compliance.library.customCategoryDescription"),
+      categoryDescription: CUSTOM_CATEGORY_DESCRIPTION_ID,
       prompt: newPromptText.trim(),
       expectedResult: newPromptExpected,
     };
@@ -303,8 +317,8 @@ export default function ComplianceUI({
     setNewPromptText("");
     setNewPromptExpected("fail");
     setShowAddPrompt(false);
-    setExpandedFrameworks((prev) => new Set([...prev, customFramework]));
-    setExpandedCategories((prev) => new Set([...prev, customCategory]));
+    setExpandedFrameworks((prev) => new Set([...prev, CUSTOM_FRAMEWORK_ID]));
+    setExpandedCategories((prev) => new Set([...prev, CUSTOM_CATEGORY_ID]));
   };
 
   const deleteCustomPrompt = (id: string) => {
@@ -391,15 +405,15 @@ export default function ComplianceUI({
             return;
           }
 
-          const framework = row.framework?.trim() || t("compliance.library.uploadFramework");
-          const category = row.category?.trim() || t("compliance.library.uploadCategory");
+          const framework = row.framework?.trim() || CSV_FRAMEWORK_ID;
+          const category = row.category?.trim() || CSV_CATEGORY_ID;
 
           newPrompts.push({
             id: `csv-${Date.now()}-${idx}`,
             framework,
             category,
             categoryIcon: "file-text",
-            categoryDescription: t("compliance.library.uploadCategoryDescription", { category }),
+            categoryDescription: CSV_CATEGORY_DESCRIPTION_ID,
             prompt,
             expectedResult: expected as "fail" | "pass",
           });
@@ -673,12 +687,22 @@ export default function ComplianceUI({
     return true;
   });
 
+  const libraryName = (name: string): string => (isLibraryName(name) ? t(name) : name);
+
+  const libraryDescription = (description: string, categoryName: string): string => {
+    if (description === CUSTOM_CATEGORY_DESCRIPTION_ID) return t(CUSTOM_CATEGORY_DESCRIPTION_ID);
+    if (description === CSV_CATEGORY_DESCRIPTION_ID) {
+      return t(CSV_CATEGORY_DESCRIPTION_ID, { category: libraryName(categoryName) });
+    }
+    return description;
+  };
+
   const exportBatchResults = () => {
     if (filteredResults.length === 0) return;
     const rows = filteredResults.map((r) => ({
       prompt_id: r.promptId,
       prompt: r.prompt,
-      category: r.category,
+      category: libraryName(r.category),
       expected_result: r.expectedResult,
       actual_result: r.actualResult,
       is_match: r.isMatch ? "yes" : "no",
@@ -1074,7 +1098,7 @@ export default function ComplianceUI({
                         )}
                         <CategoryIcon iconKey={fw.icon} className="w-4 h-4 text-muted-foreground shrink-0" />
                         <div className="flex-1 min-w-0">
-                          <span className="text-xs font-semibold text-foreground">{fw.name}</span>
+                          <span className="text-xs font-semibold text-foreground">{libraryName(fw.name)}</span>
                           <span className="text-[10px] text-muted-foreground ml-1.5">
                             {t("compliance.promptCount", { total: fwPromptCount })}
                           </span>
@@ -1124,7 +1148,7 @@ export default function ComplianceUI({
                                     />
                                   </span>
                                   <span className="text-[11px] font-medium text-foreground flex-1 min-w-0 truncate">
-                                    {category.name}
+                                    {libraryName(category.name)}
                                   </span>
                                   <span className="text-[10px] text-muted-foreground shrink-0">
                                     {category.prompts.length}
@@ -1140,7 +1164,7 @@ export default function ComplianceUI({
                                   <div>
                                     <div className="px-2.5 py-1 flex items-center justify-between">
                                       <p className="text-[10px] text-muted-foreground leading-relaxed flex-1 mr-2 line-clamp-2">
-                                        {category.description}
+                                        {libraryDescription(category.description, category.name)}
                                       </p>
                                       <button
                                         type="button"
@@ -1498,7 +1522,7 @@ export default function ComplianceUI({
                                   <div className="flex items-center gap-1.5 flex-wrap">
                                     <span className="text-[9px] text-muted-foreground inline-flex items-center gap-0.5">
                                       <CategoryIcon iconKey={result.categoryIcon} className="w-3 h-3" />
-                                      {result.category}
+                                      {libraryName(result.category)}
                                     </span>
                                     <span
                                       className={`text-[9px] font-semibold px-1 py-0.5 rounded-sm ${result.expectedResult === "fail" ? "bg-destructive/10 text-destructive" : "bg-success/10 text-success"}`}

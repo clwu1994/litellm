@@ -29,7 +29,6 @@ const matchesQuery = (option: SelectorOption, query: string): boolean =>
 export function UnifiedSelector({ value, options, loading, config, onChange }: UnifiedSelectorProps) {
   const { t } = useTranslation("playground");
   const selected = options.find((option) => option.value === value) ?? null;
-  const label = t(config.selectorLabelKey);
 
   return (
     <Combobox
@@ -41,7 +40,7 @@ export function UnifiedSelector({ value, options, loading, config, onChange }: U
       filter={matchesQuery}
     >
       <ComboboxInput
-        placeholder={loading ? t("compare.selector.loading", { label }) : t(config.selectorPlaceholderKey)}
+        placeholder={loading ? t(config.selectorLoadingKey) : t(config.selectorPlaceholderKey)}
         className="w-48 md:w-64 lg:w-72"
       />
       <ComboboxContent>
@@ -51,7 +50,7 @@ export function UnifiedSelector({ value, options, loading, config, onChange }: U
               <UiLoadingSpinner className="size-4" />
             </span>
           ) : (
-            t("compare.selector.noOptions", { label })
+            t(config.selectorNoOptionsKey)
           )}
         </ComboboxEmpty>
         <ComboboxList>
