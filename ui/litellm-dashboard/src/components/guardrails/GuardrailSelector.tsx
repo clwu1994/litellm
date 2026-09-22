@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Guardrail } from "./types";
 import { getGuardrailsList } from "../networking";
 import { MultiSelect } from "@/components/shared/MultiSelect";
@@ -12,6 +13,7 @@ interface GuardrailSelectorProps {
 }
 
 const GuardrailSelector: React.FC<GuardrailSelectorProps> = ({ onChange, value, className, accessToken, disabled }) => {
+  const { t } = useTranslation("guardrails");
   const [guardrails, setGuardrails] = useState<Guardrail[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -43,7 +45,7 @@ const GuardrailSelector: React.FC<GuardrailSelectorProps> = ({ onChange, value, 
     <div className="min-w-0">
       <MultiSelect
         disabled={disabled}
-        placeholder={disabled ? "Setting guardrails is a premium feature." : "Select guardrails"}
+        placeholder={disabled ? t("selector.premiumPlaceholder") : t("selector.placeholder")}
         onValueChange={handleGuardrailChange}
         value={value}
         loading={loading}

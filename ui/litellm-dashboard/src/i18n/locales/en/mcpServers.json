@@ -55,6 +55,16 @@
       "deleted": "Deleted MCP Server successfully"
     }
   },
+  "selector": {
+    "placeholder": "Select MCP servers",
+    "accessGroupDescription": "Access Group",
+    "serverDescription": "MCP Server",
+    "toolsetDescription": "Toolset",
+    "allProxyServers": "All Proxy MCP Servers",
+    "noServers": "No MCP Servers",
+    "blockAll": "Block all",
+    "emptyText": "No MCP servers found"
+  },
   "card": {
     "serverActions": "Server actions",
     "testConnection": "Test Connection",
@@ -663,6 +673,23 @@
     "selectToolHint": "Choose a tool from the left sidebar to start testing its functionality with custom inputs.",
     "logoAlt": "{{name}} logo",
     "title": "MCP Tools"
+  },
+  "toolPermissions": {
+    "viaAccessGroup": "Via access group: {{name}}",
+    "viaToolset": "Via toolset: {{name}}",
+    "viaToolPermissions": "Via tool permissions",
+    "fetchFailed": "Failed to fetch tools",
+    "serversLoadFailedTitle": "Unable to load MCP servers",
+    "serversLoadFailedBody": "This list is incomplete; servers granted directly or through an access group may be missing. Reload before changing tool permissions",
+    "emptyGroupTitle": "Access group \"{{group}}\" has 0 servers",
+    "emptyGroupBody": "No MCP server lists this group, so it grants nothing. A server defined in config.yaml joins a group through its <code>access_groups</code> key; <code>mcp_access_groups</code> is ignored there",
+    "toolsetsLoadFailedTitle": "Unable to load toolsets",
+    "toolsetsLoadFailedBody": "Servers reached through the selected toolsets are not listed below",
+    "alsoGrantedBy": "Also granted by {{keys}}, which names another server too. Those tools stay allowed here until the servers no longer share that name",
+    "toolsetGrantedOne": "{{tool}} is granted by a selected toolset, so it stays allowed here; edit the toolset to revoke it",
+    "toolsetGrantedMany": "{{tools}} are granted by a selected toolset, so they stay allowed here; edit the toolset to revoke them",
+    "selectAll": "Select All",
+    "deselectAll": "Deselect All"
   },
   "toolConfig": {
     "customName": "Custom name",

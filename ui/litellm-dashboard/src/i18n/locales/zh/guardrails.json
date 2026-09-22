@@ -8,6 +8,10 @@
     "unnamedGuardrail": "未命名 Guardrail",
     "tagBasedMode": "基于标签"
   },
+  "selector": {
+    "placeholder": "选择 Guardrails",
+    "premiumPlaceholder": "设置 Guardrails 是高级功能。"
+  },
   "table": {
     "columns": {
       "guardrailId": "Guardrail ID",

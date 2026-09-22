@@ -8,6 +8,10 @@
     "unnamedGuardrail": "Unnamed Guardrail",
     "tagBasedMode": "tag-based"
   },
+  "selector": {
+    "placeholder": "Select guardrails",
+    "premiumPlaceholder": "Setting guardrails is a premium feature."
+  },
   "table": {
     "columns": {
       "guardrailId": "Guardrail ID",
