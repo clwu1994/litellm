@@ -1,3 +1,5 @@
+import type { TFunction } from "i18next";
+
 const WORD_FORM_BUDGET_DURATIONS: Record<string, string> = {
   hourly: "1h",
   daily: "24h",
@@ -29,17 +31,20 @@ export const parseAllowedRoutes = (value: unknown): string[] =>
 export const modelSentinelOptions = (
   keyTeamId: string | null | undefined,
   teamLoaded: boolean,
+  t: TFunction<"templates">,
 ): { value: string; label: string }[] => {
-  if (keyTeamId == null) return [{ value: "all-proxy-models", label: "All Proxy Models" }];
-  return teamLoaded ? [{ value: "all-team-models", label: "All Team Models" }] : [];
+  if (keyTeamId == null) return [{ value: "all-proxy-models", label: t("editControls.allProxyModels") }];
+  return teamLoaded ? [{ value: "all-team-models", label: t("editControls.allTeamModels") }] : [];
 };
 
 export const currentValuePlaceholder = (
   premiumUser: boolean,
   current: unknown,
-  premiumHint: string,
-  emptyHint: string,
+  hints: { readonly premium: string; readonly empty: string },
+  t: TFunction<"templates">,
 ): string => {
-  if (!premiumUser) return premiumHint;
-  return Array.isArray(current) && current.length > 0 ? `Current: ${current.join(", ")}` : emptyHint;
+  if (!premiumUser) return hints.premium;
+  return Array.isArray(current) && current.length > 0
+    ? t("editControls.currentValue", { values: current.join(", ") })
+    : hints.empty;
 };

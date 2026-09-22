@@ -28,6 +28,7 @@ import type zhSettings from "./locales/zh/settings.json";
 import type zhSkills from "./locales/zh/skills.json";
 import type zhTagManagement from "./locales/zh/tagManagement.json";
 import type zhTeams from "./locales/zh/teams.json";
+import type zhTemplates from "./locales/zh/templates.json";
 import type zhTransformRequest from "./locales/zh/transformRequest.json";
 import type zhUiTheme from "./locales/zh/uiTheme.json";
 import type zhUsage from "./locales/zh/usage.json";
@@ -70,6 +71,7 @@ declare module "i18next" {
       settings: typeof zhSettings;
       skills: typeof zhSkills;
       tagManagement: typeof zhTagManagement;
+      templates: typeof zhTemplates;
       transformRequest: typeof zhTransformRequest;
       uiTheme: typeof zhUiTheme;
       usage: typeof zhUsage;

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { AreaChart, BarChart, CustomLegend } from "@/components/shared/charts";
 import AdvancedDatePicker from "@/components/shared/advanced_date_picker";
@@ -37,6 +38,7 @@ interface KeySavingsTabProps {
 }
 
 const KeySavingsTab: React.FC<KeySavingsTabProps> = ({ accessToken, keyToken, userId, userRole, activity }) => {
+  const { t } = useTranslation("templates");
   // Proxy admins read the whole key. For anyone else the endpoint applies the caller's own user_id
   // alongside the key filter, so the figures cover only that viewer's requests on this key -- said
   // plainly in the scope note below rather than left to be misread as the key's total.
@@ -59,11 +61,11 @@ const KeySavingsTab: React.FC<KeySavingsTabProps> = ({ accessToken, keyToken, us
     return withStartAnchor(toCumulative(perInterval), startLabel);
   }, [accumulation, perInterval, startTime]);
 
-  const intervalLabel = "Per day";
+  const intervalLabel = t("savings.perDay");
   const rangeLabel = formatRangeLabel(startTime ?? undefined, endTime ?? undefined);
   const savingsSubtitle = [
-    accumulation === "cumulative" ? "Running total saved" : `Saved ${intervalLabel.toLowerCase()}`,
-    rangeLabel && `${rangeLabel} (UTC)`,
+    accumulation === "cumulative" ? t("savings.runningTotal") : t("savings.savedPerDay"),
+    rangeLabel && t("savings.rangeWithUtc", { range: rangeLabel }),
   ]
     .filter(Boolean)
     .join(" · ");
@@ -82,14 +84,13 @@ const KeySavingsTab: React.FC<KeySavingsTabProps> = ({ accessToken, keyToken, us
   return (
     <div className="w-full space-y-6">
       <div className="flex flex-wrap items-center justify-end gap-4">
-        <span className="text-sm text-muted-foreground">Spend is bucketed by UTC day</span>
+        <span className="text-sm text-muted-foreground">{t("savings.utcDayNote")}</span>
         <AdvancedDatePicker value={dateValue} onValueChange={onDateChange} />
       </div>
 
       {!readsWholeKey && (
         <p className="text-sm text-muted-foreground" data-testid="key-savings-scope-note">
-          Showing your own requests on this key. A key shared across a team will have spend from other members that is
-          not counted here.
+          {t("savings.scopeNote")}
         </p>
       )}
 
@@ -97,13 +98,13 @@ const KeySavingsTab: React.FC<KeySavingsTabProps> = ({ accessToken, keyToken, us
 
       <Card>
         <CardHeader>
-          <CardTitle>Savings</CardTitle>
+          <CardTitle>{t("savings.title")}</CardTitle>
           <CardDescription>{savingsSubtitle}</CardDescription>
           <CardAction className="flex flex-wrap items-center justify-end gap-x-4 gap-y-2">
             <CustomLegend categories={SAVINGS_SERIES} colors={SAVINGS_COLORS} />
             <Tabs value={accumulation} onValueChange={(value) => setAccumulation(value as SavingsAccumulation)}>
               <TabsList>
-                <TabsTrigger value="cumulative">Cumulative</TabsTrigger>
+                <TabsTrigger value="cumulative">{t("savings.cumulative")}</TabsTrigger>
                 <TabsTrigger value="per-interval">{intervalLabel}</TabsTrigger>
               </TabsList>
             </Tabs>
@@ -114,7 +115,7 @@ const KeySavingsTab: React.FC<KeySavingsTabProps> = ({ accessToken, keyToken, us
               chart alone reads as a broken panel, and a $0.00 tile reads as a real zero. */}
           {!hasRows && (
             <p className="py-12 text-center text-sm text-muted-foreground" data-testid="key-savings-empty">
-              {isLoading ? "Loading savings..." : "No usage recorded for this key in this range."}
+              {isLoading ? t("savings.loading") : t("savings.noUsage")}
             </p>
           )}
           {hasRows && accumulation === "cumulative" && (

@@ -28,6 +28,7 @@ import enSettings from "./locales/en/settings.json";
 import enSkills from "./locales/en/skills.json";
 import enTagManagement from "./locales/en/tagManagement.json";
 import enTeams from "./locales/en/teams.json";
+import enTemplates from "./locales/en/templates.json";
 import enTransformRequest from "./locales/en/transformRequest.json";
 import enUiTheme from "./locales/en/uiTheme.json";
 import enUsage from "./locales/en/usage.json";
@@ -64,6 +65,7 @@ import zhSettings from "./locales/zh/settings.json";
 import zhSkills from "./locales/zh/skills.json";
 import zhTagManagement from "./locales/zh/tagManagement.json";
 import zhTeams from "./locales/zh/teams.json";
+import zhTemplates from "./locales/zh/templates.json";
 import zhTransformRequest from "./locales/zh/transformRequest.json";
 import zhUiTheme from "./locales/zh/uiTheme.json";
 import zhUsage from "./locales/zh/usage.json";
@@ -104,6 +106,7 @@ export const resources = {
     settings: enSettings,
     skills: enSkills,
     tagManagement: enTagManagement,
+    templates: enTemplates,
     transformRequest: enTransformRequest,
     uiTheme: enUiTheme,
     usage: enUsage,
@@ -142,6 +145,7 @@ export const resources = {
     settings: zhSettings,
     skills: zhSkills,
     tagManagement: zhTagManagement,
+    templates: zhTemplates,
     transformRequest: zhTransformRequest,
     uiTheme: zhUiTheme,
     usage: zhUsage,

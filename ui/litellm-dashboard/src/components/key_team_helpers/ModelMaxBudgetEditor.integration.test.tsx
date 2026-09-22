@@ -1,6 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 import { renderWithProviders, screen } from "../../../tests/test-utils";
-import { MODEL_MAX_BUDGET_PREMIUM_HINT, ModelMaxBudgetEditor, type ModelMaxBudget } from "./ModelMaxBudgetEditor";
+import { ModelMaxBudgetEditor, type ModelMaxBudget } from "./ModelMaxBudgetEditor";
+
+const MODEL_MAX_BUDGET_PREMIUM_HINT = "Premium feature - Upgrade to set per-model budgets";
 
 const STORED: ModelMaxBudget = { "gpt-4o": { budget_limit: 5, time_period: "30d" } };
 

@@ -3,7 +3,8 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { chooseSelectOption, renderWithProviders, testQueryClient } from "../../../tests/test-utils";
 import { KeyResponse } from "../key_team_helpers/key_list";
-import { MODEL_MAX_BUDGET_PREMIUM_HINT } from "../key_team_helpers/ModelMaxBudgetEditor";
+
+const MODEL_MAX_BUDGET_PREMIUM_HINT = "Premium feature - Upgrade to set per-model budgets";
 import {
   getPassThroughEndpointsCall,
   getPoliciesList,

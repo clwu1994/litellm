@@ -5,6 +5,7 @@ import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@/
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, X } from "lucide-react";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export interface ModelBudgetConfig {
   budget_limit: number;
@@ -41,12 +42,12 @@ const readNumber = (raw: unknown): number | null => {
 const readPeriod = (raw: unknown): string | null => (typeof raw === "string" && raw !== "" ? raw : null);
 
 export const MODEL_BUDGET_PERIOD_OPTIONS = [
-  { value: "1h", label: "Hourly" },
-  { value: "24h", label: "Daily" },
-  { value: "7d", label: "Weekly" },
-  { value: "30d", label: "Monthly" },
-  { value: "1mo", label: "Calendar month" },
-];
+  { value: "1h", labelKey: "budgets.hourly" },
+  { value: "24h", labelKey: "budgets.daily" },
+  { value: "7d", labelKey: "budgets.weekly" },
+  { value: "30d", labelKey: "budgets.monthly" },
+  { value: "1mo", labelKey: "budgets.periodCalendarMonth" },
+] as const;
 
 const DEFAULT_PERIOD = "30d";
 
@@ -72,8 +73,6 @@ export const modelMaxBudgetToEntries = (budget: ModelMaxBudget | null | undefine
     extra: Object.fromEntries(Object.entries(config ?? {}).filter(([field]) => !MODELLED_FIELDS.includes(field))),
   }));
 
-export const MODEL_MAX_BUDGET_PREMIUM_HINT = "Premium feature - Upgrade to set per-model budgets";
-
 interface ModelMaxBudgetEditorProps {
   value: ModelMaxBudget;
   onChange: (value: ModelMaxBudget) => void;
@@ -90,6 +89,7 @@ export function ModelMaxBudgetEditor({
   premiumUser,
   usage,
 }: ModelMaxBudgetEditorProps) {
+  const { t } = useTranslation("templates");
   const [entries, setEntries] = useState<ModelBudgetEntry[]>(() => modelMaxBudgetToEntries(value));
 
   const emitChange = (updated: ModelBudgetEntry[]) => {
@@ -109,13 +109,11 @@ export function ModelMaxBudgetEditor({
     emitChange(entries.map((entry) => (entry.id === id ? { ...entry, ...patch } : entry)));
 
   const usedModels = new Set(entries.map((entry) => entry.model).filter(Boolean));
-  const hintWhenLocked = premiumUser ? undefined : MODEL_MAX_BUDGET_PREMIUM_HINT;
+  const hintWhenLocked = premiumUser ? undefined : t("budgets.premiumHint");
 
   const blurb = (
     <div className="text-xs text-muted-foreground">
-      {premiumUser
-        ? "Cap spend per model over its own window. A budget set on the bare model name also covers the provider-prefixed spelling of that model."
-        : MODEL_MAX_BUDGET_PREMIUM_HINT}
+      {premiumUser ? t("budgets.perModelBlurb") : t("budgets.premiumHint")}
     </div>
   );
 
@@ -125,7 +123,7 @@ export function ModelMaxBudgetEditor({
         <div className="mb-2">{blurb}</div>
         <Button variant="outline" size="sm" onClick={addEntry} disabled={!premiumUser} title={hintWhenLocked}>
           <Plus className="w-3 h-3" />
-          Add Model Budget
+          {t("budgets.addModelBudget")}
         </Button>
       </div>
     );
@@ -150,13 +148,13 @@ export function ModelMaxBudgetEditor({
             </button>
 
             <div className="mb-3">
-              <label className="block text-xs font-medium text-muted-foreground mb-1">Model</label>
+              <label className="block text-xs font-medium text-muted-foreground mb-1">{t("budgets.model")}</label>
               <SearchSelect
                 options={modelOptions.map((model) => ({ label: model, value: model }))}
                 value={entry.model}
                 onValueChange={(model) => updateEntry(entry.id, { model })}
-                placeholder="Select model"
-                emptyText="No models found"
+                placeholder={t("budgets.selectModel")}
+                emptyText={t("budgets.noModelsFound")}
                 disabled={!premiumUser}
               />
             </div>
@@ -177,12 +175,15 @@ export function ModelMaxBudgetEditor({
                     const typed = event.target.valueAsNumber;
                     updateEntry(entry.id, { budgetLimit: Number.isNaN(typed) ? null : typed });
                   }}
-                  placeholder="Max spend ($)"
+                  placeholder={t("budgets.maxSpendPlaceholder")}
                   disabled={!premiumUser}
                 />
               </InputGroup>
               <Select
-                items={MODEL_BUDGET_PERIOD_OPTIONS}
+                items={MODEL_BUDGET_PERIOD_OPTIONS.map((option) => ({
+                  value: option.value,
+                  label: t(option.labelKey),
+                }))}
                 value={entry.timePeriod}
                 onValueChange={(period: string | null) => period && updateEntry(entry.id, { timePeriod: period })}
               >
@@ -192,7 +193,7 @@ export function ModelMaxBudgetEditor({
                 <SelectContent>
                   {MODEL_BUDGET_PERIOD_OPTIONS.map((option) => (
                     <SelectItem key={option.value} value={option.value}>
-                      {option.label}
+                      {t(option.labelKey)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -201,8 +202,8 @@ export function ModelMaxBudgetEditor({
 
             {spent !== undefined && (
               <div className="text-[11px] text-muted-foreground mt-2 ml-1">
-                Current window spend: ${spent}
-                {entry.budgetLimit !== null && ` of $${entry.budgetLimit}`}
+                {t("budgets.currentWindowSpend", { spent })}
+                {entry.budgetLimit !== null && t("budgets.currentWindowSpendOf", { limit: entry.budgetLimit })}
               </div>
             )}
           </div>
@@ -210,7 +211,7 @@ export function ModelMaxBudgetEditor({
       })}
       <Button variant="outline" size="sm" onClick={addEntry} disabled={!premiumUser} title={hintWhenLocked}>
         <Plus className="w-3 h-3" />
-        Add Model Budget
+        {t("budgets.addModelBudget")}
       </Button>
     </div>
   );
@@ -222,10 +223,11 @@ interface ModelMaxBudgetFieldProps extends ModelMaxBudgetEditorProps {
 
 /** The editor with its label, so every form that offers it presents it the same way. */
 export function ModelMaxBudgetField({ hint, ...editorProps }: ModelMaxBudgetFieldProps) {
+  const { t } = useTranslation("templates");
   return (
     <Field>
       <FieldLabel>
-        <span title={hint}>Per-Model Budgets</span>
+        <span title={hint}>{t("budgets.perModelBudgets")}</span>
       </FieldLabel>
       <ModelMaxBudgetEditor {...editorProps} />
     </Field>
