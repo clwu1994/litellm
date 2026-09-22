@@ -20,7 +20,11 @@ import ModelChoiceCombobox, { type ModelChoice } from "../add_model/ModelChoiceC
 import { modelAvailableCall, modelPatchUpdateCall, validateAutoRouterConfig } from "../networking";
 import type { ValidationMessage } from "../common_components/formRules";
 import { fetchAvailableModels, ModelGroup } from "@/components/llm_calls/fetch_models";
-import RouterConfigBuilder, { type RouterConfig, serializeRouterConfig } from "../add_model/RouterConfigBuilder";
+import RouterConfigBuilder, {
+  type RouterConfig,
+  RouterConfigRouteModelError,
+  serializeRouterConfig,
+} from "../add_model/RouterConfigBuilder";
 import { hydrateTierModelParams } from "../add_model/complexity_router_tiers";
 import {
   type ActiveTierSet,
@@ -725,7 +729,7 @@ const EditAutoRouterModal: React.FC<EditAutoRouterModalProps> = ({
       })();
     } catch (error) {
       console.error(t("editAutoRouter.toastUpdateFailed"), error);
-      toast.fromError(error);
+      toast.fromError(error instanceof RouterConfigRouteModelError ? t(error.key) : error);
     } finally {
       setLoading(false);
     }

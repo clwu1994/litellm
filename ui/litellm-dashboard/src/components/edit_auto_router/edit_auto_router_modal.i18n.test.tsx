@@ -156,6 +156,24 @@ describe("EditAutoRouterModal Chinese copy", () => {
     expect(screen.queryByText("Embedding model is required")).not.toBeInTheDocument();
   });
 
+  it("reports the Chinese missing-route-model toast when a route has no model", async () => {
+    const user = userEvent.setup();
+    renderModal({
+      ...SEMANTIC_MODEL_DATA,
+      litellm_params: {
+        ...SEMANTIC_MODEL_DATA.litellm_params,
+        auto_router_default_model: "gpt-4o-mini",
+        auto_router_embedding_model: "voyage-4-large",
+      },
+    });
+
+    await user.click(await screen.findByRole("button", { name: "添加路由" }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
+
+    await waitFor(() => expect(toast.fromError).toHaveBeenCalledWith("请为每个路由选择模型"));
+    expect(toast.fromError).not.toHaveBeenCalledWith("Please select a model for every route");
+  });
+
   it("renders the Chinese access groups help inside the open tooltip", async () => {
     const user = userEvent.setup();
     renderModal();

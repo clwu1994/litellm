@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import type { ParseKeys } from "i18next";
 import { ChevronDown, CircleHelp, Plus, Trash2, X } from "lucide-react";
 
 import { ModelGroup } from "@/components/llm_calls/fetch_models";
@@ -35,9 +36,18 @@ export interface RouterConfig {
   routes?: SavedRoute[];
 }
 
+export class RouterConfigRouteModelError extends Error {
+  readonly key: ParseKeys<"models"> = "autoRouterConfig.setup.builder.routeModelRequired";
+
+  constructor() {
+    super("Please select a model for every route");
+    this.name = "RouterConfigRouteModelError";
+  }
+}
+
 export function serializeRouterConfig(config: RouterConfig | null): string {
   if (config?.routes?.some((route) => !(route.name ?? route.model))) {
-    throw new Error("Please select a model for every route");
+    throw new RouterConfigRouteModelError();
   }
   return JSON.stringify(config);
 }
