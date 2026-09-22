@@ -1,3 +1,5 @@
+import type { ParseKeys } from "i18next";
+
 import { AgentCreateInfo, DiscoveredAgentCard, DiscoveryMode } from "@/components/networking";
 
 export interface DiscoveryRequestPlan {
@@ -10,6 +12,13 @@ export interface DiscoveryRequestPlan {
 export const skillId = (skill: any, idx: number): string => skill?.id ?? skill?.name ?? `skill-${idx}`;
 
 export const ALLOWED_CAPABILITY_KEYS = ["streaming"] as const;
+
+/** Wire capability names are aliased so the English leaf equals the raw value. */
+export const CAPABILITY_LABEL_KEYS: Readonly<
+  Partial<Record<(typeof ALLOWED_CAPABILITY_KEYS)[number], ParseKeys<"agents">>>
+> = {
+  streaming: "discovery.capability.streaming",
+};
 
 export const filterCapabilitiesForUI = (capabilities: Record<string, any> | undefined): Record<string, boolean> => {
   if (!capabilities) return {};

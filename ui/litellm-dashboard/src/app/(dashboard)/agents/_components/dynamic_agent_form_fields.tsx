@@ -1,11 +1,13 @@
 import React from "react";
+import type { TFunction } from "i18next";
+import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { FieldGroup } from "@/components/ui/field";
 import { AgentCreateInfo, AgentCredentialFieldMetadata } from "@/components/networking";
 import { PasswordInput } from "@/components/shared/PasswordInput";
-import { AGENT_FORM_CONFIG } from "./agent_config";
+import { AGENT_FORM_CONFIG, sectionTitle } from "./agent_config";
 import CostConfigFields, { COST_FIELD_NAMES } from "./cost_config_fields";
 import {
   AgentFormField,
@@ -28,12 +30,13 @@ export const unmountedDynamicFieldNames = (mountedPanels: readonly string[]): re
 // validation rather than throwing during render and taking the whole form down with it.
 const buildValidationPatternRule = (
   field: AgentCredentialFieldMetadata,
+  t: TFunction<"agents">,
 ): { value: RegExp; message: string } | undefined => {
   if (!field.validation_pattern) return undefined;
   try {
     return {
       value: new RegExp(field.validation_pattern),
-      message: field.validation_message || `${field.label} looks incomplete or malformed`,
+      message: field.validation_message || t("form.validation.malformed", { field: field.label }),
     };
   } catch {
     return undefined;
@@ -41,14 +44,15 @@ const buildValidationPatternRule = (
 };
 
 const CredentialField = ({ field }: { field: AgentCredentialFieldMetadata }) => {
-  const patternRule = buildValidationPatternRule(field);
+  const { t } = useTranslation("agents");
+  const patternRule = buildValidationPatternRule(field, t);
   return (
     <AgentFormField
       name={field.key}
       label={field.tooltip ? labelWithHint(field.label, field.tooltip) : field.label}
       defaultValue={field.default_value ?? undefined}
       rules={{
-        ...(field.required ? { required: `Please enter ${field.label}` } : {}),
+        ...(field.required ? { required: t("form.validation.enterField", { field: field.label }) } : {}),
         ...(patternRule ? { pattern: patternRule } : {}),
       }}
     >
@@ -99,53 +103,61 @@ const CredentialField = ({ field }: { field: AgentCredentialFieldMetadata }) => 
   );
 };
 
-const DynamicAgentFormFields: React.FC<DynamicAgentFormFieldsProps> = ({ agentTypeInfo, panels }) => (
-  <>
-    <FieldGroup className="mb-4">
-      <AgentFormField
-        name="agent_name"
-        label={labelWithHint("Agent Name", "Unique identifier for the agent")}
-        rules={{ required: "Please enter a unique agent name" }}
-      >
-        {({ value, onChange, ref, ...control }) => (
-          <Input
-            {...control}
-            ref={ref}
-            placeholder="e.g., my-langgraph-agent"
-            value={typeof value === "string" ? value : ""}
-            onChange={onChange}
-          />
-        )}
-      </AgentFormField>
+const DynamicAgentFormFields: React.FC<DynamicAgentFormFieldsProps> = ({ agentTypeInfo, panels }) => {
+  const { t } = useTranslation("agents");
 
-      <AgentFormField
-        name="description"
-        label={labelWithHint("Description", "Brief description of what this agent does")}
-      >
-        {({ value, onChange, ref, ...control }) => (
-          <Textarea
-            {...control}
-            ref={ref}
-            rows={2}
-            placeholder="Describe what this agent does..."
-            value={typeof value === "string" ? value : ""}
-            onChange={onChange}
-          />
-        )}
-      </AgentFormField>
+  return (
+    <>
+      <FieldGroup className="mb-4">
+        <AgentFormField
+          name="agent_name"
+          label={labelWithHint(t("info.fields.agentName"), t("form.agentNameHint"))}
+          rules={{ required: t("form.validation.uniqueAgentName") }}
+        >
+          {({ value, onChange, ref, ...control }) => (
+            <Input
+              {...control}
+              ref={ref}
+              placeholder={t("form.dynamicAgentNamePlaceholder")}
+              value={typeof value === "string" ? value : ""}
+              onChange={onChange}
+            />
+          )}
+        </AgentFormField>
 
-      {agentTypeInfo.credential_fields.map((field) => (
-        <CredentialField key={field.key} field={field} />
-      ))}
-    </FieldGroup>
+        <AgentFormField
+          name="description"
+          label={labelWithHint(t("info.fields.description"), t("form.descriptionHint"))}
+        >
+          {({ value, onChange, ref, ...control }) => (
+            <Textarea
+              {...control}
+              ref={ref}
+              rows={2}
+              placeholder={t("form.descriptionPlaceholder")}
+              value={typeof value === "string" ? value : ""}
+              onChange={onChange}
+            />
+          )}
+        </AgentFormField>
 
-    <div className="mb-4 rounded-md border border-border px-4">
-      <AgentFormPanel panelKey={AGENT_FORM_CONFIG.cost.key} title={AGENT_FORM_CONFIG.cost.title} panels={panels}>
-        <CostConfigFields />
-      </AgentFormPanel>
-    </div>
-  </>
-);
+        {agentTypeInfo.credential_fields.map((field) => (
+          <CredentialField key={field.key} field={field} />
+        ))}
+      </FieldGroup>
+
+      <div className="mb-4 rounded-md border border-border px-4">
+        <AgentFormPanel
+          panelKey={AGENT_FORM_CONFIG.cost.key}
+          title={sectionTitle(AGENT_FORM_CONFIG.cost, t)}
+          panels={panels}
+        >
+          <CostConfigFields />
+        </AgentFormPanel>
+      </div>
+    </>
+  );
+};
 
 export const buildDynamicAgentData = (values: AgentFormValues, agentTypeInfo: AgentCreateInfo): AgentRequestPayload => {
   const litellmParams: Record<string, unknown> = {

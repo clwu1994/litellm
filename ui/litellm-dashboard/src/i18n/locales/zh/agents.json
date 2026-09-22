@@ -136,5 +136,189 @@
     "perQuery": "每次查询成本",
     "inputPerToken": "每 Token 输入成本",
     "outputPerToken": "每 Token 输出成本"
+  },
+  "form": {
+    "steps": {
+      "ariaLabel": "Agent 创建步骤",
+      "configure": "配置",
+      "entitlements": "权限",
+      "governance": "治理",
+      "agentManagement": "Agent 管理",
+      "ready": "就绪"
+    },
+    "agentType": {
+      "custom": "自定义 / 其他",
+      "generic": "通用",
+      "notListed": "未列出？",
+      "customHint": "适用于不遵循标准协议的 Agent，只需一个 Virtual Key",
+      "settingsTitle": "{{name}} 设置"
+    },
+    "validation": {
+      "required": "必填",
+      "enterField": "请输入 {{field}}",
+      "uniqueAgentName": "请输入唯一的 Agent 名称",
+      "agentNameRequired": "请输入 Agent 名称",
+      "malformed": "{{field}} 看起来不完整或格式有误"
+    },
+    "agentNameHint": "Agent 的唯一标识符",
+    "agentNamePlaceholder": "例如 customer-support-agent",
+    "dynamicAgentNamePlaceholder": "例如 my-langgraph-agent",
+    "customAgentNamePlaceholder": "例如 my-custom-agent",
+    "descriptionHint": "简要描述此 Agent 的功能",
+    "descriptionPlaceholder": "描述此 Agent 的功能...",
+    "customDescriptionPlaceholder": "描述此 Agent 的功能…",
+    "noMatchingOptions": "没有匹配的选项",
+    "panels": {
+      "basicRequired": "基本信息（必填）",
+      "capabilities": "能力",
+      "optional": "可选设置",
+      "litellm": "LiteLLM 参数",
+      "authHeaders": "认证 Headers"
+    },
+    "basic": {
+      "displayNamePlaceholder": "例如 Customer Support Agent",
+      "urlTooltip": "托管 Agent 的 Base URL（可选）",
+      "protocolVersionTooltip": "LiteLLM 向客户端提供的此 Agent 的 A2A 协议版本。LiteLLM 会将上游 Agent 的响应转换为该版本，因此无论原始 Agent 的版本如何，客户端看到的始终是你在此选择的版本。",
+      "protocolVersionHelp": "LiteLLM 向客户端提供此版本，并将上游 Agent 的响应转换为与之匹配，无论原始 Agent 的版本如何。"
+    },
+    "litellm": {
+      "model": "模型（可选）"
+    },
+    "optional": {
+      "supportsAuthenticatedExtendedCard": "支持认证扩展卡片"
+    },
+    "costFields": {
+      "costPerQuery": "每次查询成本（$）",
+      "costPerQueryTooltip": "每次查询的固定成本",
+      "inputCostPerToken": "每 Token 输入成本（$）",
+      "inputCostPerTokenTooltip": "每个输入 Token 的成本",
+      "outputCostPerToken": "每 Token 输出成本（$）",
+      "outputCostPerTokenTooltip": "每个输出 Token 的成本"
+    },
+    "skillFields": {
+      "id": "技能 ID",
+      "name": "技能名称",
+      "namePlaceholder": "例如 Returns hello world",
+      "descriptionPlaceholder": "此技能的功能",
+      "tags": "标签",
+      "tagsPlaceholder": "输入标签并按 Enter",
+      "examples": "示例",
+      "examplesPlaceholder": "输入示例并按 Enter"
+    },
+    "skills": {
+      "add": "添加技能",
+      "remove": "移除技能"
+    },
+    "authHeaders": {
+      "headerRequired": "必须填写 Header 名称",
+      "headerPlaceholder": "Header 名称（例如 Authorization）",
+      "valueRequired": "必须填写值",
+      "valuePlaceholder": "值（例如 Bearer token123）",
+      "remove": "移除静态 Header",
+      "add": "添加静态 Header",
+      "staticHeaders": "静态 Headers",
+      "staticHeadersHint": "始终发送到后端 Agent 的 Headers，与客户端请求无关。由管理员配置，冲突时以静态值优先。",
+      "forwardClientHeaders": "转发客户端 Headers",
+      "forwardClientHeadersHint": "要从客户端请求中提取并转发给 Agent 的 Header 名称。输入名称并按 Enter。",
+      "forwardPlaceholder": "例如 x-api-key、Authorization"
+    },
+    "configure": {
+      "agentType": "Agent 类型",
+      "agentTypeHint": "选择你要创建的 Agent 类型"
+    },
+    "entitlements": {
+      "description": "配置此 Agent 允许使用的模型、Agent 和 MCP 工具。留空表示允许全部（受密钥/团队权限限制）。",
+      "allowedModels": "允许的模型",
+      "allowedModelsHint": "限制此 Agent 可以调用的模型。留空表示允许全部。",
+      "modelsPlaceholder": "选择模型（留空表示全部）",
+      "loadingModels": "正在加载模型...",
+      "allowedAgents": "允许的 Agent（子 Agent）",
+      "allowedAgentsHint": "限制此 Agent 可以作为子 Agent 调用的其他 Agent。留空表示允许全部。",
+      "agentsPlaceholder": "选择 Agent（留空表示全部）",
+      "loadingAgents": "正在加载 Agent...",
+      "allowedMcpServersHint": "选择此 Agent 可以访问的 MCP 服务器或访问组"
+    },
+    "observability": {
+      "tracing": "追踪",
+      "requireInbound": "要求对此 Agent 的调用携带 x-litellm-trace-id",
+      "requireInboundHint": "仅接受携带 trace-id 调用此 Agent（例如作为子 Agent 使用时）。",
+      "requireOutbound": "要求此 Agent 发起的调用携带 x-litellm-trace-id",
+      "requireOutboundHint": "要求此 Agent 发起的 LLM/MCP 调用包含 x-litellm-trace-id，以便跟踪会话。",
+      "budgets": "预算与速率限制",
+      "budgetsHint": "请在 Tracing 中启用“Require x-litellm-trace-id on calls BY this agent”以配置预算和速率限制。",
+      "sessionBudgets": "会话预算",
+      "maxIterations": "最大迭代次数",
+      "maxIterationsPlaceholder": "例如 25",
+      "maxIterationsHint": "每个会话 LLM 调用次数的硬性上限",
+      "maxBudgetPerSession": "每个会话最大预算（$）",
+      "maxBudgetPlaceholder": "例如 5.00",
+      "maxBudgetHint": "单次 trace 在返回 429 前的最大消费",
+      "agentRateLimits": "Agent 速率限制",
+      "agentRateLimitsHint": "应用于此 Agent 所有调用方的全局速率限制。",
+      "tpmPlaceholder": "例如 100000",
+      "rpmPlaceholder": "例如 100",
+      "perSessionRateLimits": "每会话速率限制",
+      "perSessionRateLimitsHint": "每个会话（x-litellm-trace-id）的速率限制。每个会话拥有独立的计数器。",
+      "sessionTpmPlaceholder": "例如 10000",
+      "sessionRpmPlaceholder": "例如 20",
+      "guardrails": "Guardrails",
+      "guardrailsHint": "为此 Agent 应用 Guardrails。选中的 Guardrails 将在该 Agent 的所有调用上运行。"
+    },
+    "assignKey": {
+      "teamLabel": "分配给团队",
+      "teamHint": "可选地将此 Agent 分配给一个团队。该 Agent 及其密钥将属于所选团队。",
+      "createNew": "为此 Agent 创建新密钥",
+      "createNewHint": "专用于此 Agent 的密钥。",
+      "keyName": "密钥名称",
+      "keyNamePlaceholder": "例如 my-agent-key",
+      "recommended": "推荐",
+      "assignExisting": "分配现有密钥",
+      "assignExistingHint": "将你已有的密钥重新分配给此 Agent。",
+      "loadingKeys": "正在加载密钥…",
+      "searchKeys": "按密钥名称搜索…",
+      "skip": "暂时跳过，稍后再分配密钥"
+    },
+    "ready": {
+      "title": "Agent 创建成功！",
+      "keyAssigned": "密钥 <alias>{{name}}</alias> 已分配给此 Agent。",
+      "noKey": "未分配密钥。你可以在 Virtual Keys 页面创建一个。"
+    },
+    "footer": {
+      "back": "← 返回",
+      "next": "下一步 →",
+      "creating": "正在创建...",
+      "create": "创建 Agent →",
+      "done": "完成"
+    },
+    "toast": {
+      "noAccessToken": "没有可用的 access token",
+      "selectExistingKey": "请选择一个现有密钥进行分配",
+      "createFailed": "创建 Agent 失败",
+      "createFailedWithError": "创建 Agent 失败：{{error}}"
+    }
+  },
+  "discovery": {
+    "title": "从 Agent URL 发现",
+    "tooltip": "LiteLLM 会从此 URL 获取 /.well-known/agent-card.json，并让你选择通过代理暴露哪些技能和能力。",
+    "usingDetails": "使用你上方填写的连接信息。我们将获取：",
+    "fillFieldsFirst": "请先填写上方字段",
+    "pasteUrl": "粘贴上游 Agent 的 Base URL。我们将按顺序尝试 <card>/.well-known/agent-card.json</card>、<agent>/.well-known/agent.json</agent> 和 <plain>/agent.json</plain>。",
+    "reDiscover": "重新发现",
+    "discover": "发现",
+    "failed": "发现失败",
+    "dismissError": "关闭错误",
+    "cardLoaded": "已加载上游卡片",
+    "nameLabel": "名称（对 API 客户端显示）",
+    "namePlaceholder": "Agent 名称",
+    "descriptionPlaceholder": "此 Agent 的功能",
+    "selectedCount": "已选择 {{selected}} / {{total}}",
+    "noSkills": "上游卡片没有技能",
+    "capabilitiesTooltip": "此处仅列出 LiteLLM 目前能忠实代理的能力。其他能力（推送通知、扩展）即将推出。",
+    "notAdvertised": "上游未声明",
+    "capability": {
+      "streaming": "流式传输"
+    },
+    "enterBaseUrl": "请先输入 Agent 的 Base URL",
+    "failedToDiscover": "发现 Agent 卡片失败"
   }
 }
