@@ -515,6 +515,8 @@
     "tabAlertingTypes": "告警类型",
     "tabAlertingSettings": "告警设置",
     "tabEmailAlerts": "邮件告警",
-    "tabMsTeamsAlerts": "MS Teams 告警"
+    "tabMsTeamsAlerts": "MS Teams 告警",
+    "testAlerts": "测试告警",
+    "alertTestTriggered": "告警测试已触发。已向 Slack 发送测试请求，请检查 Slack 上的日志/告警以验证"
   }
 }

@@ -1,7 +1,7 @@
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { cleanup, renderWithProviders, screen } from "@/../tests/test-utils";
+import { cleanup, fireEvent, renderWithProviders, screen, waitFor } from "@/../tests/test-utils";
 import i18n from "@/i18n/bootstrapI18n";
 
 import CloudZeroCostTracking from "./CloudZeroCostTracking";
@@ -9,7 +9,13 @@ import CloudZeroCreationModal from "./CloudZeroCreateModal";
 import CloudZeroEmptyPlaceholder from "./CloudZeroEmptyPlaceholder";
 import { CloudZeroIntegrationSettings } from "./CloudZeroIntegrationSettings";
 import CloudZeroUpdateModal from "./CloudZeroUpdateModal";
+import { toast } from "@/lib/toast";
+
 import type { CloudZeroSettings } from "./types";
+
+vi.mock("@/lib/toast", () => ({
+  toast: { success: vi.fn(), error: vi.fn(), info: vi.fn(), fromError: vi.fn() },
+}));
 
 const useCloudZeroSettings = vi.fn();
 const useCloudZeroCreate = vi.fn();
@@ -241,5 +247,130 @@ describe("CloudZero Chinese copy", () => {
     const show = screen.getByRole("button", { name: "显示 API Key" });
     expect(show).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Show API key" })).not.toBeInTheDocument();
+  });
+
+  it("renders the create and update pending labels in Chinese", () => {
+    useCloudZeroCreate.mockReturnValue(mutation({ isPending: true }));
+    renderWithProviders(<CloudZeroCreationModal open onOk={vi.fn()} onCancel={vi.fn()} />);
+    expect(screen.getByRole("button", { name: "正在创建..." })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Creating..." })).not.toBeInTheDocument();
+
+    cleanup();
+    useCloudZeroUpdateSettings.mockReturnValue(mutation({ isPending: true }));
+    renderWithProviders(<CloudZeroUpdateModal open onOk={vi.fn()} onCancel={vi.fn()} settings={settings} />);
+    expect(screen.getByRole("button", { name: "正在更新..." })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Updating..." })).not.toBeInTheDocument();
+  });
+
+  it("renders the api-key hide control after revealing in Chinese", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<CloudZeroCreationModal open onOk={vi.fn()} onCancel={vi.fn()} />);
+
+    await user.click(screen.getByRole("button", { name: "显示 API Key" }));
+
+    expect(screen.getByRole("button", { name: "隐藏 API Key" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Hide API key" })).not.toBeInTheDocument();
+  });
+
+  it("reports a successful create and update in Chinese", async () => {
+    const user = userEvent.setup();
+    useCloudZeroCreate.mockReturnValue(mutation({ mutate: vi.fn((_payload, opts) => opts.onSuccess()) }));
+    renderWithProviders(<CloudZeroCreationModal open onOk={vi.fn()} onCancel={vi.fn()} />);
+    fireEvent.change(await screen.findByLabelText("CloudZero API Key"), { target: { value: "k" } });
+    fireEvent.change(screen.getByLabelText("连接 ID"), { target: { value: "c" } });
+    await user.click(screen.getByRole("button", { name: "创建" }));
+    expect(toast.success).toHaveBeenCalledWith("CloudZero 集成创建成功");
+    expect(toast.success).not.toHaveBeenCalledWith("CloudZero integration created successfully");
+
+    cleanup();
+    useCloudZeroUpdateSettings.mockReturnValue(mutation({ mutate: vi.fn((_payload, opts) => opts.onSuccess()) }));
+    renderWithProviders(<CloudZeroUpdateModal open onOk={vi.fn()} onCancel={vi.fn()} settings={settings} />);
+    fireEvent.change(screen.getByLabelText("连接 ID"), { target: { value: "c" } });
+    await user.click(screen.getByRole("button", { name: "更新" }));
+    expect(toast.success).toHaveBeenCalledWith("CloudZero 集成更新成功");
+    expect(toast.success).not.toHaveBeenCalledWith("CloudZero integration updated successfully");
+  });
+
+  it("reports failed create and update in Chinese", async () => {
+    const user = userEvent.setup();
+    useCloudZeroCreate.mockReturnValue(mutation({ mutate: vi.fn((_payload, opts) => opts.onError(new Error(""))) }));
+    renderWithProviders(<CloudZeroCreationModal open onOk={vi.fn()} onCancel={vi.fn()} />);
+    fireEvent.change(await screen.findByLabelText("CloudZero API Key"), { target: { value: "k" } });
+    fireEvent.change(screen.getByLabelText("连接 ID"), { target: { value: "c" } });
+    await user.click(screen.getByRole("button", { name: "创建" }));
+    expect(toast.error).toHaveBeenCalledWith("创建 CloudZero 集成失败");
+    expect(toast.error).not.toHaveBeenCalledWith("Failed to create CloudZero integration");
+
+    cleanup();
+    useCloudZeroUpdateSettings.mockReturnValue(
+      mutation({ mutate: vi.fn((_payload, opts) => opts.onError(new Error(""))) }),
+    );
+    renderWithProviders(<CloudZeroUpdateModal open onOk={vi.fn()} onCancel={vi.fn()} settings={settings} />);
+    fireEvent.change(screen.getByLabelText("连接 ID"), { target: { value: "c" } });
+    await user.click(screen.getByRole("button", { name: "更新" }));
+    expect(toast.error).toHaveBeenCalledWith("更新 CloudZero 集成失败");
+    expect(toast.error).not.toHaveBeenCalledWith("Failed to update CloudZero integration");
+  });
+
+  it("reports a dry run result and its output in Chinese", () => {
+    useCloudZeroDryRun.mockReturnValue(mutation({ data: { ok: true } }));
+    renderWithProviders(<CloudZeroIntegrationSettings settings={settings} onSettingsUpdated={vi.fn()} />);
+
+    expect(screen.getByText("试运行结果")).toBeInTheDocument();
+    expect(screen.queryByText("Dry Run Results")).not.toBeInTheDocument();
+    expect(screen.getByText("连接 conn-1 的模拟输出")).toBeInTheDocument();
+    expect(screen.queryByText(/Simulation output for connection/)).not.toBeInTheDocument();
+  });
+
+  it("reports a successful and a failed dry run in Chinese", async () => {
+    const user = userEvent.setup();
+    useCloudZeroDryRun.mockReturnValue(mutation({ mutate: vi.fn((_payload, opts) => opts.onSuccess()) }));
+    renderWithProviders(<CloudZeroIntegrationSettings settings={settings} onSettingsUpdated={vi.fn()} />);
+    await user.click(screen.getByRole("button", { name: "运行试运行模拟" }));
+    expect(toast.success).toHaveBeenCalledWith("试运行成功完成");
+    expect(toast.success).not.toHaveBeenCalledWith("Dry run completed successfully");
+
+    cleanup();
+    useCloudZeroDryRun.mockReturnValue(mutation({ mutate: vi.fn((_payload, opts) => opts.onError({})) }));
+    renderWithProviders(<CloudZeroIntegrationSettings settings={settings} onSettingsUpdated={vi.fn()} />);
+    await user.click(screen.getByRole("button", { name: "运行试运行模拟" }));
+    expect(toast.error).toHaveBeenCalledWith("试运行失败");
+    expect(toast.error).not.toHaveBeenCalledWith("Failed to perform dry run");
+  });
+
+  it("reports a successful and a failed export in Chinese", async () => {
+    const user = userEvent.setup();
+    useCloudZeroExport.mockReturnValue(mutation({ mutate: vi.fn((_payload, opts) => opts.onSuccess()) }));
+    renderWithProviders(<CloudZeroIntegrationSettings settings={settings} onSettingsUpdated={vi.fn()} />);
+    await user.click(screen.getByRole("button", { name: "立即导出数据" }));
+    await user.click(await screen.findByRole("button", { name: "导出" }));
+    expect(toast.success).toHaveBeenCalledWith("数据已成功导出到 CloudZero");
+    expect(toast.success).not.toHaveBeenCalledWith("Data successfully exported to CloudZero");
+
+    cleanup();
+    useCloudZeroExport.mockReturnValue(mutation({ mutate: vi.fn((_payload, opts) => opts.onError({})) }));
+    renderWithProviders(<CloudZeroIntegrationSettings settings={settings} onSettingsUpdated={vi.fn()} />);
+    await user.click(screen.getByRole("button", { name: "立即导出数据" }));
+    await user.click(await screen.findByRole("button", { name: "导出" }));
+    expect(toast.error).toHaveBeenCalledWith("导出数据失败");
+    expect(toast.error).not.toHaveBeenCalledWith("Failed to export data");
+  });
+
+  it("reports a successful and a failed delete in Chinese", async () => {
+    const user = userEvent.setup();
+    useCloudZeroDeleteSettings.mockReturnValue(mutation({ mutate: vi.fn((_p, opts) => opts.onSuccess()) }));
+    renderWithProviders(<CloudZeroIntegrationSettings settings={settings} onSettingsUpdated={vi.fn()} />);
+    await user.click(screen.getByRole("button", { name: "删除" }));
+    await user.click(await screen.findByRole("button", { name: "删除" }));
+    await waitFor(() => expect(toast.success).toHaveBeenCalledWith("CloudZero 集成删除成功"));
+    expect(toast.success).not.toHaveBeenCalledWith("CloudZero integration deleted successfully");
+
+    cleanup();
+    useCloudZeroDeleteSettings.mockReturnValue(mutation({ mutate: vi.fn((_p, opts) => opts.onError({})) }));
+    renderWithProviders(<CloudZeroIntegrationSettings settings={settings} onSettingsUpdated={vi.fn()} />);
+    await user.click(screen.getByRole("button", { name: "删除" }));
+    await user.click(await screen.findByRole("button", { name: "删除" }));
+    await waitFor(() => expect(toast.error).toHaveBeenCalledWith("删除 CloudZero 集成失败"));
+    expect(toast.error).not.toHaveBeenCalledWith("Failed to delete CloudZero integration");
   });
 });

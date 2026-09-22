@@ -44,8 +44,19 @@ const DAILY_METRICS = {
   cache_creation_input_tokens: 0,
 };
 
+const PER_USER_ROW = {
+  user_id: "u1",
+  user_email: null,
+  user_agent: null,
+  successful_requests: 5,
+  failed_requests: 2,
+  total_requests: 7,
+  total_tokens: 100,
+  spend: 1,
+};
+
 const modelData: ModelActivityData = {
-  label: "gpt-4o",
+  label: "",
   total_requests: 10,
   total_successful_requests: 9,
   total_failed_requests: 1,
@@ -55,9 +66,26 @@ const modelData: ModelActivityData = {
   total_spend: 1.5,
   total_cache_read_input_tokens: 0,
   total_cache_creation_input_tokens: 0,
-  top_api_keys: [],
+  top_api_keys: [
+    {
+      api_key: "sk-abcdefghijklmnop",
+      key_alias: "prod-key",
+      team_id: "team-1",
+      spend: 1.5,
+      requests: 10,
+      tokens: 1000,
+    },
+  ],
   top_models: [],
   daily_data: [{ date: "2025-01-01", metrics: DAILY_METRICS }],
+};
+
+const PER_USER_RESPONSE = {
+  results: [PER_USER_ROW],
+  total_count: 1,
+  page: 1,
+  page_size: 50,
+  total_pages: 1,
 };
 
 const EMPTY_PER_USER_RESPONSE = {
@@ -110,8 +138,35 @@ describe("Usage components Chinese copy", () => {
     expect(screen.queryByText("No per-user usage data")).not.toBeInTheDocument();
   });
 
+  it("renders the per-user table headers, fallbacks and distribution categories in Chinese", async () => {
+    vi.mocked(networking.perUserAnalyticsCall).mockResolvedValue(PER_USER_RESPONSE);
+    renderWithProviders(
+      <PerUserUsage accessToken="tok" selectedTags={[]} formatAbbreviatedNumber={(value) => String(value)} />,
+    );
+
+    expect(await screen.findByText("用户 ID")).toBeInTheDocument();
+    expect(screen.getByText("用户邮箱")).toBeInTheDocument();
+    expect(screen.getByText("User Agent")).toBeInTheDocument();
+    expect(screen.queryByText("用户代理")).not.toBeInTheDocument();
+    expect(screen.getByText("总 Token 数")).toBeInTheDocument();
+    expect(screen.getByText("失败请求数")).toBeInTheDocument();
+    expect(screen.queryByText("Failed Requests")).not.toBeInTheDocument();
+    expect(screen.getByText("无")).toBeInTheDocument();
+    expect(screen.getAllByText("未知").length).toBeGreaterThan(0);
+    expect(screen.getByText("用户用量分布")).toBeInTheDocument();
+    expect(screen.getByText("按成功请求频率统计的用户数")).toBeInTheDocument();
+    expect(screen.queryByText("Number of users by successful request frequency")).not.toBeInTheDocument();
+    expect(screen.getByText("1-9 次请求")).toBeInTheDocument();
+    expect(screen.getByText("10-99 次请求")).toBeInTheDocument();
+    expect(screen.getByText("100-999 次请求")).toBeInTheDocument();
+    expect(screen.getByText("1K-9.9K 次请求")).toBeInTheDocument();
+    expect(screen.getByText("10K-99.9K 次请求")).toBeInTheDocument();
+    expect(screen.getByText("100K+ 次请求")).toBeInTheDocument();
+    expect(screen.queryByText("1-9 requests")).not.toBeInTheDocument();
+  });
+
   it("renders the activity metrics headings in Chinese", () => {
-    renderWithProviders(<ActivityMetrics modelMetrics={{ "gpt-4o": modelData }} />);
+    renderWithProviders(<ActivityMetrics modelMetrics={{ "": modelData }} />);
 
     expect(screen.getByText("总体用量")).toBeInTheDocument();
     expect(screen.queryByText("Overall Usage")).not.toBeInTheDocument();
@@ -135,6 +190,20 @@ describe("Usage components Chinese copy", () => {
     expect(screen.queryByText("Total Tokens Over Time")).not.toBeInTheDocument();
     expect(screen.getByText("总请求数随时间变化")).toBeInTheDocument();
     expect(screen.queryByText("Total Requests Over Time")).not.toBeInTheDocument();
+    expect(screen.getByText("按消费排序的 Virtual Key")).toBeInTheDocument();
+    expect(screen.queryByText("Top Virtual Keys by Spend")).not.toBeInTheDocument();
+    expect(screen.getByText("团队：team-1")).toBeInTheDocument();
+    expect(screen.queryByText("Team: team-1")).not.toBeInTheDocument();
+    expect(screen.getByText("10 次请求 | 1,000 个 Token")).toBeInTheDocument();
+    expect(screen.getByText("缓存读取：0 个 Token")).toBeInTheDocument();
+    expect(screen.getByText("缓存创建：0 个 Token")).toBeInTheDocument();
+    expect(screen.getAllByText("未知项目").length).toBeGreaterThan(0);
+    expect(screen.queryByText("Unknown Item")).not.toBeInTheDocument();
+    expect(screen.getByText("10 次请求")).toBeInTheDocument();
+    expect(screen.getByText("每次成功请求平均 111")).toBeInTheDocument();
+    expect(screen.queryByText(/avg per successful request/)).not.toBeInTheDocument();
+    expect(screen.getByText("每次成功请求 $0.167")).toBeInTheDocument();
+    expect(screen.queryByText(/per successful request/)).not.toBeInTheDocument();
   });
 
   it("renders the user agent activity headings and filter in Chinese", async () => {
@@ -154,6 +223,10 @@ describe("Usage components Chinese copy", () => {
     expect(screen.queryByText("Performance metrics for different user agents")).not.toBeInTheDocument();
     expect(screen.getByText("按 User Agent 筛选")).toBeInTheDocument();
     expect(screen.queryByText("Filter by User Agents")).not.toBeInTheDocument();
+    expect(screen.getByText("日/周/月活跃用户")).toBeInTheDocument();
+    expect(screen.queryByText("DAU/WAU/MAU")).not.toBeInTheDocument();
+    expect(screen.getByText("每用户用量（过去 30 天）")).toBeInTheDocument();
+    expect(screen.queryByText("Per User Usage (Last 30 Days)")).not.toBeInTheDocument();
     expect(screen.getByPlaceholderText("所有 User Agent")).toBeInTheDocument();
     expect(screen.queryByPlaceholderText("All User Agents")).not.toBeInTheDocument();
 
@@ -161,6 +234,27 @@ describe("Usage components Chinese copy", () => {
 
     expect(await screen.findByText("未找到 User Agent")).toBeInTheDocument();
     expect(screen.queryByText("No user agents found")).not.toBeInTheDocument();
+  });
+
+  it("renders the user agent activity clear-filter control in Chinese", async () => {
+    vi.mocked(networking.tagDistinctCall).mockResolvedValue({
+      results: [{ tag: "User-Agent: Chrome/1.0" }],
+    });
+    const user = userEvent.setup();
+    renderWithProviders(
+      <UserAgentActivity
+        accessToken="tok"
+        userRole="Admin"
+        dateValue={{ from: new Date("2025-01-01"), to: new Date("2025-01-02") }}
+        onDateChange={vi.fn()}
+      />,
+    );
+
+    await user.click(await screen.findByPlaceholderText("所有 User Agent"));
+    await user.click(await screen.findByRole("option", { name: "Chrome/1.0" }));
+
+    expect(await screen.findByRole("button", { name: "清除 User Agent 筛选" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Clear user agent filter" })).not.toBeInTheDocument();
   });
 
   it("renders the user agent activity period headings in Chinese", async () => {

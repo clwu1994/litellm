@@ -10,6 +10,8 @@ import type { RoutingGroup } from "./types";
 const GROUPS: RoutingGroup[] = [
   { group_name: "prod-group", models: ["gpt-4o"], routing_strategy: "usage-based-routing" },
   { group_name: "dev-group", models: ["gpt-4o-mini"], routing_strategy: "simple-shuffle" },
+  { group_name: "busy-group", models: ["gpt-4o-mini"], routing_strategy: "least-busy" },
+  { group_name: "latency-group", models: ["gpt-4o-mini"], routing_strategy: "latency-based-routing" },
 ];
 
 const renderTable = (groups: RoutingGroup[] = GROUPS, isLoading = false) =>
@@ -41,6 +43,10 @@ describe("RoutingGroupsTable Chinese copy", () => {
     expect(screen.queryByText("Usage Based")).not.toBeInTheDocument();
     expect(screen.getByText("简单随机")).toBeInTheDocument();
     expect(screen.queryByText("Simple Shuffle")).not.toBeInTheDocument();
+    expect(screen.getByText("最空闲")).toBeInTheDocument();
+    expect(screen.queryByText("Least Busy")).not.toBeInTheDocument();
+    expect(screen.getByText("基于延迟")).toBeInTheDocument();
+    expect(screen.queryByText("Latency Based")).not.toBeInTheDocument();
   });
 
   it("renders the empty state in Chinese", () => {

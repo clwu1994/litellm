@@ -492,10 +492,10 @@ const UserAgentActivity: React.FC<UserAgentActivityProps> = ({ accessToken, user
           <Tabs defaultValue="active-users">
             <TabsList variant="line" className="mb-6 h-auto w-full justify-start rounded-none border-b p-0">
               <TabsTrigger value="active-users" className="flex-none rounded-none px-4 py-2">
-                DAU/WAU/MAU
+                {t("userAgentActivity.tabActiveUsers")}
               </TabsTrigger>
               <TabsTrigger value="per-user" className="flex-none rounded-none px-4 py-2">
-                Per User Usage (Last 30 Days)
+                {t("userAgentActivity.tabPerUserUsage")}
               </TabsTrigger>
             </TabsList>
 

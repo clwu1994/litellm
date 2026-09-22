@@ -636,23 +636,21 @@ const Settings: React.FC<SettingsPageProps> = ({ accessToken, userRole, userID, 
                 </TableBody>
               </Table>
               <Button size="xs" className="mt-2" onClick={handleSaveAlerts}>
-                Save Changes
+                {t("settingsPage.saveChanges")}
               </Button>
 
               <Button
                 onClick={async () => {
                   try {
                     await serviceHealthCheck(accessToken, "slack");
-                    toast.success(
-                      "Alert test triggered. Test request to slack made - check logs/alerts on slack to verify",
-                    );
+                    toast.success(t("settingsPage.alertTestTriggered"));
                   } catch (error) {
                     toast.fromError(parseErrorMessage(error));
                   }
                 }}
                 className="mx-2"
               >
-                Test Alerts
+                {t("settingsPage.testAlerts")}
               </Button>
             </Card>
           </TabsContent>

@@ -78,8 +78,11 @@ describe("EntityUsageExport Chinese copy", () => {
       />,
     );
 
-    expect(screen.getByText(/1 个筛选条件/)).toBeInTheDocument();
-    expect(screen.queryByText(/1 filter/)).not.toBeInTheDocument();
+    const from = new Date("2025-01-01").toLocaleDateString();
+    const to = new Date("2025-01-02").toLocaleDateString();
+    const summary = screen.getByText(/1 个筛选条件/);
+    expect(summary).toHaveTextContent(`${from} - ${to} · 1 个筛选条件`);
+    expect(summary).not.toHaveTextContent("filter");
   });
 
   it("renders the export header in Chinese", async () => {
@@ -108,6 +111,77 @@ describe("EntityUsageExport Chinese copy", () => {
     await user.click(screen.getByRole("button", { name: "导出数据" }));
     expect(await screen.findByText("导出团队用量")).toBeInTheDocument();
     expect(screen.queryByText("Export Team Usage")).not.toBeInTheDocument();
+  });
+
+  it("renders the empty filter combobox in Chinese", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(
+      <UsageExportHeader
+        dateValue={{ from: new Date("2025-01-01"), to: new Date("2025-01-02") }}
+        entityType="team"
+        spendData={SPEND_DATA}
+        showFilters
+        filterLabel="Team"
+        filterPlaceholder="Select team"
+        selectedFilters={["team-1"]}
+        onFiltersChange={vi.fn()}
+        filterOptions={[]}
+      />,
+    );
+
+    await user.click(screen.getByRole("combobox"));
+
+    expect(await screen.findByText("未找到选项")).toBeInTheDocument();
+    expect(screen.queryByText("No options found")).not.toBeInTheDocument();
+  });
+
+  it("renders the JSON format option and a JSON export in Chinese", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(
+      <EntityUsageExportModal
+        isOpen
+        onClose={vi.fn()}
+        entityType="team"
+        spendData={SPEND_DATA}
+        dateRange={{ from: new Date("2025-01-01"), to: new Date("2025-01-02") }}
+        selectedFilters={[]}
+      />,
+    );
+
+    expect(await screen.findByText("导出团队用量")).toBeInTheDocument();
+    await user.click(screen.getByRole("combobox"));
+    await user.click(await screen.findByRole("option", { name: "JSON（包含元数据）" }));
+
+    expect(screen.getAllByText("JSON（包含元数据）").length).toBeGreaterThan(0);
+    expect(screen.queryByText("JSON (includes metadata)")).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "导出 JSON" }));
+
+    expect(toast.success).toHaveBeenCalledWith("团队用量数据已成功导出为 JSON");
+    expect(toast.success).not.toHaveBeenCalledWith("Team usage data exported successfully as JSON");
+  });
+
+  it("reports an export failure in Chinese", async () => {
+    const user = userEvent.setup();
+    const createObjectURL = vi.spyOn(window.URL, "createObjectURL").mockImplementation(() => {
+      throw new Error("boom");
+    });
+    renderWithProviders(
+      <EntityUsageExportModal
+        isOpen
+        onClose={vi.fn()}
+        entityType="team"
+        spendData={SPEND_DATA}
+        dateRange={{ from: new Date("2025-01-01"), to: new Date("2025-01-02") }}
+        selectedFilters={[]}
+      />,
+    );
+
+    await user.click(await screen.findByRole("button", { name: "导出 CSV" }));
+
+    expect(toast.fromError).toHaveBeenCalledWith("导出数据失败");
+    expect(toast.fromError).not.toHaveBeenCalledWith("Failed to export data");
+    createObjectURL.mockRestore();
   });
 
   it("renders the export modal actions and toasts in Chinese", async () => {

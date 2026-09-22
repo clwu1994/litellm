@@ -108,6 +108,22 @@ describe("CloudZeroExportModal Chinese copy", () => {
     expect(toast.info).not.toHaveBeenCalledWith("CSV export functionality coming soon!");
   });
 
+  it("reports a CSV export failure in Chinese when the info toast throws", async () => {
+    vi.mocked(toast.info).mockImplementationOnce(() => {
+      throw new Error("boom");
+    });
+    const user = userEvent.setup();
+    open();
+
+    await screen.findByLabelText("CloudZero API Key");
+    await user.click(screen.getByRole("combobox"));
+    await user.click(await screen.findByRole("option", { name: "导出到 CSV" }));
+    await user.click(screen.getByRole("button", { name: "导出 CSV" }));
+
+    expect(toast.fromError).toHaveBeenCalledWith("导出 CSV 失败");
+    expect(toast.fromError).not.toHaveBeenCalledWith("Failed to export CSV");
+  });
+
   it("renders the existing configuration alert in Chinese", async () => {
     fetchMock.mockImplementation(async (url: string) => {
       if (url === "/cloudzero/settings")

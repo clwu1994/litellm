@@ -138,7 +138,7 @@ const SidebarAccountMenu: React.FC<SidebarAccountMenuProps> = ({ onLogout, colla
   const hue = hueFromString(seed);
   const displayName = navAccountDisplayName(userEmail, userId, tNav);
   const triggerLabel = t("accountMenu.triggerLabel", {
-    role: userRole ?? t("accountMenu.unknownRole"),
+    role: userRole,
     user: userEmail || userId || t("accountMenu.unknown"),
   });
 

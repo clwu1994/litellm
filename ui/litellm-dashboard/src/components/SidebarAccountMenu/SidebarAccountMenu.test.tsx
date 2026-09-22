@@ -1,6 +1,8 @@
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { renderWithProviders, screen, waitFor } from "../../../tests/test-utils";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+import { cleanup, renderWithProviders, screen, waitFor } from "../../../tests/test-utils";
+import i18n from "@/i18n/bootstrapI18n";
 import SidebarAccountMenu from "./SidebarAccountMenu";
 
 interface AuthMock {
@@ -296,5 +298,114 @@ describe("SidebarAccountMenu", () => {
     await openMenu(user);
 
     expect(screen.getByText("-")).toBeInTheDocument();
+  });
+});
+
+describe("SidebarAccountMenu Chinese copy", () => {
+  const openMenuZh = async (user: ReturnType<typeof userEvent.setup>) => {
+    await user.click(screen.getByRole("button", { name: /账户菜单/ }));
+    await screen.findByTestId("sidebar-account-menu-panel");
+  };
+
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    mockUseAuthorizedImpl = () => ({
+      userId: "test-user-id",
+      userEmail: "test@example.com",
+      userRoleLabel: "Admin",
+      premiumUser: false,
+      accessToken: "test-token",
+    });
+    mockUseDisableShowPromptsImpl = () => false;
+    mockUseDisableBouncingIconImpl = () => false;
+    mockHealthDataImpl = () => ({ litellm_version: "1.99.0" });
+    await i18n.changeLanguage("zh");
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  it("renders the trigger label in Chinese", () => {
+    renderWithProviders(<SidebarAccountMenu onLogout={vi.fn()} />);
+
+    expect(screen.getByRole("button", { name: "账户菜单 — Admin — 已登录为 test@example.com" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Account menu/ })).not.toBeInTheDocument();
+  });
+
+  it("renders the panel copy and rows in Chinese", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<SidebarAccountMenu onLogout={vi.fn()} />);
+    await openMenuZh(user);
+
+    expect(screen.getByTitle("感谢使用 LiteLLM！")).toBeInTheDocument();
+    expect(screen.queryByTitle("Thanks for using LiteLLM!")).not.toBeInTheDocument();
+    expect(screen.getByText("套餐")).toBeInTheDocument();
+    expect(screen.queryByText("Tier")).not.toBeInTheDocument();
+    expect(screen.getByText("标准版")).toBeInTheDocument();
+    expect(screen.queryByText("Standard")).not.toBeInTheDocument();
+    expect(screen.getByTitle("升级到高级版以使用更多功能")).toBeInTheDocument();
+    expect(screen.queryByTitle("Upgrade to Premium for advanced features")).not.toBeInTheDocument();
+    expect(screen.getByText("角色")).toBeInTheDocument();
+    expect(screen.queryByText("Role")).not.toBeInTheDocument();
+    expect(screen.getByText("邮箱")).toBeInTheDocument();
+    expect(screen.queryByText("Email")).not.toBeInTheDocument();
+    expect(screen.getByText("用户 ID")).toBeInTheDocument();
+    expect(screen.queryByText("User ID")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "复制邮箱" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Copy email" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "复制用户 ID" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Copy user ID" })).not.toBeInTheDocument();
+  });
+
+  it("renders the premium tier in Chinese", async () => {
+    const user = userEvent.setup();
+    mockUseAuthorizedImpl = () => ({
+      userId: "test-user-id",
+      userEmail: "test@example.com",
+      userRoleLabel: "Admin",
+      premiumUser: true,
+      accessToken: "test-token",
+    });
+    renderWithProviders(<SidebarAccountMenu onLogout={vi.fn()} />);
+    await openMenuZh(user);
+
+    expect(screen.getByText("高级版")).toBeInTheDocument();
+    expect(screen.queryByText("Premium")).not.toBeInTheDocument();
+  });
+
+  it("renders the preference toggles in Chinese", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<SidebarAccountMenu onLogout={vi.fn()} />);
+    await openMenuZh(user);
+
+    expect(screen.getByText("隐藏新功能提示")).toBeInTheDocument();
+    expect(screen.queryByText("Hide New Feature Indicators")).not.toBeInTheDocument();
+    expect(screen.getByLabelText("切换隐藏新功能提示")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Toggle hide new feature indicators")).not.toBeInTheDocument();
+    expect(screen.getByText("隐藏所有提示词")).toBeInTheDocument();
+    expect(screen.queryByText("Hide All Prompts")).not.toBeInTheDocument();
+    expect(screen.getByLabelText("切换隐藏所有提示词")).toBeInTheDocument();
+    expect(screen.getByText("隐藏博客文章")).toBeInTheDocument();
+    expect(screen.queryByText("Hide Blog Posts")).not.toBeInTheDocument();
+    expect(screen.getByLabelText("切换隐藏博客文章")).toBeInTheDocument();
+    expect(screen.getByText("隐藏跳动图标")).toBeInTheDocument();
+    expect(screen.queryByText("Hide Bouncing Icon")).not.toBeInTheDocument();
+    expect(screen.getByLabelText("切换隐藏跳动图标")).toBeInTheDocument();
+  });
+
+  it("renders the unknown-user fallback in Chinese when no identity is available", () => {
+    mockUseAuthorizedImpl = () => ({
+      userId: null,
+      userEmail: null,
+      userRoleLabel: "Admin",
+      premiumUser: false,
+      accessToken: "test-token",
+    });
+    renderWithProviders(<SidebarAccountMenu onLogout={vi.fn()} />);
+
+    expect(screen.getByRole("button", { name: "账户菜单 — Admin — 已登录为 未知" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /signed in as unknown/ })).not.toBeInTheDocument();
   });
 });

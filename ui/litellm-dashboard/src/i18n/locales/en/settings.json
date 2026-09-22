@@ -515,6 +515,8 @@
     "tabAlertingTypes": "Alerting Types",
     "tabAlertingSettings": "Alerting Settings",
     "tabEmailAlerts": "Email Alerts",
-    "tabMsTeamsAlerts": "MS Teams Alerts"
+    "tabMsTeamsAlerts": "MS Teams Alerts",
+    "testAlerts": "Test Alerts",
+    "alertTestTriggered": "Alert test triggered. Test request to slack made - check logs/alerts on slack to verify"
   }
 }

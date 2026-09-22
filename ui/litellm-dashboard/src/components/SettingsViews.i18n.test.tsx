@@ -3,7 +3,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { cleanup, fireEvent, renderWithProviders, screen, waitFor } from "@/../tests/test-utils";
 import i18n from "@/i18n/bootstrapI18n";
+import { toast } from "@/lib/toast";
 
+import AlertingSettings from "./alerting/alerting_settings";
 import DynamicForm from "./alerting/dynamic_form";
 import EmailEventSettings from "./email_events/email_event_settings";
 import EmailSettings from "./email_settings";
@@ -15,12 +17,16 @@ const {
   resetEmailEventSettings,
   serviceHealthCheck,
   setCallbacksCall,
+  alertingSettingsCall,
+  updateConfigFieldSetting,
 } = vi.hoisted(() => ({
   getEmailEventSettings: vi.fn(),
   updateEmailEventSettings: vi.fn(),
   resetEmailEventSettings: vi.fn(),
   serviceHealthCheck: vi.fn(),
   setCallbacksCall: vi.fn(),
+  alertingSettingsCall: vi.fn(),
+  updateConfigFieldSetting: vi.fn(),
 }));
 
 vi.mock("@/components/networking", () => ({
@@ -29,10 +35,16 @@ vi.mock("@/components/networking", () => ({
   resetEmailEventSettings,
   serviceHealthCheck,
   setCallbacksCall,
+  alertingSettingsCall,
+  updateConfigFieldSetting,
 }));
 
 vi.mock("./email_events", () => ({
   EmailEventSettings: () => <div>email event settings</div>,
+}));
+
+vi.mock("@/lib/toast", () => ({
+  toast: { success: vi.fn(), error: vi.fn(), info: vi.fn(), fromError: vi.fn() },
 }));
 
 const ALERTING_SETTINGS = [
@@ -75,8 +87,13 @@ const EMAIL_ALERTS = [
     name: "email",
     variables: {
       SMTP_HOST: "smtp.example.com",
+      SMTP_PORT: "587",
+      SMTP_USERNAME: "username",
       SMTP_PASSWORD: "********",
+      SMTP_SENDER_EMAIL: "sender@berri.ai",
+      TEST_EMAIL_ADDRESS: "info@berri.ai",
       EMAIL_LOGO_URL: "https://example.com/logo.png",
+      EMAIL_SUPPORT_CONTACT: "support@berri.ai",
     },
   },
 ];
@@ -95,6 +112,18 @@ describe("Settings views Chinese copy", () => {
     resetEmailEventSettings.mockResolvedValue({});
     serviceHealthCheck.mockResolvedValue({});
     setCallbacksCall.mockResolvedValue({});
+    updateConfigFieldSetting.mockResolvedValue({});
+    alertingSettingsCall.mockResolvedValue([
+      {
+        field_name: "slack_alerting",
+        field_type: "Boolean",
+        field_value: true,
+        field_default_value: false,
+        field_description: "Send to slack",
+        stored_in_db: true,
+        premium_field: false,
+      },
+    ]);
     await i18n.changeLanguage("zh");
   });
 
@@ -171,10 +200,14 @@ describe("Settings views Chinese copy", () => {
     expect(screen.queryByRole("button", { name: "Reset to Defaults" })).not.toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "保存更改" }));
-    expect(updateEmailEventSettings).toHaveBeenCalled();
+    await waitFor(() => expect(updateEmailEventSettings).toHaveBeenCalled());
+    expect(toast.success).toHaveBeenCalledWith("邮件事件设置更新成功");
+    expect(toast.success).not.toHaveBeenCalledWith("Email event settings updated successfully");
 
     await user.click(screen.getByRole("button", { name: "重置为默认值" }));
-    expect(resetEmailEventSettings).toHaveBeenCalled();
+    await waitFor(() => expect(resetEmailEventSettings).toHaveBeenCalled());
+    expect(toast.success).toHaveBeenCalledWith("邮件事件设置已重置为默认值");
+    expect(toast.success).not.toHaveBeenCalledWith("Email event settings reset to defaults");
   });
 
   it("renders the email server settings in Chinese", async () => {
@@ -195,6 +228,8 @@ describe("Settings views Chinese copy", () => {
 
     await user.click(screen.getByRole("button", { name: "测试邮件告警" }));
     await waitFor(() => expect(serviceHealthCheck).toHaveBeenCalled());
+    expect(toast.success).toHaveBeenCalledWith("邮件测试已触发。请检查已配置的邮箱收件箱/日志。");
+    expect(toast.success).not.toHaveBeenCalledWith("Email test triggered. Check your configured email inbox/logs.");
   });
 
   it("renders the alerting form in Chinese", async () => {
@@ -223,5 +258,17 @@ describe("Settings views Chinese copy", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "更新设置" }));
     expect(user).toBeDefined();
+  });
+
+  it("reports the proxy update wait message in Chinese", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<AlertingSettings accessToken="sk-test" premiumUser={false} />);
+
+    await user.click(await screen.findByRole("switch", { name: "slack_alerting" }));
+    await user.click(screen.getByRole("button", { name: "更新设置" }));
+
+    await waitFor(() => expect(updateConfigFieldSetting).toHaveBeenCalled());
+    expect(toast.success).toHaveBeenCalledWith("请等待 10 秒以便代理更新。");
+    expect(toast.success).not.toHaveBeenCalledWith("Wait 10s for proxy to update.");
   });
 });

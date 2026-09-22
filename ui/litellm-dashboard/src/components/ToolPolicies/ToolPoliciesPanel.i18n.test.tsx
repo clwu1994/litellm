@@ -220,8 +220,10 @@ describe("ToolPolicies Chinese copy", () => {
 
     await user.click(screen.getAllByRole("combobox")[0]);
 
-    expect(await screen.findByRole("option", { name: "可信" })).toBeInTheDocument();
+    expect(await screen.findByRole("option", { name: "不可信" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "可信" })).toBeInTheDocument();
     expect(screen.getByRole("option", { name: "已阻止" })).toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: "untrusted" })).not.toBeInTheDocument();
     expect(screen.queryByRole("option", { name: "trusted" })).not.toBeInTheDocument();
     expect(screen.queryByRole("option", { name: "blocked" })).not.toBeInTheDocument();
   });

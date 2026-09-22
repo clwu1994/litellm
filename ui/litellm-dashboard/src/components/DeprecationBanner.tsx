@@ -6,7 +6,6 @@ import { Info, X } from "lucide-react";
 import { Trans, useTranslation } from "react-i18next";
 
 const DEPRECATION_DISCUSSION_URL = "https://github.com/BerriAI/litellm/discussions/32090";
-const DEPRECATION_TARGET_DATE = "September 1, 2026";
 
 interface DeprecationBannerProps {
   featureName: string;
@@ -32,7 +31,7 @@ export const DeprecationBanner: React.FC<DeprecationBannerProps> = ({ featureNam
           <Trans
             ns="common"
             i18nKey="deprecationBanner.body"
-            values={{ feature: featureName, date: DEPRECATION_TARGET_DATE }}
+            values={{ feature: featureName, date: t("deprecationBanner.targetDate") }}
             components={{
               discussion: (
                 <Link

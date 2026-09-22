@@ -50,7 +50,9 @@ const ModelSection = ({
             <p className="text-sm text-muted-foreground">{t("activityMetrics.totalTokens")}</p>
             <h3 className="text-lg font-medium text-foreground">{metrics.total_tokens.toLocaleString()}</h3>
             <p className="text-sm text-muted-foreground">
-              {Math.round(metrics.total_tokens / metrics.total_successful_requests)} avg per successful request
+              {t("activityMetrics.avgPerSuccessfulRequest", {
+                value: Math.round(metrics.total_tokens / metrics.total_successful_requests),
+              })}
             </p>
           </CardContent>
         </Card>
@@ -59,8 +61,9 @@ const ModelSection = ({
             <p className="text-sm text-muted-foreground">{t("activityMetrics.totalSpend")}</p>
             <h3 className="text-lg font-medium text-foreground">${formatNumberWithCommas(metrics.total_spend, 2)}</h3>
             <p className="text-sm text-muted-foreground">
-              ${formatNumberWithCommas(metrics.total_spend / metrics.total_successful_requests, 3)} per successful
-              request
+              {t("activityMetrics.perSuccessfulRequest", {
+                value: formatNumberWithCommas(metrics.total_spend / metrics.total_successful_requests, 3),
+              })}
             </p>
           </CardContent>
         </Card>
@@ -76,12 +79,19 @@ const ModelSection = ({
                   <div key={keyData.api_key} className="flex justify-between items-center p-3 bg-muted rounded-lg">
                     <div>
                       <p className="font-medium">{keyData.key_alias || `${keyData.api_key.substring(0, 10)}...`}</p>
-                      {keyData.team_id && <p className="text-xs text-muted-foreground">Team: {keyData.team_id}</p>}
+                      {keyData.team_id && (
+                        <p className="text-xs text-muted-foreground">
+                          {t("activityMetrics.teamLabel", { team: keyData.team_id })}
+                        </p>
+                      )}
                     </div>
                     <div className="text-right">
                       <p className="font-medium">${formatNumberWithCommas(keyData.spend, 2)}</p>
                       <p className="text-xs text-muted-foreground">
-                        {keyData.requests.toLocaleString()} requests | {keyData.tokens.toLocaleString()} tokens
+                        {t("activityMetrics.requestsAndTokens", {
+                          requests: keyData.requests.toLocaleString(),
+                          tokens: keyData.tokens.toLocaleString(),
+                        })}
                       </p>
                     </div>
                   </div>
@@ -190,10 +200,14 @@ const ModelSection = ({
               </div>
               <div className="mb-2">
                 <p className="text-sm">
-                  Cache Read: {metrics.total_cache_read_input_tokens?.toLocaleString() || 0} tokens
+                  {t("activityMetrics.cacheRead", {
+                    tokens: metrics.total_cache_read_input_tokens?.toLocaleString() || 0,
+                  })}
                 </p>
                 <p className="text-sm">
-                  Cache Creation: {metrics.total_cache_creation_input_tokens?.toLocaleString() || 0} tokens
+                  {t("activityMetrics.cacheCreation", {
+                    tokens: metrics.total_cache_creation_input_tokens?.toLocaleString() || 0,
+                  })}
                 </p>
               </div>
               <AreaChart
@@ -418,13 +432,17 @@ export const ActivityMetrics: React.FC<ActivityMetricsProps> = ({ modelMetrics, 
                 </h3>
                 <div className="flex space-x-4 text-sm text-muted-foreground">
                   <span>${formatNumberWithCommas(modelMetrics[modelName].total_spend, 2)}</span>
-                  <span>{modelMetrics[modelName].total_requests.toLocaleString()} requests</span>
+                  <span>
+                    {t("activityMetrics.requests", {
+                      requests: modelMetrics[modelName].total_requests.toLocaleString(),
+                    })}
+                  </span>
                 </div>
               </div>
             }
           >
             <ModelSection
-              modelName={modelName || t("activityMetrics.unknownModel")}
+              modelName={modelName}
               metrics={modelMetrics[modelName]}
               hidePromptCachingMetrics={hidePromptCachingMetrics}
             />

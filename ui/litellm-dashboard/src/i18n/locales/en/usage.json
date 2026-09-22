@@ -271,7 +271,6 @@
     "exportData": "Export Data",
     "modalTitle": "Export {{entity}} Usage",
     "cancel": "Cancel",
-    "exporting": "Exporting...",
     "exportFormat": "Export {{format}}",
     "exportSuccessCsv": "{{entity}} usage data exported successfully as CSV",
     "exportSuccessJson": "{{entity}} usage data exported successfully as JSON",
@@ -300,7 +299,7 @@
     "category1kTo99k": "1K-9.9K requests",
     "category10kTo999k": "10K-99.9K requests",
     "category100kPlus": "100K+ requests",
-    "usersValue": "{{count}} users"
+    "usersValue": "{{users}} users"
   },
   "activityMetrics": {
     "totalRequests": "Total Requests",
@@ -316,7 +315,13 @@
     "totalTokensOverTime": "Total Tokens Over Time",
     "totalRequestsOverTime": "Total Requests Over Time",
     "unknownItem": "Unknown Item",
-    "unknownModel": "Unknown Model"
+    "avgPerSuccessfulRequest": "{{value}} avg per successful request",
+    "perSuccessfulRequest": "${{value}} per successful request",
+    "teamLabel": "Team: {{team}}",
+    "requestsAndTokens": "{{requests}} requests | {{tokens}} tokens",
+    "cacheRead": "Cache Read: {{tokens}} tokens",
+    "cacheCreation": "Cache Creation: {{tokens}} tokens",
+    "requests": "{{requests}} requests"
   },
   "userAgentActivity": {
     "summaryTitle": "Summary by User Agent",
@@ -333,6 +338,8 @@
     "dauWauMauDescription": "Active users across different time periods",
     "dauTitle": "Daily Active Users - Last 7 Days",
     "wauTitle": "Weekly Active Users - Last 7 Weeks",
-    "mauTitle": "Monthly Active Users - Last 7 Months"
+    "mauTitle": "Monthly Active Users - Last 7 Months",
+    "tabActiveUsers": "DAU/WAU/MAU",
+    "tabPerUserUsage": "Per User Usage (Last 30 Days)"
   }
 }

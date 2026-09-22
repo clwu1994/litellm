@@ -1,5 +1,5 @@
 import type { TFunction } from "i18next";
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { CircleCheck, FileDown } from "lucide-react";
 import { z } from "zod/v4";
@@ -50,14 +50,7 @@ const CloudZeroExportModal: React.FC<CloudZeroExportModalProps> = ({ isOpen, onC
   const [exportType, setExportType] = useState<ExportType>("cloudzero");
   const [exportLoading, setExportLoading] = useState(false);
 
-  // Load existing settings when modal opens
-  useEffect(() => {
-    if (isOpen && accessToken) {
-      loadExistingSettings();
-    }
-  }, [isOpen, accessToken]);
-
-  const loadExistingSettings = async () => {
+  const loadExistingSettings = useCallback(async () => {
     setSettingsLoading(true);
     try {
       const response = await fetch("/cloudzero/settings", {
@@ -84,7 +77,14 @@ const CloudZeroExportModal: React.FC<CloudZeroExportModalProps> = ({ isOpen, onC
     } finally {
       setSettingsLoading(false);
     }
-  };
+  }, [accessToken, form, t]);
+
+  useEffect(() => {
+    if (isOpen && accessToken) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- the loading flag is part of the fetch this effect starts
+      void loadExistingSettings();
+    }
+  }, [isOpen, accessToken, loadExistingSettings]);
 
   const handleSaveCloudZeroSettings = async (values: CloudZeroSettings) => {
     if (!accessToken) {

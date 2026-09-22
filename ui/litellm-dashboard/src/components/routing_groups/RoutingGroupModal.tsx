@@ -220,7 +220,7 @@ const RoutingGroupModal: React.FC<RoutingGroupModalProps> = ({
         </form>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>
-            {t("routingGroups.delete.cancel")}
+            {t("routingGroups.modal.cancel")}
           </Button>
           <Button onClick={() => void form.handleSubmit(handleSubmit)()} disabled={saving} aria-busy={saving}>
             {mode === "create" ? t("routingGroups.createGroup") : t("routingGroups.modal.saveChanges")}

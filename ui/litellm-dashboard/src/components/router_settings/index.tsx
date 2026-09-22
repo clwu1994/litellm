@@ -195,7 +195,7 @@ const RouterSettings: React.FC<RouterSettingsProps> = ({ accessToken, userRole, 
         <Button variant="outline" onClick={() => window.location.reload()}>
           {t("routerForm.reset")}
         </Button>
-        <Button onClick={handleSaveChanges}>{t("routingGroups.modal.saveChanges")}</Button>
+        <Button onClick={handleSaveChanges}>{t("routerForm.saveChanges")}</Button>
       </div>
     </div>
   );

@@ -380,7 +380,8 @@
   },
   "deprecationBanner": {
     "title": "{{feature}} is on a draft deprecation list",
-    "body": "{{feature}} is one of several experimental features we're considering removing, potentially as early as {{date}}. This list is a draft and is not final. If you rely on this feature, please share feedback on the <discussion>deprecation discussion</discussion>."
+    "body": "{{feature}} is one of several experimental features we're considering removing, potentially as early as {{date}}. This list is a draft and is not final. If you rely on this feature, please share feedback on the <discussion>deprecation discussion</discussion>.",
+    "targetDate": "September 1, 2026"
   },
   "licenseBanner": {
     "expiresToday": "expires today",
@@ -423,7 +424,6 @@
     "hideBouncingIcon": "Hide Bouncing Icon",
     "toggleHideBouncingIcon": "Toggle hide bouncing icon",
     "triggerLabel": "Account menu — {{role}} — signed in as {{user}}",
-    "unknownRole": "Unknown role",
     "unknown": "unknown"
   },
   "toastTitles": {

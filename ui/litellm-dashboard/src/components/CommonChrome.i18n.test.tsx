@@ -40,9 +40,10 @@ describe("Common chrome Chinese copy", () => {
 
     const paragraph = screen.getByText(/Widgets 是我们正在考虑移除/);
     expect(paragraph).toHaveTextContent(
-      "Widgets 是我们正在考虑移除的若干实验性功能之一，最早可能在 September 1, 2026。此列表为草稿，并非最终决定。如果你依赖此功能，请在 弃用讨论 中提供反馈。",
+      "Widgets 是我们正在考虑移除的若干实验性功能之一，最早可能在 2026 年 9 月 1 日。此列表为草稿，并非最终决定。如果你依赖此功能，请在 弃用讨论 中提供反馈。",
     );
     expect(paragraph).not.toHaveTextContent("is one of several experimental features");
+    expect(paragraph).not.toHaveTextContent("September 1, 2026");
 
     expect(screen.getByRole("link", { name: "弃用讨论" })).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "deprecation discussion" })).not.toBeInTheDocument();

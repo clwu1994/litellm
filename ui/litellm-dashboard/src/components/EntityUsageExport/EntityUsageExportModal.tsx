@@ -101,9 +101,7 @@ const EntityUsageExportModal: React.FC<EntityUsageExportModalProps> = ({
                 </Button>
                 <Button onClick={() => handleExport()} disabled={isExporting}>
                   {isExporting && <Loader2 className="animate-spin" />}
-                  {isExporting
-                    ? t("entityUsage.exporting")
-                    : t("entityUsage.exportFormat", { format: exportFormat.toUpperCase() })}
+                  {t("entityUsage.exportFormat", { format: exportFormat.toUpperCase() })}
                 </Button>
               </>
             )}

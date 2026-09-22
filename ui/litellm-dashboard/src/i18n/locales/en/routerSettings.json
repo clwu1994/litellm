@@ -87,7 +87,8 @@
         "modelsRequired": "Select at least one model",
         "invalidJson": "Must be valid JSON",
         "strategyRequired": "Strategy is required"
-      }
+      },
+      "cancel": "Cancel"
     }
   },
   "routerForm": {
@@ -103,6 +104,7 @@
     "learnMore": "Learn more",
     "reset": "Reset",
     "saveSuccess": "router settings updated successfully",
-    "saveFailed": "Failed to update router settings: {{error}}"
+    "saveFailed": "Failed to update router settings: {{error}}",
+    "saveChanges": "Save Changes"
   }
 }

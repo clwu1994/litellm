@@ -1,6 +1,11 @@
 import React from "react";
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
+
+import { cleanup } from "@/../tests/test-utils";
+import i18n from "@/i18n/bootstrapI18n";
+import { formatExpiryDate } from "@/utils/licenseUtils";
+
 import { LicenseExpiryBannerView } from "./LicenseExpiryBanner";
 import { LicenseInfo } from "./networking";
 
@@ -91,5 +96,67 @@ describe("LicenseExpiryBannerView", () => {
     sessionStorage.setItem(`litellm:licenseExpiryBannerDismissed:${expiration}`, "true");
     render(<LicenseExpiryBannerView licenseInfo={licenseWith(expiration)} />);
     expect(screen.getByText(/expires in 5 days/)).toBeInTheDocument();
+  });
+});
+
+describe("LicenseExpiryBannerView Chinese copy", () => {
+  beforeEach(async () => {
+    sessionStorage.clear();
+    await i18n.changeLanguage("zh");
+  });
+
+  afterEach(async () => {
+    cleanup();
+    sessionStorage.clear();
+    await i18n.changeLanguage("en");
+  });
+
+  it("renders the warning countdown and renewal copy in Chinese", () => {
+    const expiration = daysFromNow(20);
+    render(<LicenseExpiryBannerView licenseInfo={licenseWith(expiration)} />);
+
+    const alert = screen.getByRole("alert");
+    expect(alert).toHaveTextContent(
+      `你的 LiteLLM 企业版许可证20 天后到期（${formatExpiryDate(expiration)}）请在到期前续订以保留企业版功能。请联系 sales@berri.ai`,
+    );
+    expect(alert).not.toHaveTextContent("expires in 20 days");
+    expect(alert).not.toHaveTextContent("Renew before it lapses to keep enterprise features");
+    expect(screen.getByRole("button", { name: "关闭" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Close" })).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "sales@berri.ai" })).toHaveAttribute("href", "mailto:sales@berri.ai");
+  });
+
+  it("renders the critical countdown and copy in Chinese", () => {
+    const expiration = daysFromNow(5);
+    render(<LicenseExpiryBannerView licenseInfo={licenseWith(expiration)} />);
+
+    const alert = screen.getByRole("alert");
+    expect(alert).toHaveTextContent(
+      `你的 LiteLLM 企业版许可证5 天后到期（${formatExpiryDate(expiration)}）请立即续订以免失去企业版功能。请联系 sales@berri.ai`,
+    );
+    expect(alert).not.toHaveTextContent("Renew now to avoid losing enterprise features");
+  });
+
+  it("renders the one-day and same-day countdowns in Chinese", () => {
+    render(<LicenseExpiryBannerView licenseInfo={licenseWith(daysFromNow(1))} />);
+    expect(screen.getByRole("alert")).toHaveTextContent("1 天后到期");
+    expect(screen.getByRole("alert")).not.toHaveTextContent("expires in 1 day");
+
+    cleanup();
+    render(<LicenseExpiryBannerView licenseInfo={licenseWith(daysFromNow(0))} />);
+    expect(screen.getByRole("alert")).toHaveTextContent("今天到期");
+    expect(screen.getByRole("alert")).not.toHaveTextContent("expires today");
+  });
+
+  it("renders the expired message and disabled-features copy in Chinese", () => {
+    const expiration = daysFromNow(-3);
+    render(<LicenseExpiryBannerView licenseInfo={licenseWith(expiration)} />);
+
+    const alert = screen.getByRole("alert");
+    expect(alert).toHaveTextContent(
+      `你的 LiteLLM 企业版许可证已于 ${formatExpiryDate(expiration)} 到期企业版功能现已停用。请联系 sales@berri.ai 以恢复访问`,
+    );
+    expect(alert).not.toHaveTextContent("expired on");
+    expect(alert).not.toHaveTextContent("Enterprise features are now disabled");
   });
 });

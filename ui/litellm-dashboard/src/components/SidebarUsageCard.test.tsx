@@ -1,6 +1,9 @@
 import React from "react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
+
+import { cleanup } from "@/../tests/test-utils";
+import i18n from "@/i18n/bootstrapI18n";
 import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import SidebarUsageCard from "./SidebarUsageCard";
@@ -163,5 +166,87 @@ describe("SidebarUsageCard", () => {
     const rail = await screen.findByTitle("Enterprise usage");
     expect(rail).toHaveClass("hover:text-sidebar-primary/80");
     expect(rail).not.toHaveClass("hover:text-foreground");
+  });
+});
+
+const BOTH_LIMITS_DATA = {
+  total_users: 100,
+  total_users_used: 20,
+  total_users_remaining: 80,
+  total_teams: 10,
+  total_teams_used: 3,
+  total_teams_remaining: 7,
+};
+
+describe("SidebarUsageCard Chinese copy", () => {
+  const renderWithClientZh = (ui: React.ReactElement) => {
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    return render(<QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>);
+  };
+
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    mockGetRemainingUsers.mockResolvedValue(BOTH_LIMITS_DATA);
+    mockUseLicenseInfo.mockReturnValue(licenseResult(ACTIVE_LICENSE));
+    await i18n.changeLanguage("zh");
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  it("renders the title, seat and team meters and the meter range in Chinese", async () => {
+    renderWithClientZh(<SidebarUsageCard accessToken="token" collapsed={false} onExpandRail={() => {}} />);
+
+    expect(await screen.findByText("企业版用量")).toBeInTheDocument();
+    expect(screen.queryByText("Enterprise usage")).not.toBeInTheDocument();
+
+    const meters = await screen.findAllByRole("meter");
+    expect(meters[0]).toHaveAttribute("aria-valuetext", "20 / 100");
+    expect(meters[0]).not.toHaveAttribute("aria-valuetext", "20 of 100");
+    expect(screen.getByText("席位")).toBeInTheDocument();
+    expect(screen.queryByText("Seats")).not.toBeInTheDocument();
+    expect(screen.getByText("团队")).toBeInTheDocument();
+    expect(screen.queryByText("Teams")).not.toBeInTheDocument();
+  });
+
+  it("renders the active-plan and expiration subtitles in Chinese", async () => {
+    renderWithClientZh(<SidebarUsageCard accessToken="token" collapsed={false} onExpandRail={() => {}} />);
+    expect(await screen.findByText("有效方案")).toBeInTheDocument();
+    expect(screen.queryByText("Active plan")).not.toBeInTheDocument();
+
+    cleanup();
+    mockUseLicenseInfo.mockReturnValue(licenseResult({ ...ACTIVE_LICENSE, expiration_date: "2099-12-31" }));
+    renderWithClientZh(<SidebarUsageCard accessToken="token" collapsed={false} onExpandRail={() => {}} />);
+    expect(await screen.findByText("Dec 31, 2099 到期")).toBeInTheDocument();
+    expect(screen.queryByText(/Expires Dec 31, 2099/)).not.toBeInTheDocument();
+
+    cleanup();
+    mockUseLicenseInfo.mockReturnValue(licenseResult({ ...ACTIVE_LICENSE, expiration_date: "2020-01-01" }));
+    renderWithClientZh(<SidebarUsageCard accessToken="token" collapsed={false} onExpandRail={() => {}} />);
+    expect(await screen.findByText("已于 Jan 1, 2020 到期")).toBeInTheDocument();
+    expect(screen.queryByText(/Expired Jan 1, 2020/)).not.toBeInTheDocument();
+
+    cleanup();
+    mockUseLicenseInfo.mockReturnValue(licenseResult({ ...ACTIVE_LICENSE, expiration_date: "not-a-date" }));
+    renderWithClientZh(<SidebarUsageCard accessToken="token" collapsed={false} onExpandRail={() => {}} />);
+    expect(await screen.findByText("无到期时间")).toBeInTheDocument();
+    expect(screen.queryByText("No expiration")).not.toBeInTheDocument();
+  });
+
+  it("renders the loading message in Chinese", async () => {
+    mockGetRemainingUsers.mockReturnValue(new Promise(() => {}));
+    renderWithClientZh(<SidebarUsageCard accessToken="token" collapsed={false} onExpandRail={() => {}} />);
+
+    expect(await screen.findByText("正在加载…")).toBeInTheDocument();
+    expect(screen.queryByText("Loading…")).not.toBeInTheDocument();
+  });
+
+  it("renders the collapsed rail title in Chinese", async () => {
+    renderWithClientZh(<SidebarUsageCard accessToken="token" collapsed onExpandRail={vi.fn()} />);
+
+    expect(await screen.findByTitle("企业版用量")).toBeInTheDocument();
+    expect(screen.queryByTitle("Enterprise usage")).not.toBeInTheDocument();
   });
 });

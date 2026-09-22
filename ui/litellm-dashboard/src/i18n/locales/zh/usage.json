@@ -271,7 +271,6 @@
     "exportData": "导出数据",
     "modalTitle": "导出{{entity}}用量",
     "cancel": "取消",
-    "exporting": "正在导出...",
     "exportFormat": "导出 {{format}}",
     "exportSuccessCsv": "{{entity}}用量数据已成功导出为 CSV",
     "exportSuccessJson": "{{entity}}用量数据已成功导出为 JSON",
@@ -300,7 +299,7 @@
     "category1kTo99k": "1K-9.9K 次请求",
     "category10kTo999k": "10K-99.9K 次请求",
     "category100kPlus": "100K+ 次请求",
-    "usersValue": "{{count}} 个用户"
+    "usersValue": "{{users}} 个用户"
   },
   "activityMetrics": {
     "totalRequests": "总请求数",
@@ -316,7 +315,13 @@
     "totalTokensOverTime": "总 Token 数随时间变化",
     "totalRequestsOverTime": "总请求数随时间变化",
     "unknownItem": "未知项目",
-    "unknownModel": "未知模型"
+    "avgPerSuccessfulRequest": "每次成功请求平均 {{value}}",
+    "perSuccessfulRequest": "每次成功请求 ${{value}}",
+    "teamLabel": "团队：{{team}}",
+    "requestsAndTokens": "{{requests}} 次请求 | {{tokens}} 个 Token",
+    "cacheRead": "缓存读取：{{tokens}} 个 Token",
+    "cacheCreation": "缓存创建：{{tokens}} 个 Token",
+    "requests": "{{requests}} 次请求"
   },
   "userAgentActivity": {
     "summaryTitle": "按 User Agent 汇总",
@@ -333,6 +338,8 @@
     "dauWauMauDescription": "不同时间段的活跃用户",
     "dauTitle": "日活跃用户 - 过去 7 天",
     "wauTitle": "周活跃用户 - 过去 7 周",
-    "mauTitle": "月活跃用户 - 过去 7 个月"
+    "mauTitle": "月活跃用户 - 过去 7 个月",
+    "tabActiveUsers": "日/周/月活跃用户",
+    "tabPerUserUsage": "每用户用量（过去 30 天）"
   }
 }

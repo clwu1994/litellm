@@ -231,7 +231,7 @@ const PerUserUsage: React.FC<PerUserUsageProps> = ({ accessToken, selectedTags, 
                 .map(([agent]) => agent);
             })()}
             colors={["blue", "green", "orange", "red", "purple", "yellow", "pink", "indigo"]}
-            valueFormatter={(value: number) => t("perUserUsage.usersValue", { count: value })}
+            valueFormatter={(value: number) => t("perUserUsage.usersValue", { users: value })}
             yAxisWidth={80}
             showLegend={true}
             stack={true}

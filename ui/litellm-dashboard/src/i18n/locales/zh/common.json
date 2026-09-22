@@ -380,7 +380,8 @@
   },
   "deprecationBanner": {
     "title": "{{feature}} 在草拟的弃用列表中",
-    "body": "{{feature}} 是我们正在考虑移除的若干实验性功能之一，最早可能在 {{date}}。此列表为草稿，并非最终决定。如果你依赖此功能，请在 <discussion>弃用讨论</discussion> 中提供反馈。"
+    "body": "{{feature}} 是我们正在考虑移除的若干实验性功能之一，最早可能在 {{date}}。此列表为草稿，并非最终决定。如果你依赖此功能，请在 <discussion>弃用讨论</discussion> 中提供反馈。",
+    "targetDate": "2026 年 9 月 1 日"
   },
   "licenseBanner": {
     "expiresToday": "今天到期",
@@ -423,7 +424,6 @@
     "hideBouncingIcon": "隐藏跳动图标",
     "toggleHideBouncingIcon": "切换隐藏跳动图标",
     "triggerLabel": "账户菜单 — {{role}} — 已登录为 {{user}}",
-    "unknownRole": "未知角色",
     "unknown": "未知"
   },
   "toastTitles": {
