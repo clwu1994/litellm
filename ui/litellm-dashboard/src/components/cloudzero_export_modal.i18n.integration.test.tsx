@@ -148,7 +148,7 @@ describe("CloudZeroExportModal Chinese copy", () => {
     fireEvent.change(screen.getByLabelText("连接 ID"), { target: { value: "conn-abc" } });
     await user.click(screen.getByRole("button", { name: "导出到 CloudZero" }));
 
-    await waitFor(() => expect(toast.fromError).toHaveBeenCalledWith("没有可用的访问令牌"));
+    await waitFor(() => expect(toast.fromError).toHaveBeenCalledWith("没有可用的访问 Token"));
     expect(toast.fromError).not.toHaveBeenCalledWith("No access token available");
   });
 
