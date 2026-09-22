@@ -3,6 +3,7 @@ import { useTeam } from "@/app/(dashboard)/hooks/teams/useTeams";
 import { BarChart } from "@/components/shared/charts";
 import { ArrowLeftIcon, DollarSignIcon, EditIcon, UsersIcon } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import DefaultProxyAdminTag from "@/components/common_components/DefaultProxyAdminTag";
 import CopyButton from "@/components/shared/CopyButton";
 import { StatusBadge } from "@/components/shared/table_cells/status_badge";
@@ -32,6 +33,7 @@ interface ProjectDetailProps {
 const utilisationTone = (percent: number) => (percent >= 90 ? "over" : percent >= 70 ? "warning" : "default");
 
 export function ProjectDetail({ projectId, onBack }: ProjectDetailProps) {
+  const { t } = useTranslation("projects");
   const { data: project, isLoading } = useProjectDetails(projectId);
   const { data: teamData } = useTeam(project?.team_id ?? undefined);
   // teamInfoCall returns { team_id, team_info: {...}, keys, team_memberships }
@@ -57,7 +59,7 @@ export function ProjectDetail({ projectId, onBack }: ProjectDetailProps) {
         <div
           role="status"
           aria-busy="true"
-          aria-label="Loading"
+          aria-label={t("details.loadingAria")}
           className="flex min-h-[300px] items-center justify-center"
         >
           <UiLoadingSpinner className="size-8 text-primary" />
@@ -69,10 +71,10 @@ export function ProjectDetail({ projectId, onBack }: ProjectDetailProps) {
   if (!project) {
     return (
       <div className="p-6 px-12">
-        <Button variant="ghost" size="icon" aria-label="Back" onClick={onBack} className="mb-4">
+        <Button variant="ghost" size="icon" aria-label={t("details.backAria")} onClick={onBack} className="mb-4">
           <ArrowLeftIcon className="size-4" />
         </Button>
-        <p className="py-8 text-center text-sm text-muted-foreground">Project not found</p>
+        <p className="py-8 text-center text-sm text-muted-foreground">{t("details.notFound")}</p>
       </div>
     );
   }
@@ -81,7 +83,7 @@ export function ProjectDetail({ projectId, onBack }: ProjectDetailProps) {
     <div className="p-6 px-12">
       <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" aria-label="Back" onClick={onBack}>
+          <Button variant="ghost" size="icon" aria-label={t("details.backAria")} onClick={onBack}>
             <ArrowLeftIcon className="size-4" />
           </Button>
           <div>
@@ -91,45 +93,45 @@ export function ProjectDetail({ projectId, onBack }: ProjectDetailProps) {
               </h1>
               <StatusBadge
                 tone={project.blocked ? "error" : "success"}
-                label={project.blocked ? "Blocked" : "Active"}
+                label={project.blocked ? t("status.blocked") : t("status.active")}
               />
             </div>
             <div className="flex items-center gap-1 text-sm text-muted-foreground">
-              <span>ID: {project.project_id}</span>
-              <CopyButton value={project.project_id} label="Copy project ID" />
+              <span>{t("details.idLabel", { id: project.project_id })}</span>
+              <CopyButton value={project.project_id} label={t("details.copyProjectIdAria")} />
             </div>
           </div>
         </div>
         <Button onClick={() => setIsEditModalVisible(true)}>
           <EditIcon className="size-4" />
-          Edit Project
+          {t("details.editProject")}
         </Button>
       </div>
 
       <Card className="mb-6">
         <CardHeader>
-          <CardTitle>Project Details</CardTitle>
+          <CardTitle>{t("details.title")}</CardTitle>
         </CardHeader>
         <CardContent>
           <dl className="grid grid-cols-[max-content_1fr] gap-x-4 gap-y-2 text-sm">
-            <dt className="text-muted-foreground">Description</dt>
+            <dt className="text-muted-foreground">{t("details.description")}</dt>
             <dd className="text-foreground">{project.description || "—"}</dd>
-            <dt className="text-muted-foreground">Created</dt>
+            <dt className="text-muted-foreground">{t("details.created")}</dt>
             <dd className="flex items-center gap-1 text-foreground">
               {new Date(project.created_at).toLocaleString()}
               {project.created_by && (
                 <>
-                  <span>by</span>
+                  <span>{t("details.by")}</span>
                   <DefaultProxyAdminTag userId={project.created_by} />
                 </>
               )}
             </dd>
-            <dt className="text-muted-foreground">Last Updated</dt>
+            <dt className="text-muted-foreground">{t("details.lastUpdated")}</dt>
             <dd className="flex items-center gap-1 text-foreground">
               {new Date(project.updated_at).toLocaleString()}
               {project.updated_by && (
                 <>
-                  <span>by</span>
+                  <span>{t("details.by")}</span>
                   <DefaultProxyAdminTag userId={project.updated_by} />
                 </>
               )}
@@ -143,14 +145,14 @@ export function ProjectDetail({ projectId, onBack }: ProjectDetailProps) {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <DollarSignIcon className="size-4" />
-              Budget
+              {t("details.budget")}
             </CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
             <div>
               <p className="text-[28px] leading-none font-medium text-foreground">${spend.toFixed(2)}</p>
               <p className="mt-1 text-sm text-muted-foreground">
-                {hasLimit ? `of $${maxBudget.toFixed(2)} budget` : "No budget limit"}
+                {hasLimit ? t("details.ofBudget", { amount: maxBudget.toFixed(2) }) : t("details.noBudgetLimit")}
               </p>
             </div>
             {hasLimit && (
@@ -161,7 +163,7 @@ export function ProjectDetail({ projectId, onBack }: ProjectDetailProps) {
                   </MeterTrack>
                 </Meter>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  {(Math.round(spendPercent * 10) / 10).toFixed(1)}% utilized
+                  {t("details.utilized", { percent: (Math.round(spendPercent * 10) / 10).toFixed(1) })}
                 </p>
               </div>
             )}
@@ -170,7 +172,7 @@ export function ProjectDetail({ projectId, onBack }: ProjectDetailProps) {
 
         <Card className="h-full lg:col-span-2">
           <CardHeader>
-            <CardTitle>Spend by Model</CardTitle>
+            <CardTitle>{t("details.spendByModel")}</CardTitle>
           </CardHeader>
           <CardContent>
             {modelSpendData.length > 0 ? (
@@ -186,7 +188,7 @@ export function ProjectDetail({ projectId, onBack }: ProjectDetailProps) {
                 style={{ height: Math.max(modelSpendData.length * 40, 120) }}
               />
             ) : (
-              <p className="py-8 text-center text-sm text-muted-foreground">No model spend recorded yet</p>
+              <p className="py-8 text-center text-sm text-muted-foreground">{t("details.noModelSpend")}</p>
             )}
           </CardContent>
         </Card>
@@ -199,7 +201,7 @@ export function ProjectDetail({ projectId, onBack }: ProjectDetailProps) {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <UsersIcon className="size-4" />
-              Team
+              {t("details.team")}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -215,13 +217,13 @@ export function ProjectDetail({ projectId, onBack }: ProjectDetailProps) {
                     <div>
                       <p className="text-base font-medium text-foreground">{teamInfo.team_alias || teamInfo.team_id}</p>
                       <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <span>ID: {teamInfo.team_id}</span>
-                        <CopyButton value={teamInfo.team_id} label="Copy team ID" />
+                        <span>{t("details.idLabel", { id: teamInfo.team_id })}</span>
+                        <CopyButton value={teamInfo.team_id} label={t("details.copyTeamIdAria")} />
                       </div>
                     </div>
 
                     <div>
-                      <p className="mb-1 text-xs text-muted-foreground">Models</p>
+                      <p className="mb-1 text-xs text-muted-foreground">{t("details.models")}</p>
                       {(teamInfo.models?.length ?? 0) > 0 ? (
                         <div className="flex max-h-[60px] flex-wrap gap-1 overflow-hidden">
                           {teamInfo.models?.map((m: string) => (
@@ -231,17 +233,17 @@ export function ProjectDetail({ projectId, onBack }: ProjectDetailProps) {
                           ))}
                         </div>
                       ) : (
-                        <p className="text-sm text-muted-foreground">All models</p>
+                        <p className="text-sm text-muted-foreground">{t("details.allModels")}</p>
                       )}
                     </div>
 
                     <div>
                       <div className="mb-0.5 flex items-center justify-between">
-                        <span className="text-xs text-muted-foreground">Spend</span>
+                        <span className="text-xs text-muted-foreground">{t("details.spend")}</span>
                         <span className="text-xs text-foreground">
                           ${teamSpend.toFixed(2)}
                           <span className="text-muted-foreground">
-                            {teamHasLimit ? ` / $${teamBudget.toFixed(2)}` : " (Unlimited)"}
+                            {teamHasLimit ? ` / $${teamBudget.toFixed(2)}` : ` ${t("details.unlimited")}`}
                           </span>
                         </span>
                       </div>
@@ -255,7 +257,7 @@ export function ProjectDetail({ projectId, onBack }: ProjectDetailProps) {
                     </div>
 
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground">Members</span>
+                      <span className="text-xs text-muted-foreground">{t("details.members")}</span>
                       <span className="text-xs text-foreground">{teamInfo.members_with_roles?.length ?? 0}</span>
                     </div>
                   </div>
@@ -265,13 +267,13 @@ export function ProjectDetail({ projectId, onBack }: ProjectDetailProps) {
               <div
                 role="status"
                 aria-busy="true"
-                aria-label="Loading team"
+                aria-label={t("details.loadingTeamAria")}
                 className="flex items-center justify-center p-4"
               >
                 <UiLoadingSpinner className="size-5 text-muted-foreground" />
               </div>
             ) : (
-              <p className="py-8 text-center text-sm text-muted-foreground">No team assigned</p>
+              <p className="py-8 text-center text-sm text-muted-foreground">{t("details.noTeamAssigned")}</p>
             )}
           </CardContent>
         </Card>

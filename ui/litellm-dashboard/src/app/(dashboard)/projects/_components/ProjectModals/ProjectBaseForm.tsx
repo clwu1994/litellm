@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useFieldArray, useWatch, type UseFormReturn } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { ChevronDown, CircleAlert, Minus, Plus } from "lucide-react";
 
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
@@ -40,6 +41,7 @@ interface ProjectBaseFormProps {
 export type { ProjectFormValues } from "./projectFormSchema";
 
 export function ProjectBaseForm({ form, advancedOpen, onAdvancedOpenChange }: ProjectBaseFormProps) {
+  const { t } = useTranslation("projects");
   const { accessToken, userId, userRole } = useAuthorized();
   const { data: teams } = useTeams();
 
@@ -107,25 +109,25 @@ export function ProjectBaseForm({ form, advancedOpen, onAdvancedOpenChange }: Pr
   }));
 
   const modelOptions = [
-    { value: ALL_TEAM_MODELS, label: "All Team Models" },
+    { value: ALL_TEAM_MODELS, label: t("form.allTeamModels") },
     ...modelsToPick.map((model) => ({ value: model, label: getModelDisplayName(model) })),
   ];
-  const modelsPlaceholder = selectedTeam ? "Select models" : "Select a team first";
+  const modelsPlaceholder = selectedTeam ? t("form.selectModels") : t("form.selectTeamFirst");
 
   return (
     <div className="mt-6">
-      <p className="text-xs font-semibold tracking-[0.05em] text-foreground uppercase">Basic Information</p>
+      <p className="text-xs font-semibold tracking-[0.05em] text-foreground uppercase">{t("form.basicInformation")}</p>
       <Separator className="mt-2 mb-4" />
 
       <FieldGroup>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-          <FormField control={form.control} name="project_alias" label="Project Name">
+          <FormField control={form.control} name="project_alias" label={t("form.projectName")}>
             {({ ref, ...field }) => (
-              <Input {...field} value={field.value ?? ""} ref={ref} placeholder="e.g. Customer Support Bot" />
+              <Input {...field} value={field.value ?? ""} ref={ref} placeholder={t("form.projectNamePlaceholder")} />
             )}
           </FormField>
 
-          <FormField control={form.control} name="team_id" label="Team">
+          <FormField control={form.control} name="team_id" label={t("form.team")}>
             {({ id, value, onChange, ref: _ref, ...field }) => (
               <SearchSelect
                 {...field}
@@ -136,21 +138,21 @@ export function ProjectBaseForm({ form, advancedOpen, onAdvancedOpenChange }: Pr
                   onChange(next);
                   handleTeamChange(next);
                 }}
-                placeholder="Search or select a team"
+                placeholder={t("form.teamPlaceholder")}
                 allowClear
               />
             )}
           </FormField>
         </div>
 
-        <FormField control={form.control} name="description" label="Description">
+        <FormField control={form.control} name="description" label={t("form.description")}>
           {({ ref, ...field }) => (
             <Textarea
               {...field}
               value={field.value ?? ""}
               ref={ref}
               rows={3}
-              placeholder="Describe the purpose of this project"
+              placeholder={t("form.descriptionPlaceholder")}
             />
           )}
         </FormField>
@@ -158,8 +160,8 @@ export function ProjectBaseForm({ form, advancedOpen, onAdvancedOpenChange }: Pr
         <FormField
           control={form.control}
           name="models"
-          label="Allowed Models (scoped to selected team's models)"
-          description={!selectedTeam ? "Select a team first to see available models" : undefined}
+          label={t("form.allowedModels")}
+          description={!selectedTeam ? t("form.allowedModelsDescription") : undefined}
         >
           {({ id, value, onChange, "aria-invalid": ariaInvalid, "aria-describedby": ariaDescribedBy }) => (
             <Select
@@ -193,7 +195,7 @@ export function ProjectBaseForm({ form, advancedOpen, onAdvancedOpenChange }: Pr
         </FormField>
 
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-          <FormField control={form.control} name="max_budget" label="Max Budget (USD)">
+          <FormField control={form.control} name="max_budget" label={t("form.maxBudget")}>
             {({ ref, value, onChange, ...field }) => (
               <InputGroup>
                 <InputGroupAddon>
@@ -236,13 +238,13 @@ export function ProjectBaseForm({ form, advancedOpen, onAdvancedOpenChange }: Pr
               <ChevronDown
                 className={`size-4 text-muted-foreground transition-transform ${advancedOpen ? "" : "-rotate-90"}`}
               />
-              <span className="text-sm font-semibold text-foreground">Advanced Settings</span>
+              <span className="text-sm font-semibold text-foreground">{t("form.advancedSettings")}</span>
             </button>
           }
         />
         <CollapsibleContent className="px-4 pb-4">
           <div className="flex items-center gap-3">
-            <span className="text-sm font-semibold text-foreground">Block Project</span>
+            <span className="text-sm font-semibold text-foreground">{t("form.blockProject")}</span>
             <FormField control={form.control} name="isBlocked" className="w-auto">
               {({ id, value, onChange, ref: _ref, ...field }) => (
                 <Switch {...field} id={id} checked={value} onCheckedChange={onChange} />
@@ -253,7 +255,7 @@ export function ProjectBaseForm({ form, advancedOpen, onAdvancedOpenChange }: Pr
           {isBlocked ? (
             <Alert variant="warning" className="mt-3">
               <CircleAlert />
-              <AlertTitle>All API requests using keys under this project will be rejected.</AlertTitle>
+              <AlertTitle>{t("form.blockedWarning")}</AlertTitle>
             </Alert>
           ) : null}
 
@@ -262,8 +264,8 @@ export function ProjectBaseForm({ form, advancedOpen, onAdvancedOpenChange }: Pr
           <FormField
             control={form.control}
             name="guardrails"
-            label="Guardrails"
-            description="Select existing guardrails or enter new ones"
+            label={t("form.guardrails")}
+            description={t("form.guardrailsDescription")}
           >
             {({ id, value, onChange }) => (
               <TagsInput
@@ -271,71 +273,71 @@ export function ProjectBaseForm({ form, advancedOpen, onAdvancedOpenChange }: Pr
                 value={value ?? []}
                 onValueChange={onChange}
                 options={guardrailsList.map((name) => ({ label: name, value: name }))}
-                placeholder="Select or enter guardrails"
+                placeholder={t("form.guardrailsPlaceholder")}
               />
             )}
           </FormField>
 
           <Separator className="my-4" />
 
-          <p className="mb-3 text-sm font-semibold text-foreground">Model-Specific Limits</p>
+          <p className="mb-3 text-sm font-semibold text-foreground">{t("form.modelSpecificLimits")}</p>
           {modelLimits.fields.map((field, index) => (
             <div
               key={field.id}
               className="mb-2 grid grid-cols-1 items-start gap-2 sm:grid-cols-2 xl:grid-cols-[minmax(0,2fr)_repeat(4,minmax(0,1fr))_auto]"
             >
-              <FormField control={form.control} name={`modelLimits.${index}.model`} label="Model">
+              <FormField control={form.control} name={`modelLimits.${index}.model`} label={t("form.model")}>
                 {({ ref, ...control }) => (
-                  <Input {...control} value={control.value ?? ""} ref={ref} placeholder="Model name (e.g. gpt-4)" />
+                  <Input {...control} value={control.value ?? ""} ref={ref} placeholder={t("form.modelPlaceholder")} />
                 )}
               </FormField>
-              <FormField control={form.control} name={`modelLimits.${index}.tpm`} label="TPM Limit">
+              <FormField control={form.control} name={`modelLimits.${index}.tpm`} label={t("form.tpmLimit")}>
                 {({ ref, value, onChange, ...control }) => (
                   <Input
                     {...control}
                     ref={ref}
                     type="number"
                     min={0}
-                    placeholder="TPM Limit"
+                    placeholder={t("form.tpmLimit")}
                     value={value ?? ""}
                     onChange={(event) => onChange(toOptionalNumber(event.target.value))}
                   />
                 )}
               </FormField>
-              <FormField control={form.control} name={`modelLimits.${index}.rpm`} label="RPM Limit">
+              <FormField control={form.control} name={`modelLimits.${index}.rpm`} label={t("form.rpmLimit")}>
                 {({ ref, value, onChange, ...control }) => (
                   <Input
                     {...control}
                     ref={ref}
                     type="number"
                     min={0}
-                    placeholder="RPM Limit"
+                    placeholder={t("form.rpmLimit")}
                     value={value ?? ""}
                     onChange={(event) => onChange(toOptionalNumber(event.target.value))}
                   />
                 )}
               </FormField>
-              <FormField control={form.control} name={`modelLimits.${index}.itpm`} label="Input TPM Limit">
+              <FormField control={form.control} name={`modelLimits.${index}.itpm`} label={t("form.inputTpmLimit")}>
                 {({ ref, value, onChange, ...control }) => (
                   <Input
                     {...control}
                     ref={ref}
                     type="number"
                     min={0}
-                    placeholder="Input TPM Limit"
+                    placeholder={t("form.inputTpmLimit")}
                     value={value ?? ""}
                     onChange={(event) => onChange(toOptionalNumber(event.target.value))}
                   />
                 )}
               </FormField>
-              <FormField control={form.control} name={`modelLimits.${index}.otpm`} label="Output TPM Limit">
+              <FormField control={form.control} name={`modelLimits.${index}.otpm`} label={t("form.outputTpmLimit")}>
                 {({ ref, value, onChange, ...control }) => (
                   <Input
                     {...control}
                     ref={ref}
                     type="number"
                     min={0}
-                    placeholder="Output TPM Limit"
+                    placeholder={t("form.outputTpmLimit")}
                     value={value ?? ""}
                     onChange={(event) => onChange(toOptionalNumber(event.target.value))}
                   />
@@ -347,7 +349,7 @@ export function ProjectBaseForm({ form, advancedOpen, onAdvancedOpenChange }: Pr
                 size="icon-sm"
                 className="mt-1 text-destructive"
                 onClick={() => modelLimits.remove(index)}
-                aria-label={`Remove model limit ${index + 1}`}
+                aria-label={t("form.removeModelLimit", { index: index + 1 })}
               >
                 <Minus />
               </Button>
@@ -360,22 +362,22 @@ export function ProjectBaseForm({ form, advancedOpen, onAdvancedOpenChange }: Pr
             onClick={() => modelLimits.append(emptyModelLimit)}
           >
             <Plus />
-            Add Model Limit
+            {t("form.addModelLimit")}
           </Button>
 
           <Separator className="my-4" />
 
-          <p className="mb-3 text-sm font-semibold text-foreground">Metadata</p>
+          <p className="mb-3 text-sm font-semibold text-foreground">{t("form.metadata")}</p>
           {metadata.fields.map((field, index) => (
             <div key={field.id} className="mb-2 flex items-start gap-2">
               <FormField control={form.control} name={`metadata.${index}.key`}>
                 {({ ref, ...control }) => (
-                  <Input {...control} value={control.value ?? ""} ref={ref} placeholder="Key" />
+                  <Input {...control} value={control.value ?? ""} ref={ref} placeholder={t("form.metadataKey")} />
                 )}
               </FormField>
               <FormField control={form.control} name={`metadata.${index}.value`}>
                 {({ ref, ...control }) => (
-                  <Input {...control} value={control.value ?? ""} ref={ref} placeholder="Value" />
+                  <Input {...control} value={control.value ?? ""} ref={ref} placeholder={t("form.metadataValue")} />
                 )}
               </FormField>
               <Button
@@ -384,7 +386,7 @@ export function ProjectBaseForm({ form, advancedOpen, onAdvancedOpenChange }: Pr
                 size="icon-sm"
                 className="mt-1 text-destructive"
                 onClick={() => metadata.remove(index)}
-                aria-label={`Remove metadata pair ${index + 1}`}
+                aria-label={t("form.removeMetadataPair", { index: index + 1 })}
               >
                 <Minus />
               </Button>
@@ -397,7 +399,7 @@ export function ProjectBaseForm({ form, advancedOpen, onAdvancedOpenChange }: Pr
             onClick={() => metadata.append({ key: "", value: "" })}
           >
             <Plus />
-            Add Key-Value Pair
+            {t("form.addKeyValuePair")}
           </Button>
         </CollapsibleContent>
       </Collapsible>

@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { FolderPlus } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { toast } from "@/lib/toast";
 import { useZodForm } from "@/lib/forms/useZodForm";
@@ -19,9 +20,13 @@ interface CreateProjectModalProps {
 }
 
 function CreateProjectForm({ onClose }: { onClose: () => void }) {
-  const form = useZodForm(projectFormSchema, { defaultValues: emptyProjectFormValues });
-  const createMutation = useCreateProject();
+  const { t } = useTranslation("projects");
   const [advancedOpen, setAdvancedOpen] = useState(false);
+  const form = useZodForm(
+    useMemo(() => projectFormSchema(t), [t]),
+    { defaultValues: emptyProjectFormValues },
+  );
+  const createMutation = useCreateProject();
 
   const handleSubmit = form.handleSubmit((values) => {
     const params: ProjectCreateParams = {
@@ -31,12 +36,12 @@ function CreateProjectForm({ onClose }: { onClose: () => void }) {
 
     createMutation.mutate(params, {
       onSuccess: () => {
-        toast.success("Project created successfully");
+        toast.success(t("toasts.created"));
         form.reset(emptyProjectFormValues);
         onClose();
       },
       onError: (error) => {
-        toast.error(error.message || "Failed to create project");
+        toast.error(error.message || t("toasts.createFailed"));
       },
     });
   });
@@ -52,11 +57,11 @@ function CreateProjectForm({ onClose }: { onClose: () => void }) {
 
       <div className="mt-6 flex justify-end gap-2 border-t border-border pt-4">
         <Button type="button" variant="outline" onClick={handleCancel}>
-          Cancel
+          {t("modals.cancel")}
         </Button>
         <Button type="button" onClick={() => void handleSubmit()} disabled={createMutation.isPending}>
           {createMutation.isPending ? <UiLoadingSpinner /> : <FolderPlus />}
-          Create Project
+          {t("modals.createSubmit")}
         </Button>
       </div>
     </form>
@@ -64,11 +69,12 @@ function CreateProjectForm({ onClose }: { onClose: () => void }) {
 }
 
 export function CreateProjectModal({ isOpen, onClose }: CreateProjectModalProps) {
+  const { t } = useTranslation("projects");
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[720px]">
         <DialogHeader>
-          <DialogTitle className="text-lg">Create New Project</DialogTitle>
+          <DialogTitle className="text-lg">{t("modals.createTitle")}</DialogTitle>
         </DialogHeader>
         <CreateProjectForm onClose={onClose} />
       </DialogContent>

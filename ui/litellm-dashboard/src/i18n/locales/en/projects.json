@@ -1,0 +1,130 @@
+{
+  "page": {
+    "title": "Projects",
+    "subtitle": "Manage projects within your teams",
+    "createProject": "Create Project",
+    "searchPlaceholder": "Search projects by name, ID, description, or team...",
+    "clearSearchAria": "Clear search"
+  },
+  "status": {
+    "active": "Active",
+    "blocked": "Blocked"
+  },
+  "table": {
+    "loading": "Loading projects…",
+    "emptyTitle": "No projects yet",
+    "emptyDescription": "Create a project to organize keys within your teams.",
+    "emptyFilteredTitle": "No matching projects",
+    "emptyFilteredDescription": "Try a different search term.",
+    "noModels": "No models",
+    "columns": {
+      "id": "ID",
+      "name": "Name",
+      "team": "Team",
+      "models": "Models",
+      "status": "Status",
+      "created": "Created",
+      "updated": "Updated"
+    }
+  },
+  "details": {
+    "title": "Project Details",
+    "loadingAria": "Loading",
+    "backAria": "Back",
+    "notFound": "Project not found",
+    "editProject": "Edit Project",
+    "idLabel": "ID: {{id}}",
+    "copyProjectIdAria": "Copy project ID",
+    "description": "Description",
+    "created": "Created",
+    "by": "by",
+    "lastUpdated": "Last Updated",
+    "budget": "Budget",
+    "ofBudget": "of ${{amount}} budget",
+    "noBudgetLimit": "No budget limit",
+    "utilized": "{{percent}}% utilized",
+    "spendByModel": "Spend by Model",
+    "noModelSpend": "No model spend recorded yet",
+    "team": "Team",
+    "copyTeamIdAria": "Copy team ID",
+    "models": "Models",
+    "allModels": "All models",
+    "spend": "Spend",
+    "unlimited": "(Unlimited)",
+    "members": "Members",
+    "loadingTeamAria": "Loading team",
+    "noTeamAssigned": "No team assigned"
+  },
+  "keys": {
+    "title": "Keys",
+    "filterPlaceholder": "Filter by key name...",
+    "clearFilterAria": "Clear key filter",
+    "loading": "Loading keys…",
+    "emptyTitle": "No keys found",
+    "emptyDescription": "Keys created in this project will show up here.",
+    "never": "Never",
+    "columns": {
+      "keyName": "Key Name",
+      "owner": "Owner",
+      "created": "Created",
+      "lastActive": "Last Active"
+    }
+  },
+  "form": {
+    "basicInformation": "Basic Information",
+    "projectName": "Project Name",
+    "projectNamePlaceholder": "e.g. Customer Support Bot",
+    "team": "Team",
+    "teamPlaceholder": "Search or select a team",
+    "description": "Description",
+    "descriptionPlaceholder": "Describe the purpose of this project",
+    "allowedModels": "Allowed Models (scoped to selected team's models)",
+    "allowedModelsDescription": "Select a team first to see available models",
+    "allTeamModels": "All Team Models",
+    "selectModels": "Select models",
+    "selectTeamFirst": "Select a team first",
+    "maxBudget": "Max Budget (USD)",
+    "advancedSettings": "Advanced Settings",
+    "blockProject": "Block Project",
+    "blockedWarning": "All API requests using keys under this project will be rejected.",
+    "guardrails": "Guardrails",
+    "guardrailsDescription": "Select existing guardrails or enter new ones",
+    "guardrailsPlaceholder": "Select or enter guardrails",
+    "modelSpecificLimits": "Model-Specific Limits",
+    "model": "Model",
+    "modelPlaceholder": "Model name (e.g. gpt-4)",
+    "tpmLimit": "TPM Limit",
+    "rpmLimit": "RPM Limit",
+    "inputTpmLimit": "Input TPM Limit",
+    "outputTpmLimit": "Output TPM Limit",
+    "removeModelLimit": "Remove model limit {{index}}",
+    "addModelLimit": "Add Model Limit",
+    "metadata": "Metadata",
+    "metadataKey": "Key",
+    "metadataValue": "Value",
+    "removeMetadataPair": "Remove metadata pair {{index}}",
+    "addKeyValuePair": "Add Key-Value Pair"
+  },
+  "modals": {
+    "createTitle": "Create New Project",
+    "editTitle": "Edit Project",
+    "cancel": "Cancel",
+    "createSubmit": "Create Project",
+    "saveChanges": "Save Changes"
+  },
+  "validation": {
+    "projectNameRequired": "Please enter a project name",
+    "teamRequired": "Please select a team",
+    "modelRequired": "Missing model",
+    "metadataKeyRequired": "Missing key",
+    "metadataValueRequired": "Missing value",
+    "duplicateModel": "Duplicate model",
+    "duplicateKey": "Duplicate key"
+  },
+  "toasts": {
+    "created": "Project created successfully",
+    "createFailed": "Failed to create project",
+    "updated": "Project updated successfully",
+    "updateFailed": "Failed to update project"
+  }
+}
