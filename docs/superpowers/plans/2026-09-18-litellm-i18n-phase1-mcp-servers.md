@@ -62,8 +62,8 @@ The increment covers `src/app/(dashboard)/mcp-servers/**` and the component tree
 
 ### Task 4: Tools, toolsets, submissions, permissions and the `mcp_tools` tree
 
-**Files:** `_components/mcp_tools.tsx` (~16), `mcp_tool_configuration.tsx` (~21), `ToolTestPanel.tsx` (~20), `MCPToolsetsTab.tsx` (~19), `MCPSubmissionsTab.tsx` (~18), `MCPPermissionManagement.tsx` (~16), `MCPToolsetTableColumns.tsx` (~11), `mcp_server_cost_config.tsx` (~10), `mcp_server_cost_display.tsx` (~3), `ToolArgumentsForm.tsx` (~6), `editToolPreview.ts`, `editServerPayload.differential.cases.ts`, plus `src/components/mcp_tools/**` (ByokCredentialModal, McpCrudPermissionPanel)
-- [ ] Same shape, extending `mcpServers`. Sweep the whole `mcp-servers/` and `mcp_tools/` trees afterwards and report any file deliberately skipped with importer evidence, plus the increment's final per-key coverage count.
+**Files:** `_components/mcp_tools.tsx` (~16), `mcp_tool_configuration.tsx` (~21), `ToolTestPanel.tsx` (~20), `MCPToolsetsTab.tsx` (~19), `MCPSubmissionsTab.tsx` (~18), `MCPPermissionManagement.tsx` (~16), `MCPToolsetTableColumns.tsx` (~11), `mcp_server_cost_config.tsx` (~10), `mcp_server_cost_display.tsx` (~3), `ToolArgumentsForm.tsx` (~6), `editToolPreview.ts`, `editServerPayload.differential.cases.ts`, plus `src/components/mcp_tools/**` (ByokCredentialModal, McpCrudPermissionPanel). **Also, assigned by Task 1's report:** `_components/importConnectorConfig.ts` (English parse-error copy rendered in the import dialog's Alert; reachable, not dead, and its existing `importConnectorConfig.test.ts` pins the English strings, so if you change the helper's contract say why and confirm the assertion did not weaken), and the `MCP*` panels this route embeds under `src/components/Settings/AdminSettings/` (`MCPSemanticFilterSettings`, `MCPToolSearchSettings`).
+- [ ] Same shape, extending `mcpServers`. Sweep the whole `mcp-servers/`, `mcp_tools/` and embedded `Settings/AdminSettings/MCP*` trees afterwards and report any file deliberately skipped with importer evidence, plus the increment's final per-key coverage count.
 
 ---
 
