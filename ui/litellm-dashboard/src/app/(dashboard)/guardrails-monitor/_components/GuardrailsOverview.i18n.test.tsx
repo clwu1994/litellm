@@ -186,13 +186,13 @@ describe("GuardrailsOverview Chinese copy", () => {
     expect(screen.queryByTitle("Evaluation settings")).not.toBeInTheDocument();
   });
 
-  it("renders the Chinese unpriced tooltip with the raw unit summary", async () => {
+  it("renders the Chinese unpriced tooltip with the Chinese unit summary", async () => {
     const user = userEvent.setup();
     renderOverview();
 
-    await user.hover(within(rowNamed("High Failure Guardrail")).getByLabelText("250 units unpriced"));
+    await user.hover(within(rowNamed("High Failure Guardrail")).getByLabelText("250 个单位未定价"));
 
-    expect(await screen.findByText("250 units unpriced：这些单位没有已知价格，未计入成本")).toBeInTheDocument();
+    expect(await screen.findByText("250 个单位未定价：这些单位没有已知价格，未计入成本")).toBeInTheDocument();
     expect(
       screen.queryByText("250 units unpriced: these units have no known price and are left out of the cost"),
     ).not.toBeInTheDocument();
@@ -203,7 +203,7 @@ describe("GuardrailsOverview Chinese copy", () => {
     renderOverview();
 
     const card = await screen.findByRole("group", { name: "Guardrail 成本" });
-    await user.click(within(card).getByRole("button", { name: /How is this calculated/ }));
+    await user.click(within(card).getByRole("button", { name: "如何计算？" }));
 
     const dialog = await screen.findByRole("dialog", { name: "此成本如何计算" });
     expect(screen.queryByRole("dialog", { name: "How this cost is calculated" })).not.toBeInTheDocument();

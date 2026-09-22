@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import i18n from "@/i18n/bootstrapI18n";
 import {
   counterLabel,
   counterMathRow,
@@ -11,6 +12,8 @@ import {
   unpricedSummary,
   type CounterMath,
 } from "./usageUnits";
+
+const t = i18n.getFixedT("en", "guardrailsMonitor");
 
 const counterOf = (counter: string, units: number, unpriced: number, cost: number | null): CounterMath => ({
   counter,
@@ -62,13 +65,13 @@ describe("counterLabel", () => {
 
 describe("unpricedSummary", () => {
   it("is null when every unit was priced", () => {
-    expect(unpricedSummary({})).toBeNull();
-    expect(unpricedSummary({ contentPolicyUnits: 0 })).toBeNull();
+    expect(unpricedSummary({}, t)).toBeNull();
+    expect(unpricedSummary({ contentPolicyUnits: 0 }, t)).toBeNull();
   });
 
   it("counts unpriced units across counters with a pluralised label", () => {
-    expect(unpricedSummary({ contentPolicyUnits: 1200, someFutureCounter: 34 })).toBe("1,234 units unpriced");
-    expect(unpricedSummary({ someFutureCounter: 1 })).toBe("1 unit unpriced");
+    expect(unpricedSummary({ contentPolicyUnits: 1200, someFutureCounter: 34 }, t)).toBe("1,234 units unpriced");
+    expect(unpricedSummary({ someFutureCounter: 1 }, t)).toBe("1 unit unpriced");
   });
 });
 
@@ -98,7 +101,7 @@ describe("formatUnitPrice", () => {
 
 describe("counterMathRow", () => {
   it("shows units × price = cost for a fully priced counter", () => {
-    expect(counterMathRow(counterOf("contentPolicyUnits", 1000, 0, 0.15))).toEqual({
+    expect(counterMathRow(counterOf("contentPolicyUnits", 1000, 0, 0.15), t)).toEqual({
       label: "Content Policy",
       parts: ["1,000", "× $0.00015", "= $0.1500"],
       note: null,
@@ -106,18 +109,18 @@ describe("counterMathRow", () => {
   });
 
   it("prices only the priced share and calls out the rest", () => {
-    expect(counterMathRow(counterOf("sensitiveInformationPolicyUnits", 8, 2, 0.0006))).toEqual({
+    expect(counterMathRow(counterOf("sensitiveInformationPolicyUnits", 8, 2, 0.0006), t)).toEqual({
       label: "Sensitive Information Policy",
       parts: ["6", "× $0.0001", "= $0.0006"],
       note: "2 unpriced units left out",
     });
-    expect(counterMathRow(counterOf("sensitiveInformationPolicyUnits", 8, 1, 0.0007)).note).toBe(
+    expect(counterMathRow(counterOf("sensitiveInformationPolicyUnits", 8, 1, 0.0007), t).note).toBe(
       "1 unpriced unit left out",
     );
   });
 
   it("says so when a counter has no known price at all", () => {
-    expect(counterMathRow(counterOf("someFutureCounter", 7, 7, null))).toEqual({
+    expect(counterMathRow(counterOf("someFutureCounter", 7, 7, null), t)).toEqual({
       label: "Some Future Counter",
       parts: ["7", "× —", "= —"],
       note: "no known price, left out",
@@ -125,7 +128,7 @@ describe("counterMathRow", () => {
   });
 
   it("shows a free counter as × $0", () => {
-    expect(counterMathRow(counterOf("wordPolicyUnits", 2, 0, 0)).parts).toEqual(["2", "× $0", "= $0.0000"]);
+    expect(counterMathRow(counterOf("wordPolicyUnits", 2, 0, 0), t).parts).toEqual(["2", "× $0", "= $0.0000"]);
   });
 });
 

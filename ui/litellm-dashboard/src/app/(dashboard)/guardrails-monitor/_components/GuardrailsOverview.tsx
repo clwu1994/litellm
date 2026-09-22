@@ -105,7 +105,7 @@ function TotalCostMath({
 
 function CostCell({ row }: { row: GuardrailUsageOverviewRow }) {
   const { t } = useTranslation("guardrailsMonitor");
-  const unpriced = unpricedSummary(row.untrackedUsageUnits);
+  const unpriced = unpricedSummary(row.untrackedUsageUnits, t);
   return (
     <span className="inline-flex w-full items-center justify-end gap-1">
       {unpriced && (
@@ -332,7 +332,7 @@ export function GuardrailsOverview({
           value={formatCost(metrics.totalCost)}
           valueColor={metrics.totalCost != null ? "text-foreground" : "text-muted-foreground"}
           icon={<CircleDollarSign className="size-4" />}
-          subtitle={unpricedSummary(metrics.untracked) ?? undefined}
+          subtitle={unpricedSummary(metrics.untracked, t) ?? undefined}
           hint={<TotalCostMath rows={activeData} total={metrics.totalCost} untracked={metrics.untracked} />}
         />
         <MetricCard label={t("overview.activeGuardrails")} value={metrics.count} />

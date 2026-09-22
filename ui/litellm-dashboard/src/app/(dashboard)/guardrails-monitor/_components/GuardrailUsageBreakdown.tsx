@@ -121,7 +121,7 @@ const CostMath = ({ counters, detail }: { counters: CounterRow[]; detail: Guardr
   const { t } = useTranslation("guardrailsMonitor");
   return (
     <CalcPopover title={t("common.costMathTitle")} formula={t("breakdown.costFormula")}>
-      <MathTable rows={counters.map(counterMathRow)} total={formatCost(detail.cost)} />
+      <MathTable rows={counters.map((row) => counterMathRow(row, t))} total={formatCost(detail.cost)} />
       <p className="text-xs text-muted-foreground">{t("breakdown.costNote")}</p>
       <UnpricedNote unpriced={detail.untracked_usage_units} provider={detail.provider} />
     </CalcPopover>
@@ -145,7 +145,7 @@ const TableHeading = ({ title }: { title: string }) => (
 export function GuardrailUsageBreakdown({ detail }: { detail: GuardrailUsageDetail }) {
   const { t } = useTranslation("guardrailsMonitor");
   const counters = counterRows(detail);
-  const unpriced = unpricedSummary(detail.untracked_usage_units);
+  const unpriced = unpricedSummary(detail.untracked_usage_units, t);
 
   return (
     <section className="space-y-4" aria-label={t("breakdown.regionAria")}>

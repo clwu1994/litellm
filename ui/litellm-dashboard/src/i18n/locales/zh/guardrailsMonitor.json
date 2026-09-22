@@ -107,6 +107,18 @@
     "noTeam": "无团队",
     "noKey": "无密钥"
   },
+  "math": {
+    "howCalculated": "如何计算？",
+    "total": "总计",
+    "noKnownPrice": "没有已知价格，未计入",
+    "unpricedLeftOutOne": "{{unpriced}} 个单位未定价，未计入",
+    "unpricedLeftOutOther": "{{unpriced}} 个单位未定价，未计入",
+    "unpricedSummaryOne": "{{total}} 个单位未定价",
+    "unpricedSummaryOther": "{{total}} 个单位未定价",
+    "unpricedNoteOne": "{{total}} 个单位没有已知价格，未计入成本。",
+    "unpricedNoteOther": "{{total}} 个单位没有已知价格，未计入成本。",
+    "requestPricing": "在 GitHub 上申请定价"
+  },
   "detail": {
     "backToOverview": "返回概览",
     "loadFailed": "Guardrail 详情加载失败。",

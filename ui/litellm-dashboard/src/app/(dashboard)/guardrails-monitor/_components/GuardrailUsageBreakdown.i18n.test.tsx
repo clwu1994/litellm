@@ -55,6 +55,20 @@ const singleCounterDetail: GuardrailUsageDetail = {
 const renderBreakdown = (value: GuardrailUsageDetail = detail) =>
   renderWithProviders(<GuardrailUsageBreakdown detail={value} />);
 
+const partiallyUnpricedDetail: GuardrailUsageDetail = {
+  ...detail,
+  usage_units: { wordPolicyUnits: 8, sensitiveInformationPolicyUnits: 4 },
+  usage_units_by_team: {},
+  usage_units_by_key: {},
+  cost: 0.0009,
+  cost_by_unit: { wordPolicyUnits: 0.0006, sensitiveInformationPolicyUnits: 0.0003 },
+  cost_by_team: {},
+  cost_by_key: {},
+  untracked_usage_units: { wordPolicyUnits: 2, sensitiveInformationPolicyUnits: 1 },
+  untracked_usage_units_by_team: {},
+  untracked_usage_units_by_key: {},
+};
+
 const emptyUsageDetail: GuardrailUsageDetail = {
   ...detail,
   usage_units: {},
@@ -138,9 +152,7 @@ describe("GuardrailUsageBreakdown Chinese copy", () => {
     const user = userEvent.setup();
     renderBreakdown();
 
-    await user.click(
-      within(screen.getByRole("group", { name: "成本" })).getByRole("button", { name: /How is this calculated/ }),
-    );
+    await user.click(within(screen.getByRole("group", { name: "成本" })).getByRole("button", { name: "如何计算？" }));
 
     const dialog = await screen.findByRole("dialog", { name: "此成本如何计算" });
     expect(screen.queryByRole("dialog", { name: "How this cost is calculated" })).not.toBeInTheDocument();
@@ -150,6 +162,8 @@ describe("GuardrailUsageBreakdown Chinese copy", () => {
     expect(
       within(dialog).queryByText("Per-unit prices come from the cost map LiteLLM ships with."),
     ).not.toBeInTheDocument();
+    expect(within(dialog).getByText("没有已知价格，未计入")).toBeInTheDocument();
+    expect(within(dialog).queryByText("no known price, left out")).not.toBeInTheDocument();
   });
 
   it("renders the Chinese usage units math popover", async () => {
@@ -158,7 +172,7 @@ describe("GuardrailUsageBreakdown Chinese copy", () => {
 
     await user.click(
       within(screen.getByRole("group", { name: "用量单位" })).getByRole("button", {
-        name: /How is this calculated/,
+        name: "如何计算？",
       }),
     );
 
@@ -195,6 +209,33 @@ describe("GuardrailUsageBreakdown Chinese copy", () => {
 
     expect(screen.getByText("该时间段未记录任何计费用量单位。")).toBeInTheDocument();
     expect(screen.queryByText("No billable usage units were recorded in this period.")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese per-counter unpriced notes for one and several units", async () => {
+    const user = userEvent.setup();
+    renderBreakdown(partiallyUnpricedDetail);
+
+    await user.click(within(screen.getByRole("group", { name: "成本" })).getByRole("button", { name: "如何计算？" }));
+
+    const dialog = await screen.findByRole("dialog", { name: "此成本如何计算" });
+    expect(within(dialog).getByText("2 个单位未定价，未计入")).toBeInTheDocument();
+    expect(within(dialog).queryByText("2 unpriced units left out")).not.toBeInTheDocument();
+    expect(within(dialog).getByText("1 个单位未定价，未计入")).toBeInTheDocument();
+    expect(within(dialog).queryByText("1 unpriced unit left out")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese unpriced unit summary for several units", () => {
+    renderBreakdown(partiallyUnpricedDetail);
+
+    expect(screen.getByText("3 个单位未定价")).toBeInTheDocument();
+    expect(screen.queryByText("3 units unpriced")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese unpriced unit summary for a single unit", () => {
+    renderBreakdown({ ...partiallyUnpricedDetail, untracked_usage_units: { wordPolicyUnits: 1 } });
+
+    expect(screen.getByText("1 个单位未定价")).toBeInTheDocument();
+    expect(screen.queryByText("1 unit unpriced")).not.toBeInTheDocument();
   });
 
   it("keeps the English counter count singular and plural literals under en", async () => {

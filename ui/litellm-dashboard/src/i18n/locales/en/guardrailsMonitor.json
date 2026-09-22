@@ -107,6 +107,18 @@
     "noTeam": "No team",
     "noKey": "No key"
   },
+  "math": {
+    "howCalculated": "How is this calculated?",
+    "total": "Total",
+    "noKnownPrice": "no known price, left out",
+    "unpricedLeftOutOne": "{{unpriced}} unpriced unit left out",
+    "unpricedLeftOutOther": "{{unpriced}} unpriced units left out",
+    "unpricedSummaryOne": "{{total}} unit unpriced",
+    "unpricedSummaryOther": "{{total}} units unpriced",
+    "unpricedNoteOne": "{{total}} unit with no known price is left out of the cost. ",
+    "unpricedNoteOther": "{{total}} units with no known price are left out of the cost. ",
+    "requestPricing": "Request pricing on GitHub"
+  },
   "detail": {
     "backToOverview": "Back to Overview",
     "loadFailed": "Failed to load guardrail details.",
