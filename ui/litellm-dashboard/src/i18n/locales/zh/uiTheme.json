@@ -1,0 +1,28 @@
+{
+  "header": {
+    "title": "UI 主题自定义",
+    "subtitle": "用自定义标志和 Favicon 个性化你的 LiteLLM 管理仪表盘。"
+  },
+  "logo": {
+    "label": "自定义标志 URL",
+    "hint": "输入自定义标志的 URL，留空则使用默认值"
+  },
+  "logoDark": {
+    "label": "自定义标志 URL（深色模式）",
+    "hint": "输入适合深色背景的标志 URL，留空则复用上方的标志"
+  },
+  "favicon": {
+    "label": "自定义 Favicon URL",
+    "hint": "输入自定义 Favicon 的 URL（.ico、.png 或 .svg），留空则使用默认值"
+  },
+  "actions": {
+    "save": "保存更改",
+    "reset": "重置为默认值"
+  },
+  "toast": {
+    "saved": "主题设置更新成功！",
+    "saveFailed": "更新主题设置失败",
+    "reset": "主题设置已重置为默认值！",
+    "resetFailed": "重置主题设置失败"
+  }
+}

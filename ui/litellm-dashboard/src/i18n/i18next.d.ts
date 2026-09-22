@@ -22,6 +22,7 @@ import type zhSearchTools from "./locales/zh/searchTools.json";
 import type zhTagManagement from "./locales/zh/tagManagement.json";
 import type zhTeams from "./locales/zh/teams.json";
 import type zhTransformRequest from "./locales/zh/transformRequest.json";
+import type zhUiTheme from "./locales/zh/uiTheme.json";
 import type zhUsage from "./locales/zh/usage.json";
 import type zhUsers from "./locales/zh/users.json";
 import type zhVectorStores from "./locales/zh/vectorStores.json";
@@ -55,6 +56,7 @@ declare module "i18next" {
       searchTools: typeof zhSearchTools;
       tagManagement: typeof zhTagManagement;
       transformRequest: typeof zhTransformRequest;
+      uiTheme: typeof zhUiTheme;
       usage: typeof zhUsage;
       vectorStores: typeof zhVectorStores;
     };
