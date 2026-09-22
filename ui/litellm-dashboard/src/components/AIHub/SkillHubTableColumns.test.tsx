@@ -2,8 +2,11 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { DataTable } from "@/components/shared/DataTable";
+import i18n from "@/i18n/bootstrapI18n";
 import { Plugin } from "@/components/claude_code_plugins/types";
 import { getSkillHubTableColumns } from "./SkillHubTableColumns";
+
+const t = i18n.getFixedT("en", "modelHub");
 
 const mockSkill: Plugin = {
   id: "skill-1",
@@ -19,7 +22,7 @@ function renderTable(data: Plugin[], onSkillClick = vi.fn()) {
   render(
     <DataTable
       data={data}
-      columns={getSkillHubTableColumns({ onSkillClick })}
+      columns={getSkillHubTableColumns({ onSkillClick, t })}
       getRowId={(skill, index) => skill.id || String(index)}
       sortingMode="client"
       size="compact"

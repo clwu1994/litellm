@@ -2,7 +2,10 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { DataTable } from "@/components/shared/DataTable";
+import i18n from "@/i18n/bootstrapI18n";
 import { getAgentHubTableColumns, AgentHubData } from "./AgentHubTableColumns";
+
+const t = i18n.getFixedT("en", "modelHub");
 
 const mockAgent: AgentHubData = {
   agent_id: "agent-1",
@@ -26,7 +29,7 @@ function renderTable(data: AgentHubData[], onAgentClick = vi.fn()) {
   render(
     <DataTable
       data={data}
-      columns={getAgentHubTableColumns({ onAgentClick })}
+      columns={getAgentHubTableColumns({ onAgentClick, t })}
       getRowId={(agent, index) => agent.agent_id || String(index)}
       sortingMode="client"
       size="compact"

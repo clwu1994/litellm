@@ -7,6 +7,7 @@ import { getSkillHubTableColumns } from "@/components/AIHub/SkillHubTableColumns
 import SkillDetail from "@/components/claude_code_plugins/skill_detail";
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "@/components/ui/input-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useTranslation } from "react-i18next";
 
 const ALL_DOMAINS = "__all_domains__";
 
@@ -20,17 +21,16 @@ interface SkillHubDashboardProps {
 }
 
 function SkillsEmptyState({ filtered }: { filtered: boolean }) {
+  const { t } = useTranslation("modelHub");
   return (
     <div className="flex flex-col items-center gap-1 py-6">
       <div className="mb-1 flex size-10 items-center justify-center rounded-lg bg-muted">
         <Inbox className="size-5 text-muted-foreground" />
       </div>
-      <div className="text-sm font-medium text-foreground">{filtered ? "No matching skills" : "No skills yet"}</div>
-      <div className="text-sm text-muted-foreground">
-        {filtered
-          ? "Adjust the search or domain filter to see more skills."
-          : "Skills added here will appear for developers."}
+      <div className="text-sm font-medium text-foreground">
+        {filtered ? t("skills.noMatchTitle") : t("skills.noneTitle")}
       </div>
+      <div className="text-sm text-muted-foreground">{filtered ? t("skills.noMatchBody") : t("skills.noneBody")}</div>
     </div>
   );
 }
@@ -43,6 +43,7 @@ const SkillHubDashboard: React.FC<SkillHubDashboardProps> = ({
   publicPage = false,
   onPublishSuccess,
 }) => {
+  const { t } = useTranslation("modelHub");
   const [search, setSearch] = useState("");
   const [domainFilter, setDomainFilter] = useState<string | undefined>(undefined);
   const [selectedSkill, setSelectedSkill] = useState<Plugin | null>(null);
@@ -76,11 +77,11 @@ const SkillHubDashboard: React.FC<SkillHubDashboardProps> = ({
     return result;
   }, [skills, search, domainFilter]);
 
-  const columns = useMemo(() => getSkillHubTableColumns({ onSkillClick: setSelectedSkill }), []);
+  const columns = useMemo(() => getSkillHubTableColumns({ onSkillClick: setSelectedSkill, t }), [t]);
 
   const domainItems = useMemo(
-    () => [{ value: ALL_DOMAINS, label: "All Domains" }, ...domains.map((d) => ({ value: d, label: d }))],
-    [domains],
+    () => [{ value: ALL_DOMAINS, label: t("skills.allDomains") }, ...domains.map((d) => ({ value: d, label: d }))],
+    [domains, t],
   );
 
   const hasActiveFilter = search.trim().length > 0 || domainFilter != null;
@@ -102,15 +103,15 @@ const SkillHubDashboard: React.FC<SkillHubDashboardProps> = ({
       {/* Stats row */}
       <div className="grid grid-cols-3 gap-4">
         <div className="border border-border rounded-lg p-4">
-          <div className="text-xs text-muted-foreground mb-1">Total Skills</div>
+          <div className="text-xs text-muted-foreground mb-1">{t("skills.totalSkills")}</div>
           <div className="text-2xl font-semibold text-foreground">{totalSkills}</div>
         </div>
         <div className="border border-border rounded-lg p-4">
-          <div className="text-xs text-muted-foreground mb-1">Namespaces</div>
+          <div className="text-xs text-muted-foreground mb-1">{t("skills.namespaces")}</div>
           <div className="text-2xl font-semibold text-foreground">{namespaces.length}</div>
         </div>
         <div className="border border-border rounded-lg p-4">
-          <div className="text-xs text-muted-foreground mb-1">Domains</div>
+          <div className="text-xs text-muted-foreground mb-1">{t("skills.domains")}</div>
           <div className="text-2xl font-semibold text-foreground">{domains.length}</div>
         </div>
       </div>
@@ -118,7 +119,9 @@ const SkillHubDashboard: React.FC<SkillHubDashboardProps> = ({
       {/* Search + filters + table */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-foreground">All {publicPage ? "Public " : ""}Skills</h3>
+          <h3 className="text-sm font-semibold text-foreground">
+            {publicPage ? t("skills.allPublicSkills") : t("skills.allSkills")}
+          </h3>
           <div className="flex items-center gap-2">
             <Select
               items={domainItems}
@@ -141,7 +144,7 @@ const SkillHubDashboard: React.FC<SkillHubDashboardProps> = ({
                 <Search className="size-4 text-muted-foreground" />
               </InputGroupAddon>
               <InputGroupInput
-                placeholder="Search by name, namespace, or tag…"
+                placeholder={t("skills.searchPlaceholder")}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -150,7 +153,7 @@ const SkillHubDashboard: React.FC<SkillHubDashboardProps> = ({
                   <InputGroupButton
                     size="icon-xs"
                     variant="ghost"
-                    aria-label="Clear search"
+                    aria-label={t("skills.clearSearch")}
                     onClick={() => setSearch("")}
                   >
                     <X className="size-3.5" />
@@ -169,13 +172,16 @@ const SkillHubDashboard: React.FC<SkillHubDashboardProps> = ({
           sorting={sorting}
           onSortingChange={setSorting}
           isLoading={isLoading}
-          loadingMessage="Loading skills…"
+          loadingMessage={t("skills.loading")}
           noDataMessage={<SkillsEmptyState filtered={hasActiveFilter} />}
           size="compact"
         />
         <div className="mt-3 text-center">
           <p className="text-sm text-muted-foreground">
-            Showing {filteredSkills.length} of {totalSkills} skill{totalSkills !== 1 ? "s" : ""}
+            {t(totalSkills === 1 ? "skills.showingCountOne" : "skills.showingCountOther", {
+              shown: filteredSkills.length,
+              total: totalSkills,
+            })}
           </p>
         </div>
       </div>

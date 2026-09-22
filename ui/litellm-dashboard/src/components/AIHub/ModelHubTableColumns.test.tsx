@@ -2,7 +2,10 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { DataTable } from "@/components/shared/DataTable";
+import i18n from "@/i18n/bootstrapI18n";
 import { getModelHubTableColumns, ModelHubData } from "./ModelHubTableColumns";
+
+const t = i18n.getFixedT("en", "modelHub");
 
 const mockModel: ModelHubData = {
   model_group: "gpt-4o",
@@ -22,7 +25,7 @@ function renderTable(data: ModelHubData[], onModelClick = vi.fn()) {
   render(
     <DataTable
       data={data}
-      columns={getModelHubTableColumns({ onModelClick })}
+      columns={getModelHubTableColumns({ onModelClick, t })}
       getRowId={(model, index) => model.model_group || String(index)}
       sortingMode="client"
       size="compact"

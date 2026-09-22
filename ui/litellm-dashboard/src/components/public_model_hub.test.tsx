@@ -3,8 +3,12 @@ import { describe, it, expect, vi, beforeAll, beforeEach } from "vitest";
 import { render, screen, waitFor, within, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import i18n from "@/i18n/bootstrapI18n";
+
 import PublicModelHub from "./public_model_hub";
 import { getPublicMCPHubColumns, MCPServerData, ModelGroupInfo } from "./PublicModelHubTableColumns";
+
+const t = i18n.getFixedT("en", "modelHub");
 
 const { apiGetMock } = vi.hoisted(() => ({ apiGetMock: vi.fn() }));
 
@@ -409,7 +413,7 @@ const mockMcpServer: MCPServerData = {
 };
 
 function PublicMcpTestTable({ data }: { data: MCPServerData[] }) {
-  const columns = getPublicMCPHubColumns({ onServerClick: vi.fn() });
+  const columns = getPublicMCPHubColumns({ onServerClick: vi.fn(), t });
   const table = useReactTable({ data, columns, getCoreRowModel: getCoreRowModel() });
 
   return (
@@ -447,7 +451,7 @@ describe("publicMCPHubColumns", () => {
   it("does not expose a URL column header", () => {
     render(<PublicMcpTestTable data={[mockMcpServer]} />);
     expect(screen.queryByText("URL")).not.toBeInTheDocument();
-    const columns = getPublicMCPHubColumns({ onServerClick: vi.fn() });
+    const columns = getPublicMCPHubColumns({ onServerClick: vi.fn(), t });
     expect(columns.some((c) => c.header === "URL" || c.meta?.title === "URL")).toBe(false);
   });
 
