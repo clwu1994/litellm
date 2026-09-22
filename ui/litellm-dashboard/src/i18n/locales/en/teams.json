@@ -286,7 +286,10 @@
     "teamDeleteFailed": "Error deleting the team: {{error}}",
     "creatingTeam": "Creating Team",
     "teamCreated": "Team created",
-    "teamCreateFailed": "Error creating the team: {{error}}"
+    "teamCreateFailed": "Error creating the team: {{error}}",
+    "defaultSettingsFetchFailed": "Failed to fetch team settings",
+    "defaultSettingsUpdated": "Default team settings updated successfully",
+    "defaultSettingsUpdateFailed": "Failed to update team settings"
   },
   "mcp": {
     "saveError": "Cannot save MCP tool permissions because {{reason}}. Retry once the page has finished loading",
@@ -507,5 +510,68 @@
       "viaGroups": "Granted via access groups {{names}}",
       "viaAnyGroup": "Granted via an access group"
     }
+  },
+  "table": {
+    "team": "Team",
+    "resources": "Resources",
+    "spendBudget": "Spend / Budget",
+    "created": "Created",
+    "updated": "Updated",
+    "teamAlias": "Team alias",
+    "aliasPlaceholder": "Enter team alias…",
+    "teamIdPlaceholder": "Enter team ID…",
+    "resourceMembers": "{{count}} members",
+    "resourceModels": "{{count}} models",
+    "resourceKeys": "{{count}} keys",
+    "copyTeamId": "Copy team ID",
+    "teamIdCopied": "Team ID copied",
+    "editTeam": "Edit team",
+    "deleteTeam": "Delete team",
+    "loading": "Loading teams...",
+    "noTeams": "No teams found",
+    "searchPlaceholder": "Search teams by name or ID…",
+    "exportCsv": "Export CSV",
+    "exporting": "Exporting...",
+    "filtersDescription": "Narrow down your teams",
+    "organizationPlaceholder": "Select an organization…",
+    "noOrganizationsFound": "No organizations found"
+  },
+  "deleted": {
+    "enterpriseTitle": "Coming soon to Enterprise",
+    "deletedAt": "Deleted At",
+    "deletedBy": "Deleted By",
+    "teamAlias": "Team Alias",
+    "teams": {
+      "emptyTitle": "No deleted teams found",
+      "emptyHint": "Teams deleted from this proxy will show up here.",
+      "loading": "Loading deleted teams…",
+      "enterpriseDescription": "Deleted team auditing is graduating from beta into our Enterprise audit & compliance suite."
+    },
+    "keys": {
+      "emptyTitle": "No deleted keys found",
+      "emptyHint": "Keys deleted from this proxy will show up here.",
+      "loading": "Loading deleted keys…",
+      "enterpriseDescription": "Deleted key auditing is graduating from beta into our Enterprise audit & compliance suite."
+    }
+  },
+  "sso": {
+    "notSet": "Not set",
+    "loadingAria": "Loading default team settings",
+    "unavailable": "No team settings available or you do not have permission to view them.",
+    "description": "These settings will be applied by default when creating new teams.",
+    "budgetAndRateLimits": "Budget & Rate Limits",
+    "accessAndPermissions": "Access & Permissions",
+    "maxBudget": "Max Budget",
+    "maxBudgetDescription": "Maximum budget (in USD) for new automatically created teams.",
+    "budgetDuration": "Budget Duration",
+    "budgetDurationDescription": "How frequently the team's budget resets.",
+    "tpmLimitDescription": "Maximum tokens per minute allowed across all models.",
+    "rpmLimitDescription": "Maximum requests per minute allowed across all models.",
+    "defaultOrganization": "Default Organization",
+    "defaultOrganizationDescription": "Teams created without an explicit organization are assigned to this organization.",
+    "modelsDescription": "Default list of models that new teams can access.",
+    "teamMemberPermissions": "Team Member Permissions",
+    "teamMemberPermissionsDescription": "Default permissions granted to members of newly created teams. /key/info and /key/health are always included.",
+    "selectPermissions": "Select permissions"
   }
 }

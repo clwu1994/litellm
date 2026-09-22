@@ -2,6 +2,7 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 import { organizationKeys } from "@/app/(dashboard)/hooks/organizations/useOrganizations";
 import { ModelSelect } from "@/components/ModelSelect/ModelSelect";
@@ -19,7 +20,7 @@ import { useZodForm } from "@/lib/forms/useZodForm";
 import { fetchClient } from "@/lib/http/api";
 
 import { BUDGET_DURATION_OPTIONS, NO_RESET } from "../org-settings/OrgSettingsForm";
-import { orgSettingsSchema } from "../org-settings/schema";
+import { buildOrgSettingsSchema } from "../org-settings/schema";
 import { buildOrgCreateBody, emptyOrgFormValues, type OrgCreateBody } from "./mapper";
 
 const defaultCreateOrganization = async (body: OrgCreateBody): Promise<unknown> => {
@@ -40,8 +41,14 @@ export const OrgCreateDialog = ({
   accessToken,
   createOrganization = defaultCreateOrganization,
 }: OrgCreateDialogProps) => {
+  const { t } = useTranslation("organizations");
   const queryClient = useQueryClient();
-  const form = useZodForm(orgSettingsSchema, { defaultValues: emptyOrgFormValues });
+  const schema = React.useMemo(() => buildOrgSettingsSchema(t), [t]);
+  const form = useZodForm(schema, { defaultValues: emptyOrgFormValues });
+  const budgetDurationOptions = React.useMemo(
+    () => BUDGET_DURATION_OPTIONS.map((option) => ({ value: option.value, label: t(option.labelKey) })),
+    [t],
+  );
 
   const closeAndReset = () => {
     form.reset(emptyOrgFormValues);
@@ -51,12 +58,11 @@ export const OrgCreateDialog = ({
   const mutation = useMutation({
     mutationFn: (body: OrgCreateBody) => createOrganization(body),
     onSuccess: () => {
-      toast.success("Organization created successfully");
+      toast.success(t("toast.created"));
       queryClient.invalidateQueries({ queryKey: organizationKeys.all });
       closeAndReset();
     },
-    onError: (error: unknown) =>
-      toast.fromError(error instanceof Error ? error.message : "Failed to create organization"),
+    onError: (error: unknown) => toast.fromError(error instanceof Error ? error.message : t("toast.createFailed")),
   });
 
   const handleOpenChange = (nextOpen: boolean) => {
@@ -76,16 +82,16 @@ export const OrgCreateDialog = ({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Create Organization</DialogTitle>
+          <DialogTitle>{t("create.title")}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={onSubmit} noValidate>
           <FieldGroup>
-            <FormField control={form.control} name="organization_alias" label="Organization Name">
+            <FormField control={form.control} name="organization_alias" label={t("table.header.organizationName")}>
               {({ ref, ...field }) => <Input {...field} ref={ref} />}
             </FormField>
 
-            <FormField control={form.control} name="models" label="Models">
+            <FormField control={form.control} name="models" label={t("table.header.models")}>
               {(field) => (
                 <ModelSelect
                   value={field.value}
@@ -96,14 +102,14 @@ export const OrgCreateDialog = ({
               )}
             </FormField>
 
-            <FormField control={form.control} name="max_budget" label="Max Budget (USD)">
+            <FormField control={form.control} name="max_budget" label={t("field.maxBudget")}>
               {({ ref, ...field }) => <Input {...field} ref={ref} type="number" step="any" min={0} />}
             </FormField>
 
-            <FormField control={form.control} name="budget_duration" label="Reset Budget">
+            <FormField control={form.control} name="budget_duration" label={t("field.resetBudget")}>
               {({ id, value, onChange, "aria-invalid": ariaInvalid, "aria-describedby": ariaDescribedBy }) => (
                 <Select
-                  items={BUDGET_DURATION_OPTIONS}
+                  items={budgetDurationOptions}
                   value={value === "" ? NO_RESET : value}
                   onValueChange={(selected) => onChange(selected === NO_RESET ? "" : selected)}
                 >
@@ -111,7 +117,7 @@ export const OrgCreateDialog = ({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {BUDGET_DURATION_OPTIONS.map((option) => (
+                    {budgetDurationOptions.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}
                       </SelectItem>
@@ -121,26 +127,26 @@ export const OrgCreateDialog = ({
               )}
             </FormField>
 
-            <FormField control={form.control} name="tpm_limit" label="Tokens per minute Limit (TPM)">
+            <FormField control={form.control} name="tpm_limit" label={t("field.tpmLimit")}>
               {({ ref, ...field }) => <Input {...field} ref={ref} type="number" step={1} min={0} />}
             </FormField>
 
-            <FormField control={form.control} name="rpm_limit" label="Requests per minute Limit (RPM)">
+            <FormField control={form.control} name="rpm_limit" label={t("field.rpmLimit")}>
               {({ ref, ...field }) => <Input {...field} ref={ref} type="number" step={1} min={0} />}
             </FormField>
 
             <FormField
               control={form.control}
               name="vector_stores"
-              label="Allowed Vector Stores"
-              description="Select vector stores this organization can access. Leave empty for access to all vector stores"
+              label={t("create.allowedVectorStores")}
+              description={t("create.allowedVectorStoresDescription")}
             >
               {(field) => (
                 <VectorStoreSelector
                   value={field.value}
                   onChange={field.onChange}
                   accessToken={accessToken}
-                  placeholder="Select vector stores (optional)"
+                  placeholder={t("create.selectVectorStoresOptional")}
                 />
               )}
             </FormField>
@@ -148,20 +154,20 @@ export const OrgCreateDialog = ({
             <FormField
               control={form.control}
               name="mcp"
-              label="Allowed MCP Servers"
-              description="Select MCP servers, access groups, and toolsets this organization can access. Leave empty for access to all"
+              label={t("create.allowedMcpServers")}
+              description={t("create.allowedMcpServersDescription")}
             >
               {(field) => (
                 <MCPServerSelector
                   value={field.value}
                   onChange={field.onChange}
                   accessToken={accessToken}
-                  placeholder="Select MCP servers and access groups (optional)"
+                  placeholder={t("create.selectMcpServersOptional")}
                 />
               )}
             </FormField>
 
-            <FormField control={form.control} name="metadata" label="Metadata">
+            <FormField control={form.control} name="metadata" label={t("field.metadata")}>
               {({ ref, ...field }) => <Textarea {...field} ref={ref} rows={4} />}
             </FormField>
           </FieldGroup>
@@ -173,10 +179,10 @@ export const OrgCreateDialog = ({
               onClick={() => handleOpenChange(false)}
               disabled={mutation.isPending}
             >
-              Cancel
+              {t("actions.cancel")}
             </Button>
             <Button type="submit" disabled={mutation.isPending}>
-              {mutation.isPending ? "Creating..." : "Create Organization"}
+              {mutation.isPending ? t("create.creating") : t("create.title")}
             </Button>
           </DialogFooter>
         </form>

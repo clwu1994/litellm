@@ -31,7 +31,10 @@
   "actions": {
     "edit": "Edit",
     "delete": "Delete",
-    "createOrganization": "+ Create New Organization"
+    "createOrganization": "+ Create New Organization",
+    "cancel": "Cancel",
+    "saving": "Saving...",
+    "saveChanges": "Save Changes"
   },
   "empty": {
     "noMatches": "No matching organizations",
@@ -52,6 +55,96 @@
     "organizationId": "Organization ID"
   },
   "toast": {
-    "deleted": "Organization deleted successfully"
+    "deleted": "Organization deleted successfully",
+    "created": "Organization created successfully",
+    "createFailed": "Failed to create organization",
+    "settingsUpdated": "Organization settings updated successfully",
+    "settingsUpdateFailed": "Failed to update organization settings",
+    "memberAdded": "Organization member added successfully",
+    "memberAddFailed": "Failed to add organization member",
+    "memberUpdated": "Organization member updated successfully",
+    "memberUpdateFailed": "Failed to update organization member",
+    "memberDeleted": "Organization member deleted successfully",
+    "memberDeleteFailed": "Failed to delete organization member"
+  },
+  "field": {
+    "maxBudget": "Max Budget (USD)",
+    "resetBudget": "Reset Budget",
+    "tpmLimit": "Tokens per minute Limit (TPM)",
+    "rpmLimit": "Requests per minute Limit (RPM)",
+    "metadata": "Metadata",
+    "createdAt": "Created At",
+    "vectorStores": "Vector Stores",
+    "selectVectorStores": "Select vector stores",
+    "mcpServersAndGroups": "MCP Servers & Access Groups",
+    "selectMcpServersAndGroups": "Select MCP servers and access groups"
+  },
+  "tabs": {
+    "overview": "Overview",
+    "settings": "Settings"
+  },
+  "view": {
+    "loading": "Loading...",
+    "notFound": "Organization not found",
+    "backToOrganizations": "Back to Organizations",
+    "copyOrganizationId": "Copy organization ID",
+    "details": "Organization Details",
+    "created": "Created: {{date}}",
+    "updated": "Updated: {{date}}",
+    "createdBy": "Created By: {{name}}",
+    "budgetStatus": "Budget Status",
+    "ofAmount": "of {{amount}}",
+    "reset": "Reset: {{value}}",
+    "rateLimits": "Rate Limits",
+    "maxParallelRequests": "Max Parallel Requests: {{value}}",
+    "allProxyModels": "All proxy models",
+    "teams": "Teams",
+    "settingsTitle": "Organization Settings",
+    "editSettings": "Edit Settings",
+    "budget": "Budget",
+    "max": "Max: {{value}}",
+    "noLimit": "No Limit",
+    "never": "Never"
+  },
+  "members": {
+    "roleColumnTitle": "Organization Role",
+    "emptyText": "No members found",
+    "editTitle": "Edit Member"
+  },
+  "addMember": {
+    "title": "Add Organization Member",
+    "roleOrgAdmin": "org_admin",
+    "roleInternalUser": "internal_user",
+    "roleInternalUserViewer": "internal_user_viewer",
+    "descriptionOrgAdmin": "Can add and remove members, and change their roles.",
+    "descriptionInternalUser": "Can view/create keys for themselves within organization.",
+    "descriptionInternalUserViewer": "Can only view their keys within organization."
+  },
+  "roles": {
+    "orgAdmin": "Org Admin",
+    "internalUser": "Internal User",
+    "internalUserViewer": "Internal User Viewer"
+  },
+  "budgetDuration": {
+    "noReset": "No reset",
+    "daily": "daily",
+    "weekly": "weekly",
+    "monthly": "monthly"
+  },
+  "create": {
+    "title": "Create Organization",
+    "creating": "Creating...",
+    "allowedVectorStores": "Allowed Vector Stores",
+    "allowedVectorStoresDescription": "Select vector stores this organization can access. Leave empty for access to all vector stores",
+    "selectVectorStoresOptional": "Select vector stores (optional)",
+    "allowedMcpServers": "Allowed MCP Servers",
+    "allowedMcpServersDescription": "Select MCP servers, access groups, and toolsets this organization can access. Leave empty for access to all",
+    "selectMcpServersOptional": "Select MCP servers and access groups (optional)"
+  },
+  "validation": {
+    "organizationNameRequired": "Please input an organization name",
+    "nonNegativeWholeNumber": "Must be a non-negative whole number",
+    "nonNegativeNumber": "Must be a non-negative number",
+    "metadataInvalid": "Metadata must be a valid JSON object"
   }
 }

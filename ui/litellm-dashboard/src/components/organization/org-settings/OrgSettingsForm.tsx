@@ -2,6 +2,7 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 import { organizationKeys } from "@/app/(dashboard)/hooks/organizations/useOrganizations";
 import { ModelSelect } from "@/components/ModelSelect/ModelSelect";
@@ -20,15 +21,15 @@ import { useZodForm } from "@/lib/forms/useZodForm";
 import { fetchClient } from "@/lib/http/api";
 
 import { buildOrgPatch, orgToForm, type OrgPatchBody } from "./mapper";
-import { orgSettingsSchema } from "./schema";
+import { buildOrgSettingsSchema } from "./schema";
 
 export const NO_RESET = "never";
 
 export const BUDGET_DURATION_OPTIONS = [
-  { value: NO_RESET, label: "No reset" },
-  { value: "24h", label: "daily" },
-  { value: "7d", label: "weekly" },
-  { value: "30d", label: "monthly" },
+  { value: NO_RESET, labelKey: "budgetDuration.noReset" },
+  { value: "24h", labelKey: "budgetDuration.daily" },
+  { value: "7d", labelKey: "budgetDuration.weekly" },
+  { value: "30d", labelKey: "budgetDuration.monthly" },
 ] as const;
 
 const defaultPatchOrganization = async (organizationId: string, body: OrgPatchBody): Promise<unknown> => {
@@ -56,19 +57,25 @@ export const OrgSettingsForm = ({
   onSaved,
   patchOrganization = defaultPatchOrganization,
 }: OrgSettingsFormProps) => {
+  const { t } = useTranslation("organizations");
   const queryClient = useQueryClient();
-  const form = useZodForm(orgSettingsSchema, { defaultValues: orgToForm(org) });
+  const schema = React.useMemo(() => buildOrgSettingsSchema(t), [t]);
+  const form = useZodForm(schema, { defaultValues: orgToForm(org) });
   const { isDirty } = form.formState;
+  const budgetDurationOptions = React.useMemo(
+    () => BUDGET_DURATION_OPTIONS.map((option) => ({ value: option.value, label: t(option.labelKey) })),
+    [t],
+  );
 
   const mutation = useMutation({
     mutationFn: (body: OrgPatchBody) => patchOrganization(organizationId, body),
     onSuccess: () => {
-      toast.success("Organization settings updated successfully");
+      toast.success(t("toast.settingsUpdated"));
       queryClient.invalidateQueries({ queryKey: organizationKeys.all });
       onSaved();
     },
     onError: (error: unknown) =>
-      toast.fromError(error instanceof Error ? error.message : "Failed to update organization settings"),
+      toast.fromError(error instanceof Error ? error.message : t("toast.settingsUpdateFailed")),
   });
 
   const onSubmit = form.handleSubmit((values) => {
@@ -78,11 +85,11 @@ export const OrgSettingsForm = ({
   return (
     <form onSubmit={onSubmit} noValidate>
       <FieldGroup>
-        <FormField control={form.control} name="organization_alias" label="Organization Name">
+        <FormField control={form.control} name="organization_alias" label={t("table.header.organizationName")}>
           {({ ref, ...field }) => <Input {...field} ref={ref} />}
         </FormField>
 
-        <FormField control={form.control} name="models" label="Models">
+        <FormField control={form.control} name="models" label={t("table.header.models")}>
           {(field) => (
             <ModelSelect
               value={field.value}
@@ -93,14 +100,14 @@ export const OrgSettingsForm = ({
           )}
         </FormField>
 
-        <FormField control={form.control} name="max_budget" label="Max Budget (USD)">
+        <FormField control={form.control} name="max_budget" label={t("field.maxBudget")}>
           {({ ref, ...field }) => <Input {...field} ref={ref} type="number" step="any" min={0} />}
         </FormField>
 
-        <FormField control={form.control} name="budget_duration" label="Reset Budget">
+        <FormField control={form.control} name="budget_duration" label={t("field.resetBudget")}>
           {({ id, value, onChange, "aria-invalid": ariaInvalid, "aria-describedby": ariaDescribedBy }) => (
             <Select
-              items={BUDGET_DURATION_OPTIONS}
+              items={budgetDurationOptions}
               value={value === "" ? NO_RESET : value}
               onValueChange={(selected) => onChange(selected === NO_RESET ? "" : selected)}
             >
@@ -108,7 +115,7 @@ export const OrgSettingsForm = ({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {BUDGET_DURATION_OPTIONS.map((option) => (
+                {budgetDurationOptions.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
                   </SelectItem>
@@ -118,37 +125,37 @@ export const OrgSettingsForm = ({
           )}
         </FormField>
 
-        <FormField control={form.control} name="tpm_limit" label="Tokens per minute Limit (TPM)">
+        <FormField control={form.control} name="tpm_limit" label={t("field.tpmLimit")}>
           {({ ref, ...field }) => <Input {...field} ref={ref} type="number" step={1} min={0} />}
         </FormField>
 
-        <FormField control={form.control} name="rpm_limit" label="Requests per minute Limit (RPM)">
+        <FormField control={form.control} name="rpm_limit" label={t("field.rpmLimit")}>
           {({ ref, ...field }) => <Input {...field} ref={ref} type="number" step={1} min={0} />}
         </FormField>
 
-        <FormField control={form.control} name="vector_stores" label="Vector Stores">
+        <FormField control={form.control} name="vector_stores" label={t("field.vectorStores")}>
           {(field) => (
             <VectorStoreSelector
               value={field.value}
               onChange={field.onChange}
               accessToken={accessToken}
-              placeholder="Select vector stores"
+              placeholder={t("field.selectVectorStores")}
             />
           )}
         </FormField>
 
-        <FormField control={form.control} name="mcp" label="MCP Servers & Access Groups">
+        <FormField control={form.control} name="mcp" label={t("field.mcpServersAndGroups")}>
           {(field) => (
             <MCPServerSelector
               value={field.value}
               onChange={field.onChange}
               accessToken={accessToken}
-              placeholder="Select MCP servers and access groups"
+              placeholder={t("field.selectMcpServersAndGroups")}
             />
           )}
         </FormField>
 
-        <FormField control={form.control} name="metadata" label="Metadata">
+        <FormField control={form.control} name="metadata" label={t("field.metadata")}>
           {({ ref, ...field }) => <Textarea {...field} ref={ref} rows={4} />}
         </FormField>
       </FieldGroup>
@@ -156,10 +163,10 @@ export const OrgSettingsForm = ({
       <div className="sticky z-chrome bg-card p-4 border-t border-border -bottom-6 -inset-x-6 mt-6">
         <div className="flex justify-end items-center gap-2">
           <Button type="button" variant="outline" onClick={onCancel} disabled={mutation.isPending}>
-            Cancel
+            {t("actions.cancel")}
           </Button>
           <Button type="submit" disabled={!isDirty || mutation.isPending}>
-            {mutation.isPending ? "Saving..." : "Save Changes"}
+            {mutation.isPending ? t("actions.saving") : t("actions.saveChanges")}
           </Button>
         </div>
       </div>

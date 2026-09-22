@@ -1,3 +1,4 @@
+import type { TFunction } from "i18next";
 import { z } from "zod/v4";
 
 const isBlank = (value: string): boolean => value.trim() === "";
@@ -11,33 +12,35 @@ const isJsonObject = (value: string): boolean => {
   }
 };
 
-const wholeNumberOrEmpty = z
-  .string()
-  .refine((value) => isBlank(value) || /^\d+$/.test(value.trim()), "Must be a non-negative whole number");
+export const buildOrgSettingsSchema = (t: TFunction<"organizations">) => {
+  const wholeNumberOrEmpty = z
+    .string()
+    .refine((value) => isBlank(value) || /^\d+$/.test(value.trim()), t("validation.nonNegativeWholeNumber"));
 
-const amountOrEmpty = z
-  .string()
-  .refine(
-    (value) => isBlank(value) || (Number.isFinite(Number(value)) && Number(value) >= 0),
-    "Must be a non-negative number",
-  );
+  const amountOrEmpty = z
+    .string()
+    .refine(
+      (value) => isBlank(value) || (Number.isFinite(Number(value)) && Number(value) >= 0),
+      t("validation.nonNegativeNumber"),
+    );
 
-const orgSettingsShape = {
-  organization_alias: z.string().min(1, "Please input an organization name"),
-  models: z.array(z.string()),
-  max_budget: amountOrEmpty,
-  budget_duration: z.string(),
-  tpm_limit: wholeNumberOrEmpty,
-  rpm_limit: wholeNumberOrEmpty,
-  vector_stores: z.array(z.string()),
-  mcp: z.object({
-    servers: z.array(z.string()),
-    accessGroups: z.array(z.string()),
-    toolsets: z.array(z.string()),
-  }),
-  metadata: z.string().refine((value) => isBlank(value) || isJsonObject(value), "Metadata must be a valid JSON object"),
+  const orgSettingsShape = {
+    organization_alias: z.string().min(1, t("validation.organizationNameRequired")),
+    models: z.array(z.string()),
+    max_budget: amountOrEmpty,
+    budget_duration: z.string(),
+    tpm_limit: wholeNumberOrEmpty,
+    rpm_limit: wholeNumberOrEmpty,
+    vector_stores: z.array(z.string()),
+    mcp: z.object({
+      servers: z.array(z.string()),
+      accessGroups: z.array(z.string()),
+      toolsets: z.array(z.string()),
+    }),
+    metadata: z.string().refine((value) => isBlank(value) || isJsonObject(value), t("validation.metadataInvalid")),
+  };
+
+  return z.object(orgSettingsShape);
 };
 
-export const orgSettingsSchema = z.object(orgSettingsShape);
-
-export type OrgSettingsFormValues = z.output<typeof orgSettingsSchema>;
+export type OrgSettingsFormValues = z.output<ReturnType<typeof buildOrgSettingsSchema>>;
