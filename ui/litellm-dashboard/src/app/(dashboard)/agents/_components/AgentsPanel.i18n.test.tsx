@@ -93,6 +93,8 @@ describe("AgentsPanel Chinese copy", () => {
     ).not.toBeInTheDocument();
     expect(within(dialog).getByRole("button", { name: "取消" })).toBeInTheDocument();
     expect(within(dialog).queryByRole("button", { name: "Cancel" })).not.toBeInTheDocument();
+    expect(within(dialog).getByRole("button", { name: "删除" })).toBeInTheDocument();
+    expect(within(dialog).queryByRole("button", { name: "Delete" })).not.toBeInTheDocument();
 
     await user.click(within(dialog).getByRole("button", { name: "删除" }));
 

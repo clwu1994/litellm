@@ -122,7 +122,7 @@ const AgentInfoView: React.FC<AgentInfoViewProps> = ({ agentId, onClose, accessT
       if (agentType === "a2a") {
         form.reset(parseAgentForForm(data));
       } else {
-        const typeInfo = agentTypeMetadata.find((t) => t.agent_type === agentType);
+        const typeInfo = agentTypeMetadata.find((meta) => meta.agent_type === agentType);
         if (typeInfo) {
           form.reset({ ...parseDynamicAgentForForm(data, typeInfo), ...parseMcpPermissionsForForm(data) });
         } else {
@@ -142,7 +142,7 @@ const AgentInfoView: React.FC<AgentInfoViewProps> = ({ agentId, onClose, accessT
     if (agent && agentTypeMetadata.length > 0) {
       const agentType = detectAgentType(agent);
       if (agentType !== "a2a") {
-        const typeInfo = agentTypeMetadata.find((t) => t.agent_type === agentType);
+        const typeInfo = agentTypeMetadata.find((meta) => meta.agent_type === agentType);
         if (typeInfo) {
           form.reset({ ...parseDynamicAgentForForm(agent, typeInfo), ...parseMcpPermissionsForForm(agent) });
         }
@@ -150,7 +150,7 @@ const AgentInfoView: React.FC<AgentInfoViewProps> = ({ agentId, onClose, accessT
     }
   }, [agentTypeMetadata, agent]);
 
-  const selectedAgentTypeInfo = agentTypeMetadata.find((t) => t.agent_type === detectedAgentType);
+  const selectedAgentTypeInfo = agentTypeMetadata.find((meta) => meta.agent_type === detectedAgentType);
   const watchedFormValues = useWatch({ control: form.control });
   const mcpSelection = useWatch({ control: form.control, name: "allowed_mcp_servers_and_groups" });
   const mcpToolPermissions = useWatch({ control: form.control, name: "mcp_tool_permissions" });
