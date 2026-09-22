@@ -24,5 +24,85 @@
     "inConfig": "配置文件中",
     "notSet": "未设置",
     "update": "更新"
+  },
+  "routingGroups": {
+    "searchPlaceholder": "搜索分组...",
+    "clearSearchAria": "清除搜索",
+    "refresh": "刷新",
+    "createGroup": "创建分组",
+    "showingSingular": "显示 {{groups}} 个结果",
+    "showingPlural": "显示 {{groups}} 个结果",
+    "toast": {
+      "created": "已创建路由分组 \"{{name}}\"",
+      "updated": "已更新路由分组 \"{{name}}\"",
+      "deleted": "已删除路由分组 \"{{name}}\"",
+      "saveFailed": "保存路由分组失败",
+      "deleteFailed": "删除路由分组失败"
+    },
+    "delete": {
+      "title": "删除路由分组？",
+      "body": "「<strong>{{name}}</strong>」中的模型将回退到代理的顶层路由策略。此操作无法撤销。",
+      "cancel": "取消",
+      "confirm": "删除"
+    },
+    "table": {
+      "groupName": "分组名称",
+      "models": "模型",
+      "strategy": "策略",
+      "actions": "操作",
+      "openActionsAria": "打开 {{name}} 的操作",
+      "edit": "编辑",
+      "delete": "删除",
+      "emptyTitle": "暂无路由分组",
+      "emptyDescription": "创建一个分组，将一组模型负载均衡到同一个名称下。",
+      "loading": "正在加载路由分组…"
+    },
+    "usage": {
+      "howItWorks": "此分组的路由方式",
+      "description": "调用方按名称请求分组中的任意模型；LiteLLM 会在后台使用<strong>{{strategy}}</strong>策略选择一个部署。"
+    },
+    "strategies": {
+      "simpleShuffle": "简单随机",
+      "leastBusy": "最空闲",
+      "usageBased": "基于用量",
+      "latencyBased": "基于延迟"
+    },
+    "modal": {
+      "createTitle": "创建路由分组",
+      "editTitle": "编辑 {{name}}",
+      "groupNameDescription": "在 API 调用中使用此名称作为模型名，LiteLLM 会将请求路由到该分组中的某个模型。",
+      "modelsDescription": "来自你的模型列表、此分组会在其间路由的模型。",
+      "selectModels": "选择模型",
+      "noModels": "未找到模型",
+      "routingStrategy": "路由策略",
+      "selectStrategy": "选择策略",
+      "strategyArgs": "策略参数（JSON）",
+      "strategyArgsExample": "示例：{{json}}",
+      "fallThrough": "未被显式分组占用的模型将回退到代理的顶层路由策略。",
+      "saveChanges": "保存更改",
+      "validation": {
+        "groupNameRequired": "分组名称为必填项",
+        "groupNameMax": "必须不超过 {{max}} 个字符",
+        "groupNameExists": "已存在同名分组",
+        "modelsRequired": "至少选择一个模型",
+        "invalidJson": "必须是有效的 JSON",
+        "strategyRequired": "策略为必填项"
+      }
+    }
+  },
+  "routerForm": {
+    "routingSettings": "路由设置",
+    "routingSettingsDescription": "配置请求如何路由到部署",
+    "latencyTitle": "基于延迟的配置",
+    "latencyDescription": "微调基于延迟的路由行为",
+    "ttlExplanation": "计算部署平均延迟时回溯的滑动窗口。默认 1 小时（以秒为单位）。",
+    "lowestLatencyBufferExplanation": "在最低延迟此百分比范围内的部署之间随机选择。默认 0（即始终选择最低延迟）。",
+    "reliabilityTitle": "可靠性与重试",
+    "reliabilityDescription": "配置重试逻辑与故障处理",
+    "enableTagFilteringFallback": "启用标签筛选",
+    "learnMore": "了解更多",
+    "reset": "重置",
+    "saveSuccess": "路由设置更新成功",
+    "saveFailed": "更新路由设置失败：{{error}}"
   }
 }

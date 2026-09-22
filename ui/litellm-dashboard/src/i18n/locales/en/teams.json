@@ -394,7 +394,26 @@
       "teamActivity": "Member can view all team usage data (not just their own)",
       "spendLogs": "Member can view spend logs for the entire team (not just their own)",
       "fallback": "Access {{endpoint}}"
-    }
+    },
+    "agents": "Agents",
+    "noAgents": "No agents or access groups configured",
+    "group": "Group",
+    "vectorStores": "Vector Stores",
+    "noVectorStores": "No vector stores configured",
+    "mcpServers": "MCP Servers",
+    "blocked": "Blocked",
+    "all": "All",
+    "noMcpServersBlocked": "No MCP servers — this key is blocked from all MCP servers, including its team's servers",
+    "allProxyMcpServers": "All Proxy MCP Servers",
+    "toolSingular": "tool",
+    "toolPlural": "tools",
+    "toolset": "Toolset",
+    "noMcpServers": "No MCP servers, access groups, or toolsets configured",
+    "fullId": "Full ID: {{id}}",
+    "grantedVia": "Granted via {{source}}. Full ID: {{id}}",
+    "anAccessGroup": "an access group",
+    "accessGroupSingular": "access group {{names}}",
+    "accessGroupPlural": "access groups {{names}}"
   },
   "logging": {
     "eventType": "Event Type",
@@ -426,6 +445,23 @@
     "empty": {
       "title": "No logging integrations configured",
       "hint": "Click \"{{action}}\" to configure logging for this team"
+    },
+    "callbackDescriptions": {
+      "arize": "Arize Logging Integration",
+      "braintrust": "Braintrust Logging Integration",
+      "custom_callback_api": "Custom Callback API Logging Integration",
+      "galileo": "Galileo AI Observability Integration",
+      "datadog": "Datadog Logging Integration",
+      "newrelic": "New Relic Logging Integration",
+      "lago": "Lago Billing Logging Integration",
+      "langfuse": "Langfuse v2 Logging Integration",
+      "langfuse_otel": "Langfuse v3 OTEL Logging Integration",
+      "langsmith": "Langsmith Logging Integration",
+      "openmeter": "OpenMeter Logging Integration",
+      "otel": "OpenTelemetry Logging Integration",
+      "pointfive": "PointFive Logging Integration",
+      "s3": "S3 Bucket (AWS) Logging Integration",
+      "SQS": "SQS Queue (AWS) Logging Integration"
     }
   },
   "guardrailsSelect": {
@@ -573,5 +609,23 @@
     "teamMemberPermissions": "Team Member Permissions",
     "teamMemberPermissionsDescription": "Default permissions granted to members of newly created teams. /key/info and /key/health are always included.",
     "selectPermissions": "Select permissions"
+  },
+  "guardrailSettingsView": {
+    "noGuardrails": "No guardrails configured",
+    "globalAria": "Global guardrail",
+    "global": "Global",
+    "bypassed": "Bypassed for this team",
+    "noneConfigured": "None configured",
+    "teamSpecific": "Team-specific",
+    "title": "Guardrails Settings",
+    "description": "Global and team-specific guardrails applied to this team"
+  },
+  "objectPermissions": {
+    "searchTools": "Search tools",
+    "noSearchRestriction": "No restriction — all configured search tools are allowed for this team.",
+    "skills": "Skills",
+    "noPrivateSkills": "No private skills granted. Only enabled (public) Claude Code plugins are visible.",
+    "title": "Object Permissions",
+    "description": "Access control for Vector Stores and MCP Servers"
   }
 }

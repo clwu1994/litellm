@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { Info, X } from "lucide-react";
+import { Trans, useTranslation } from "react-i18next";
 
 const DEPRECATION_DISCUSSION_URL = "https://github.com/BerriAI/litellm/discussions/32090";
 const DEPRECATION_TARGET_DATE = "September 1, 2026";
@@ -12,6 +13,7 @@ interface DeprecationBannerProps {
 }
 
 export const DeprecationBanner: React.FC<DeprecationBannerProps> = ({ featureName }) => {
+  const { t } = useTranslation("common");
   const [isClosed, setIsClosed] = useState(false);
 
   if (isClosed) {
@@ -25,23 +27,28 @@ export const DeprecationBanner: React.FC<DeprecationBannerProps> = ({ featureNam
     >
       <Info className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
       <div className="min-w-0 flex-1">
-        <p className="font-medium">{`${featureName} is on a draft deprecation list`}</p>
+        <p className="font-medium">{t("deprecationBanner.title", { feature: featureName })}</p>
         <p className="mt-1 break-words text-muted-foreground">
-          {`${featureName} is one of several experimental features we're considering removing, potentially as early as ${DEPRECATION_TARGET_DATE}. This list is a draft and is not final. If you rely on this feature, please share feedback on the `}
-          <Link
-            href={DEPRECATION_DISCUSSION_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline underline-offset-4"
-          >
-            deprecation discussion
-          </Link>
-          .
+          <Trans
+            ns="common"
+            i18nKey="deprecationBanner.body"
+            values={{ feature: featureName, date: DEPRECATION_TARGET_DATE }}
+            components={{
+              discussion: (
+                <Link
+                  href={DEPRECATION_DISCUSSION_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline underline-offset-4"
+                />
+              ),
+            }}
+          />
         </p>
       </div>
       <button
         type="button"
-        aria-label="Close"
+        aria-label={t("dialog.close")}
         onClick={() => setIsClosed(true)}
         className="shrink-0 rounded-md p-0.5 text-muted-foreground transition-colors hover:text-foreground"
       >

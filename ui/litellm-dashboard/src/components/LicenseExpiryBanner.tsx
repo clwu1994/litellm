@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 import { CircleAlert, TriangleAlert, X } from "lucide-react";
+import type { TFunction } from "i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { Alert, AlertAction, AlertDescription, AlertTitle } from "@/components/shared/Alert";
 import { Button } from "@/components/ui/button";
 import { LicenseInfo } from "@/components/networking";
@@ -21,27 +23,49 @@ interface LicenseExpiryBannerViewProps {
   licenseInfo: LicenseInfo | null;
 }
 
-const describeCountdown = (days: number): string => {
+const describeCountdown = (days: number, t: TFunction<"common">): string => {
   if (days <= 0) {
-    return "expires today";
+    return t("licenseBanner.expiresToday");
   }
   if (days === 1) {
-    return "expires in 1 day";
+    return t("licenseBanner.expiresInOneDay");
   }
-  return `expires in ${days} days`;
+  return t("licenseBanner.expiresInDays", { days });
 };
 
 const expiryDescription = (tier: "warning" | "critical" | "expired"): React.ReactNode => {
   if (tier === "expired") {
-    return <>Enterprise features are now disabled. Reach out to {salesLink} to restore access</>;
+    return (
+      <Trans
+        ns="common"
+        i18nKey="licenseBanner.expiredDescription"
+        values={{ email: SALES_EMAIL }}
+        components={{ contact: salesLink }}
+      />
+    );
   }
   if (tier === "critical") {
-    return <>Renew now to avoid losing enterprise features. Reach out to {salesLink}</>;
+    return (
+      <Trans
+        ns="common"
+        i18nKey="licenseBanner.criticalDescription"
+        values={{ email: SALES_EMAIL }}
+        components={{ contact: salesLink }}
+      />
+    );
   }
-  return <>Renew before it lapses to keep enterprise features. Reach out to {salesLink}</>;
+  return (
+    <Trans
+      ns="common"
+      i18nKey="licenseBanner.warningDescription"
+      values={{ email: SALES_EMAIL }}
+      components={{ contact: salesLink }}
+    />
+  );
 };
 
 export const LicenseExpiryBannerView: React.FC<LicenseExpiryBannerViewProps> = ({ licenseInfo }) => {
+  const { t } = useTranslation("common");
   const [locallyDismissed, setLocallyDismissed] = useState(false);
 
   const expirationDate = licenseInfo?.expiration_date ?? null;
@@ -65,8 +89,8 @@ export const LicenseExpiryBannerView: React.FC<LicenseExpiryBannerViewProps> = (
 
   const message =
     tier === "expired"
-      ? `Your LiteLLM Enterprise license expired on ${formattedDate}`
-      : `Your LiteLLM Enterprise license ${describeCountdown(days)} (${formattedDate})`;
+      ? t("licenseBanner.expiredMessage", { date: formattedDate })
+      : t("licenseBanner.expiringMessage", { countdown: describeCountdown(days, t), date: formattedDate });
 
   const description = expiryDescription(tier);
 
@@ -88,7 +112,7 @@ export const LicenseExpiryBannerView: React.FC<LicenseExpiryBannerViewProps> = (
       <AlertDescription>{description}</AlertDescription>
       {isDismissible && (
         <AlertAction>
-          <Button variant="ghost" size="icon-sm" aria-label="Close" onClick={handleClose}>
+          <Button variant="ghost" size="icon-sm" aria-label={t("dialog.close")} onClick={handleClose}>
             <X className="size-4" />
           </Button>
         </AlertAction>

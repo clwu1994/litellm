@@ -1,3 +1,5 @@
+import type { TFunction } from "i18next";
+
 export const ALL_PROXY_MODELS = "all-proxy-models";
 export const NO_DEFAULT_MODELS = "no-default-models";
 
@@ -42,8 +44,10 @@ export function normalizeTeamModelSelection(models: string[] | undefined): strin
   return models && models.length > 0 ? models : [NO_DEFAULT_MODELS];
 }
 
-export const describeGroups = (names: string[]): string =>
-  names.length > 1 ? `access groups ${names.join(", ")}` : `access group ${names[0]}`;
+export const describeGroups = (names: string[], t: TFunction<"teams">): string =>
+  names.length > 1
+    ? t("permissions.accessGroupPlural", { names: names.join(", ") })
+    : t("permissions.accessGroupSingular", { names: names[0] });
 
 const pickTooltipKey = <T extends string>(count: number, none: T, one: T, many: T): T => {
   if (count === 0) return none;

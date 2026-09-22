@@ -1,18 +1,19 @@
 "use client";
 
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/cva.config";
 
 export const INPUT_POLICY_OPTIONS = [
-  { value: "untrusted", label: "untrusted", dot: "bg-warning" },
-  { value: "trusted", label: "trusted", dot: "bg-success" },
-  { value: "blocked", label: "blocked", dot: "bg-destructive" },
+  { value: "untrusted", labelKey: "toolPolicies.policy.untrusted", dot: "bg-warning" },
+  { value: "trusted", labelKey: "toolPolicies.policy.trusted", dot: "bg-success" },
+  { value: "blocked", labelKey: "toolPolicies.policy.blocked", dot: "bg-destructive" },
 ] as const;
 
 export const OUTPUT_POLICY_OPTIONS = [
-  { value: "untrusted", label: "untrusted", dot: "bg-warning" },
-  { value: "trusted", label: "trusted", dot: "bg-success" },
+  { value: "untrusted", labelKey: "toolPolicies.policy.untrusted", dot: "bg-warning" },
+  { value: "trusted", labelKey: "toolPolicies.policy.trusted", dot: "bg-success" },
 ] as const;
 
 export const POLICY_OPTIONS = INPUT_POLICY_OPTIONS;
@@ -39,6 +40,7 @@ export const PolicySelect: React.FC<PolicySelectProps> = ({
   size = "small",
   stopPropagation = true,
 }) => {
+  const { t } = useTranslation("policies");
   const options = policyType === "output" ? OUTPUT_POLICY_OPTIONS : INPUT_POLICY_OPTIONS;
   const selected = policyStyle(value);
   return (
@@ -56,7 +58,7 @@ export const PolicySelect: React.FC<PolicySelectProps> = ({
           <SelectItem key={o.value} value={o.value}>
             <span className="inline-flex items-center gap-1.5">
               <span className={cn("size-2 shrink-0 rounded-full", o.dot)} />
-              {o.label}
+              {t(o.labelKey)}
             </span>
           </SelectItem>
         ))}

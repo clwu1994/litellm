@@ -374,5 +374,56 @@
   "summaryCard": {
     "howCalculated": "{{label}} 的计算方式"
   },
-  "rawValue": "{{value}}"
+  "rawValue": "{{value}}",
+  "dialog": {
+    "close": "关闭"
+  },
+  "deprecationBanner": {
+    "title": "{{feature}} 在草拟的弃用列表中",
+    "body": "{{feature}} 是我们正在考虑移除的若干实验性功能之一，最早可能在 {{date}}。此列表为草稿，并非最终决定。如果你依赖此功能，请在 <discussion>弃用讨论</discussion> 中提供反馈。"
+  },
+  "licenseBanner": {
+    "expiresToday": "今天到期",
+    "expiresInOneDay": "1 天后到期",
+    "expiresInDays": "{{days}} 天后到期",
+    "expiredMessage": "你的 LiteLLM 企业版许可证已于 {{date}} 到期",
+    "expiringMessage": "你的 LiteLLM 企业版许可证{{countdown}}（{{date}}）",
+    "expiredDescription": "企业版功能现已停用。请联系 <contact>{{email}}</contact> 以恢复访问",
+    "criticalDescription": "请立即续订以免失去企业版功能。请联系 <contact>{{email}}</contact>",
+    "warningDescription": "请在到期前续订以保留企业版功能。请联系 <contact>{{email}}</contact>"
+  },
+  "usageCard": {
+    "title": "企业版用量",
+    "seats": "席位",
+    "teams": "团队",
+    "loading": "正在加载…",
+    "activePlan": "有效方案",
+    "expires": "{{date}} 到期",
+    "expired": "已于 {{date}} 到期",
+    "noExpiration": "无到期时间",
+    "aria": "{{used}} / {{total}}"
+  },
+  "accountMenu": {
+    "thanks": "感谢使用 LiteLLM！",
+    "tier": "套餐",
+    "premium": "高级版",
+    "standard": "标准版",
+    "upgradeTitle": "升级到高级版以使用更多功能",
+    "role": "角色",
+    "email": "邮箱",
+    "userId": "用户 ID",
+    "copyEmail": "复制邮箱",
+    "copyUserId": "复制用户 ID",
+    "hideNewFeatureIndicators": "隐藏新功能提示",
+    "toggleHideNewFeatureIndicators": "切换隐藏新功能提示",
+    "hideAllPrompts": "隐藏所有提示词",
+    "toggleHideAllPrompts": "切换隐藏所有提示词",
+    "hideBlogPosts": "隐藏博客文章",
+    "toggleHideBlogPosts": "切换隐藏博客文章",
+    "hideBouncingIcon": "隐藏跳动图标",
+    "toggleHideBouncingIcon": "切换隐藏跳动图标",
+    "triggerLabel": "账户菜单 — {{role}} — 已登录为 {{user}}",
+    "unknownRole": "未知角色",
+    "unknown": "未知"
+  }
 }

@@ -1,3 +1,5 @@
+import type { TFunction } from "i18next";
+
 import type { RoutingGroup } from "./types";
 
 export const STRATEGIES_WITH_ARGS = new Set<string>(["latency-based-routing", "usage-based-routing"]);
@@ -28,7 +30,10 @@ export const toRoutingGroupFormValues = (
 export const argsForStrategy = (routingStrategy: string, routingStrategyArgs: string): string =>
   STRATEGIES_WITH_ARGS.has(routingStrategy) ? routingStrategyArgs : "";
 
-export const buildRoutingGroupPayload = (values: RoutingGroupFormValues): RoutingGroupPayload => {
+export const buildRoutingGroupPayload = (
+  values: RoutingGroupFormValues,
+  t: TFunction<"routerSettings">,
+): RoutingGroupPayload => {
   const base = {
     group_name: values.group_name.trim(),
     models: values.models,
@@ -43,6 +48,6 @@ export const buildRoutingGroupPayload = (values: RoutingGroupFormValues): Routin
   try {
     return { ok: true, group: { ...base, routing_strategy_args: JSON.parse(args) as Record<string, unknown> } };
   } catch {
-    return { ok: false, argsError: "Must be valid JSON" };
+    return { ok: false, argsError: t("routingGroups.modal.validation.invalidJson") };
   }
 };

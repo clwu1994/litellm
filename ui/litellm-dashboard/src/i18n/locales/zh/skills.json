@@ -119,5 +119,36 @@
       "success": "技能注册成功",
       "failure": "注册技能失败"
     }
+  },
+  "detail": {
+    "back": "技能",
+    "tabOverview": "概览",
+    "tabUsage": "使用方法",
+    "skillDetails": "技能详情",
+    "metadataDescription": "注册到此技能的元数据",
+    "property": "属性",
+    "propertyCategory": "分类",
+    "propertyDomain": "领域",
+    "propertyNamespace": "命名空间",
+    "propertyVersion": "版本",
+    "propertyAuthor": "作者",
+    "propertyAdded": "添加时间",
+    "status": "状态",
+    "public": "公开",
+    "draft": "草稿",
+    "source": "来源",
+    "tags": "标签",
+    "skillId": "技能 ID",
+    "usingSkill": "使用此技能",
+    "usingSkillDescription": "将代理设置为 marketplace 后，在 Claude Code 中用一条命令启用此技能：",
+    "runInClaudeCode": "在 Claude Code 中运行",
+    "copied": "已复制",
+    "copy": "复制",
+    "staleCatalog": "如果看到 \"Plugin {{name}} not found in marketplace\"，请先更新目录：",
+    "marketplaceNotConfigured": "还没有配置 marketplace？",
+    "seeSetup": "查看一次性设置 →",
+    "setupTitle": "一次性 marketplace 设置",
+    "setupRunCommand": "在 Claude Code 中运行此命令以注册 marketplace：",
+    "setupSettingsPrefix": "或将此项添加到 <code>{{file}}</code> 以实现持久配置："
   }
 }

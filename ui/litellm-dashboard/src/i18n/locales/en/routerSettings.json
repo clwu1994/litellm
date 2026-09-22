@@ -24,5 +24,85 @@
     "inConfig": "In Config",
     "notSet": "Not Set",
     "update": "Update"
+  },
+  "routingGroups": {
+    "searchPlaceholder": "Search groups...",
+    "clearSearchAria": "Clear search",
+    "refresh": "Refresh",
+    "createGroup": "Create Group",
+    "showingSingular": "Showing {{groups}} result",
+    "showingPlural": "Showing {{groups}} results",
+    "toast": {
+      "created": "Created routing group \"{{name}}\"",
+      "updated": "Updated routing group \"{{name}}\"",
+      "deleted": "Deleted routing group \"{{name}}\"",
+      "saveFailed": "Failed to save routing group",
+      "deleteFailed": "Failed to delete routing group"
+    },
+    "delete": {
+      "title": "Delete routing group?",
+      "body": "Models in <strong>{{name}}</strong> will fall back to the proxy's top-level routing strategy. This cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Delete"
+    },
+    "table": {
+      "groupName": "Group Name",
+      "models": "Models",
+      "strategy": "Strategy",
+      "actions": "Actions",
+      "openActionsAria": "Open actions for {{name}}",
+      "edit": "Edit",
+      "delete": "Delete",
+      "emptyTitle": "No routing groups yet",
+      "emptyDescription": "Create a group to load-balance a set of models behind one name.",
+      "loading": "Loading routing groups…"
+    },
+    "usage": {
+      "howItWorks": "How routing works for this group",
+      "description": "Callers request any model in the group by name; LiteLLM picks a deployment behind the scenes using the <strong>{{strategy}}</strong> strategy."
+    },
+    "strategies": {
+      "simpleShuffle": "Simple Shuffle",
+      "leastBusy": "Least Busy",
+      "usageBased": "Usage Based",
+      "latencyBased": "Latency Based"
+    },
+    "modal": {
+      "createTitle": "Create Routing Group",
+      "editTitle": "Edit {{name}}",
+      "groupNameDescription": "Use this name as the model in API calls — LiteLLM routes the request to one of the group's models.",
+      "modelsDescription": "Models from your model list that this group routes between.",
+      "selectModels": "Select models",
+      "noModels": "No models found",
+      "routingStrategy": "Routing Strategy",
+      "selectStrategy": "Select strategy",
+      "strategyArgs": "Strategy Arguments (JSON)",
+      "strategyArgsExample": "Example: {{json}}",
+      "fallThrough": "Models not claimed by an explicit group fall through to the proxy's top-level routing strategy.",
+      "saveChanges": "Save Changes",
+      "validation": {
+        "groupNameRequired": "Group name is required",
+        "groupNameMax": "Must be {{max}} characters or fewer",
+        "groupNameExists": "A group with this name already exists",
+        "modelsRequired": "Select at least one model",
+        "invalidJson": "Must be valid JSON",
+        "strategyRequired": "Strategy is required"
+      }
+    }
+  },
+  "routerForm": {
+    "routingSettings": "Routing Settings",
+    "routingSettingsDescription": "Configure how requests are routed to deployments",
+    "latencyTitle": "Latency-Based Configuration",
+    "latencyDescription": "Fine-tune latency-based routing behavior",
+    "ttlExplanation": "Sliding window to look back over when calculating the average latency of a deployment. Default - 1 hour (in seconds).",
+    "lowestLatencyBufferExplanation": "Shuffle between deployments within this % of the lowest latency. Default - 0 (i.e. always pick lowest latency).",
+    "reliabilityTitle": "Reliability & Retries",
+    "reliabilityDescription": "Configure retry logic and failure handling",
+    "enableTagFilteringFallback": "Enable Tag Filtering",
+    "learnMore": "Learn more",
+    "reset": "Reset",
+    "saveSuccess": "router settings updated successfully",
+    "saveFailed": "Failed to update router settings: {{error}}"
   }
 }

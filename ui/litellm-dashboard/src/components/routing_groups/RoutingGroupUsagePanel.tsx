@@ -2,6 +2,7 @@
 
 import { Code2 } from "lucide-react";
 import React from "react";
+import { Trans, useTranslation } from "react-i18next";
 
 import CodeBlock from "@/components/CodeBlock";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -62,15 +63,20 @@ const SNIPPET_TABS = [
 ] as const;
 
 export function RoutingGroupUsagePanel({ group, baseUrl }: RoutingGroupUsagePanelProps) {
+  const { t } = useTranslation("routerSettings");
   return (
     <div className="border-y bg-muted/40 px-4 py-4">
       <div className="mb-2 flex items-center gap-2">
         <Code2 className="size-4 text-primary" />
-        <span className="text-sm font-medium text-foreground">How routing works for this group</span>
+        <span className="text-sm font-medium text-foreground">{t("routingGroups.usage.howItWorks")}</span>
       </div>
       <p className="mb-3 text-sm text-muted-foreground">
-        Callers request any model in the group by name; LiteLLM picks a deployment behind the scenes using the{" "}
-        <span className="font-medium text-foreground">{formatStrategyLabel(group.routing_strategy)}</span> strategy.
+        <Trans
+          ns="routerSettings"
+          i18nKey="routingGroups.usage.description"
+          values={{ strategy: formatStrategyLabel(group.routing_strategy, t) }}
+          components={{ strong: <span className="font-medium text-foreground" /> }}
+        />
       </p>
       <Tabs defaultValue="curl">
         <TabsList variant="line" className="h-auto w-full justify-start rounded-none border-b p-0">

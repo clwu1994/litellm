@@ -1,6 +1,7 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
+import type { TFunction } from "i18next";
 import { GitBranch, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 
 import { DataTableSortHeader } from "@/components/shared/DataTable";
@@ -18,16 +19,17 @@ import { formatStrategyLabel } from "./strategy";
 import type { RoutingGroup } from "./types";
 
 interface RoutingGroupRowActionsProps {
+  t: TFunction<"routerSettings">;
   group: RoutingGroup;
   onEdit: (group: RoutingGroup) => void;
   onDelete: (group: RoutingGroup) => void;
 }
 
-function RoutingGroupRowActions({ group, onEdit, onDelete }: RoutingGroupRowActionsProps) {
+function RoutingGroupRowActions({ t, group, onEdit, onDelete }: RoutingGroupRowActionsProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        aria-label={`Open actions for ${group.group_name}`}
+        aria-label={t("routingGroups.table.openActionsAria", { name: group.group_name })}
         data-testid={`routing-group-actions-${group.group_name}`}
         className={cn(buttonVariants({ variant: "ghost", size: "icon-sm" }), "text-muted-foreground")}
       >
@@ -36,7 +38,7 @@ function RoutingGroupRowActions({ group, onEdit, onDelete }: RoutingGroupRowActi
       <DropdownMenuContent align="end" className="w-44">
         <DropdownMenuItem data-testid="routing-group-action-edit" onClick={() => onEdit(group)}>
           <Pencil />
-          Edit
+          {t("routingGroups.table.edit")}
         </DropdownMenuItem>
         <DropdownMenuItem
           variant="destructive"
@@ -44,7 +46,7 @@ function RoutingGroupRowActions({ group, onEdit, onDelete }: RoutingGroupRowActi
           onClick={() => onDelete(group)}
         >
           <Trash2 />
-          Delete
+          {t("routingGroups.table.delete")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -52,12 +54,14 @@ function RoutingGroupRowActions({ group, onEdit, onDelete }: RoutingGroupRowActi
 }
 
 interface RoutingGroupsTableColumnsDeps {
+  t: TFunction<"routerSettings">;
   onEdit: (group: RoutingGroup) => void;
   onDelete: (group: RoutingGroup) => void;
   onToggleUsage: (group: RoutingGroup) => void;
 }
 
 export const getRoutingGroupsTableColumns = ({
+  t,
   onEdit,
   onDelete,
   onToggleUsage,
@@ -65,8 +69,8 @@ export const getRoutingGroupsTableColumns = ({
   {
     id: "group_name",
     accessorKey: "group_name",
-    meta: { title: "Group Name", skeleton: "text" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Group Name" />,
+    meta: { title: t("routingGroups.table.groupName"), skeleton: "text" },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("routingGroups.table.groupName")} />,
     size: 240,
     enableSorting: true,
     cell: ({ row }) => (
@@ -75,8 +79,8 @@ export const getRoutingGroupsTableColumns = ({
   },
   {
     id: "models",
-    meta: { title: "Models", skeleton: "chips" },
-    header: "Models",
+    meta: { title: t("routingGroups.table.models"), skeleton: "chips" },
+    header: t("routingGroups.table.models"),
     size: 320,
     enableSorting: false,
     cell: ({ row }) => <ModelsCell models={row.original.models} />,
@@ -84,27 +88,27 @@ export const getRoutingGroupsTableColumns = ({
   {
     id: "routing_strategy",
     accessorKey: "routing_strategy",
-    meta: { title: "Strategy", skeleton: "text" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Strategy" />,
+    meta: { title: t("routingGroups.table.strategy"), skeleton: "text" },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("routingGroups.table.strategy")} />,
     size: 180,
     enableSorting: true,
     cell: ({ row }) => (
       <span className="flex items-center gap-1.5 text-sm">
         <GitBranch className="size-4 shrink-0 text-muted-foreground" />
-        {formatStrategyLabel(row.original.routing_strategy)}
+        {formatStrategyLabel(row.original.routing_strategy, t)}
       </span>
     ),
   },
   {
     id: "actions",
     meta: { className: "text-right", headerClassName: "text-right" },
-    header: () => <span className="sr-only">Actions</span>,
+    header: () => <span className="sr-only">{t("routingGroups.table.actions")}</span>,
     size: 64,
     enableSorting: false,
     enableHiding: false,
     cell: ({ row }) => (
       <div className="flex justify-end">
-        <RoutingGroupRowActions group={row.original} onEdit={onEdit} onDelete={onDelete} />
+        <RoutingGroupRowActions t={t} group={row.original} onEdit={onEdit} onDelete={onDelete} />
       </div>
     ),
   },

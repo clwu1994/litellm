@@ -513,5 +513,82 @@
     "selectAtLeastOne": "Select at least one guardrail to create, or click \"Use Template\" to proceed without creating new guardrails.",
     "createAndUse": "Create {{guardrailCount}} Guardrails & Use Template",
     "createAndUseSingular": "Create {{guardrailCount}} Guardrail & Use Template"
+  },
+  "toolPolicies": {
+    "title": "Tool Policies",
+    "adminOnly": "Tool Policies is only available to admin users.",
+    "metrics": {
+      "newToday": "New Today",
+      "totalTools": "Total Tools Discovered",
+      "blockedTools": "Blocked Tools",
+      "activeTeams": "Active Teams",
+      "trendUp": "+{{diff}} since yesterday",
+      "trendDown": "{{diff}} since yesterday"
+    },
+    "needsReview": {
+      "title": "Needs Review",
+      "singular": "{{tools}} new tool discovered that require policy decisions.",
+      "plural": "{{tools}} new tools discovered that require policy decisions.",
+      "review": "Review"
+    },
+    "loadFailed": "Failed to load tools",
+    "updateInputFailed": "Failed to update input policy: {{error}}",
+    "updateOutputFailed": "Failed to update output policy: {{error}}",
+    "unknownError": "unknown error",
+    "policy": {
+      "untrusted": "untrusted",
+      "trusted": "trusted",
+      "blocked": "blocked"
+    },
+    "table": {
+      "discovered": "Discovered",
+      "toolName": "Tool Name",
+      "inputPolicy": "Input Policy",
+      "outputPolicy": "Output Policy",
+      "calls": "# Calls",
+      "teamName": "Team Name",
+      "keyName": "Key Name",
+      "keyHash": "Key Hash",
+      "userAgent": "User Agent",
+      "searchPlaceholder": "Search by Tool Name",
+      "loading": "Loading tools…",
+      "filtersTitle": "Filters",
+      "filtersDescription": "Narrow down discovered tools",
+      "allInputPolicies": "All Input Policies",
+      "allOutputPolicies": "All Output Policies",
+      "allTeams": "All Teams",
+      "allKeys": "All Keys"
+    },
+    "empty": {
+      "filteredTitle": "No matching tools",
+      "filteredDescription": "No tools match your search or filters.",
+      "noneTitle": "No tools discovered",
+      "noneDescription": "Make a chat completion that returns tool_calls to start auto-discovery."
+    },
+    "detail": {
+      "back": "Back to Tool Policies",
+      "loadFailed": "Failed to load tool details.",
+      "calls": "{{calls}} calls",
+      "userAgent": "User Agent:",
+      "firstDiscovered": "First Discovered:",
+      "lastUsed": "Last Used:",
+      "inputPolicyDefault": "Controls what data this tool is allowed to accept.",
+      "outputPolicyDefault": "Controls how this tool's output is trusted by downstream tools.",
+      "blockedFor": "Blocked for team or key",
+      "teamLabel": "Team: {{team}}",
+      "keyLabel": "Key: {{key}}",
+      "remove": "Remove",
+      "blockFor": "Block for team or key",
+      "scope": "Scope",
+      "team": "Team",
+      "key": "Key",
+      "blockForTeam": "Block for team",
+      "blockForKey": "Block for key",
+      "selectKey": "Select key",
+      "noKeys": "No keys found",
+      "recentInvocations": "Recent invocations",
+      "addOverrideFailed": "Failed to add override: {{error}}",
+      "removeOverrideFailed": "Failed to remove override: {{error}}"
+    }
   }
 }

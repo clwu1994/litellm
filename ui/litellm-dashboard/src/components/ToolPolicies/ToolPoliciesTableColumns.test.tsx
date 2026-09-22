@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi } from "vitest";
 import { flexRender, getCoreRowModel, useReactTable, type ColumnDef } from "@tanstack/react-table";
+import i18n from "@/i18n/bootstrapI18n";
 import { getToolPoliciesTableColumns } from "./ToolPoliciesTableColumns";
 import type { ToolRow } from "@/components/networking";
 
@@ -18,6 +19,7 @@ const row: ToolRow = {
 } as ToolRow;
 
 const defaultDeps = {
+  t: i18n.getFixedT(null, "policies"),
   onSelectTool: vi.fn(),
   savingInput: new Set<string>(),
   savingOutput: new Set<string>(),

@@ -2,6 +2,7 @@ import { useTeams } from "@/app/(dashboard)/hooks/teams/useTeams";
 import { createTeamAliasMap } from "@/utils/teamUtils";
 import { Loader2 } from "lucide-react";
 import React, { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -9,8 +10,17 @@ import { toast } from "@/lib/toast";
 import ExportFormatSelector from "./ExportFormatSelector";
 import ExportSummary from "./ExportSummary";
 import ExportTypeSelector from "./ExportTypeSelector";
-import type { EntityUsageExportModalProps, ExportFormat, ExportScope } from "./types";
+import type { EntityType, EntityUsageExportModalProps, ExportFormat, ExportScope } from "./types";
 import { handleExportCSV, handleExportJSON } from "./utils";
+
+const ENTITY_TYPE_KEYS = {
+  tag: "entity.type.tag",
+  team: "entity.type.team",
+  organization: "entity.type.organization",
+  customer: "entity.type.customer",
+  agent: "entity.type.agent",
+  user: "entity.type.user",
+} as const satisfies Record<EntityType, string>;
 
 const EntityUsageExportModal: React.FC<EntityUsageExportModalProps> = ({
   isOpen,
@@ -21,13 +31,15 @@ const EntityUsageExportModal: React.FC<EntityUsageExportModalProps> = ({
   selectedFilters,
   customTitle,
 }) => {
+  const { t } = useTranslation("usage");
   const [exportFormat, setExportFormat] = useState<ExportFormat>("csv");
   const [exportScope, setExportScope] = useState<ExportScope>("daily");
   const [isExporting, setIsExporting] = useState(false);
   const { data: teams, isLoading: isLoadingTeams } = useTeams();
 
   const entityLabel = entityType.charAt(0).toUpperCase() + entityType.slice(1);
-  const modalTitle = customTitle || `Export ${entityLabel} Usage`;
+  const entityDisplay = t(ENTITY_TYPE_KEYS[entityType]);
+  const modalTitle = customTitle || t("entityUsage.modalTitle", { entity: entityDisplay });
 
   // Cache team alias map using useMemo
   const teamAliasMap = useMemo(() => createTeamAliasMap(teams), [teams]);
@@ -37,15 +49,15 @@ const EntityUsageExportModal: React.FC<EntityUsageExportModalProps> = ({
     try {
       if (formatToUse === "csv") {
         handleExportCSV(spendData, exportScope, entityLabel, entityType, teamAliasMap);
-        toast.success(`${entityLabel} usage data exported successfully as CSV`);
+        toast.success(t("entityUsage.exportSuccessCsv", { entity: entityDisplay }));
       } else {
         handleExportJSON(spendData, exportScope, entityLabel, entityType, dateRange, selectedFilters, teamAliasMap);
-        toast.success(`${entityLabel} usage data exported successfully as JSON`);
+        toast.success(t("entityUsage.exportSuccessJson", { entity: entityDisplay }));
       }
       onClose();
     } catch (error) {
       console.error("Error exporting data:", error);
-      toast.fromError("Failed to export data");
+      toast.fromError(t("entityUsage.exportFailed"));
     } finally {
       setIsExporting(false);
     }
@@ -85,11 +97,13 @@ const EntityUsageExportModal: React.FC<EntityUsageExportModalProps> = ({
             ) : (
               <>
                 <Button variant="outline" onClick={onClose} disabled={isExporting}>
-                  Cancel
+                  {t("entityUsage.cancel")}
                 </Button>
                 <Button onClick={() => handleExport()} disabled={isExporting}>
                   {isExporting && <Loader2 className="animate-spin" />}
-                  {isExporting ? "Exporting..." : `Export ${exportFormat.toUpperCase()}`}
+                  {isExporting
+                    ? t("entityUsage.exporting")
+                    : t("entityUsage.exportFormat", { format: exportFormat.toUpperCase() })}
                 </Button>
               </>
             )}

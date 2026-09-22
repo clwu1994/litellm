@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 
+import i18n from "@/i18n/bootstrapI18n";
+
 import type { RoutingGroup } from "./types";
 import {
   argsForStrategy,
@@ -7,6 +9,10 @@ import {
   toRoutingGroupFormValues,
   type RoutingGroupFormValues,
 } from "./routingGroupPayload";
+
+const t = i18n.getFixedT("en", "routerSettings");
+
+const build = (formValues: RoutingGroupFormValues) => buildRoutingGroupPayload(formValues, t);
 
 const values = (overrides: Partial<RoutingGroupFormValues> = {}): RoutingGroupFormValues => ({
   group_name: "fast-chat",
@@ -18,7 +24,7 @@ const values = (overrides: Partial<RoutingGroupFormValues> = {}): RoutingGroupFo
 
 describe("buildRoutingGroupPayload", () => {
   it("sends a null args key for a strategy that takes no arguments", () => {
-    expect(buildRoutingGroupPayload(values())).toStrictEqual({
+    expect(build(values())).toStrictEqual({
       ok: true,
       group: {
         group_name: "fast-chat",
@@ -30,9 +36,7 @@ describe("buildRoutingGroupPayload", () => {
   });
 
   it("parses the arguments for latency based routing", () => {
-    const result = buildRoutingGroupPayload(
-      values({ routing_strategy: "latency-based-routing", routing_strategy_args: '{"ttl": 3600}' }),
-    );
+    const result = build(values({ routing_strategy: "latency-based-routing", routing_strategy_args: '{"ttl": 3600}' }));
 
     expect(result).toStrictEqual({
       ok: true,
@@ -46,44 +50,38 @@ describe("buildRoutingGroupPayload", () => {
   });
 
   it("parses the arguments for usage based routing", () => {
-    const result = buildRoutingGroupPayload(
-      values({ routing_strategy: "usage-based-routing", routing_strategy_args: '{"ttl": 60}' }),
-    );
+    const result = build(values({ routing_strategy: "usage-based-routing", routing_strategy_args: '{"ttl": 60}' }));
 
     expect(result.ok && result.group.routing_strategy_args).toStrictEqual({ ttl: 60 });
   });
 
   it("drops arguments belonging to a strategy that does not take them", () => {
-    const result = buildRoutingGroupPayload(
-      values({ routing_strategy: "least-busy", routing_strategy_args: '{"ttl": 3600}' }),
-    );
+    const result = build(values({ routing_strategy: "least-busy", routing_strategy_args: '{"ttl": 3600}' }));
 
     expect(result.ok && result.group.routing_strategy_args).toBeNull();
   });
 
   it("treats whitespace-only arguments as absent", () => {
-    const result = buildRoutingGroupPayload(
-      values({ routing_strategy: "latency-based-routing", routing_strategy_args: "   \n  " }),
-    );
+    const result = build(values({ routing_strategy: "latency-based-routing", routing_strategy_args: "   \n  " }));
 
     expect(result.ok && result.group.routing_strategy_args).toBeNull();
   });
 
   it("reports invalid JSON instead of a payload", () => {
-    expect(
-      buildRoutingGroupPayload(values({ routing_strategy: "latency-based-routing", routing_strategy_args: "{ttl:}" })),
-    ).toStrictEqual({ ok: false, argsError: "Must be valid JSON" });
+    expect(build(values({ routing_strategy: "latency-based-routing", routing_strategy_args: "{ttl:}" }))).toStrictEqual(
+      { ok: false, argsError: "Must be valid JSON" },
+    );
   });
 
   it("trims the group name", () => {
-    const result = buildRoutingGroupPayload(values({ group_name: "  fast-chat  " }));
+    const result = build(values({ group_name: "  fast-chat  " }));
 
     expect(result.ok && result.group.group_name).toBe("fast-chat");
   });
 
   it("passes the selected models through untouched", () => {
     const models = ["gpt-4o", "claude-sonnet", "gemini-pro"];
-    const result = buildRoutingGroupPayload(values({ models }));
+    const result = build(values({ models }));
 
     expect(result.ok && result.group.models).toStrictEqual(models);
   });

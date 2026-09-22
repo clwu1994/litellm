@@ -1,6 +1,7 @@
 import type { DateRangePickerValue } from "@/components/shared/date_picker_types";
 import { Download } from "lucide-react";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
   Combobox,
@@ -18,6 +19,15 @@ import {
 import EntityUsageExportModal from "./EntityUsageExportModal";
 import type { EntitySpendData, EntityType } from "./types";
 import type { Team } from "@/components/key_team_helpers/key_list";
+
+const ENTITY_LOWER_KEYS = {
+  tag: "entity.typeLower.tag",
+  team: "entity.typeLower.team",
+  organization: "entity.typeLower.organization",
+  customer: "entity.typeLower.customer",
+  agent: "entity.typeLower.agent",
+  user: "entity.typeLower.user",
+} as const satisfies Record<EntityType, string>;
 
 interface UsageExportHeaderProps {
   dateValue: DateRangePickerValue;
@@ -51,6 +61,7 @@ const UsageExportHeader: React.FC<UsageExportHeaderProps> = ({
   compactLayout = false,
   teams = [],
 }) => {
+  const { t } = useTranslation("usage");
   const anchor = useComboboxAnchor();
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
@@ -58,14 +69,14 @@ const UsageExportHeader: React.FC<UsageExportHeaderProps> = ({
   const optionValues = filterOptions.map((option) => option.value);
   const labelOf = (value: string) => filterOptions.find((option) => option.value === value)?.label ?? value;
   const hasNoOptions = filterOptions.length === 0;
-  const emptyPlaceholder = `No ${entityType}s with usage in this range`;
+  const emptyPlaceholder = t("entityUsage.emptyFilterPlaceholder", { entity: t(ENTITY_LOWER_KEYS[entityType]) });
   // A selection carried over from a range that did have options still scopes
   // the data below, so the control has to stay usable long enough to clear it.
   const isFilterDisabled = hasNoOptions && selectedFilters.length === 0;
 
   const filterList = (
     <ComboboxContent anchor={anchor}>
-      <ComboboxEmpty>No options found</ComboboxEmpty>
+      <ComboboxEmpty>{t("entityUsage.noOptions")}</ComboboxEmpty>
       <ComboboxList>
         {(value: string) => (
           <ComboboxItem key={value} value={value}>
@@ -98,7 +109,11 @@ const UsageExportHeader: React.FC<UsageExportHeaderProps> = ({
           placeholder={hasNoOptions ? emptyPlaceholder : filterPlaceholder}
           aria-label={hasNoOptions ? emptyPlaceholder : filterPlaceholder}
         />
-        {selectedFilters.length > 0 && <ComboboxClear aria-label={`Clear ${filterLabel ?? "filters"}`} />}
+        {selectedFilters.length > 0 && (
+          <ComboboxClear
+            aria-label={t("entityUsage.clearFilter", { filter: filterLabel ?? t("entityUsage.filtersFallback") })}
+          />
+        )}
       </ComboboxChips>
       {filterList}
     </Combobox>
@@ -123,7 +138,7 @@ const UsageExportHeader: React.FC<UsageExportHeaderProps> = ({
           <div className="justify-self-end">
             <Button onClick={() => setIsExportModalOpen(true)}>
               <Download />
-              Export Data
+              {t("entityUsage.exportData")}
             </Button>
           </div>
         </div>

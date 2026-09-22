@@ -513,5 +513,82 @@
     "selectAtLeastOne": "请至少选择一个要创建的 Guardrail，或点击「使用模板」在不创建新 Guardrail 的情况下继续。",
     "createAndUse": "创建 {{guardrailCount}} 个 Guardrail 并使用模板",
     "createAndUseSingular": "创建 {{guardrailCount}} 个 Guardrail 并使用模板"
+  },
+  "toolPolicies": {
+    "title": "工具策略",
+    "adminOnly": "工具策略仅对管理员用户可用。",
+    "metrics": {
+      "newToday": "今日新增",
+      "totalTools": "已发现的工具总数",
+      "blockedTools": "已阻止的工具",
+      "activeTeams": "活跃团队",
+      "trendUp": "较昨日 +{{diff}}",
+      "trendDown": "较昨日 {{diff}}"
+    },
+    "needsReview": {
+      "title": "待审核",
+      "singular": "发现 {{tools}} 个需要策略决策的新工具。",
+      "plural": "发现 {{tools}} 个需要策略决策的新工具。",
+      "review": "审核"
+    },
+    "loadFailed": "加载工具失败",
+    "updateInputFailed": "更新输入策略失败：{{error}}",
+    "updateOutputFailed": "更新输出策略失败：{{error}}",
+    "unknownError": "未知错误",
+    "policy": {
+      "untrusted": "不可信",
+      "trusted": "可信",
+      "blocked": "已阻止"
+    },
+    "table": {
+      "discovered": "发现时间",
+      "toolName": "工具名称",
+      "inputPolicy": "输入策略",
+      "outputPolicy": "输出策略",
+      "calls": "调用次数",
+      "teamName": "团队名称",
+      "keyName": "密钥名称",
+      "keyHash": "密钥哈希",
+      "userAgent": "用户代理",
+      "searchPlaceholder": "按工具名称搜索",
+      "loading": "正在加载工具…",
+      "filtersTitle": "筛选",
+      "filtersDescription": "缩小已发现工具的范围",
+      "allInputPolicies": "所有输入策略",
+      "allOutputPolicies": "所有输出策略",
+      "allTeams": "所有团队",
+      "allKeys": "所有密钥"
+    },
+    "empty": {
+      "filteredTitle": "没有匹配的工具",
+      "filteredDescription": "没有工具符合你的搜索或筛选条件。",
+      "noneTitle": "尚未发现工具",
+      "noneDescription": "发起一次返回 tool_calls 的聊天补全即可开始自动发现。"
+    },
+    "detail": {
+      "back": "返回工具策略",
+      "loadFailed": "加载工具详情失败。",
+      "calls": "{{calls}} 次调用",
+      "userAgent": "用户代理：",
+      "firstDiscovered": "首次发现：",
+      "lastUsed": "上次使用：",
+      "inputPolicyDefault": "控制此工具允许接收的数据。",
+      "outputPolicyDefault": "控制下游工具如何信任此工具的输出。",
+      "blockedFor": "已按团队或密钥阻止",
+      "teamLabel": "团队：{{team}}",
+      "keyLabel": "密钥：{{key}}",
+      "remove": "移除",
+      "blockFor": "按团队或密钥阻止",
+      "scope": "范围",
+      "team": "团队",
+      "key": "密钥",
+      "blockForTeam": "阻止团队",
+      "blockForKey": "阻止密钥",
+      "selectKey": "选择密钥",
+      "noKeys": "未找到密钥",
+      "recentInvocations": "最近调用",
+      "addOverrideFailed": "添加覆盖失败：{{error}}",
+      "removeOverrideFailed": "移除覆盖失败：{{error}}"
+    }
   }
 }

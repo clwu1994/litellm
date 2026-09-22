@@ -1,3 +1,5 @@
+import type { ParseKeys } from "i18next";
+
 import arizeLogo from "../../public/assets/logos/arize.png";
 import awsLogo from "../../public/assets/logos/aws.svg";
 import braintrustLogo from "../../public/assets/logos/braintrust.png";
@@ -17,7 +19,7 @@ interface CallbackConfig {
   logo?: string;
   supports_key_team_logging: boolean;
   dynamic_params: Record<string, "text" | "password" | "select" | "upload" | "number">;
-  description: string;
+  descriptionKey: ParseKeys<"teams">;
 }
 
 export const CALLBACK_CONFIGS: CallbackConfig[] = [
@@ -30,7 +32,7 @@ export const CALLBACK_CONFIGS: CallbackConfig[] = [
       arize_api_key: "password",
       arize_space_id: "password",
     },
-    description: "Arize Logging Integration",
+    descriptionKey: "logging.callbackDescriptions.arize",
   },
   {
     id: "braintrust",
@@ -41,7 +43,7 @@ export const CALLBACK_CONFIGS: CallbackConfig[] = [
       braintrust_api_key: "password",
       braintrust_project_name: "text",
     },
-    description: "Braintrust Logging Integration",
+    descriptionKey: "logging.callbackDescriptions.braintrust",
   },
   {
     id: "custom_callback_api",
@@ -51,7 +53,7 @@ export const CALLBACK_CONFIGS: CallbackConfig[] = [
       custom_callback_api_url: "text",
       custom_callback_api_headers: "text",
     },
-    description: "Custom Callback API Logging Integration",
+    descriptionKey: "logging.callbackDescriptions.custom_callback_api",
   },
   {
     id: "galileo",
@@ -66,7 +68,7 @@ export const CALLBACK_CONFIGS: CallbackConfig[] = [
       GALILEO_USERNAME: "text",
       GALILEO_PASSWORD: "password",
     },
-    description: "Galileo AI Observability Integration",
+    descriptionKey: "logging.callbackDescriptions.galileo",
   },
   {
     id: "datadog",
@@ -77,7 +79,7 @@ export const CALLBACK_CONFIGS: CallbackConfig[] = [
       dd_api_key: "password",
       dd_site: "text",
     },
-    description: "Datadog Logging Integration",
+    descriptionKey: "logging.callbackDescriptions.datadog",
   },
   {
     id: "newrelic",
@@ -88,7 +90,7 @@ export const CALLBACK_CONFIGS: CallbackConfig[] = [
       newrelic_api_key: "password",
       newrelic_region: "text",
     },
-    description: "New Relic Logging Integration",
+    descriptionKey: "logging.callbackDescriptions.newrelic",
   },
   {
     id: "lago",
@@ -99,7 +101,7 @@ export const CALLBACK_CONFIGS: CallbackConfig[] = [
       lago_api_url: "text",
       lago_api_key: "password",
     },
-    description: "Lago Billing Logging Integration",
+    descriptionKey: "logging.callbackDescriptions.lago",
   },
   {
     id: "langfuse",
@@ -112,7 +114,7 @@ export const CALLBACK_CONFIGS: CallbackConfig[] = [
       langfuse_host: "text",
       langfuse_environment: "text",
     },
-    description: "Langfuse v2 Logging Integration",
+    descriptionKey: "logging.callbackDescriptions.langfuse",
   },
   {
     id: "langfuse_otel",
@@ -125,7 +127,7 @@ export const CALLBACK_CONFIGS: CallbackConfig[] = [
       langfuse_host: "text",
       langfuse_environment: "text",
     },
-    description: "Langfuse v3 OTEL Logging Integration",
+    descriptionKey: "logging.callbackDescriptions.langfuse_otel",
   },
   {
     id: "langsmith",
@@ -138,7 +140,7 @@ export const CALLBACK_CONFIGS: CallbackConfig[] = [
       langsmith_base_url: "text",
       langsmith_sampling_rate: "number",
     },
-    description: "Langsmith Logging Integration",
+    descriptionKey: "logging.callbackDescriptions.langsmith",
   },
   {
     id: "openmeter",
@@ -149,7 +151,7 @@ export const CALLBACK_CONFIGS: CallbackConfig[] = [
       openmeter_api_key: "password",
       openmeter_base_url: "text",
     },
-    description: "OpenMeter Logging Integration",
+    descriptionKey: "logging.callbackDescriptions.openmeter",
   },
   {
     id: "otel",
@@ -161,7 +163,7 @@ export const CALLBACK_CONFIGS: CallbackConfig[] = [
       otel_headers: "text",
       otel_exporter_otlp_protocol: "select",
     },
-    description: "OpenTelemetry Logging Integration",
+    descriptionKey: "logging.callbackDescriptions.otel",
   },
   {
     id: "pointfive",
@@ -172,7 +174,7 @@ export const CALLBACK_CONFIGS: CallbackConfig[] = [
       POINTFIVE_API_KEY: "password",
       POINTFIVE_API_URL: "text",
     },
-    description: "PointFive Logging Integration",
+    descriptionKey: "logging.callbackDescriptions.pointfive",
   },
   {
     id: "s3",
@@ -185,7 +187,7 @@ export const CALLBACK_CONFIGS: CallbackConfig[] = [
       aws_secret_access_key: "password",
       aws_region: "text",
     },
-    description: "S3 Bucket (AWS) Logging Integration",
+    descriptionKey: "logging.callbackDescriptions.s3",
   },
   {
     id: "SQS",
@@ -198,7 +200,7 @@ export const CALLBACK_CONFIGS: CallbackConfig[] = [
       aws_secret_access_key: "password",
       aws_region: "text",
     },
-    description: "SQS Queue (AWS) Logging Integration",
+    descriptionKey: "logging.callbackDescriptions.SQS",
   },
 ];
 

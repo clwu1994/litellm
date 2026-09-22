@@ -1,6 +1,16 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import type { ExportScope, EntityType } from "./types";
+
+const ENTITY_LOWER_KEYS = {
+  tag: "entity.typeLower.tag",
+  team: "entity.typeLower.team",
+  organization: "entity.typeLower.organization",
+  customer: "entity.typeLower.customer",
+  agent: "entity.typeLower.agent",
+  user: "entity.typeLower.user",
+} as const satisfies Record<EntityType, string>;
 
 interface ExportTypeSelectorProps {
   value: ExportScope;
@@ -9,27 +19,29 @@ interface ExportTypeSelectorProps {
 }
 
 const ExportTypeSelector: React.FC<ExportTypeSelectorProps> = ({ value, onChange, entityType }) => {
+  const { t } = useTranslation("usage");
+  const entity = t(ENTITY_LOWER_KEYS[entityType]);
   const scopes: { value: ExportScope; title: string; description: string }[] = [
     {
       value: "daily",
-      title: `Day-by-day breakdown by ${entityType}`,
-      description: `Daily metrics for each ${entityType}`,
+      title: t("entityUsage.scopeDailyTitle", { entity }),
+      description: t("entityUsage.scopeDailyDescription", { entity }),
     },
     {
       value: "daily_with_keys",
-      title: `Day-by-day breakdown by ${entityType} and key`,
-      description: `Daily metrics for each ${entityType}, split by API key`,
+      title: t("entityUsage.scopeDailyWithKeysTitle", { entity }),
+      description: t("entityUsage.scopeDailyWithKeysDescription", { entity }),
     },
     {
       value: "daily_with_models",
-      title: `Day-by-day by ${entityType} and model`,
-      description: "Daily metrics split by model",
+      title: t("entityUsage.scopeDailyWithModelsTitle", { entity }),
+      description: t("entityUsage.scopeDailyWithModelsDescription"),
     },
   ];
 
   return (
     <div>
-      <label className="text-sm font-medium text-foreground block mb-2">Export type</label>
+      <label className="text-sm font-medium text-foreground block mb-2">{t("entityUsage.exportTypeLabel")}</label>
       <RadioGroup value={value} onValueChange={(next) => onChange(next as ExportScope)} className="gap-2">
         {scopes.map((scope) => (
           <label

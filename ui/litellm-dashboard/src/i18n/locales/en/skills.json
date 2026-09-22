@@ -119,5 +119,36 @@
       "success": "Skill registered successfully",
       "failure": "Failed to register skill"
     }
+  },
+  "detail": {
+    "back": "Skills",
+    "tabOverview": "Overview",
+    "tabUsage": "How to Use",
+    "skillDetails": "Skill Details",
+    "metadataDescription": "Metadata registered with this skill",
+    "property": "Property",
+    "propertyCategory": "Category",
+    "propertyDomain": "Domain",
+    "propertyNamespace": "Namespace",
+    "propertyVersion": "Version",
+    "propertyAuthor": "Author",
+    "propertyAdded": "Added",
+    "status": "Status",
+    "public": "Public",
+    "draft": "Draft",
+    "source": "Source",
+    "tags": "Tags",
+    "skillId": "Skill ID",
+    "usingSkill": "Using this skill",
+    "usingSkillDescription": "Once your proxy is set as a marketplace, enable this skill in Claude Code with one command:",
+    "runInClaudeCode": "Run in Claude Code",
+    "copied": "Copied",
+    "copy": "Copy",
+    "staleCatalog": "If you see \"Plugin {{name}} not found in marketplace\", update the catalog first:",
+    "marketplaceNotConfigured": "Don't have the marketplace configured yet?",
+    "seeSetup": "See one-time setup →",
+    "setupTitle": "One-time marketplace setup",
+    "setupRunCommand": "Run this command in Claude Code to register the marketplace:",
+    "setupSettingsPrefix": "Or add this to <code>{{file}}</code> for a persistent configuration:"
   }
 }

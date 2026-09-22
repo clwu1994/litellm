@@ -394,7 +394,26 @@
       "teamActivity": "成员可以查看全部团队用量数据（不仅限于自己的）",
       "spendLogs": "成员可以查看整个团队的消费日志（不仅限于自己的）",
       "fallback": "访问 {{endpoint}}"
-    }
+    },
+    "agents": "Agent",
+    "noAgents": "未配置 Agent 或访问组",
+    "group": "访问组",
+    "vectorStores": "向量存储",
+    "noVectorStores": "未配置向量存储",
+    "mcpServers": "MCP 服务器",
+    "blocked": "已阻止",
+    "all": "全部",
+    "noMcpServersBlocked": "无 MCP 服务器：此密钥被阻止访问所有 MCP 服务器，包括其团队的服务器",
+    "allProxyMcpServers": "所有代理 MCP 服务器",
+    "toolSingular": "个工具",
+    "toolPlural": "个工具",
+    "toolset": "工具集",
+    "noMcpServers": "未配置 MCP 服务器、访问组或工具集",
+    "fullId": "完整 ID：{{id}}",
+    "grantedVia": "授予来源：{{source}}。完整 ID：{{id}}",
+    "anAccessGroup": "一个访问组",
+    "accessGroupSingular": "访问组 {{names}}",
+    "accessGroupPlural": "访问组 {{names}}"
   },
   "logging": {
     "eventType": "事件类型",
@@ -426,6 +445,23 @@
     "empty": {
       "title": "未配置日志集成",
       "hint": "点击“{{action}}”为此团队配置日志"
+    },
+    "callbackDescriptions": {
+      "arize": "Arize 日志集成",
+      "braintrust": "Braintrust 日志集成",
+      "custom_callback_api": "自定义回调 API 日志集成",
+      "galileo": "Galileo AI 可观测性集成",
+      "datadog": "Datadog 日志集成",
+      "newrelic": "New Relic 日志集成",
+      "lago": "Lago 计费日志集成",
+      "langfuse": "Langfuse v2 日志集成",
+      "langfuse_otel": "Langfuse v3 OTEL 日志集成",
+      "langsmith": "Langsmith 日志集成",
+      "openmeter": "OpenMeter 日志集成",
+      "otel": "OpenTelemetry 日志集成",
+      "pointfive": "PointFive 日志集成",
+      "s3": "S3 存储桶（AWS）日志集成",
+      "SQS": "SQS 队列（AWS）日志集成"
     }
   },
   "guardrailsSelect": {
@@ -573,5 +609,23 @@
     "teamMemberPermissions": "团队成员权限",
     "teamMemberPermissionsDescription": "新创建团队的成员默认获得的权限。/key/info 和 /key/health 始终包含在内。",
     "selectPermissions": "选择权限"
+  },
+  "guardrailSettingsView": {
+    "noGuardrails": "未配置 guardrail",
+    "globalAria": "全局 guardrail",
+    "global": "全局",
+    "bypassed": "已为此团队绕过",
+    "noneConfigured": "未配置",
+    "teamSpecific": "团队专属",
+    "title": "Guardrail 设置",
+    "description": "应用于此团队的全局和团队专属 guardrail"
+  },
+  "objectPermissions": {
+    "searchTools": "搜索工具",
+    "noSearchRestriction": "无限制，此团队允许使用所有已配置的搜索工具。",
+    "skills": "技能",
+    "noPrivateSkills": "未授予私有技能。仅可见已启用（公开）的 Claude Code 插件。",
+    "title": "对象权限",
+    "description": "向量存储和 MCP 服务器的访问控制"
   }
 }
