@@ -79,17 +79,21 @@ describe("PromptEditorView Chinese copy", () => {
     await i18n.changeLanguage("en");
   });
 
-  it("renders the Chinese view modes plus the translated default name and message, hiding the English originals", () => {
+  it("renders the Chinese view modes and default name while the seeded message body stays English", () => {
     renderEditor();
 
     expect(screen.getByRole("button", { name: "美化" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "PRETTY" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "DOTPROMPT" })).toBeInTheDocument();
-    expect(screen.getByRole("textbox", { name: "提示词名称" })).toHaveValue("新提示词");
+    const nameField = screen.getByRole("textbox", { name: "提示词名称" });
+    expect(nameField).toHaveValue("");
+    expect(nameField).toHaveAttribute("placeholder", "新提示词");
     expect(screen.queryByDisplayValue("New prompt")).not.toBeInTheDocument();
-    expect(screen.getByDisplayValue("在此填写任务细节。使用 {{template_variables}} 作为动态输入")).toBeInTheDocument();
     expect(
-      screen.queryByDisplayValue("Enter task specifics. Use {{template_variables}} for dynamic inputs"),
+      screen.getByDisplayValue("Enter task specifics. Use {{template_variables}} for dynamic inputs"),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByDisplayValue("在此填写任务细节。使用 {{template_variables}} 作为动态输入"),
     ).not.toBeInTheDocument();
   });
 
@@ -99,19 +103,45 @@ describe("PromptEditorView Chinese copy", () => {
 
     expect(screen.getByRole("button", { name: "PRETTY" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "DOTPROMPT" })).toBeInTheDocument();
-    expect(screen.getByRole("textbox", { name: "Prompt name" })).toHaveValue("New prompt");
+    const nameField = screen.getByRole("textbox", { name: "Prompt name" });
+    expect(nameField).toHaveValue("");
+    expect(nameField).toHaveAttribute("placeholder", "New prompt");
     expect(
       screen.getByDisplayValue("Enter task specifics. Use {{template_variables}} for dynamic inputs"),
     ).toBeInTheDocument();
   });
 
-  it("renders the Chinese unnamed-prompt fallback, hiding the English original", () => {
+  it("renders the Chinese unnamed-prompt placeholder while the raw name stays English", () => {
     renderEditor({
       initialPromptData: { prompt_spec: { litellm_params: { dotprompt_content: validDotprompt } } },
     });
 
-    expect(screen.getByRole("textbox", { name: "提示词名称" })).toHaveValue("未命名提示词");
+    const nameField = screen.getByRole("textbox", { name: "提示词名称" });
+    expect(nameField).toHaveValue("");
+    expect(nameField).toHaveAttribute("placeholder", "未命名提示词");
     expect(screen.queryByDisplayValue("Unnamed Prompt")).not.toBeInTheDocument();
+  });
+
+  it("persists the English message body in dotprompt_content when saving from the Chinese UI", async () => {
+    const user = userEvent.setup();
+    renderEditor();
+
+    await user.click(screen.getByRole("button", { name: "保存" }));
+    await user.click(screen.getByRole("button", { name: "publish-submit" }));
+
+    await vi.waitFor(() =>
+      expect(createPromptCall).toHaveBeenCalledWith(
+        "sk-test",
+        expect.objectContaining({
+          litellm_params: expect.objectContaining({
+            dotprompt_content: expect.stringContaining(
+              "User: Enter task specifics. Use {{template_variables}} for dynamic inputs",
+            ),
+          }),
+        }),
+      ),
+    );
+    expect(JSON.stringify(vi.mocked(createPromptCall).mock.calls)).not.toContain("在此填写任务细节");
   });
 
   it("shows the Chinese parse-failure toast and hides the English original", () => {
@@ -168,7 +198,9 @@ describe("PromptEditorView Chinese copy", () => {
     const user = userEvent.setup();
     renderEditor();
 
-    fireEvent.change(screen.getByRole("textbox", { name: "提示词名称" }), { target: { value: "" } });
+    const nameField = screen.getByRole("textbox", { name: "提示词名称" });
+    fireEvent.change(nameField, { target: { value: "named" } });
+    fireEvent.change(nameField, { target: { value: "" } });
     await user.click(screen.getByRole("button", { name: "保存" }));
     await user.click(screen.getByRole("button", { name: "publish-submit" }));
 

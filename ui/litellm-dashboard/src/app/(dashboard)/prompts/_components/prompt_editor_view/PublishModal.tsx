@@ -11,7 +11,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { DEFAULT_PROMPT_NAME } from "./utils";
+import { promptNameAliasKey } from "./utils";
 
 interface PublishModalProps {
   visible: boolean;
@@ -31,7 +31,8 @@ const PublishModal: React.FC<PublishModalProps> = ({
   onCancel,
 }) => {
   const { t } = useTranslation("prompts");
-  const displayName = promptName === DEFAULT_PROMPT_NAME ? t("editor.defaultPromptName") : promptName;
+  const aliasKey = promptNameAliasKey(promptName);
+  const alias = aliasKey ? t(aliasKey) : undefined;
 
   return (
     <Dialog open={visible} onOpenChange={(open) => !open && onCancel()}>
@@ -46,9 +47,9 @@ const PublishModal: React.FC<PublishModalProps> = ({
           </label>
           <Input
             id="publish-prompt-name"
-            value={displayName}
+            value={alias === undefined ? promptName : ""}
             onChange={(e) => onNameChange(e.target.value)}
-            placeholder={t("publish.namePlaceholder")}
+            placeholder={alias ?? t("publish.namePlaceholder")}
             onKeyDown={(event) => event.key === "Enter" && onPublish()}
             autoFocus
           />

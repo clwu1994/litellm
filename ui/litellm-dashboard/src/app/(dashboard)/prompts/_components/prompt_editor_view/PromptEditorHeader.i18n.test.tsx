@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import userEvent, { PointerEventsCheckLevel } from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -21,6 +22,11 @@ const defaultProps = {
   accessToken: "token",
   environment: "development",
   onEnvironmentChange: vi.fn(),
+};
+
+const ControlledHeader = ({ initialName }: { initialName: string }) => {
+  const [name, setName] = useState(initialName);
+  return <PromptEditorHeader {...defaultProps} promptName={name} onNameChange={setName} />;
 };
 
 describe("PromptEditorHeader Chinese copy", () => {
@@ -59,19 +65,44 @@ describe("PromptEditorHeader Chinese copy", () => {
     expect(screen.queryByRole("button", { name: "保存" })).not.toBeInTheDocument();
   });
 
-  it("shows the Chinese default prompt name without translating the identifier sent to the code snippets", () => {
+  it("shows the Chinese default prompt name as a display-only placeholder, keeping the raw identifier", () => {
     renderWithProviders(<PromptEditorHeader {...defaultProps} promptName="New prompt" />);
 
-    expect(screen.getByRole("textbox", { name: "提示词名称" })).toHaveValue("新提示词");
+    const nameField = screen.getByRole("textbox", { name: "提示词名称" });
+    expect(nameField).toHaveValue("");
+    expect(nameField).toHaveAttribute("placeholder", "新提示词");
     expect(screen.queryByDisplayValue("New prompt")).not.toBeInTheDocument();
     expect(screen.getByTestId("code-snippets")).toHaveAttribute("data-prompt-id", "New prompt");
+  });
+
+  it("shows the Chinese unnamed-prompt placeholder while keeping the raw identifier", () => {
+    renderWithProviders(<PromptEditorHeader {...defaultProps} promptName="Unnamed Prompt" />);
+
+    const nameField = screen.getByRole("textbox", { name: "提示词名称" });
+    expect(nameField).toHaveValue("");
+    expect(nameField).toHaveAttribute("placeholder", "未命名提示词");
+    expect(screen.queryByDisplayValue("Unnamed Prompt")).not.toBeInTheDocument();
+    expect(screen.getByTestId("code-snippets")).toHaveAttribute("data-prompt-id", "Unnamed Prompt");
+  });
+
+  it("stores the user's raw typed name, never the displayed placeholder", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<ControlledHeader initialName="New prompt" />);
+
+    const nameField = screen.getByRole("textbox", { name: "提示词名称" });
+    await user.type(nameField, "welcome");
+
+    expect(nameField).toHaveValue("welcome");
+    expect(nameField).not.toHaveAttribute("placeholder");
   });
 
   it("keeps the English default prompt name byte-identical", async () => {
     await i18n.changeLanguage("en");
     renderWithProviders(<PromptEditorHeader {...defaultProps} promptName="New prompt" />);
 
-    expect(screen.getByRole("textbox", { name: "Prompt name" })).toHaveValue("New prompt");
+    const nameField = screen.getByRole("textbox", { name: "Prompt name" });
+    expect(nameField).toHaveValue("");
+    expect(nameField).toHaveAttribute("placeholder", "New prompt");
     expect(screen.getByTestId("code-snippets")).toHaveAttribute("data-prompt-id", "New prompt");
   });
 

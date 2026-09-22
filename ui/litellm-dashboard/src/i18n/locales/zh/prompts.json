@@ -157,7 +157,6 @@
     "update": "更新",
     "unnamedTool": "未命名工具",
     "unnamedPrompt": "未命名提示词",
-    "defaultMessage": "在此填写任务细节。使用 {{template_variables}} 作为动态输入",
     "viewMode": {
       "pretty": "美化",
       "dotprompt": "DOTPROMPT"

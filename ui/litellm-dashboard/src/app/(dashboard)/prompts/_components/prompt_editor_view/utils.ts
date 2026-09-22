@@ -1,8 +1,18 @@
-import type { TFunction } from "i18next";
-
 import { PromptType, Message, Tool } from "./types";
 
 export const DEFAULT_PROMPT_NAME = "New prompt";
+export const UNNAMED_PROMPT_NAME = "Unnamed Prompt";
+export const DEFAULT_MESSAGE_CONTENT = "Enter task specifics. Use {{template_variables}} for dynamic inputs";
+
+export type PromptNameAliasKey = "editor.defaultPromptName" | "editor.unnamedPrompt";
+
+// Placeholder prompt names stay raw English data: they are stored as the prompt name and flow into
+// the generated code sample, so only the keys are returned here and resolved at render.
+export const promptNameAliasKey = (name: string): PromptNameAliasKey | undefined => {
+  if (name === DEFAULT_PROMPT_NAME) return "editor.defaultPromptName";
+  if (name === UNNAMED_PROMPT_NAME) return "editor.unnamedPrompt";
+  return undefined;
+};
 
 export const extractVariables = (prompt: PromptType): string[] => {
   const variableSet = new Set<string>();
@@ -215,7 +225,7 @@ const parseDotpromptBody = (body: string): ParsedBody => {
   return { developerMessage, messages };
 };
 
-export const parseExistingPrompt = (apiResponse: any, t: TFunction<"prompts">): PromptType => {
+export const parseExistingPrompt = (apiResponse: any): PromptType => {
   // Extract dotprompt_content from litellm_params
   const dotpromptContent = apiResponse?.prompt_spec?.litellm_params?.dotprompt_content || "";
 
@@ -236,7 +246,7 @@ export const parseExistingPrompt = (apiResponse: any, t: TFunction<"prompts">): 
   const parsedBody = parseDotpromptBody(content);
 
   // Strip version suffix from prompt name for display
-  const promptId = apiResponse?.prompt_spec?.prompt_id || t("editor.unnamedPrompt");
+  const promptId = apiResponse?.prompt_spec?.prompt_id || UNNAMED_PROMPT_NAME;
   const baseName = stripVersionFromPromptId(promptId) || promptId;
 
   return {
@@ -246,7 +256,7 @@ export const parseExistingPrompt = (apiResponse: any, t: TFunction<"prompts">): 
     tools: parsedFrontmatter.tools,
     developerMessage: parsedBody.developerMessage,
     messages:
-      parsedBody.messages.length > 0 ? parsedBody.messages : [{ role: "user", content: t("editor.defaultMessage") }],
+      parsedBody.messages.length > 0 ? parsedBody.messages : [{ role: "user", content: DEFAULT_MESSAGE_CONTENT }],
     environment:
       apiResponse?.prompt_spec?.environment || apiResponse?.prompt_spec?.prompt_info?.environment || "development",
   };

@@ -2,7 +2,7 @@ import React from "react";
 import { ArrowLeftIcon, SaveIcon, ClockIcon, LoaderCircleIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import PromptCodeSnippets from "./PromptCodeSnippets";
-import { DEFAULT_PROMPT_NAME } from "./utils";
+import { promptNameAliasKey } from "./utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -50,7 +50,8 @@ const PromptEditorHeader: React.FC<PromptEditorHeaderProps> = ({
     { value: "staging", label: t("list.environmentOptions.staging") },
     { value: "production", label: t("list.environmentOptions.production") },
   ];
-  const displayName = promptName === DEFAULT_PROMPT_NAME ? t("editor.defaultPromptName") : promptName;
+  const aliasKey = promptNameAliasKey(promptName);
+  const alias = aliasKey ? t(aliasKey) : undefined;
 
   return (
     <div className="bg-background border-b border-border px-6 py-3 flex items-center justify-between">
@@ -61,7 +62,8 @@ const PromptEditorHeader: React.FC<PromptEditorHeaderProps> = ({
         </Button>
         <Input
           aria-label={t("editor.promptNameAria")}
-          value={displayName}
+          value={alias === undefined ? promptName : ""}
+          placeholder={alias}
           onChange={(e) => onNameChange(e.target.value)}
           className="text-base font-medium border-none shadow-none"
           style={{ width: "200px" }}

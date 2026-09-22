@@ -157,7 +157,6 @@
     "update": "Update",
     "unnamedTool": "Unnamed Tool",
     "unnamedPrompt": "Unnamed Prompt",
-    "defaultMessage": "Enter task specifics. Use {{template_variables}} for dynamic inputs",
     "viewMode": {
       "pretty": "PRETTY",
       "dotprompt": "DOTPROMPT"

@@ -1,3 +1,5 @@
+import React, { useState } from "react";
+import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import i18n from "@/i18n/bootstrapI18n";
@@ -12,6 +14,11 @@ const defaultProps = {
   onNameChange: vi.fn(),
   onPublish: vi.fn(),
   onCancel: vi.fn(),
+};
+
+const ControlledModal = ({ initialName }: { initialName: string }) => {
+  const [name, setName] = useState(initialName);
+  return <PublishModal {...defaultProps} promptName={name} onNameChange={setName} />;
 };
 
 describe("PublishModal Chinese copy", () => {
@@ -48,17 +55,41 @@ describe("PublishModal Chinese copy", () => {
     expect(dialog).toBeInTheDocument();
   });
 
-  it("shows the Chinese default prompt name, hiding the English original", async () => {
+  it("shows the Chinese default prompt name as a display-only placeholder, hiding the English original", async () => {
     renderWithProviders(<PublishModal {...defaultProps} promptName="New prompt" />);
 
-    expect(await screen.findByLabelText("名称")).toHaveValue("新提示词");
+    const nameField = await screen.findByLabelText("名称");
+    expect(nameField).toHaveValue("");
+    expect(nameField).toHaveAttribute("placeholder", "新提示词");
     expect(screen.queryByDisplayValue("New prompt")).not.toBeInTheDocument();
+  });
+
+  it("shows the Chinese unnamed-prompt placeholder, hiding the English original", async () => {
+    renderWithProviders(<PublishModal {...defaultProps} promptName="Unnamed Prompt" />);
+
+    const nameField = await screen.findByLabelText("名称");
+    expect(nameField).toHaveValue("");
+    expect(nameField).toHaveAttribute("placeholder", "未命名提示词");
+    expect(screen.queryByDisplayValue("Unnamed Prompt")).not.toBeInTheDocument();
+  });
+
+  it("stores the user's raw typed name, never the displayed placeholder", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<ControlledModal initialName="New prompt" />);
+
+    const nameField = await screen.findByLabelText("名称");
+    await user.type(nameField, "welcome");
+
+    expect(nameField).toHaveValue("welcome");
+    expect(nameField).toHaveAttribute("placeholder", "输入提示词名称");
   });
 
   it("keeps the English default prompt name byte-identical", async () => {
     await i18n.changeLanguage("en");
     renderWithProviders(<PublishModal {...defaultProps} promptName="New prompt" />);
 
-    expect(await screen.findByLabelText("Name")).toHaveValue("New prompt");
+    const nameField = await screen.findByLabelText("Name");
+    expect(nameField).toHaveValue("");
+    expect(nameField).toHaveAttribute("placeholder", "New prompt");
   });
 });
