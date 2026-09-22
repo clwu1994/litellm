@@ -1,0 +1,58 @@
+{
+  "adminOnly": {
+    "title": "Usage",
+    "body": "Proxy-wide usage is only available to admin users. Your own usage is on the Usage page."
+  },
+  "dbLimit": {
+    "title": "Database Query Limit Reached",
+    "rows": "SpendLogs in DB has {{rows}} rows.",
+    "guide": "Please follow our guide to view usage when SpendLogs has more than 1M rows.",
+    "link": "View Usage Guide"
+  },
+  "tabs": {
+    "allUp": "All Up",
+    "teamBased": "Team Based Usage",
+    "customer": "Customer Usage",
+    "tagBased": "Tag Based Usage"
+  },
+  "costTab": {
+    "cost": "Cost",
+    "activity": "Activity"
+  },
+  "cost": {
+    "projectSpend": "Project Spend {{month}} 1 - {{day}}",
+    "monthlySpend": "Monthly Spend",
+    "topVirtualKeys": "Top Virtual Keys",
+    "topModels": "Top Models",
+    "spendByProvider": "Spend by Provider",
+    "providerColumn": "Provider",
+    "spendColumn": "Spend"
+  },
+  "activity": {
+    "title": "All Up",
+    "apiRequests": "API Requests {{value}}",
+    "tokens": "Tokens {{value}}"
+  },
+  "teamSpend": {
+    "totalPerTeam": "Total Spend Per Team",
+    "dailyPerTeam": "Daily Spend Per Team"
+  },
+  "customer": {
+    "note": "Customers of your LLM API calls. Tracked when a `user` param is passed in your LLM calls",
+    "docsLink": "docs here",
+    "selectKey": "Select Key",
+    "allKeys": "All Keys",
+    "customerColumn": "Customer",
+    "spendColumn": "Spend",
+    "totalEventsColumn": "Total Events"
+  },
+  "tagSpend": {
+    "allTags": "All Tags",
+    "enterpriseOnly": "✨ {{tag}} (Enterprise only Feature)",
+    "selectTags": "Select tags",
+    "noTags": "No tags found",
+    "title": "Spend Per Tag",
+    "getStarted": "Get Started by Tracking cost per tag",
+    "link": "here"
+  }
+}

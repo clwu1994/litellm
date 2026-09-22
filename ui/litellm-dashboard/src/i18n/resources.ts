@@ -13,6 +13,7 @@ import enLogs from "./locales/en/logs.json";
 import enMcpServers from "./locales/en/mcpServers.json";
 import enModels from "./locales/en/models.json";
 import enNav from "./locales/en/nav.json";
+import enOldUsage from "./locales/en/oldUsage.json";
 import enOrganizations from "./locales/en/organizations.json";
 import enPlayground from "./locales/en/playground.json";
 import enPolicies from "./locales/en/policies.json";
@@ -42,6 +43,7 @@ import zhLogs from "./locales/zh/logs.json";
 import zhMcpServers from "./locales/zh/mcpServers.json";
 import zhModels from "./locales/zh/models.json";
 import zhNav from "./locales/zh/nav.json";
+import zhOldUsage from "./locales/zh/oldUsage.json";
 import zhOrganizations from "./locales/zh/organizations.json";
 import zhPlayground from "./locales/zh/playground.json";
 import zhPolicies from "./locales/zh/policies.json";
@@ -74,6 +76,7 @@ export const resources = {
     logs: enLogs,
     mcpServers: enMcpServers,
     models: enModels,
+    oldUsage: enOldUsage,
     teams: enTeams,
     users: enUsers,
     organizations: enOrganizations,
@@ -105,6 +108,7 @@ export const resources = {
     logs: zhLogs,
     mcpServers: zhMcpServers,
     models: zhModels,
+    oldUsage: zhOldUsage,
     teams: zhTeams,
     users: zhUsers,
     organizations: zhOrganizations,

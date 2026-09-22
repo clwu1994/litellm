@@ -1,0 +1,58 @@
+{
+  "adminOnly": {
+    "title": "用量",
+    "body": "代理范围的用量仅对管理员用户开放。你自己的用量可在「用量」页面查看。"
+  },
+  "dbLimit": {
+    "title": "已达到数据库查询上限",
+    "rows": "数据库中的 SpendLogs 有 {{rows}} 行。",
+    "guide": "当 SpendLogs 超过 100 万行时，请按照我们的指南查看用量。",
+    "link": "查看用量指南"
+  },
+  "tabs": {
+    "allUp": "总览",
+    "teamBased": "按团队用量",
+    "customer": "客户用量",
+    "tagBased": "按标签用量"
+  },
+  "costTab": {
+    "cost": "成本",
+    "activity": "活动"
+  },
+  "cost": {
+    "projectSpend": "项目支出 {{month}} 1 - {{day}}",
+    "monthlySpend": "每月支出",
+    "topVirtualKeys": "Top Virtual Keys",
+    "topModels": "Top 模型",
+    "spendByProvider": "按提供商统计支出",
+    "providerColumn": "提供商",
+    "spendColumn": "支出"
+  },
+  "activity": {
+    "title": "总览",
+    "apiRequests": "API 请求 {{value}}",
+    "tokens": "Token 数 {{value}}"
+  },
+  "teamSpend": {
+    "totalPerTeam": "团队总支出",
+    "dailyPerTeam": "团队每日支出"
+  },
+  "customer": {
+    "note": "你的 LLM API 调用的客户。当你的 LLM 调用中传入 `user` 参数时会被跟踪",
+    "docsLink": "查看文档",
+    "selectKey": "选择密钥",
+    "allKeys": "所有密钥",
+    "customerColumn": "客户",
+    "spendColumn": "支出",
+    "totalEventsColumn": "总事件数"
+  },
+  "tagSpend": {
+    "allTags": "所有标签",
+    "enterpriseOnly": "✨ {{tag}}（仅企业版功能）",
+    "selectTags": "选择标签",
+    "noTags": "未找到标签",
+    "title": "按标签支出",
+    "getStarted": "开始按标签跟踪成本",
+    "link": "此处"
+  }
+}

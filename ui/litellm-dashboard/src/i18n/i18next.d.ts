@@ -13,6 +13,7 @@ import type zhLogs from "./locales/zh/logs.json";
 import type zhMcpServers from "./locales/zh/mcpServers.json";
 import type zhModels from "./locales/zh/models.json";
 import type zhNav from "./locales/zh/nav.json";
+import type zhOldUsage from "./locales/zh/oldUsage.json";
 import type zhOrganizations from "./locales/zh/organizations.json";
 import type zhPlayground from "./locales/zh/playground.json";
 import type zhPolicies from "./locales/zh/policies.json";
@@ -47,6 +48,7 @@ declare module "i18next" {
       logs: typeof zhLogs;
       mcpServers: typeof zhMcpServers;
       models: typeof zhModels;
+      oldUsage: typeof zhOldUsage;
       teams: typeof zhTeams;
       users: typeof zhUsers;
       organizations: typeof zhOrganizations;
