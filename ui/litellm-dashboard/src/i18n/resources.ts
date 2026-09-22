@@ -21,6 +21,7 @@ import enRouterSettings from "./locales/en/routerSettings.json";
 import enSearchTools from "./locales/en/searchTools.json";
 import enTagManagement from "./locales/en/tagManagement.json";
 import enTeams from "./locales/en/teams.json";
+import enTransformRequest from "./locales/en/transformRequest.json";
 import enUsage from "./locales/en/usage.json";
 import enUsers from "./locales/en/users.json";
 import enVectorStores from "./locales/en/vectorStores.json";
@@ -47,6 +48,7 @@ import zhRouterSettings from "./locales/zh/routerSettings.json";
 import zhSearchTools from "./locales/zh/searchTools.json";
 import zhTagManagement from "./locales/zh/tagManagement.json";
 import zhTeams from "./locales/zh/teams.json";
+import zhTransformRequest from "./locales/zh/transformRequest.json";
 import zhUsage from "./locales/zh/usage.json";
 import zhUsers from "./locales/zh/users.json";
 import zhVectorStores from "./locales/zh/vectorStores.json";
@@ -77,6 +79,7 @@ export const resources = {
     routerSettings: enRouterSettings,
     searchTools: enSearchTools,
     tagManagement: enTagManagement,
+    transformRequest: enTransformRequest,
     usage: enUsage,
     vectorStores: enVectorStores,
   },
@@ -105,6 +108,7 @@ export const resources = {
     routerSettings: zhRouterSettings,
     searchTools: zhSearchTools,
     tagManagement: zhTagManagement,
+    transformRequest: zhTransformRequest,
     usage: zhUsage,
     vectorStores: zhVectorStores,
   },

@@ -1,0 +1,29 @@
+{
+  "header": {
+    "title": "Playground",
+    "subtitle": "See how LiteLLM transforms your request for the specified provider."
+  },
+  "originalRequest": {
+    "title": "Original Request",
+    "description": "The request you would send to LiteLLM /chat/completions endpoint.",
+    "placeholder": "Press Cmd/Ctrl + Enter to transform",
+    "submit": "Transform"
+  },
+  "transformedRequest": {
+    "title": "Transformed Request",
+    "description": "How LiteLLM transforms your request for the specified provider.",
+    "note": "Note: Sensitive headers are not shown.",
+    "copy": "Copy to clipboard"
+  },
+  "toast": {
+    "invalidJson": "Invalid JSON in request body",
+    "noAccessToken": "No access token found",
+    "transformed": "Request transformed successfully",
+    "unexpectedFormat": "Transformed request received in unexpected format",
+    "transformFailed": "Failed to transform request",
+    "copied": "Copied to clipboard"
+  },
+  "footer": {
+    "reportIssue": "Found an error? File an issue <1>here</1>."
+  }
+}

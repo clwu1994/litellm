@@ -1,0 +1,29 @@
+{
+  "header": {
+    "title": "Playground",
+    "subtitle": "了解 LiteLLM 如何为指定的提供商转换你的请求。"
+  },
+  "originalRequest": {
+    "title": "原始请求",
+    "description": "你将发送到 LiteLLM /chat/completions Endpoint 的请求。",
+    "placeholder": "按 Cmd/Ctrl + Enter 进行转换",
+    "submit": "转换"
+  },
+  "transformedRequest": {
+    "title": "转换后的请求",
+    "description": "LiteLLM 如何为指定的提供商转换你的请求。",
+    "note": "注意：不会显示敏感请求头。",
+    "copy": "复制到剪贴板"
+  },
+  "toast": {
+    "invalidJson": "请求体中的 JSON 无效",
+    "noAccessToken": "未找到 access token",
+    "transformed": "请求转换成功",
+    "unexpectedFormat": "收到的转换后请求格式不符合预期",
+    "transformFailed": "转换请求失败",
+    "copied": "已复制到剪贴板"
+  },
+  "footer": {
+    "reportIssue": "发现问题？请在<1>此处</1>提交 issue。"
+  }
+}
