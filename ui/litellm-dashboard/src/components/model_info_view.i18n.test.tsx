@@ -220,6 +220,10 @@ describe("ModelInfoView Chinese copy", () => {
 
     expect(await screen.findByText("使用现有凭证")).toBeInTheDocument();
     expect(screen.queryByText("Using Existing Credential")).not.toBeInTheDocument();
+
+    const dialog = await screen.findByRole("dialog");
+    expect(within(dialog).getByRole("button", { name: "取消" })).toBeInTheDocument();
+    expect(within(dialog).queryByRole("button", { name: "Cancel" })).not.toBeInTheDocument();
   });
 
   it("reports the Chinese storing and stored toasts for a reused credential", async () => {
@@ -282,6 +286,17 @@ describe("ModelInfoView Chinese copy", () => {
 
     expect(await screen.findByText("连接测试结果")).toBeInTheDocument();
     expect(screen.queryByText("Connection Test Results")).not.toBeInTheDocument();
+
+    const dialog = await screen.findByRole("dialog");
+    expect(within(dialog).getByRole("button", { name: "关闭" })).toBeInTheDocument();
+  });
+
+  it("renders the Chinese Edit Auto Router action for an auto-router model", async () => {
+    useModel(autoRouterModelData);
+    await renderView();
+
+    expect(await screen.findByRole("button", { name: "编辑自动路由" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Edit Auto Router" })).not.toBeInTheDocument();
   });
 
   it("renders the Chinese model delete dialog and reports the Chinese delete failure", async () => {
@@ -310,6 +325,10 @@ describe("ModelInfoView Chinese copy", () => {
 
     expect(await screen.findByText("确定要删除此自动路由吗？")).toBeInTheDocument();
     expect(screen.queryByText("Are you sure you want to delete this auto-router?")).not.toBeInTheDocument();
+
+    const dialog = await screen.findByRole("dialog");
+    expect(within(dialog).getByText("删除自动路由")).toBeInTheDocument();
+    expect(within(dialog).queryByText("Delete Auto-Router")).not.toBeInTheDocument();
   });
 
   it("renders the Chinese edit-disabled tooltip inside the open state", async () => {

@@ -183,6 +183,8 @@ describe("ModelInfoEditForm Chinese copy", () => {
     expect(screen.queryByText("Stream Timeout (seconds)")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "保存更改" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Save Changes" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "取消" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Cancel" })).not.toBeInTheDocument();
   });
 
   it("renders the Chinese cache-control injection point copy", async () => {

@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -83,6 +83,7 @@ describe("CredentialsPanel Chinese copy", () => {
 
     await openRowAction(user, "credential-action-delete");
 
+    const dialog = await screen.findByRole("dialog");
     expect(await screen.findByText("删除凭证？")).toBeInTheDocument();
     expect(screen.queryByText("Delete Credential?")).not.toBeInTheDocument();
     expect(screen.getByText("确定要删除此凭证吗？此操作无法撤销，并可能破坏现有的集成。")).toBeInTheDocument();
@@ -93,6 +94,10 @@ describe("CredentialsPanel Chinese copy", () => {
     ).not.toBeInTheDocument();
     expect(screen.getByText("凭证信息")).toBeInTheDocument();
     expect(screen.queryByText("Credential Information")).not.toBeInTheDocument();
+    expect(within(dialog).getByText("凭证名称")).toBeInTheDocument();
+    expect(within(dialog).queryByText("Credential Name")).not.toBeInTheDocument();
+    expect(within(dialog).getByText("提供商")).toBeInTheDocument();
+    expect(within(dialog).queryByText("Provider")).not.toBeInTheDocument();
   });
 
   it("reports the Chinese add toasts on success and failure", async () => {

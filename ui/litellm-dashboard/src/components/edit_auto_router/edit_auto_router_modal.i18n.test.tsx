@@ -6,7 +6,7 @@ import i18n from "@/i18n/bootstrapI18n";
 import { toast } from "@/lib/toast";
 
 import { findTooltipTrigger } from "@/../tests/i18nTooltip";
-import { renderWithProviders, screen, waitFor } from "@/../tests/test-utils";
+import { renderWithProviders, screen, waitFor, within } from "@/../tests/test-utils";
 
 import EditAutoRouterModal from "./edit_auto_router_modal";
 
@@ -125,10 +125,23 @@ describe("EditAutoRouterModal Chinese copy", () => {
 
     expect(await screen.findByText("嵌入模型")).toBeInTheDocument();
     expect(screen.queryByText("Embedding Model")).not.toBeInTheDocument();
+    expect(screen.getByText("默认模型")).toBeInTheDocument();
+    expect(screen.queryByText("Default Model")).not.toBeInTheDocument();
     expect(screen.getByPlaceholderText("选择默认模型")).toBeInTheDocument();
     expect(screen.queryByPlaceholderText("Select a default model")).not.toBeInTheDocument();
     expect(screen.getByPlaceholderText("选择嵌入模型")).toBeInTheDocument();
     expect(screen.queryByPlaceholderText("Select an embedding model")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese custom-model option inside the open default-model combobox", async () => {
+    const user = userEvent.setup();
+    renderModal(SEMANTIC_MODEL_DATA);
+
+    await user.click(await screen.findByPlaceholderText("选择默认模型"));
+
+    const listbox = await screen.findByRole("listbox");
+    expect(within(listbox).getByText("输入自定义模型名称")).toBeInTheDocument();
+    expect(within(listbox).queryByText("Enter custom model name")).not.toBeInTheDocument();
   });
 
   it("renders the Chinese semantic-router required-model validation messages", async () => {

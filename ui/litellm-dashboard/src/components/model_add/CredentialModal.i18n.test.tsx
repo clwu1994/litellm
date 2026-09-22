@@ -85,6 +85,15 @@ describe("CredentialModal Chinese copy", () => {
     expect(screen.queryByText("Credential name is required")).not.toBeInTheDocument();
   });
 
+  it("renders the Chinese provider required validation message", async () => {
+    const user = userEvent.setup();
+    renderModal();
+
+    await user.click(screen.getByRole("button", { name: "添加凭证" }));
+
+    expect(await screen.findByText("必填")).toBeInTheDocument();
+  });
+
   it("renders the Chinese edit title and submit button", () => {
     renderModal({ mode: "edit", existingCredential: EXISTING_CREDENTIAL });
 

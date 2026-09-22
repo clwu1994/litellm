@@ -1,4 +1,4 @@
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -75,5 +75,20 @@ describe("CredentialsTable Chinese copy", () => {
 
     await waitFor(() => expect(mockCopyToClipboard).toHaveBeenCalledWith("openai-key", "凭证名称已复制"));
     expect(mockCopyToClipboard).not.toHaveBeenCalledWith("openai-key", "Credential name copied");
+  });
+
+  it("renders the Chinese edit and delete actions inside the open menu", async () => {
+    const user = userEvent.setup();
+    render(<CredentialsTable credentials={credentials} canModifyCredentials onEdit={vi.fn()} onDelete={vi.fn()} />);
+
+    await user.click(screen.getByLabelText("打开凭证操作"));
+
+    const editItem = await screen.findByTestId("credential-action-edit");
+    expect(within(editItem).getByText("编辑")).toBeInTheDocument();
+    expect(within(editItem).queryByText("Edit")).not.toBeInTheDocument();
+
+    const deleteItem = await screen.findByTestId("credential-action-delete");
+    expect(within(deleteItem).getByText("删除")).toBeInTheDocument();
+    expect(within(deleteItem).queryByText("Delete")).not.toBeInTheDocument();
   });
 });

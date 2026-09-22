@@ -1,6 +1,6 @@
 /* @vitest-environment jsdom */
 import type { PaginationState } from "@tanstack/react-table";
-import { act, cleanup, render, screen } from "@testing-library/react";
+import { act, cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -123,6 +123,9 @@ describe("HealthCheckComponent Chinese copy", () => {
     expect(screen.queryByText("Full Error Details:")).not.toBeInTheDocument();
     expect(screen.getByText("模型健康检查返回的详细信息。")).toBeInTheDocument();
     expect(screen.queryByText("Details returned by the model health check.")).not.toBeInTheDocument();
+
+    const dialog = await screen.findByRole("dialog");
+    expect(within(dialog).getByRole("button", { name: "关闭" })).toBeInTheDocument();
   });
 
   it("renders the Chinese success dialog inside the open state", async () => {
@@ -141,5 +144,10 @@ describe("HealthCheckComponent Chinese copy", () => {
     expect(screen.getByText("健康检查已通过")).toBeInTheDocument();
     expect(screen.queryByText("Health check passed successfully")).not.toBeInTheDocument();
     expect(screen.getByText("响应详情：")).toBeInTheDocument();
+
+    const dialog = await screen.findByRole("dialog");
+    expect(within(dialog).getByText("状态：")).toBeInTheDocument();
+    expect(within(dialog).queryByText("Status:")).not.toBeInTheDocument();
+    expect(within(dialog).getByRole("button", { name: "关闭" })).toBeInTheDocument();
   });
 });
