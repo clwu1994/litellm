@@ -1,0 +1,149 @@
+{
+  "page": {
+    "title": "Search Tools",
+    "description": "Configure and manage your search providers",
+    "addSearchTool": "+ Add New Search Tool"
+  },
+  "missingAuth": "Missing required authentication parameters.",
+  "deleteModal": {
+    "title": "Delete Search Tool",
+    "message": "Are you sure you want to delete this search tool? This action cannot be undone.",
+    "resourceInformationTitle": "Search Tool Information",
+    "fields": {
+      "name": "Name",
+      "id": "ID",
+      "provider": "Provider",
+      "description": "Description"
+    }
+  },
+  "edit": {
+    "title": "Edit Search Tool",
+    "searchToolName": "Search Tool Name",
+    "searchToolNamePlaceholder": "e.g., my-perplexity-search",
+    "searchProvider": "Search Provider",
+    "searchProviderPlaceholder": "Select a search provider",
+    "apiKey": "API Key",
+    "apiKeyDescription": "API key for the search provider",
+    "apiKeyPlaceholder": "Enter API key",
+    "description": "Description",
+    "descriptionPlaceholder": "Description of this search tool",
+    "cancel": "Cancel",
+    "ok": "OK"
+  },
+  "validation": {
+    "searchToolNameRequired": "Please enter a search tool name",
+    "searchToolNamePattern": "Name can only contain letters, numbers, hyphens, and underscores",
+    "searchProviderRequired": "Please select a search provider"
+  },
+  "toast": {
+    "deleted": "Deleted search tool successfully",
+    "deleteFailed": "Failed to delete search tool",
+    "updated": "Search tool updated successfully",
+    "updateFailed": "Failed to update search tool"
+  },
+  "table": {
+    "loading": "Loading search tools…",
+    "emptyTitle": "No search tools configured",
+    "emptyDescription": "Add a search tool to enable web search for your models.",
+    "openActionsAria": "Open search tool actions",
+    "edit": "Edit search tool",
+    "delete": "Delete search tool",
+    "configEditHint": "Config search tools cannot be edited on the dashboard. Please edit the config file.",
+    "configDeleteHint": "Config search tools cannot be deleted on the dashboard. Please edit the config file.",
+    "sourceConfig": "Config",
+    "sourceDb": "DB",
+    "columns": {
+      "searchToolId": "Search Tool ID",
+      "name": "Name",
+      "provider": "Provider",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "source": "Source",
+      "actions": "Actions"
+    }
+  },
+  "create": {
+    "title": "Add New Search Tool",
+    "searchToolName": "Search Tool Name",
+    "searchToolNameHint": "A unique name to identify this search tool configuration (e.g., 'perplexity-search', 'tavily-news-search').",
+    "searchToolNamePlaceholder": "e.g., perplexity-search, my-tavily-tool",
+    "searchProvider": "Search Provider",
+    "searchProviderHint": "Select the search provider you want to use. Each provider has different capabilities and pricing.",
+    "searchProviderPlaceholder": "Select a search provider",
+    "noMatchingProviders": "No matching search providers",
+    "apiKey": "API Key",
+    "apiKeyHint": "The API key for authenticating with the search provider. This will be securely stored.",
+    "apiKeyPlaceholder": "Enter your API key",
+    "description": "Description (Optional)",
+    "descriptionPlaceholder": "Brief description of this search tool's purpose",
+    "needHelp": "Need Help?",
+    "needHelpTooltip": "Get help on our github",
+    "testConnection": "Test Connection",
+    "submit": "Add Search Tool",
+    "testMissingFields": "Please fill in Search Provider and API Key before testing",
+    "connectionTestTitle": "Connection Test Results",
+    "close": "Close",
+    "toast": {
+      "created": "Search tool created successfully",
+      "createFailed": "Error creating search tool: {{error}}"
+    }
+  },
+  "view": {
+    "back": "Back to All Search Tools",
+    "copyNameAria": "Copy search tool name",
+    "copyIdAria": "Copy search tool ID",
+    "provider": "Provider",
+    "apiKey": "API Key",
+    "notSet": "Not set",
+    "createdAt": "Created At",
+    "unknown": "Unknown",
+    "description": "Description"
+  },
+  "tester": {
+    "title": "Test Search Tool",
+    "queryPlaceholder": "Enter your search query...",
+    "search": "Search",
+    "queryRequired": "Please enter a search query",
+    "queryFailed": "Failed to query search tool",
+    "emptyTitle": "Test your search tool",
+    "emptyDescription": "Enter a query above to see search results",
+    "searching": "Searching...",
+    "searchQuery": "Search Query",
+    "resultCountOne": "{{resultCount}} result",
+    "resultCountOther": "{{resultCount}} results",
+    "openResultAria": "Open result in new tab",
+    "showMore": "Show more",
+    "showLess": "Show less",
+    "noResults": "No results found",
+    "noResultsHint": "Try a different search query",
+    "previousSearches": "Previous Searches",
+    "clearAll": "Clear All",
+    "historyCleared": "Search history cleared"
+  },
+  "connection": {
+    "testing": "Testing connection to {{provider}}...",
+    "providerFallback": "search provider",
+    "success": "Connection to {{provider}} successful!",
+    "failed": "Connection to {{provider}} failed",
+    "testQuery": "Test query:",
+    "resultsRetrieved": "Results retrieved: {{resultsCount}}",
+    "errorLabel": "Error:",
+    "errorType": "Error type:",
+    "showDetails": "Show Details",
+    "hideDetails": "Hide Details",
+    "fullErrorDetails": "Full Error Details",
+    "troubleshooting": "Troubleshooting tips:",
+    "tip1": "Verify your API key is correct and active",
+    "tip2": "Check if the search provider service is operational",
+    "tip3": "Ensure you have sufficient credits/quota with the provider",
+    "tip4": "Review the provider's documentation for any additional requirements",
+    "unknownError": "Unknown error occurred",
+    "unknownErrorShort": "Unknown error",
+    "authFailedInvalidKey": "Authentication failed: Invalid API key or credentials",
+    "authError": "Authentication error - please check your API key",
+    "docsLink": "View Search Documentation",
+    "toast": {
+      "success": "Connection test successful!"
+    }
+  }
+}

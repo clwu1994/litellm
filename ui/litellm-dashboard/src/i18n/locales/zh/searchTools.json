@@ -1,0 +1,149 @@
+{
+  "page": {
+    "title": "搜索工具",
+    "description": "配置和管理你的搜索提供方",
+    "addSearchTool": "+ 添加搜索工具"
+  },
+  "missingAuth": "缺少必要的认证参数。",
+  "deleteModal": {
+    "title": "删除搜索工具",
+    "message": "确定要删除此搜索工具？此操作无法撤销。",
+    "resourceInformationTitle": "搜索工具信息",
+    "fields": {
+      "name": "名称",
+      "id": "ID",
+      "provider": "提供方",
+      "description": "描述"
+    }
+  },
+  "edit": {
+    "title": "编辑搜索工具",
+    "searchToolName": "搜索工具名称",
+    "searchToolNamePlaceholder": "例如 my-perplexity-search",
+    "searchProvider": "搜索提供方",
+    "searchProviderPlaceholder": "选择搜索提供方",
+    "apiKey": "API Key",
+    "apiKeyDescription": "搜索提供方的 API key",
+    "apiKeyPlaceholder": "输入 API key",
+    "description": "描述",
+    "descriptionPlaceholder": "此搜索工具的描述",
+    "cancel": "取消",
+    "ok": "确定"
+  },
+  "validation": {
+    "searchToolNameRequired": "请输入搜索工具名称",
+    "searchToolNamePattern": "名称只能包含字母、数字、连字符和下划线",
+    "searchProviderRequired": "请选择搜索提供方"
+  },
+  "toast": {
+    "deleted": "搜索工具删除成功",
+    "deleteFailed": "删除搜索工具失败",
+    "updated": "搜索工具更新成功",
+    "updateFailed": "更新搜索工具失败"
+  },
+  "table": {
+    "loading": "正在加载搜索工具…",
+    "emptyTitle": "未配置搜索工具",
+    "emptyDescription": "添加搜索工具以为你的模型启用 Web 搜索。",
+    "openActionsAria": "打开搜索工具操作",
+    "edit": "编辑搜索工具",
+    "delete": "删除搜索工具",
+    "configEditHint": "配置文件中的搜索工具无法在仪表盘上编辑。请编辑配置文件。",
+    "configDeleteHint": "配置文件中的搜索工具无法在仪表盘上删除。请编辑配置文件。",
+    "sourceConfig": "配置文件",
+    "sourceDb": "数据库",
+    "columns": {
+      "searchToolId": "搜索工具 ID",
+      "name": "名称",
+      "provider": "提供方",
+      "createdAt": "创建时间",
+      "updatedAt": "更新时间",
+      "source": "来源",
+      "actions": "操作"
+    }
+  },
+  "create": {
+    "title": "添加新的搜索工具",
+    "searchToolName": "搜索工具名称",
+    "searchToolNameHint": "用于标识此搜索工具配置的唯一名称（例如 'perplexity-search'、'tavily-news-search'）。",
+    "searchToolNamePlaceholder": "例如 perplexity-search、my-tavily-tool",
+    "searchProvider": "搜索提供方",
+    "searchProviderHint": "选择你要使用的搜索提供方。每个提供方的能力和价格各不相同。",
+    "searchProviderPlaceholder": "选择搜索提供方",
+    "noMatchingProviders": "没有匹配的搜索提供方",
+    "apiKey": "API Key",
+    "apiKeyHint": "用于向搜索提供方进行身份验证的 API key。它将被安全存储。",
+    "apiKeyPlaceholder": "输入你的 API key",
+    "description": "描述（可选）",
+    "descriptionPlaceholder": "简要描述此搜索工具的用途",
+    "needHelp": "需要帮助？",
+    "needHelpTooltip": "在我们的 github 上获取帮助",
+    "testConnection": "测试连接",
+    "submit": "添加搜索工具",
+    "testMissingFields": "测试前请填写搜索提供方和 API Key",
+    "connectionTestTitle": "连接测试结果",
+    "close": "关闭",
+    "toast": {
+      "created": "搜索工具创建成功",
+      "createFailed": "创建搜索工具出错：{{error}}"
+    }
+  },
+  "view": {
+    "back": "返回所有搜索工具",
+    "copyNameAria": "复制搜索工具名称",
+    "copyIdAria": "复制搜索工具 ID",
+    "provider": "提供方",
+    "apiKey": "API Key",
+    "notSet": "未设置",
+    "createdAt": "创建时间",
+    "unknown": "未知",
+    "description": "描述"
+  },
+  "tester": {
+    "title": "测试搜索工具",
+    "queryPlaceholder": "输入你的搜索查询...",
+    "search": "搜索",
+    "queryRequired": "请输入搜索查询",
+    "queryFailed": "查询搜索工具失败",
+    "emptyTitle": "测试你的搜索工具",
+    "emptyDescription": "在上方输入查询以查看搜索结果",
+    "searching": "正在搜索...",
+    "searchQuery": "搜索查询",
+    "resultCountOne": "{{resultCount}} 条结果",
+    "resultCountOther": "{{resultCount}} 条结果",
+    "openResultAria": "在新标签页中打开结果",
+    "showMore": "展开",
+    "showLess": "收起",
+    "noResults": "未找到结果",
+    "noResultsHint": "尝试其他搜索查询",
+    "previousSearches": "之前的搜索",
+    "clearAll": "全部清空",
+    "historyCleared": "搜索历史已清除"
+  },
+  "connection": {
+    "testing": "正在测试与 {{provider}} 的连接...",
+    "providerFallback": "搜索提供方",
+    "success": "已成功连接到 {{provider}}！",
+    "failed": "连接到 {{provider}} 失败",
+    "testQuery": "测试查询：",
+    "resultsRetrieved": "已获取结果数：{{resultsCount}}",
+    "errorLabel": "错误：",
+    "errorType": "错误类型：",
+    "showDetails": "显示详情",
+    "hideDetails": "隐藏详情",
+    "fullErrorDetails": "完整错误详情",
+    "troubleshooting": "故障排查提示：",
+    "tip1": "验证你的 API key 是否正确且有效",
+    "tip2": "检查搜索提供方服务是否正常运行",
+    "tip3": "确保你在该提供方处有足够的额度/配额",
+    "tip4": "查看提供方的文档以了解任何其他要求",
+    "unknownError": "发生未知错误",
+    "unknownErrorShort": "未知错误",
+    "authFailedInvalidKey": "认证失败：API key 或凭证无效",
+    "authError": "认证错误 - 请检查你的 API key",
+    "docsLink": "查看搜索文档",
+    "toast": {
+      "success": "连接测试成功！"
+    }
+  }
+}
