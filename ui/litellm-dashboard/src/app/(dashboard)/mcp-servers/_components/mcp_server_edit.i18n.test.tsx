@@ -230,6 +230,8 @@ describe("MCPServerEdit Chinese copy", () => {
     expectPair("环境变量（JSON 对象）", "Environment (JSON object)");
     expect(screen.getByPlaceholderText("例如 npx")).toBeInTheDocument();
     expect(screen.queryByPlaceholderText("e.g., npx")).not.toBeInTheDocument();
+    expect(screen.getByPlaceholderText("添加参数（按 Enter 或逗号）")).toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("Add args (press enter or comma)")).not.toBeInTheDocument();
 
     await user.click(screen.getByLabelText("添加参数（按 Enter 或逗号）"));
     expect(await screen.findByText("输入以添加")).toBeInTheDocument();
@@ -352,6 +354,29 @@ describe("MCPServerEdit Chinese copy", () => {
     expect(toast.success).not.toHaveBeenCalledWith("MCP Server updated successfully");
   });
 
+  it("renders the Chinese whitespace validation error for the edit auth value and hides the English original", async () => {
+    renderEdit();
+
+    fireEvent.change(screen.getByPlaceholderText("输入 Token 或密钥（留空以保留现有值）"), {
+      target: { value: "   " },
+    });
+
+    expect(await screen.findByText("认证值不能为空")).toBeInTheDocument();
+    expect(screen.queryByText("Authentication value cannot be empty")).not.toBeInTheDocument();
+  });
+
+  it("reports the Chinese update failure toast without a reason for a non-Error rejection", async () => {
+    const { updateMCPServer } = await import("@/components/networking");
+    vi.mocked(updateMCPServer).mockRejectedValue("boom");
+    const user = userEvent.setup();
+    renderEdit();
+
+    await user.click(screen.getAllByRole("button", { name: "保存更改" })[0]);
+
+    expect(toast.fromError).toHaveBeenCalledWith("更新 MCP 服务器失败");
+    expect(toast.fromError).not.toHaveBeenCalledWith("Failed to update MCP Server");
+  });
+
   it("reports the Chinese update failure toast with the reason", async () => {
     const { updateMCPServer } = await import("@/components/networking");
     vi.mocked(updateMCPServer).mockRejectedValue(new Error("boom"));
@@ -372,6 +397,9 @@ describe("MCPServerEdit Chinese copy", () => {
     expect(toast.success).toHaveBeenCalledWith(
       "Token 已保留在此浏览器会话中。现在可以加载和配置工具；该 Token 不会保存到 LiteLLM。",
     );
+    expect(toast.success).not.toHaveBeenCalledWith(
+      "Token held for this browser session. Tools can now be loaded and configured; the token is not saved to LiteLLM.",
+    );
 
     cleanup();
     renderEdit({ auth_type: "oauth2", oauth2_flow: "authorization_code", token_url: "https://idp/token" });
@@ -379,6 +407,9 @@ describe("MCPServerEdit Chinese copy", () => {
       mockOauth.onTokenReceived?.({ access_token: "tok" });
     });
     expect(toast.success).toHaveBeenCalledWith("OAuth 授权成功！请点击“更新 MCP 服务器”以保存凭证。");
+    expect(toast.success).not.toHaveBeenCalledWith(
+      "OAuth authorization successful! Please click 'Update MCP Server' to save the credentials.",
+    );
   });
 
   it("reports the Chinese OAuth token persistence failure toasts", async () => {
@@ -392,6 +423,7 @@ describe("MCPServerEdit Chinese copy", () => {
     await user.click(screen.getAllByRole("button", { name: "保存更改" })[0]);
 
     expect(toast.fromError).toHaveBeenCalledWith("MCP 服务器已更新，但保存 OAuth Token 失败：bad");
+    expect(toast.fromError).not.toHaveBeenCalledWith("MCP Server updated, but failed to persist OAuth token: bad");
 
     cleanup();
     vi.mocked(storeMCPOAuthUserCredential).mockRejectedValue(new Error(""));
@@ -400,6 +432,7 @@ describe("MCPServerEdit Chinese copy", () => {
     await user.click(screen.getAllByRole("button", { name: "保存更改" })[0]);
 
     expect(toast.fromError).toHaveBeenCalledWith("MCP 服务器已更新，但保存 OAuth Token 失败");
+    expect(toast.fromError).not.toHaveBeenCalledWith("MCP Server updated, but failed to persist OAuth token");
   });
 
   it("renders the Chinese tool-loading failure message and hides the English original", async () => {

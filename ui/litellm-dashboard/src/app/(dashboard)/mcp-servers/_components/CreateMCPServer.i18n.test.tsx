@@ -374,6 +374,9 @@ describe("CreateMCPServer Chinese copy", () => {
     expect(toast.success).toHaveBeenCalledWith(
       "Token 已保留在此浏览器会话中。现在可以预览和配置工具；该 Token 不会保存到 LiteLLM。",
     );
+    expect(toast.success).not.toHaveBeenCalledWith(
+      "Token held for this browser session. Tools can now be previewed and configured; the token is not saved to LiteLLM.",
+    );
   });
 
   it("reports the Chinese OAuth-authorized toast for the oauth2 mode", async () => {
@@ -387,6 +390,9 @@ describe("CreateMCPServer Chinese copy", () => {
     });
 
     expect(toast.success).toHaveBeenCalledWith("OAuth 授权成功！请点击“创建 MCP 服务器”以保存配置。");
+    expect(toast.success).not.toHaveBeenCalledWith(
+      "OAuth authorization successful! Please click 'Create MCP Server' to save the configuration.",
+    );
   });
 
   it("reports the Chinese invalid-tool-display-name payload error", async () => {
