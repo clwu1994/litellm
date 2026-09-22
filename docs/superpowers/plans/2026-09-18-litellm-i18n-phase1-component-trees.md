@@ -66,6 +66,10 @@ This increment covers the component trees that no route-area increment owns. Som
 
 **Namespace:** per tree, extending the closest existing area namespace. **Files:** `src/components/ToolPolicies/**`, `src/components/routing_groups/**`, `src/components/router_settings/**`, `src/components/CloudZeroCostTracking/**`, `src/components/claude_code_plugins/**`, `src/components/permissions/**`, `src/components/alerting/**`, `src/components/email_events/**`, `src/components/EntityUsageExport/**`, `src/components/ui/**` (user-facing copy only), `src/components/SidebarAccountMenu/**` (including the carried-forward `Thanks for using LiteLLM!`), and the remaining root-level `src/components/*.tsx` files (`settings.tsx`, `user_agent_activity.tsx`, `ToolDetail.tsx`, `callback_info_helpers.tsx`, `vector_store_providers.tsx`, `object_permissions_view.tsx`, `logging_settings_view.tsx`, `email_settings.tsx`, `price_data_reload.tsx`, `route_preview.tsx`, `add_pass_through.tsx`, `pass_through_info.tsx`, `per_user_usage.tsx`, `SSOModals.tsx`, `LicenseExpiryBanner.tsx`, `SidebarUsageCard.tsx`, `GuardrailSettingsView.tsx`, `activity_metrics.tsx`, `cloudzero_export_modal.tsx`)
 
+### Task 8: Library-level user-facing copy (`src/lib`, `src/utils`)
+
+**Namespace:** `errors` (new) or `common` where the copy is generic. **Files:** `src/lib/toast.ts` (hardcoded English titles `"Error"`, `"Access Denied"` and siblings at `:31-49,124-129`, so every failure toast in the dashboard currently shows an English title above a Chinese description; surfaced by the Policies Task 2 review), plus any other `src/lib/**` or `src/utils/**` module that builds user-facing copy (`formatTime`/`toLocaleString` date-formatting helpers are the recorded browser-locale-vs-app-locale follow-up, not this task). `toast.ts` is not a React module, so it must take a `t` or a key and resolve at the call site rather than reading the singleton.
+
 ---
 
 Each task follows the same steps:
