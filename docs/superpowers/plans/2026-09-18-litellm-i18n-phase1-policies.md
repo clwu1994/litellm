@@ -52,13 +52,13 @@ The increment covers `src/app/(dashboard)/policies/**`. The route imports only t
 
 ### Task 2: The policy and attachment forms
 
-**Files:** `_components/add_policy_form.tsx` (~26), `add_attachment_form.tsx` (~20), `build_attachment_data.ts`, `scope_validation.ts`, `template_parameter_modal.tsx` (~12), `TokenSelect.tsx` (~2), plus the remaining form files
+**Files:** `_components/add_policy_form.tsx` (~26), `add_attachment_form.tsx` (~20), `build_attachment_data.ts`, `scope_validation.ts`, `template_parameter_modal.tsx` (~12), `TokenSelect.tsx` (~2), plus the remaining form files. **Also `src/hooks/policies/useDeletePolicyAttachment.ts`**, whose delete toasts ("Attachment deleted successfully" / "Failed to delete attachment") render on this route but sit outside the route glob; Task 1's report assigned it here.
 - [ ] Same shape, extending `policies` under `policies.form.*`, `policies.attachmentForm.*`, `policies.validation.*`. `scope_validation.ts` and `build_attachment_data.ts` are logic modules: return keys or take a `t`; a validation message that reaches the DOM gets a key plus values contract.
 
 ### Task 3: AI suggestion, impact preview, pipeline builder and the test panel
 
 **Files:** `_components/pipeline_flow_builder.tsx` (~49), `ai_suggestion_modal.tsx` (~30), `policy_test_panel.tsx` (~21), `guardrail_selection_modal.tsx` (~8 remaining), `impact_popover.tsx` (~7), `impact_preview_alert.tsx` (~4), `page.tsx`, plus every remaining file in the route
-- [ ] Same shape, extending `policies`. Sweep the whole `policies/` tree afterwards and report any file deliberately skipped with importer evidence, plus the increment's final per-key coverage count.
+- [ ] Same shape, extending `policies`. Reuse `templates.complexity.*` and `info.pipelineMode.*` for the same raw values rather than adding duplicate keys. Sweep the whole `policies/` tree afterwards and report any file deliberately skipped with importer evidence, plus the increment's final per-key coverage count.
 
 ---
 
