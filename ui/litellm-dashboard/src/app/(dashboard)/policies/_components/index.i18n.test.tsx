@@ -432,10 +432,10 @@ describe("PoliciesPanel Chinese copy", () => {
     renderPanel();
 
     await user.click(await screen.findByRole("button", { name: "使用模板" }));
-    await user.click(await screen.findByRole("radio", { name: /enter manually/i }));
-    await user.type(screen.getByPlaceholderText("Type a name and press Enter to add"), "Acme{Enter}");
-    await user.type(screen.getByPlaceholderText("e.g. Acme Airlines"), "Acme Airlines");
-    await user.click(await screen.findByRole("button", { name: "Continue" }));
+    await user.click(await screen.findByRole("radio", { name: "手动输入" }));
+    await user.type(screen.getByPlaceholderText("输入名称并按 Enter 添加"), "Acme{Enter}");
+    await user.type(screen.getByPlaceholderText("例如：Acme Airlines"), "Acme Airlines");
+    await user.click(await screen.findByRole("button", { name: "继续" }));
 
     await act(async () => {
       await vi.waitFor(() => expect(toast.error).toHaveBeenCalledWith("配置模板失败，请重试。"));
