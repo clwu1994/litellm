@@ -142,14 +142,13 @@ describe("MakeModelPublicForm Chinese copy", () => {
       fireEvent.click(screen.getByRole("button", { name: "下一步" }));
     });
 
-    const warning = screen.getByText(/一旦你将这些模型设为公开/);
-    expect(warning).toHaveTextContent(
-      "一旦你将这些模型设为公开，任何能访问 /ui/model_hub_table 的人都能知道它们存在于该代理上。",
-    );
+    expect(
+      findParagraph("警告： 一旦你将这些模型设为公开，任何能访问 /ui/model_hub_table 的人都能知道它们存在于该代理上。"),
+    ).toBeInTheDocument();
     expect(screen.getByText("/ui/model_hub_table")).toBeInTheDocument();
     expect(
       hasParagraphText(
-        "Once you make these models public, anyone who can go to the /ui/model_hub_table will be able to know they exist on the proxy.",
+        "Warning: Once you make these models public, anyone who can go to the /ui/model_hub_table will be able to know they exist on the proxy.",
       ),
     ).toBe(false);
   });
@@ -249,5 +248,10 @@ describe("MakeModelPublicForm English copy", () => {
       fireEvent.click(screen.getByRole("button", { name: "Next" }));
     });
     expect(findParagraph("Total: 2 models will be made public")).toBeInTheDocument();
+    expect(
+      findParagraph(
+        "Warning: Once you make these models public, anyone who can go to the /ui/model_hub_table will be able to know they exist on the proxy.",
+      ),
+    ).toBeInTheDocument();
   });
 });
