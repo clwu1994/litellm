@@ -3,6 +3,7 @@
 import { SortingState } from "@tanstack/react-table";
 import { Inbox } from "lucide-react";
 import React, { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { DataTable } from "@/components/shared/DataTable";
 import { Tag } from "@/components/tag_management/types";
@@ -20,21 +21,27 @@ interface TagTableProps {
 const DEFAULT_SORTING: SortingState = [{ id: "created_at", desc: true }];
 
 function EmptyState() {
+  const { t } = useTranslation("tagManagement");
+
   return (
     <div className="flex flex-col items-center gap-1 py-6">
       <div className="mb-1 flex size-10 items-center justify-center rounded-lg bg-muted">
         <Inbox className="size-5 text-muted-foreground" />
       </div>
-      <div className="text-sm font-medium text-foreground">No tags yet</div>
-      <div className="text-sm text-muted-foreground">Create a tag to start routing and restricting model usage.</div>
+      <div className="text-sm font-medium text-foreground">{t("table.emptyTitle")}</div>
+      <div className="text-sm text-muted-foreground">{t("table.emptyDescription")}</div>
     </div>
   );
 }
 
 const TagTable: React.FC<TagTableProps> = ({ data, onEdit, onDelete, onSelectTag, isLoading = false }) => {
+  const { t } = useTranslation("tagManagement");
   const [sorting, setSorting] = useState<SortingState>(DEFAULT_SORTING);
 
-  const columns = useMemo(() => getTagTableColumns({ onSelectTag, onEdit, onDelete }), [onSelectTag, onEdit, onDelete]);
+  const columns = useMemo(
+    () => getTagTableColumns(t, { onSelectTag, onEdit, onDelete }),
+    [t, onSelectTag, onEdit, onDelete],
+  );
 
   return (
     <DataTable
@@ -47,7 +54,7 @@ const TagTable: React.FC<TagTableProps> = ({ data, onEdit, onDelete, onSelectTag
       sorting={sorting}
       onSortingChange={setSorting}
       isLoading={isLoading}
-      loadingMessage="Loading tags…"
+      loadingMessage={t("table.loading")}
       noDataMessage={<EmptyState />}
       size="compact"
     />

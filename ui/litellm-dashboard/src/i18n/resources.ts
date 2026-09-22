@@ -16,6 +16,7 @@ import enPolicies from "./locales/en/policies.json";
 import enProjects from "./locales/en/projects.json";
 import enPrompts from "./locales/en/prompts.json";
 import enSearchTools from "./locales/en/searchTools.json";
+import enTagManagement from "./locales/en/tagManagement.json";
 import enTeams from "./locales/en/teams.json";
 import enUsage from "./locales/en/usage.json";
 import enUsers from "./locales/en/users.json";
@@ -38,6 +39,7 @@ import zhPolicies from "./locales/zh/policies.json";
 import zhProjects from "./locales/zh/projects.json";
 import zhPrompts from "./locales/zh/prompts.json";
 import zhSearchTools from "./locales/zh/searchTools.json";
+import zhTagManagement from "./locales/zh/tagManagement.json";
 import zhTeams from "./locales/zh/teams.json";
 import zhUsage from "./locales/zh/usage.json";
 import zhUsers from "./locales/zh/users.json";
@@ -65,6 +67,7 @@ export const resources = {
     prompts: enPrompts,
     projects: enProjects,
     searchTools: enSearchTools,
+    tagManagement: enTagManagement,
     usage: enUsage,
     vectorStores: enVectorStores,
   },
@@ -89,6 +92,7 @@ export const resources = {
     prompts: zhPrompts,
     projects: zhProjects,
     searchTools: zhSearchTools,
+    tagManagement: zhTagManagement,
     usage: zhUsage,
     vectorStores: zhVectorStores,
   },

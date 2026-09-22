@@ -16,6 +16,7 @@ import type zhPolicies from "./locales/zh/policies.json";
 import type zhPrompts from "./locales/zh/prompts.json";
 import type zhProjects from "./locales/zh/projects.json";
 import type zhSearchTools from "./locales/zh/searchTools.json";
+import type zhTagManagement from "./locales/zh/tagManagement.json";
 import type zhTeams from "./locales/zh/teams.json";
 import type zhUsage from "./locales/zh/usage.json";
 import type zhUsers from "./locales/zh/users.json";
@@ -45,6 +46,7 @@ declare module "i18next" {
       prompts: typeof zhPrompts;
       projects: typeof zhProjects;
       searchTools: typeof zhSearchTools;
+      tagManagement: typeof zhTagManagement;
       usage: typeof zhUsage;
       vectorStores: typeof zhVectorStores;
     };
