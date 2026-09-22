@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import type { TFunction } from "i18next";
+import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -67,32 +69,32 @@ const toSchemaNumber = (raw: string, isInteger: boolean): number | null => {
 
 const messageOf = (error: unknown): string => (error instanceof Error ? error.message : String(error));
 
-const getFieldHelp = (key: string, property: SchemaProperty, type: string): string => {
+const getFieldHelp = (key: string, property: SchemaProperty, type: string, t: TFunction<"common">): string => {
   // Default help text based on type
   const defaultHelp =
     {
-      string: "Text input",
-      number: "Numeric input",
-      integer: "Whole number input",
-      boolean: "True/False value",
-    }[type] || "Text input";
+      string: t("schemaForm.help.string"),
+      number: t("schemaForm.help.number"),
+      integer: t("schemaForm.help.integer"),
+      boolean: t("schemaForm.help.boolean"),
+    }[type] || t("schemaForm.help.string");
 
   // Specific field help text
   const specificHelp: { [key: string]: string } = {
-    max_budget: "Enter maximum budget in USD (e.g., 100.50)",
-    budget_duration: "Select a time period for budget reset",
-    tpm_limit: "Enter maximum tokens per minute (whole number)",
-    rpm_limit: "Enter maximum requests per minute (whole number)",
-    duration: "Enter duration (e.g., 30s, 24h, 7d)",
-    metadata: 'Enter JSON object with key-value pairs\nExample: {"team": "research", "project": "nlp"}',
-    config: 'Enter configuration as JSON object\nExample: {"setting": "value"}',
-    permissions: "Enter comma-separated permission strings",
-    enforced_params: 'Enter parameters as JSON object\nExample: {"param": "value"}',
-    blocked: "Enter true/false or specific block conditions",
-    aliases: 'Enter aliases as JSON object\nExample: {"alias1": "value1", "alias2": "value2"}',
-    models: "Select one or more model names",
-    key_alias: "Enter a unique identifier for this key",
-    tags: "Enter comma-separated tag strings",
+    max_budget: t("schemaForm.help.maxBudget"),
+    budget_duration: t("schemaForm.help.budgetDuration"),
+    tpm_limit: t("schemaForm.help.tpmLimit"),
+    rpm_limit: t("schemaForm.help.rpmLimit"),
+    duration: t("schemaForm.help.duration"),
+    metadata: t("schemaForm.help.metadata"),
+    config: t("schemaForm.help.config"),
+    permissions: t("schemaForm.help.permissions"),
+    enforced_params: t("schemaForm.help.enforcedParams"),
+    blocked: t("schemaForm.help.blocked"),
+    aliases: t("schemaForm.help.aliases"),
+    models: t("schemaForm.help.models"),
+    key_alias: t("schemaForm.help.keyAlias"),
+    tags: t("schemaForm.help.tags"),
   };
 
   // Get specific help text or use default based on type
@@ -100,11 +102,11 @@ const getFieldHelp = (key: string, property: SchemaProperty, type: string): stri
 
   // Add format requirements for special cases
   if (isJSONField(key, property)) {
-    return `${helpText}\nMust be valid JSON format`;
+    return `${helpText}\n${t("schemaForm.help.mustBeValidJson")}`;
   }
 
   if (property.enum) {
-    return `Select from available options\nAllowed values: ${property.enum.join(", ")}`;
+    return t("schemaForm.help.allowedValues", { values: property.enum.join(", ") });
   }
 
   return helpText;
@@ -119,6 +121,7 @@ const SchemaFormFields: React.FC<SchemaFormFieldsProps> = ({
   customValidation = {},
   defaultValues = {},
 }) => {
+  const { t } = useTranslation("common");
   const [schemaProperties, setSchemaProperties] = useState<OpenAPISchema | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -141,12 +144,12 @@ const SchemaFormFields: React.FC<SchemaFormFieldsProps> = ({
           });
       } catch (error) {
         console.error("Schema fetch error:", error);
-        setError(error instanceof Error ? error.message : "Failed to fetch schema");
+        setError(error instanceof Error ? error.message : t("schemaForm.failedToFetch"));
       }
     };
 
     fetchOpenAPISchema();
-  }, [schemaComponent, setValue, excludedFields]);
+  }, [schemaComponent, setValue, excludedFields, t]);
 
   const getPropertyType = (property: SchemaProperty): string => {
     if (property.type) {
@@ -207,7 +210,7 @@ const SchemaFormFields: React.FC<SchemaFormFieldsProps> = ({
         required={isRequired}
         rules={Object.keys(validate).length > 0 ? { validate } : undefined}
         defaultValue={defaultValues[key]}
-        help={<div className="text-xs text-muted-foreground">{getFieldHelp(key, property, type)}</div>}
+        help={<div className="text-xs text-muted-foreground">{getFieldHelp(key, property, type, t)}</div>}
       >
         {(control) => {
           if (isJSONField(key, property)) {
@@ -216,7 +219,7 @@ const SchemaFormFields: React.FC<SchemaFormFieldsProps> = ({
                 {...control}
                 value={control.value as string | undefined}
                 rows={4}
-                placeholder="Enter as JSON"
+                placeholder={t("schemaForm.enterAsJson")}
                 className="font-mono"
               />
             );
@@ -256,7 +259,11 @@ const SchemaFormFields: React.FC<SchemaFormFieldsProps> = ({
           }
           if (key === "duration") {
             return (
-              <Input {...control} value={(control.value as string | undefined) ?? ""} placeholder="eg: 30s, 30h, 30d" />
+              <Input
+                {...control}
+                value={(control.value as string | undefined) ?? ""}
+                placeholder={t("schemaForm.durationPlaceholder")}
+              />
             );
           }
           return <Input {...control} value={(control.value as string | undefined) ?? ""} placeholder={tooltip || ""} />;
@@ -266,7 +273,7 @@ const SchemaFormFields: React.FC<SchemaFormFieldsProps> = ({
   };
 
   if (error) {
-    return <div className="text-destructive">Error: {error}</div>;
+    return <div className="text-destructive">{t("schemaForm.error", { message: error })}</div>;
   }
 
   if (!schemaProperties?.properties) {

@@ -91,7 +91,7 @@ describe("CredentialModal Chinese copy", () => {
 
     await user.click(screen.getByRole("button", { name: "添加凭证" }));
 
-    expect(await screen.findByText("必填")).toBeInTheDocument();
+    expect(await screen.findByText("必填", { selector: "#custom_llm_provider_help" })).toBeInTheDocument();
   });
 
   it("renders the Chinese edit title and submit button", () => {

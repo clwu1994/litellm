@@ -1,5 +1,7 @@
 import React from "react";
 import { CircleHelp } from "lucide-react";
+import type { TFunction } from "i18next";
+import { useTranslation } from "react-i18next";
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -30,38 +32,34 @@ interface RateLimitTypeFormItemProps {
   "aria-describedby"?: string | undefined;
 }
 
-const rateLimitTypeOptions = (type: RateLimitType): RateLimitTypeOption[] => {
+const rateLimitTypeOptions = (type: RateLimitType, t: TFunction<"common">): RateLimitTypeOption[] => {
   const upper = type.toUpperCase();
   const lower = type.toLowerCase();
   return [
     {
       value: "best_effort_throughput",
-      label: "Default",
-      description: `Best effort throughput - no error if we're overallocating ${lower} (Team/Key Limits checked at runtime).`,
+      label: t("rateLimitType.default"),
+      description: t("rateLimitType.defaultDescription", { lower }),
     },
     {
       value: "guaranteed_throughput",
-      label: "Guaranteed throughput",
-      description: `Guaranteed throughput - raise an error if we're overallocating ${lower} (also checks model-specific limits)`,
+      label: t("rateLimitType.guaranteed"),
+      description: t("rateLimitType.guaranteedDescription", { lower }),
     },
     {
       value: "dynamic",
-      label: "Dynamic",
-      description: `If the key has a set ${upper} (e.g. 2 ${upper}) and there are no 429 errors, it can dynamically exceed the limit when the model being called is not erroring.`,
+      label: t("rateLimitType.dynamic"),
+      description: t("rateLimitType.dynamicDescription", { upper }),
     },
   ];
 };
 
-const plainLabels: Record<string, string> = {
-  best_effort_throughput: "Best effort throughput",
-  guaranteed_throughput: "Guaranteed throughput",
-  dynamic: "Dynamic",
+const plainLabel = (value: string, t: TFunction<"common">): string => {
+  if (value === "best_effort_throughput") return t("rateLimitType.bestEffortPlain");
+  if (value === "guaranteed_throughput") return t("rateLimitType.guaranteed");
+  if (value === "dynamic") return t("rateLimitType.dynamic");
+  return value;
 };
-
-const rateLimitTypeLabelText = (type: RateLimitType): string => `${type.toUpperCase()} Rate Limit Type`;
-
-const rateLimitTypeTooltip = (type: RateLimitType): string =>
-  `Select 'guaranteed_throughput' to prevent overallocating ${type.toUpperCase()} limit when the key belongs to a Team with specific ${type.toUpperCase()} limits.`;
 
 export const RateLimitTypeFormItem: React.FC<RateLimitTypeFormItemProps> = ({
   type,
@@ -75,20 +73,23 @@ export const RateLimitTypeFormItem: React.FC<RateLimitTypeFormItemProps> = ({
   "aria-invalid": ariaInvalid,
   "aria-describedby": ariaDescribedBy,
 }) => {
+  const { t } = useTranslation("common");
   const controlId = id ?? `rate-limit-type-${name}`;
-  const options = rateLimitTypeOptions(type);
+  const options = rateLimitTypeOptions(type, t);
+  const labelText = t("rateLimitType.label", { type: type.toUpperCase() });
+  const tooltip = t("rateLimitType.tooltip", { type: type.toUpperCase() });
 
   return (
     <div className={className}>
       <TooltipProvider>
         <label htmlFor={controlId} className="mb-2 flex items-center gap-1 text-sm text-foreground">
-          {rateLimitTypeLabelText(type)}
+          {labelText}
           <Tooltip>
             <TooltipTrigger
               render={<CircleHelp className="size-3.5 shrink-0 cursor-help text-muted-foreground" />}
-              aria-label={rateLimitTypeTooltip(type)}
+              aria-label={tooltip}
             />
-            <TooltipContent>{rateLimitTypeTooltip(type)}</TooltipContent>
+            <TooltipContent>{tooltip}</TooltipContent>
           </Tooltip>
         </label>
       </TooltipProvider>
@@ -98,9 +99,9 @@ export const RateLimitTypeFormItem: React.FC<RateLimitTypeFormItemProps> = ({
         disabled={disabled}
       >
         <SelectTrigger id={controlId} className="w-full" aria-invalid={ariaInvalid} aria-describedby={ariaDescribedBy}>
-          <SelectValue placeholder="Select rate limit type">
+          <SelectValue placeholder={t("rateLimitType.placeholder")}>
             {(selected: string | null) =>
-              selected === null ? "Select rate limit type" : plainLabels[selected] ?? selected
+              selected === null ? t("rateLimitType.placeholder") : plainLabel(selected, t)
             }
           </SelectValue>
         </SelectTrigger>
@@ -114,8 +115,8 @@ export const RateLimitTypeFormItem: React.FC<RateLimitTypeFormItemProps> = ({
                 </span>
               </SelectItem>
             ) : (
-              <SelectItem key={option.value} value={option.value} title={plainLabels[option.value]}>
-                {plainLabels[option.value]}
+              <SelectItem key={option.value} value={option.value} title={plainLabel(option.value, t)}>
+                {plainLabel(option.value, t)}
               </SelectItem>
             ),
           )}

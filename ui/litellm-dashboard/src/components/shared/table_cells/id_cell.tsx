@@ -2,6 +2,7 @@
 
 import { Copy } from "lucide-react";
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 import { useEntityLinkClick } from "@/components/shared/EntityLink";
 import { cn } from "@/lib/cva.config";
@@ -43,7 +44,7 @@ export function IdCell({
   href,
   onClick,
   copyable = false,
-  copyLabel = "Copy ID",
+  copyLabel,
   truncate = true,
   fallback = "-",
   tooltip,
@@ -51,10 +52,12 @@ export function IdCell({
   dataTestId,
   className,
 }: IdCellProps) {
+  const { t } = useTranslation("common");
   if (!value) {
     return <span className="text-muted-foreground">{fallback}</span>;
   }
 
+  const resolvedCopyLabel = copyLabel ?? t("idCell.copyId");
   const linked = !!href && !disabled;
   const clickable = !!onClick && !disabled;
   const classes = cn(
@@ -94,7 +97,7 @@ export function IdCell({
       {withTooltip}
       <button
         type="button"
-        aria-label={copyLabel}
+        aria-label={resolvedCopyLabel}
         className="shrink-0 cursor-pointer text-muted-foreground hover:text-foreground"
         onClick={(event) => {
           event.stopPropagation();
