@@ -50,6 +50,28 @@ const resolveAction = (action: string, t: TFunction<"policies">): string => {
   return key === undefined ? action : t(key);
 };
 
+const TERMINAL_ACTION_KEYS: Record<string, ParseKeys<"policies"> | undefined> = {
+  allow: "pipeline.terminalAction.allow",
+  block: "pipeline.terminalAction.block",
+  modify_response: "pipeline.terminalAction.modifyResponse",
+  error: "pipeline.terminalAction.error",
+};
+
+const resolveTerminalAction = (action: string, t: TFunction<"policies">): string => {
+  const key = TERMINAL_ACTION_KEYS[action];
+  return key === undefined ? action : t(key);
+};
+
+const EXPECTED_RESULT_KEYS: Record<string, ParseKeys<"policies"> | undefined> = {
+  pass: "pipeline.expectedResult.pass",
+  fail: "pipeline.expectedResult.fail",
+};
+
+const resolveExpectedResult = (expected: string, t: TFunction<"policies">): string => {
+  const key = EXPECTED_RESULT_KEYS[expected];
+  return key === undefined ? expected : t(key);
+};
+
 function createDefaultStep(): PipelineStep {
   return {
     guardrail: "",
@@ -1122,7 +1144,7 @@ const PipelineTestPanel: React.FC<PipelineTestPanelProps> = ({ pipeline, accessT
                     >
                       {result.terminal_action === "modify_response"
                         ? t("pipeline.action.modifyResponse")
-                        : result.terminal_action}
+                        : resolveTerminalAction(result.terminal_action, t)}
                     </span>
                   );
                 })()}
@@ -1211,11 +1233,11 @@ const PipelineTestPanel: React.FC<PipelineTestPanelProps> = ({ pipeline, accessT
                       }}
                     >
                       <span style={{ color: "var(--color-muted-foreground)" }}>
-                        {t("pipeline.expected", { value: entry.prompt.expectedResult })}
+                        {t("pipeline.expected", { value: resolveExpectedResult(entry.prompt.expectedResult, t) })}
                       </span>
                       <span style={{ color: "var(--color-muted-foreground)" }}>→</span>
                       <span style={{ color: "var(--color-muted-foreground)" }}>
-                        {t("pipeline.actual", { value: actual })}
+                        {t("pipeline.actual", { value: resolveTerminalAction(actual, t) })}
                       </span>
                       <span
                         style={{

@@ -314,6 +314,16 @@
       "block": "拦截",
       "modifyResponse": "自定义响应"
     },
+    "terminalAction": {
+      "allow": "允许",
+      "block": "拦截",
+      "modifyResponse": "自定义响应",
+      "error": "错误"
+    },
+    "expectedResult": {
+      "pass": "通过",
+      "fail": "失败"
+    },
     "passAction": "通过 → {{action}}",
     "failAction": "失败时 → {{action}}",
     "apiFailureAction": "API 失败时 → {{action}}",

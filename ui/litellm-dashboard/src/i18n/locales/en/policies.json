@@ -314,6 +314,16 @@
       "block": "Block",
       "modifyResponse": "Custom Response"
     },
+    "terminalAction": {
+      "allow": "allow",
+      "block": "block",
+      "modifyResponse": "modify_response",
+      "error": "error"
+    },
+    "expectedResult": {
+      "pass": "pass",
+      "fail": "fail"
+    },
     "passAction": "Pass → {{action}}",
     "failAction": "On fail → {{action}}",
     "apiFailureAction": "On API failure → {{action}}",

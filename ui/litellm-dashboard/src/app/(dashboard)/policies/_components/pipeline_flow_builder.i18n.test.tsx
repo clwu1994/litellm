@@ -353,10 +353,56 @@ describe("FlowBuilderPage Chinese copy", () => {
     expect(screen.queryByText("Compliance dataset")).not.toBeInTheDocument();
     expect(screen.getByText(`${matchedCount} / ${euPrompts.length} 符合预期`)).toBeInTheDocument();
     expect(screen.queryByText(`${matchedCount} / ${euPrompts.length} matched expected`)).not.toBeInTheDocument();
-    expect(screen.getAllByText(`预期：${euPrompts[0].expectedResult}`).length).toBeGreaterThan(0);
-    expect(screen.queryByText(`expected: ${euPrompts[0].expectedResult}`)).not.toBeInTheDocument();
-    expect(screen.getAllByText("实际：block").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("预期：通过").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("预期：失败").length).toBeGreaterThan(0);
+    expect(screen.queryByText("预期：pass")).not.toBeInTheDocument();
+    expect(screen.queryByText("预期：fail")).not.toBeInTheDocument();
+    expect(screen.queryByText("expected: pass")).not.toBeInTheDocument();
+    expect(screen.getAllByText("实际：拦截").length).toBeGreaterThan(0);
     expect(screen.queryByText("actual: block")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese raw allow terminal action", async () => {
+    vi.mocked(networking.testPipelineCall).mockResolvedValue({ ...quickChatResult, terminal_action: "allow" });
+    const user = userEvent.setup();
+    renderPage({ editingPolicy: pipelinePolicy });
+
+    await user.click(screen.getByRole("button", { name: "测试流水线" }));
+    await user.click(screen.getByRole("button", { name: "运行测试" }));
+
+    expect(await screen.findByText("结果")).toBeInTheDocument();
+    expect(screen.getByText("允许")).toBeInTheDocument();
+    expect(screen.queryByText("allow")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese raw modify_response actual result", async () => {
+    vi.mocked(networking.testPipelineCall).mockResolvedValue({ ...datasetResult, terminal_action: "modify_response" });
+    const user = userEvent.setup();
+    renderPage({ editingPolicy: pipelinePolicy });
+
+    await user.click(screen.getByRole("button", { name: "测试流水线" }));
+    await user.click(screen.getByText("快速对话（自定义消息）"));
+    await user.click(await screen.findByRole("option", { name: "EU AI Act" }));
+    await user.click(screen.getByRole("button", { name: "运行测试" }));
+
+    expect((await screen.findAllByText("实际：自定义响应")).length).toBeGreaterThan(0);
+    expect(screen.queryByText("实际：modify_response")).not.toBeInTheDocument();
+    expect(screen.queryByText("actual: modify_response")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese raw error actual result", async () => {
+    vi.mocked(networking.testPipelineCall).mockRejectedValue(new Error("boom"));
+    const user = userEvent.setup();
+    renderPage({ editingPolicy: pipelinePolicy });
+
+    await user.click(screen.getByRole("button", { name: "测试流水线" }));
+    await user.click(screen.getByText("快速对话（自定义消息）"));
+    await user.click(await screen.findByRole("option", { name: "EU AI Act" }));
+    await user.click(screen.getByRole("button", { name: "运行测试" }));
+
+    expect((await screen.findAllByText("实际：错误")).length).toBeGreaterThan(0);
+    expect(screen.queryByText("实际：error")).not.toBeInTheDocument();
+    expect(screen.queryByText("actual: error")).not.toBeInTheDocument();
   });
 
   it("renders the Chinese versions sidebar for a draft", async () => {
