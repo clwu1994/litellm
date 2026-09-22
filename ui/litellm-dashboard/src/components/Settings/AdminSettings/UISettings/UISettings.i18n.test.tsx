@@ -70,6 +70,23 @@ const SETTING_LABELS: ReadonlyArray<readonly [string, string]> = [
   ["禁用自定义 Virtual key 值", "Disable custom Virtual key values"],
 ];
 
+// The Projects and Chat switches carry an accessible name that differs from their visible label.
+const SWITCH_NAMES: ReadonlyArray<readonly [string, string]> = [
+  ["禁止内部用户添加模型", "Disable model add for internal users"],
+  ["禁止团队管理员删除团队用户", "Disable team admin delete team user"],
+  ["要求对公共 AI Hub 进行身份验证", "Require authentication for public AI Hub"],
+  ["将客户端请求头转发到 LLM API", "Forward client headers to LLM API"],
+  ["转发 LLM 提供商认证请求头", "Forward LLM provider auth headers"],
+  ["启用 Projects UI", "Enable Projects UI"],
+  ["启用 Chat 页面", "Enable Chat page"],
+  ["禁止内部用户使用 Agents", "Disable agents for internal users"],
+  ["允许团队管理员使用 Agents", "Allow agents for team admins"],
+  ["禁止内部用户使用向量存储", "Disable vector stores for internal users"],
+  ["允许团队管理员使用向量存储", "Allow vector stores for team admins"],
+  ["将用户搜索限制在组织范围内", "Scope user search to organization"],
+  ["禁用自定义 Virtual key 值", "Disable custom Virtual key values"],
+];
+
 describe("UISettings Chinese copy", () => {
   beforeEach(async () => {
     await i18n.changeLanguage("zh");
@@ -88,6 +105,10 @@ describe("UISettings Chinese copy", () => {
 
     expectLocalized("UI 设置", "UI Settings");
     for (const [zh, en] of SETTING_LABELS) {
+      expect(screen.getAllByText(zh).length).toBeGreaterThan(0);
+      expect(screen.queryAllByText(en)).toHaveLength(0);
+    }
+    for (const [zh, en] of SWITCH_NAMES) {
       expect(screen.getByRole("switch", { name: zh })).toBeInTheDocument();
       expect(screen.queryByRole("switch", { name: en })).not.toBeInTheDocument();
     }
@@ -175,7 +196,7 @@ describe("UISettings Chinese copy", () => {
     renderWithProviders(<UISettings />);
 
     act(() => {
-      fireEvent.click(screen.getByRole("switch", { name: "[BETA] 启用 Projects（页面将刷新）" }));
+      fireEvent.click(screen.getByRole("switch", { name: "启用 Projects UI" }));
     });
 
     expect(toast.success).toHaveBeenCalledWith("UI 设置更新成功。正在刷新页面...");
@@ -274,6 +295,9 @@ describe("UISettings English copy", () => {
 
     expect(screen.getByText("UI Settings")).toBeInTheDocument();
     for (const [, en] of SETTING_LABELS) {
+      expect(screen.getAllByText(en).length).toBeGreaterThan(0);
+    }
+    for (const [, en] of SWITCH_NAMES) {
       expect(screen.getByRole("switch", { name: en })).toBeInTheDocument();
     }
   });

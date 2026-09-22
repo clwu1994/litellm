@@ -125,7 +125,7 @@ describe("LoggingSettings Chinese copy", () => {
   it("renders every tooltip in Chinese while it is open and hides the English originals", async () => {
     renderWithProviders(<LoggingSettings />);
 
-    const cases: ReadonlyArray<readonly [string, string]> = [
+    const cases: ReadonlyArray<readonly [string, string, string]> = [
       [
         "在 Spend Logs 中存储提示词",
         "启用后，提示词将存储在 Spend Logs 中，用于跟踪和分析。",

@@ -347,7 +347,7 @@ export default function UISettings() {
                 checked={Boolean(values.enable_projects_ui)}
                 disabled={isUpdating}
                 onCheckedChange={handleToggleEnableProjectsUI}
-                ariaLabel={enableProjectsUIProperty.description ?? t("uiSettings.enableProjects")}
+                ariaLabel={enableProjectsUIProperty.description ?? t("uiSettings.enableProjectsAria")}
                 label={t("uiSettings.enableProjects")}
                 description={enableProjectsUIProperty.description ?? t("uiSettings.enableProjectsDescription")}
               />
@@ -356,7 +356,7 @@ export default function UISettings() {
               checked={Boolean(values.enable_chat_ui)}
               disabled={isUpdating}
               onCheckedChange={handleToggleEnableChatUI}
-              ariaLabel={enableChatUIProperty?.description ?? t("uiSettings.enableChat")}
+              ariaLabel={enableChatUIProperty?.description ?? t("uiSettings.enableChatAria")}
               label={t("uiSettings.enableChat")}
               description={enableChatUIProperty?.description ?? t("uiSettings.enableChatDescription")}
             />

@@ -144,18 +144,21 @@ describe("CyberArk Chinese copy", () => {
     expectLocalized("Token 刷新间隔（秒）", "Token Refresh Interval (seconds)");
 
     expect(screen.getByText("CyberArk Conjur")).toBeInTheDocument();
-    expect(screen.getAllByText("API Key").length).toBeGreaterThan(0);
+    // The auth-method row and the cyberark_api_key field label both read "API Key".
+    expect(screen.getAllByText("API Key")).toHaveLength(2);
   });
 
   it("renders the TLS certificate and no-auth auth methods in Chinese", () => {
     settle({ values: { cyberark_api_base: "https://conjur.example.com", client_cert: "cert", client_key: "key" } });
     const tls = renderWithProviders(<CyberArk />);
     expectLocalized("TLS 证书", "TLS Certificate");
+    expect(screen.getAllByText("TLS 证书")).toHaveLength(1);
     tls.unmount();
 
     settle({ values: { cyberark_api_base: "https://conjur.example.com" } });
     renderWithProviders(<CyberArk />);
     expectLocalized("无", "None");
+    expect(screen.getAllByText("无")).toHaveLength(1);
   });
 
   it("renders the clear-field confirmation in Chinese in the same open state", async () => {
@@ -197,7 +200,7 @@ describe("CyberArk Chinese copy", () => {
   });
 
   it("reports a successful connection in Chinese and not in English", async () => {
-    vi.mocked(testCyberArkConnection).mockResolvedValue({ message: "" });
+    vi.mocked(testCyberArkConnection).mockResolvedValue({ status: "success", message: "" });
     settle({ values: ALL_VALUES });
     renderWithProviders(<CyberArk />);
 

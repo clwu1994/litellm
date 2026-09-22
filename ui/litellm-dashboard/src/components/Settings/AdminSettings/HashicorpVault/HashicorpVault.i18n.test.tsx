@@ -151,16 +151,20 @@ describe("HashicorpVault Chinese copy", () => {
     expectLocalized("客户端密钥", "Client Key");
     expectLocalized("证书角色", "Certificate Role");
 
-    for (const value of ["AppRole", "Token", "Role ID", "Secret ID"]) {
-      expect(screen.getAllByText(value).length).toBeGreaterThan(0);
-    }
+    // AppRole is the auth-method row; the others are field labels. Counting keeps the
+    // auth-method key from being counted as covered by a field label that shares its text.
+    expect(screen.getAllByText("AppRole")).toHaveLength(1);
+    expect(screen.getAllByText("Token")).toHaveLength(1);
+    expect(screen.getAllByText("Role ID")).toHaveLength(1);
+    expect(screen.getAllByText("Secret ID")).toHaveLength(1);
   });
 
   it("renders the token auth method and its clear action in Chinese and hides the English original", () => {
     settle({ values: { vault_addr: "https://vault.example.com", vault_token: "secret-token" } });
     renderWithProviders(<HashicorpVault />);
 
-    expect(screen.getAllByText("Token").length).toBeGreaterThan(0);
+    // The auth-method row and the vault_token field label both read "Token".
+    expect(screen.getAllByText("Token")).toHaveLength(2);
     expect(screen.getByRole("button", { name: "清除Token" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Clear Token" })).not.toBeInTheDocument();
   });
@@ -169,6 +173,7 @@ describe("HashicorpVault Chinese copy", () => {
     settle({ values: { vault_addr: "https://vault.example.com", client_cert: "cert", client_key: "key" } });
     const tls = renderWithProviders(<HashicorpVault />);
     expectLocalized("TLS 证书", "TLS Certificate");
+    expect(screen.getAllByText("TLS 证书")).toHaveLength(1);
     tls.unmount();
 
     settle({ values: { vault_addr: "https://vault.example.com" } });
