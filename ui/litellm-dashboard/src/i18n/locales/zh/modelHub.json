@@ -226,7 +226,8 @@
     "viewDocumentation": "查看文档",
     "usageExampleA2a": "用法示例（A2A 协议）",
     "step1": "第 1 步：获取 Agent 卡片",
-    "step2": "第 2 步：调用 Agent"
+    "step2": "第 2 步：调用 Agent",
+    "skillId": "ID：{{id}}"
   },
   "mcpDetail": {
     "title": "MCP 服务器详情",

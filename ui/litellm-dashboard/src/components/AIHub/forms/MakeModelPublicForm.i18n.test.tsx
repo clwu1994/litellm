@@ -52,8 +52,9 @@ const normalize = (value: string) => value.replace(/\s+/g, " ").trim();
 const findParagraph = (text: string): HTMLElement =>
   screen.getByText((_, el) => el?.tagName === "P" && normalize(el.textContent ?? "") === normalize(text));
 
-const hasParagraph = (pattern: RegExp): boolean =>
-  screen.queryAllByText((_, el) => el?.tagName === "P" && pattern.test(el.textContent ?? "")).length > 0;
+const hasParagraphText = (text: string): boolean =>
+  screen.queryAllByText((_, el) => el?.tagName === "P" && normalize(el.textContent ?? "") === normalize(text)).length >
+  0;
 
 describe("MakeModelPublicForm Chinese copy", () => {
   beforeEach(async () => {
@@ -111,7 +112,7 @@ describe("MakeModelPublicForm Chinese copy", () => {
     expect(screen.queryByRole("button", { name: "Previous" })).not.toBeInTheDocument();
 
     expect(findParagraph("总计： 1 个模型将被设为公开")).toBeInTheDocument();
-    expect(hasParagraph(/model will be made public/)).toBe(false);
+    expect(hasParagraphText("Total: 1 model will be made public")).toBe(false);
   });
 
   it("renders the plural total count in Chinese and hides the English original", async () => {
@@ -130,7 +131,7 @@ describe("MakeModelPublicForm Chinese copy", () => {
     });
 
     expect(findParagraph("总计： 2 个模型将被设为公开")).toBeInTheDocument();
-    expect(hasParagraph(/models will be made public/)).toBe(false);
+    expect(hasParagraphText("Total: 2 models will be made public")).toBe(false);
     expect(screen.queryByText("models selected")).not.toBeInTheDocument();
   });
 
@@ -146,7 +147,11 @@ describe("MakeModelPublicForm Chinese copy", () => {
       "一旦你将这些模型设为公开，任何能访问 /ui/model_hub_table 的人都能知道它们存在于该代理上。",
     );
     expect(screen.getByText("/ui/model_hub_table")).toBeInTheDocument();
-    expect(screen.queryByText(/Once you make these models public/)).not.toBeInTheDocument();
+    expect(
+      hasParagraphText(
+        "Once you make these models public, anyone who can go to the /ui/model_hub_table will be able to know they exist on the proxy.",
+      ),
+    ).toBe(false);
   });
 
   it("reports the success toast in Chinese and not in English", async () => {
@@ -239,6 +244,7 @@ describe("MakeModelPublicForm English copy", () => {
         ]}
       />,
     );
+    expect(findParagraph("2 models selected")).toBeInTheDocument();
     await act(async () => {
       fireEvent.click(screen.getByRole("button", { name: "Next" }));
     });

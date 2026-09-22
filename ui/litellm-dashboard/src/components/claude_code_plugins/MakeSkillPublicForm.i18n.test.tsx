@@ -42,8 +42,9 @@ const normalize = (value: string) => value.replace(/\s+/g, " ").trim();
 const findParagraph = (text: string): HTMLElement =>
   screen.getByText((_, el) => el?.tagName === "P" && normalize(el.textContent ?? "") === normalize(text));
 
-const hasParagraph = (pattern: RegExp): boolean =>
-  screen.queryAllByText((_, el) => el?.tagName === "P" && pattern.test(el.textContent ?? "")).length > 0;
+const hasParagraphText = (text: string): boolean =>
+  screen.queryAllByText((_, el) => el?.tagName === "P" && normalize(el.textContent ?? "") === normalize(text)).length >
+  0;
 
 describe("MakeSkillPublicForm Chinese copy", () => {
   beforeEach(async () => {
@@ -90,7 +91,7 @@ describe("MakeSkillPublicForm Chinese copy", () => {
     render(<MakeSkillPublicForm {...baseProps} skillsList={[skill({ enabled: true })]} />);
 
     expect(findParagraph("1 个技能将被发布")).toBeInTheDocument();
-    expect(hasParagraph(/1 skill will be published/)).toBe(false);
+    expect(hasParagraphText("1 skill will be published")).toBe(false);
   });
 
   it("renders the confirm step in Chinese and hides the English originals", async () => {
@@ -111,7 +112,7 @@ describe("MakeSkillPublicForm Chinese copy", () => {
     expect(screen.getByRole("button", { name: "上一步" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Previous" })).not.toBeInTheDocument();
     expect(findParagraph("总计： 1 个技能将被发布")).toBeInTheDocument();
-    expect(hasParagraph(/skill will be published/)).toBe(false);
+    expect(hasParagraphText("Total: 1 skill will be published")).toBe(false);
   });
 
   it("renders the plural published count in Chinese and hides the English original", async () => {
@@ -127,7 +128,7 @@ describe("MakeSkillPublicForm Chinese copy", () => {
     });
 
     expect(findParagraph("总计： 2 个技能将被发布")).toBeInTheDocument();
-    expect(hasParagraph(/skills will be published/)).toBe(false);
+    expect(hasParagraphText("Total: 2 skills will be published")).toBe(false);
   });
 
   it("reports the success toast in Chinese and not in English", async () => {

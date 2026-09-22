@@ -1131,7 +1131,7 @@ if _public_card.supports_authenticated_extended_card:
                           }}
                           className="text-sm text-info hover:text-info/80 cursor-pointer"
                         >
-                          Copy to clipboard
+                          {t("publicHub.copyToClipboard")}
                         </button>
                       </div>
                     </div>
@@ -1188,7 +1188,7 @@ print(response.model_dump(mode='json', exclude_none=True))`;
                           }}
                           className="text-sm text-info hover:text-info/80 cursor-pointer"
                         >
-                          Copy to clipboard
+                          {t("publicHub.copyToClipboard")}
                         </button>
                       </div>
                     </div>

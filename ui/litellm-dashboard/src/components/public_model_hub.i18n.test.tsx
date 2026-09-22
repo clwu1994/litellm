@@ -1,10 +1,10 @@
-/* eslint-disable testing-library/no-node-access -- The filter hints are icons with no accessible name, so reaching their tooltips needs the DOM */
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { cleanup } from "@/../tests/test-utils";
+import { findTooltipTriggerBeside } from "@/../tests/i18nTooltip";
 import i18n from "@/i18n/bootstrapI18n";
 import { toast } from "@/lib/toast";
 
@@ -140,10 +140,14 @@ const expectLocalized = (zh: string, en: string) => {
   expect(screen.queryAllByText(en)).toHaveLength(0);
 };
 
+const normalize = (value: string) => value.replace(/\s+/g, " ").trim();
+
+const hasParagraphText = (text: string): boolean =>
+  screen.queryAllByText((_, el) => el?.tagName === "P" && normalize(el.textContent ?? "") === normalize(text)).length >
+  0;
+
 const hoverInfoNextTo = async (user: ReturnType<typeof userEvent.setup>, label: string) => {
-  const trigger = screen.getByText(label).parentElement?.querySelector("svg");
-  expect(trigger).not.toBeNull();
-  await user.hover(trigger as SVGElement);
+  await user.hover(findTooltipTriggerBeside(screen.getByText(label)));
 };
 
 beforeEach(async () => {
@@ -205,6 +209,7 @@ describe("PublicModelHub Chinese copy", () => {
     expectLocalized("功能：", "Features:");
     expect(screen.getByPlaceholderText("搜索模型名称...")).toBeInTheDocument();
     expect(screen.getByLabelText("搜索模型名称")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Search model names")).not.toBeInTheDocument();
     expect(screen.getByPlaceholderText("选择提供商")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("选择模式")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("选择功能")).toBeInTheDocument();
@@ -343,11 +348,17 @@ describe("PublicModelHub Chinese copy", () => {
 
     const intro = screen.getByText(/此模型使用通配符路由/);
     expect(intro).toHaveTextContent("此模型使用通配符路由。你可以在看到 * 符号的位置传入任意值。");
-    expect(screen.queryByText(/This model uses wildcard routing/)).not.toBeInTheDocument();
+    expect(
+      hasParagraphText("This model uses wildcard routing. You can pass any value where you see the * symbol."),
+    ).toBe(false);
 
     const example = screen.getByText(/例如，对于/);
     expect(example).toHaveTextContent("例如，对于 gpt-4*，你可以使用任何匹配此模式的字符串（gpt-4my-custom-value）。");
-    expect(screen.queryByText(/For example, with/)).not.toBeInTheDocument();
+    expect(
+      hasParagraphText(
+        "For example, with gpt-4*, you can use any string (gpt-4my-custom-value) that matches this pattern.",
+      ),
+    ).toBe(false);
 
     expectLocalized("复制到剪贴板", "Copy to clipboard");
     await user.click(screen.getByRole("button", { name: "复制到剪贴板" }));
@@ -371,6 +382,8 @@ describe("PublicModelHub Chinese copy", () => {
     expectLocalized("用法示例（A2A 协议）", "Usage Example (A2A Protocol)");
     expectLocalized("第 1 步：获取 Agent 卡片", "Step 1: Retrieve Agent Card");
     expectLocalized("第 2 步：调用 Agent", "Step 2: Call the Agent");
+    expect(screen.getAllByText("复制到剪贴板")).toHaveLength(2);
+    expect(screen.queryAllByText("Copy to clipboard")).toHaveLength(0);
   });
 
   it("renders the MCP details dialog in Chinese and hides the English originals", async () => {

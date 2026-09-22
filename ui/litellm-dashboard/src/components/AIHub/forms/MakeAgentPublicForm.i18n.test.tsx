@@ -42,8 +42,9 @@ const normalize = (value: string) => value.replace(/\s+/g, " ").trim();
 const findParagraph = (text: string): HTMLElement =>
   screen.getByText((_, el) => el?.tagName === "P" && normalize(el.textContent ?? "") === normalize(text));
 
-const hasParagraph = (pattern: RegExp): boolean =>
-  screen.queryAllByText((_, el) => el?.tagName === "P" && pattern.test(el.textContent ?? "")).length > 0;
+const hasParagraphText = (text: string): boolean =>
+  screen.queryAllByText((_, el) => el?.tagName === "P" && normalize(el.textContent ?? "") === normalize(text)).length >
+  0;
 
 describe("MakeAgentPublicForm Chinese copy", () => {
   beforeEach(async () => {
@@ -97,7 +98,7 @@ describe("MakeAgentPublicForm Chinese copy", () => {
     expect(screen.getByRole("button", { name: "上一步" })).toBeInTheDocument();
 
     expect(findParagraph("总计： 1 个 Agent 将被设为公开")).toBeInTheDocument();
-    expect(hasParagraph(/agent will be made public/)).toBe(false);
+    expect(hasParagraphText("Total: 1 agent will be made public")).toBe(false);
   });
 
   it("renders the plural total count in Chinese and hides the English original", async () => {
@@ -113,7 +114,7 @@ describe("MakeAgentPublicForm Chinese copy", () => {
     });
 
     expect(findParagraph("总计： 2 个 Agent 将被设为公开")).toBeInTheDocument();
-    expect(hasParagraph(/agents will be made public/)).toBe(false);
+    expect(hasParagraphText("Total: 2 agents will be made public")).toBe(false);
     expect(screen.queryByText("agents selected")).not.toBeInTheDocument();
   });
 
@@ -150,7 +151,11 @@ describe("MakeAgentPublicForm Chinese copy", () => {
       "一旦你将这些 Agent 设为公开，任何能访问 /ui/model_hub_table 的人都能知道它们存在于该代理上。",
     );
     expect(screen.getByText("/ui/model_hub_table")).toBeInTheDocument();
-    expect(screen.queryByText(/Once you make these agents public/)).not.toBeInTheDocument();
+    expect(
+      hasParagraphText(
+        "Once you make these agents public, anyone who can go to the /ui/model_hub_table will be able to know they exist on the proxy.",
+      ),
+    ).toBe(false);
   });
 
   it("reports the success toast in Chinese and not in English", async () => {
@@ -212,5 +217,39 @@ describe("MakeAgentPublicForm Chinese copy", () => {
 
     expect(toast.fromError).toHaveBeenCalledWith("请至少选择一个要设为公开的 Agent");
     expect(toast.fromError).not.toHaveBeenCalledWith("Please select at least one agent to make public");
+  });
+});
+
+describe("MakeAgentPublicForm English copy", () => {
+  beforeEach(async () => {
+    await i18n.changeLanguage("en");
+    vi.clearAllMocks();
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  it("keeps the singular and plural agent counts byte-identical", async () => {
+    render(<MakeAgentPublicForm {...baseProps} agentHubData={[agent({ is_public: true })]} />);
+    expect(findParagraph("1 agent selected")).toBeInTheDocument();
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Next" }));
+    });
+    expect(findParagraph("Total: 1 agent will be made public")).toBeInTheDocument();
+    cleanup();
+
+    render(
+      <MakeAgentPublicForm
+        {...baseProps}
+        agentHubData={[agent({ is_public: true }), agent({ agent_id: "agent-2", name: "Support", is_public: true })]}
+      />,
+    );
+    expect(findParagraph("2 agents selected")).toBeInTheDocument();
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Next" }));
+    });
+    expect(findParagraph("Total: 2 agents will be made public")).toBeInTheDocument();
   });
 });

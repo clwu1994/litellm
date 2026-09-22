@@ -97,7 +97,7 @@ const healthStatusLabel = (status: string | undefined, t: TFunction<"modelHub">)
   if (status === "healthy") return t("healthStatus.healthy");
   if (status === "unhealthy") return t("healthStatus.unhealthy");
   if (status === "unknown") return t("healthStatus.unknownWire");
-  if (!status) return t("healthStatus.unknown");
+  if (status === undefined) return t("healthStatus.unknown");
   return status;
 };
 

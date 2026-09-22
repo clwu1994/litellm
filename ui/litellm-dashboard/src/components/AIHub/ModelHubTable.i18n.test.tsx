@@ -328,6 +328,7 @@ describe("ModelHubTable Chinese copy", () => {
     expectLocalized("示例：", "Examples:");
     expectLocalized("附加功能", "Additional Features");
     expectLocalized("支持经过认证的扩展卡片", "Supports Authenticated Extended Card");
+    expectLocalized("ID：s1", "ID: s1");
   });
 
   it("renders the MCP details dialog in Chinese and hides the English originals", async () => {

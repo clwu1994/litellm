@@ -1,4 +1,4 @@
-import { screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -144,25 +144,25 @@ describe("UsefulLinksManagement Chinese copy", () => {
     renderPanel();
     await screen.findByText("First Link");
 
-    await user.type(screen.getByPlaceholderText("友好名称"), "Broken");
-    await user.type(screen.getByPlaceholderText("https://example.com"), "not-a-url");
+    fireEvent.change(screen.getByPlaceholderText("友好名称"), { target: { value: "Broken" } });
+    fireEvent.change(screen.getByPlaceholderText("https://example.com"), { target: { value: "not-a-url" } });
     await user.click(screen.getByRole("button", { name: "添加链接" }));
     expect(toast.fromError).toHaveBeenCalledWith("请输入有效的 URL");
     expect(toast.fromError).not.toHaveBeenCalledWith("Please enter a valid URL");
 
-    await user.clear(screen.getByPlaceholderText("友好名称"));
-    await user.type(screen.getByPlaceholderText("友好名称"), "First Link");
-    await user.clear(screen.getByPlaceholderText("https://example.com"));
-    await user.type(screen.getByPlaceholderText("https://example.com"), "https://dup.example.com");
+    fireEvent.change(screen.getByPlaceholderText("友好名称"), { target: { value: "First Link" } });
+    fireEvent.change(screen.getByPlaceholderText("https://example.com"), {
+      target: { value: "https://dup.example.com" },
+    });
     await user.click(screen.getByRole("button", { name: "添加链接" }));
     expect(toast.fromError).toHaveBeenCalledWith("已存在使用此显示名称的链接");
     expect(toast.fromError).not.toHaveBeenCalledWith("A link with this display name already exists");
 
     mockedUpdateUsefulLinksCall.mockRejectedValueOnce(new Error("boom"));
-    await user.clear(screen.getByPlaceholderText("友好名称"));
-    await user.type(screen.getByPlaceholderText("友好名称"), "Third Link");
-    await user.clear(screen.getByPlaceholderText("https://example.com"));
-    await user.type(screen.getByPlaceholderText("https://example.com"), "https://third.example.com");
+    fireEvent.change(screen.getByPlaceholderText("友好名称"), { target: { value: "Third Link" } });
+    fireEvent.change(screen.getByPlaceholderText("https://example.com"), {
+      target: { value: "https://third.example.com" },
+    });
     await user.click(screen.getByRole("button", { name: "添加链接" }));
     await waitFor(() => expect(toast.fromError).toHaveBeenCalledWith("保存链接失败 - Error: boom"));
     expect(toast.fromError).not.toHaveBeenCalledWith("Failed to save links - Error: boom");
@@ -173,8 +173,10 @@ describe("UsefulLinksManagement Chinese copy", () => {
     renderPanel();
     await screen.findByText("First Link");
 
-    await user.type(screen.getByPlaceholderText("友好名称"), "Third Link");
-    await user.type(screen.getByPlaceholderText("https://example.com"), "https://third.example.com");
+    fireEvent.change(screen.getByPlaceholderText("友好名称"), { target: { value: "Third Link" } });
+    fireEvent.change(screen.getByPlaceholderText("https://example.com"), {
+      target: { value: "https://third.example.com" },
+    });
     await user.click(screen.getByRole("button", { name: "添加链接" }));
     await waitFor(() => expect(toast.success).toHaveBeenCalledWith("链接添加成功"));
     expect(toast.success).not.toHaveBeenCalledWith("Link added successfully");

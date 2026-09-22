@@ -226,7 +226,8 @@
     "viewDocumentation": "View Documentation",
     "usageExampleA2a": "Usage Example (A2A Protocol)",
     "step1": "Step 1: Retrieve Agent Card",
-    "step2": "Step 2: Call the Agent"
+    "step2": "Step 2: Call the Agent",
+    "skillId": "ID: {{id}}"
   },
   "mcpDetail": {
     "title": "MCP Server Details",
