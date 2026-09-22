@@ -1,0 +1,140 @@
+{
+  "title": "Guardrails Monitor",
+  "common": {
+    "loading": "Loading",
+    "overview": "Overview",
+    "logs": "Logs",
+    "provider": "Provider",
+    "cost": "Cost",
+    "units": "Units",
+    "usageUnits": "Usage Units",
+    "failRate": "Fail Rate",
+    "avgLatency": "Avg. latency added",
+    "counter": "Counter",
+    "unpricedUnits": "Unpriced Units",
+    "team": "Team",
+    "key": "Key",
+    "evaluationSettings": "Evaluation settings",
+    "costMathTitle": "How this cost is calculated",
+    "status": {
+      "healthy": "healthy",
+      "warning": "warning",
+      "critical": "critical"
+    }
+  },
+  "overview": {
+    "subtitle": "Monitor guardrail performance across all requests",
+    "exportData": "Export Data",
+    "comingSoon": "Coming soon",
+    "loadFailed": "Failed to load data. Try again.",
+    "noData": "No data for this period",
+    "performanceTitle": "Guardrail Performance",
+    "performanceHint": "Click a guardrail to view details, logs, and configuration",
+    "totalEvaluations": "Total Evaluations",
+    "blockedRequests": "Blocked Requests",
+    "passRate": "Pass Rate",
+    "guardrailCost": "Guardrail Cost",
+    "activeGuardrails": "Active Guardrails",
+    "unpricedTooltip": "{{unpriced}}: these units have no known price and are left out of the cost",
+    "costFormula": "guardrail + guardrail + … = guardrail cost",
+    "costNote": "Each guardrail's cost is its units per counter × that counter's per-unit price from the cost map. Open a guardrail for its per-counter math.",
+    "columns": {
+      "status": "Status",
+      "guardrail": "Guardrail",
+      "requests": "Requests"
+    }
+  },
+  "config": {
+    "versionLabel": "Version:",
+    "versionCurrent": "{{version}} (current)",
+    "viewHistory": "View history",
+    "hideHistory": "Hide history",
+    "revert": "Revert",
+    "saveAsVersion": "Save as v{{version}}",
+    "parameters": "Parameters",
+    "behaviorDescription": "Configure {{name}} behavior",
+    "actionOnFailure": "Action on Failure",
+    "guardrailType": "Guardrail Type",
+    "categories": "Categories (comma-separated)",
+    "enabledInProduction": "Guardrail enabled in production",
+    "customCodeOverride": "Custom Code Override",
+    "customCodeOverrideDescription": "Replace the built-in guardrail with custom evaluation code",
+    "testConfiguration": "Test Configuration",
+    "rerunDescription": "Re-run this guardrail on recent failing logs to validate your changes",
+    "rerunRunning": "Running on 10 samples...",
+    "rerunAction": "Re-run on failing logs",
+    "rerunSuccess": "7/10 would now pass with new config",
+    "versionChanges": {
+      "medical": "Adjusted sensitivity for medical terms",
+      "categories": "Added custom categories list",
+      "initial": "Initial configuration"
+    },
+    "actions": {
+      "block": "Block Request",
+      "flag": "Flag for Review",
+      "log": "Log Only",
+      "fallback": "Use Fallback Response"
+    },
+    "providers": {
+      "bedrock": "AWS Bedrock Guardrails",
+      "google": "Google Cloud AI Safety",
+      "litellm": "LiteLLM Built-in",
+      "custom": "Custom Code"
+    },
+    "types": {
+      "contentSafety": "Content Safety",
+      "pii": "PII Detection",
+      "topic": "Topic Restriction",
+      "promptInjection": "Prompt Injection",
+      "custom": "Custom"
+    }
+  },
+  "breakdown": {
+    "regionAria": "Usage and cost",
+    "title": "Usage & Cost",
+    "description": "Billable units the provider reported for this guardrail and what LiteLLM priced them at",
+    "noUnits": "No billable usage units were recorded in this period.",
+    "costFormula": "priced units × price per unit = cost, per counter",
+    "costNote": "Per-unit prices come from the cost map LiteLLM ships with.",
+    "unitsMathTitle": "How usage units add up",
+    "unitsFormula": "counter + counter + … = usage units",
+    "unitsNote": "Units are the billable counters the provider reported for this guardrail, added up over every call.",
+    "counterCountOne": "{{counterCount}} counter",
+    "counterCountOther": "{{counterCount}} counters",
+    "byCounter": "By counter",
+    "byTeam": "By team",
+    "byKey": "By key",
+    "noTeam": "No team",
+    "noKey": "No key"
+  },
+  "detail": {
+    "backToOverview": "Back to Overview",
+    "loadFailed": "Failed to load guardrail details.",
+    "requestsEvaluated": "Requests Evaluated",
+    "blockedCount": "{{blockedCount}} blocked",
+    "perRequest": "Per request (avg)",
+    "noData": "No data"
+  },
+  "evaluation": {
+    "title": "Evaluation Settings",
+    "descriptionNamed": "Configure AI evaluation for {{name}}",
+    "descriptionGeneric": "Configure AI evaluation for re-running on logs",
+    "promptLabel": "Evaluation Prompt",
+    "defaultPrompt": "Evaluate whether this guardrail's decision was correct.\nAnalyze the user input, the guardrail action taken, and determine if it was appropriate.\n\nConsider:\n— Was the user's intent genuinely harmful or policy-violating?\n— Was the guardrail's action (block / flag / pass) appropriate?\n— Could this be a false positive or false negative?\n\nReturn a structured verdict with confidence and justification.",
+    "resetToDefault": "Reset to default",
+    "promptHint": "System prompt sent to the evaluation model. Output is structured via response_format.",
+    "schemaLabel": "Response Schema",
+    "schemaHint": "response_format: json_schema",
+    "modelLabel": "Model",
+    "loadingModels": "Loading models…",
+    "selectModel": "Select a model",
+    "signInToSeeModels": "Sign in to see models",
+    "noModels": "No models available",
+    "cancel": "Cancel",
+    "runEvaluation": "Run Evaluation"
+  },
+  "chart": {
+    "title": "Request Outcomes Over Time",
+    "noData": "No chart data for this period"
+  }
+}

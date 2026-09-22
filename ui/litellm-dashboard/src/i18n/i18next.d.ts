@@ -3,6 +3,7 @@ import type zhBudgets from "./locales/zh/budgets.json";
 import type zhCommon from "./locales/zh/common.json";
 import type zhCostTracking from "./locales/zh/costTracking.json";
 import type zhGuardrails from "./locales/zh/guardrails.json";
+import type zhGuardrailsMonitor from "./locales/zh/guardrailsMonitor.json";
 import type zhKeys from "./locales/zh/keys.json";
 import type zhLogs from "./locales/zh/logs.json";
 import type zhModels from "./locales/zh/models.json";
@@ -28,6 +29,7 @@ declare module "i18next" {
       budgets: typeof zhBudgets;
       costTracking: typeof zhCostTracking;
       guardrails: typeof zhGuardrails;
+      guardrailsMonitor: typeof zhGuardrailsMonitor;
       keys: typeof zhKeys;
       logs: typeof zhLogs;
       models: typeof zhModels;

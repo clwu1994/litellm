@@ -1,5 +1,6 @@
 import { Play } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { fetchAvailableModels, type ModelGroup } from "@/components/llm_calls/fetch_models";
 import { SearchSelect } from "@/components/shared/SearchSelect";
 import { Button } from "@/components/ui/button";
@@ -12,16 +13,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-
-const DEFAULT_PROMPT = `Evaluate whether this guardrail's decision was correct.
-Analyze the user input, the guardrail action taken, and determine if it was appropriate.
-
-Consider:
-— Was the user's intent genuinely harmful or policy-violating?
-— Was the guardrail's action (block / flag / pass) appropriate?
-— Could this be a false positive or false negative?
-
-Return a structured verdict with confidence and justification.`;
 
 const DEFAULT_SCHEMA = `{
   "verdict": "correct" | "false_positive" | "false_negative",
@@ -47,11 +38,13 @@ export function EvaluationSettingsModal({
   accessToken,
   onRunEvaluation,
 }: EvaluationSettingsModalProps) {
-  const [prompt, setPrompt] = useState(DEFAULT_PROMPT);
+  const { t } = useTranslation("guardrailsMonitor");
+  const [prompt, setPrompt] = useState<string | null>(null);
   const [schema, setSchema] = useState(DEFAULT_SCHEMA);
   const [model, setModel] = useState<string | null>(null);
   const [modelOptions, setModelOptions] = useState<ModelGroup[]>([]);
   const [loadingModels, setLoadingModels] = useState(false);
+  const defaultPrompt = t("evaluation.defaultPrompt");
 
   useEffect(() => {
     if (!open || !accessToken) {
@@ -75,10 +68,10 @@ export function EvaluationSettingsModal({
     };
   }, [open, accessToken]);
 
-  const handleResetPrompt = () => setPrompt(DEFAULT_PROMPT);
+  const handleResetPrompt = () => setPrompt(null);
   const handleRun = () => {
     if (model) {
-      onRunEvaluation?.({ prompt, schema, model });
+      onRunEvaluation?.({ prompt: prompt ?? defaultPrompt, schema, model });
       onClose();
     }
   };
@@ -92,11 +85,11 @@ export function EvaluationSettingsModal({
     <Dialog open={open} onOpenChange={(nextOpen) => !nextOpen && onClose()}>
       <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[640px]">
         <DialogHeader>
-          <DialogTitle>Evaluation Settings</DialogTitle>
+          <DialogTitle>{t("evaluation.title")}</DialogTitle>
           <DialogDescription>
             {guardrailName
-              ? `Configure AI evaluation for ${guardrailName}`
-              : "Configure AI evaluation for re-running on logs"}
+              ? t("evaluation.descriptionNamed", { name: guardrailName })
+              : t("evaluation.descriptionGeneric")}
           </DialogDescription>
         </DialogHeader>
 
@@ -104,29 +97,27 @@ export function EvaluationSettingsModal({
           <div>
             <div className="mb-1.5 flex items-center justify-between">
               <label htmlFor="evaluation-prompt" className="text-sm font-medium text-foreground">
-                Evaluation Prompt
+                {t("evaluation.promptLabel")}
               </label>
               <Button variant="link" size="xs" onClick={handleResetPrompt}>
-                Reset to default
+                {t("evaluation.resetToDefault")}
               </Button>
             </div>
             <Textarea
               id="evaluation-prompt"
-              value={prompt}
+              value={prompt ?? defaultPrompt}
               onChange={(e) => setPrompt(e.target.value)}
               rows={6}
               className="field-sizing-fixed font-mono text-sm"
             />
-            <p className="mt-1 text-xs text-muted-foreground">
-              System prompt sent to the evaluation model. Output is structured via response_format.
-            </p>
+            <p className="mt-1 text-xs text-muted-foreground">{t("evaluation.promptHint")}</p>
           </div>
 
           <div>
             <label htmlFor="evaluation-schema" className="mb-1.5 block text-sm font-medium text-foreground">
-              Response Schema
+              {t("evaluation.schemaLabel")}
             </label>
-            <p className="mb-1 text-xs text-muted-foreground">response_format: json_schema</p>
+            <p className="mb-1 text-xs text-muted-foreground">{t("evaluation.schemaHint")}</p>
             <Textarea
               id="evaluation-schema"
               value={schema}
@@ -137,24 +128,24 @@ export function EvaluationSettingsModal({
           </div>
 
           <div>
-            <p className="mb-1.5 text-sm font-medium text-foreground">Model</p>
+            <p className="mb-1.5 text-sm font-medium text-foreground">{t("evaluation.modelLabel")}</p>
             <SearchSelect
               options={modelSelectOptions}
               value={model ?? undefined}
               onValueChange={(value) => setModel(value || null)}
-              placeholder={loadingModels ? "Loading models…" : "Select a model"}
-              emptyText={!accessToken ? "Sign in to see models" : "No models available"}
+              placeholder={loadingModels ? t("evaluation.loadingModels") : t("evaluation.selectModel")}
+              emptyText={!accessToken ? t("evaluation.signInToSeeModels") : t("evaluation.noModels")}
             />
           </div>
         </div>
 
         <DialogFooter className="border-t border-border pt-4">
           <Button variant="outline" onClick={onClose}>
-            Cancel
+            {t("evaluation.cancel")}
           </Button>
           <Button onClick={handleRun} disabled={!model}>
             <Play className="size-4" />
-            Run Evaluation
+            {t("evaluation.runEvaluation")}
           </Button>
         </DialogFooter>
       </DialogContent>

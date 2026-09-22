@@ -3,6 +3,7 @@ import enBudgets from "./locales/en/budgets.json";
 import enCommon from "./locales/en/common.json";
 import enCostTracking from "./locales/en/costTracking.json";
 import enGuardrails from "./locales/en/guardrails.json";
+import enGuardrailsMonitor from "./locales/en/guardrailsMonitor.json";
 import enKeys from "./locales/en/keys.json";
 import enLogs from "./locales/en/logs.json";
 import enModels from "./locales/en/models.json";
@@ -22,6 +23,7 @@ import zhBudgets from "./locales/zh/budgets.json";
 import zhCommon from "./locales/zh/common.json";
 import zhCostTracking from "./locales/zh/costTracking.json";
 import zhGuardrails from "./locales/zh/guardrails.json";
+import zhGuardrailsMonitor from "./locales/zh/guardrailsMonitor.json";
 import zhKeys from "./locales/zh/keys.json";
 import zhLogs from "./locales/zh/logs.json";
 import zhModels from "./locales/zh/models.json";
@@ -45,6 +47,7 @@ export const resources = {
     budgets: enBudgets,
     costTracking: enCostTracking,
     guardrails: enGuardrails,
+    guardrailsMonitor: enGuardrailsMonitor,
     keys: enKeys,
     logs: enLogs,
     models: enModels,
@@ -66,6 +69,7 @@ export const resources = {
     budgets: zhBudgets,
     costTracking: zhCostTracking,
     guardrails: zhGuardrails,
+    guardrailsMonitor: zhGuardrailsMonitor,
     keys: zhKeys,
     logs: zhLogs,
     models: zhModels,

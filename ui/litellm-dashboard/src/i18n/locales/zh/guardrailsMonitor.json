@@ -1,0 +1,140 @@
+{
+  "title": "Guardrails 监控",
+  "common": {
+    "loading": "加载中",
+    "overview": "概览",
+    "logs": "日志",
+    "provider": "提供商",
+    "cost": "成本",
+    "units": "单位",
+    "usageUnits": "用量单位",
+    "failRate": "失败率",
+    "avgLatency": "平均增加延迟",
+    "counter": "计数器",
+    "unpricedUnits": "未定价单位",
+    "team": "团队",
+    "key": "密钥",
+    "evaluationSettings": "评估设置",
+    "costMathTitle": "此成本如何计算",
+    "status": {
+      "healthy": "健康",
+      "warning": "警告",
+      "critical": "严重"
+    }
+  },
+  "overview": {
+    "subtitle": "监控所有请求的 Guardrail 表现",
+    "exportData": "导出数据",
+    "comingSoon": "即将推出",
+    "loadFailed": "数据加载失败，请重试。",
+    "noData": "该时间段无数据",
+    "performanceTitle": "Guardrail 性能",
+    "performanceHint": "点击 Guardrail 查看详情、日志和配置",
+    "totalEvaluations": "总评估数",
+    "blockedRequests": "已拦截请求",
+    "passRate": "通过率",
+    "guardrailCost": "Guardrail 成本",
+    "activeGuardrails": "活跃 Guardrail",
+    "unpricedTooltip": "{{unpriced}}：这些单位没有已知价格，未计入成本",
+    "costFormula": "Guardrail + Guardrail + … = Guardrail 成本",
+    "costNote": "每个 Guardrail 的成本等于各计数器单位数 × 成本映射中该计数器的单价。打开某个 Guardrail 可查看其按计数器的计算过程。",
+    "columns": {
+      "status": "状态",
+      "guardrail": "Guardrail",
+      "requests": "请求数"
+    }
+  },
+  "config": {
+    "versionLabel": "版本：",
+    "versionCurrent": "{{version}}（当前）",
+    "viewHistory": "查看历史",
+    "hideHistory": "隐藏历史",
+    "revert": "还原",
+    "saveAsVersion": "另存为 v{{version}}",
+    "parameters": "参数",
+    "behaviorDescription": "配置 {{name}} 的行为",
+    "actionOnFailure": "失败时的操作",
+    "guardrailType": "Guardrail 类型",
+    "categories": "类别（逗号分隔）",
+    "enabledInProduction": "在生产环境启用 Guardrail",
+    "customCodeOverride": "自定义代码覆盖",
+    "customCodeOverrideDescription": "用自定义评估代码替换内置 Guardrail",
+    "testConfiguration": "测试配置",
+    "rerunDescription": "在最近的失败日志上重新运行此 Guardrail，以验证你的更改",
+    "rerunRunning": "正在 10 个样本上运行...",
+    "rerunAction": "在失败日志上重新运行",
+    "rerunSuccess": "使用新配置后 7/10 将通过",
+    "versionChanges": {
+      "medical": "调整了医疗术语的敏感度",
+      "categories": "添加了自定义类别列表",
+      "initial": "初始配置"
+    },
+    "actions": {
+      "block": "拦截请求",
+      "flag": "标记待审核",
+      "log": "仅记录日志",
+      "fallback": "使用回退响应"
+    },
+    "providers": {
+      "bedrock": "AWS Bedrock Guardrails",
+      "google": "Google Cloud AI Safety",
+      "litellm": "LiteLLM 内置",
+      "custom": "自定义代码"
+    },
+    "types": {
+      "contentSafety": "内容安全",
+      "pii": "PII 检测",
+      "topic": "主题限制",
+      "promptInjection": "提示注入",
+      "custom": "自定义"
+    }
+  },
+  "breakdown": {
+    "regionAria": "用量与成本",
+    "title": "用量与成本",
+    "description": "提供商为此 Guardrail 上报的计费单位，以及 LiteLLM 为其定价的结果",
+    "noUnits": "该时间段未记录任何计费用量单位。",
+    "costFormula": "已定价单位 × 单价 = 成本（按计数器）",
+    "costNote": "单价来自 LiteLLM 自带的成本映射。",
+    "unitsMathTitle": "用量单位如何累加",
+    "unitsFormula": "计数器 + 计数器 + … = 用量单位",
+    "unitsNote": "用量单位是提供商为此 Guardrail 上报的计费计数器，在所有调用中累加得出。",
+    "counterCountOne": "{{counterCount}} 个计数器",
+    "counterCountOther": "{{counterCount}} 个计数器",
+    "byCounter": "按计数器",
+    "byTeam": "按团队",
+    "byKey": "按密钥",
+    "noTeam": "无团队",
+    "noKey": "无密钥"
+  },
+  "detail": {
+    "backToOverview": "返回概览",
+    "loadFailed": "Guardrail 详情加载失败。",
+    "requestsEvaluated": "已评估请求数",
+    "blockedCount": "{{blockedCount}} 次拦截",
+    "perRequest": "每请求（平均）",
+    "noData": "无数据"
+  },
+  "evaluation": {
+    "title": "评估设置",
+    "descriptionNamed": "为 {{name}} 配置 AI 评估",
+    "descriptionGeneric": "配置 AI 评估以在日志上重新运行",
+    "promptLabel": "评估提示词",
+    "defaultPrompt": "评估此 Guardrail 的判定是否正确。\n分析用户输入和 Guardrail 采取的操作，判断该操作是否恰当。\n\n请考虑：\n- 用户意图是否确实有害或违反策略？\n- Guardrail 的操作（block / flag / pass）是否恰当？\n- 这可能是误报还是漏报？\n\n返回包含置信度和理由的结构化结论。",
+    "resetToDefault": "重置为默认",
+    "promptHint": "发送给评估模型的系统提示词。输出通过 response_format 结构化。",
+    "schemaLabel": "响应 schema",
+    "schemaHint": "response_format: json_schema",
+    "modelLabel": "模型",
+    "loadingModels": "正在加载模型…",
+    "selectModel": "选择模型",
+    "signInToSeeModels": "登录后查看模型",
+    "noModels": "没有可用模型",
+    "cancel": "取消",
+    "runEvaluation": "运行评估"
+  },
+  "chart": {
+    "title": "请求结果随时间变化",
+    "noData": "该时间段无图表数据"
+  }
+}

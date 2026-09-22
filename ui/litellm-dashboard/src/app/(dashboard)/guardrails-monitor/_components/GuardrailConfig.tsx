@@ -1,11 +1,13 @@
 import { CircleCheck, CirclePlay, Code, Save, Undo2 } from "lucide-react";
+import type { ParseKeys } from "i18next";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import React, { useId, useState } from "react";
+import React, { useId, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface GuardrailConfigProps {
   guardrailName: string;
@@ -13,41 +15,62 @@ interface GuardrailConfigProps {
   provider: string;
 }
 
+type ConfigKey = ParseKeys<"guardrailsMonitor">;
+
 const versions = [
   {
     id: "v3",
-    label: "v3 (current)",
+    current: true,
     date: "2026-02-18",
     author: "admin@company.com",
-    changes: "Adjusted sensitivity for medical terms",
+    changesKey: "config.versionChanges.medical",
   },
-  { id: "v2", label: "v2", date: "2026-02-10", author: "admin@company.com", changes: "Added custom categories list" },
-  { id: "v1", label: "v1", date: "2026-01-28", author: "admin@company.com", changes: "Initial configuration" },
-];
+  {
+    id: "v2",
+    current: false,
+    date: "2026-02-10",
+    author: "admin@company.com",
+    changesKey: "config.versionChanges.categories",
+  },
+  {
+    id: "v1",
+    current: false,
+    date: "2026-01-28",
+    author: "admin@company.com",
+    changesKey: "config.versionChanges.initial",
+  },
+] as const satisfies readonly {
+  id: string;
+  current: boolean;
+  date: string;
+  author: string;
+  changesKey: ConfigKey;
+}[];
 
 const ACTION_ITEMS = [
-  { value: "block", label: "Block Request" },
-  { value: "flag", label: "Flag for Review" },
-  { value: "log", label: "Log Only" },
-  { value: "fallback", label: "Use Fallback Response" },
-];
+  { value: "block", labelKey: "config.actions.block" },
+  { value: "flag", labelKey: "config.actions.flag" },
+  { value: "log", labelKey: "config.actions.log" },
+  { value: "fallback", labelKey: "config.actions.fallback" },
+] as const satisfies readonly { value: string; labelKey: ConfigKey }[];
 
 const PROVIDER_ITEMS = [
-  { value: "bedrock", label: "AWS Bedrock Guardrails" },
-  { value: "google", label: "Google Cloud AI Safety" },
-  { value: "litellm", label: "LiteLLM Built-in" },
-  { value: "custom", label: "Custom Code" },
-];
+  { value: "bedrock", labelKey: "config.providers.bedrock" },
+  { value: "google", labelKey: "config.providers.google" },
+  { value: "litellm", labelKey: "config.providers.litellm" },
+  { value: "custom", labelKey: "config.providers.custom" },
+] as const satisfies readonly { value: string; labelKey: ConfigKey }[];
 
 const GUARDRAIL_TYPE_ITEMS = [
-  { value: "Content Safety", label: "Content Safety" },
-  { value: "PII", label: "PII Detection" },
-  { value: "Topic", label: "Topic Restriction" },
-  { value: "prompt_injection", label: "Prompt Injection" },
-  { value: "custom", label: "Custom" },
-];
+  { value: "Content Safety", labelKey: "config.types.contentSafety" },
+  { value: "PII", labelKey: "config.types.pii" },
+  { value: "Topic", labelKey: "config.types.topic" },
+  { value: "prompt_injection", labelKey: "config.types.promptInjection" },
+  { value: "custom", labelKey: "config.types.custom" },
+] as const satisfies readonly { value: string; labelKey: ConfigKey }[];
 
 export function GuardrailConfig({ guardrailName, guardrailType, provider }: GuardrailConfigProps) {
+  const { t } = useTranslation("guardrailsMonitor");
   const [action, setAction] = useState("block");
   const [enabled, setEnabled] = useState(true);
   const [customCode, setCustomCode] = useState("");
@@ -56,6 +79,24 @@ export function GuardrailConfig({ guardrailName, guardrailType, provider }: Guar
   const [version, setVersion] = useState("v3");
   const [showVersionHistory, setShowVersionHistory] = useState(false);
   const enabledToggleId = useId();
+
+  const versionItems = useMemo(
+    () =>
+      versions.map((v) => ({
+        value: v.id,
+        label: v.current ? t("config.versionCurrent", { version: v.id }) : v.id,
+      })),
+    [t],
+  );
+  const actionItems = useMemo(() => ACTION_ITEMS.map((item) => ({ value: item.value, label: t(item.labelKey) })), [t]);
+  const providerItems = useMemo(
+    () => PROVIDER_ITEMS.map((item) => ({ value: item.value, label: t(item.labelKey) })),
+    [t],
+  );
+  const guardrailTypeItems = useMemo(
+    () => GUARDRAIL_TYPE_ITEMS.map((item) => ({ value: item.value, label: t(item.labelKey) })),
+    [t],
+  );
 
   const handleRerun = () => {
     setRerunStatus("running");
@@ -71,9 +112,9 @@ export function GuardrailConfig({ guardrailName, guardrailType, provider }: Guar
       <div className="bg-card border border-border rounded-lg p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="text-sm font-medium text-foreground">Version:</span>
+            <span className="text-sm font-medium text-foreground">{t("config.versionLabel")}</span>
             <Select
-              items={versions.map((v) => ({ value: v.id, label: v.label }))}
+              items={versionItems}
               value={version}
               onValueChange={(value: string | null) => value && setVersion(value)}
             >
@@ -81,25 +122,25 @@ export function GuardrailConfig({ guardrailName, guardrailType, provider }: Guar
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {versions.map((v) => (
-                  <SelectItem key={v.id} value={v.id}>
+                {versionItems.map((v) => (
+                  <SelectItem key={v.value} value={v.value}>
                     {v.label}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
             <Button variant="link" size="sm" onClick={() => setShowVersionHistory(!showVersionHistory)}>
-              {showVersionHistory ? "Hide history" : "View history"}
+              {showVersionHistory ? t("config.hideHistory") : t("config.viewHistory")}
             </Button>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="outline">
               <Undo2 />
-              Revert
+              {t("config.revert")}
             </Button>
             <Button>
               <Save />
-              Save as v{parseInt(version.replace("v", ""), 10) + 1}
+              {t("config.saveAsVersion", { version: parseInt(version.replace("v", ""), 10) + 1 })}
             </Button>
           </div>
         </div>
@@ -119,7 +160,7 @@ export function GuardrailConfig({ guardrailName, guardrailType, provider }: Guar
                   >
                     {v.id}
                   </span>
-                  <span className="text-foreground">{v.changes}</span>
+                  <span className="text-foreground">{t(v.changesKey)}</span>
                 </div>
                 <div className="flex items-center gap-3 text-xs text-muted-foreground">
                   <span>{v.author}</span>
@@ -133,14 +174,14 @@ export function GuardrailConfig({ guardrailName, guardrailType, provider }: Guar
 
       {/* Parameters */}
       <div className="bg-card border border-border rounded-lg p-6">
-        <h3 className="text-base font-semibold text-foreground mb-1">Parameters</h3>
-        <p className="text-xs text-muted-foreground mb-5">Configure {guardrailName} behavior</p>
+        <h3 className="text-base font-semibold text-foreground mb-1">{t("config.parameters")}</h3>
+        <p className="text-xs text-muted-foreground mb-5">{t("config.behaviorDescription", { name: guardrailName })}</p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1.5">Action on Failure</label>
+            <label className="block text-sm font-medium text-foreground mb-1.5">{t("config.actionOnFailure")}</label>
             <Select
-              items={ACTION_ITEMS}
+              items={actionItems}
               value={action}
               onValueChange={(value: string | null) => value && setAction(value)}
             >
@@ -148,7 +189,7 @@ export function GuardrailConfig({ guardrailName, guardrailType, provider }: Guar
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {ACTION_ITEMS.map((item) => (
+                {actionItems.map((item) => (
                   <SelectItem key={item.value} value={item.value}>
                     {item.label}
                   </SelectItem>
@@ -158,13 +199,13 @@ export function GuardrailConfig({ guardrailName, guardrailType, provider }: Guar
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1.5">Provider</label>
-            <Select items={PROVIDER_ITEMS} defaultValue={provider}>
+            <label className="block text-sm font-medium text-foreground mb-1.5">{t("common.provider")}</label>
+            <Select items={providerItems} defaultValue={provider}>
               <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {PROVIDER_ITEMS.map((item) => (
+                {providerItems.map((item) => (
                   <SelectItem key={item.value} value={item.value}>
                     {item.label}
                   </SelectItem>
@@ -174,13 +215,13 @@ export function GuardrailConfig({ guardrailName, guardrailType, provider }: Guar
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1.5">Guardrail Type</label>
-            <Select items={GUARDRAIL_TYPE_ITEMS} defaultValue={guardrailType}>
+            <label className="block text-sm font-medium text-foreground mb-1.5">{t("config.guardrailType")}</label>
+            <Select items={guardrailTypeItems} defaultValue={guardrailType}>
               <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {GUARDRAIL_TYPE_ITEMS.map((item) => (
+                {guardrailTypeItems.map((item) => (
                   <SelectItem key={item.value} value={item.value}>
                     {item.label}
                   </SelectItem>
@@ -190,14 +231,14 @@ export function GuardrailConfig({ guardrailName, guardrailType, provider }: Guar
           </div>
 
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-foreground mb-1.5">Categories (comma-separated)</label>
+            <label className="block text-sm font-medium text-foreground mb-1.5">{t("config.categories")}</label>
             <Input defaultValue="violence, hate_speech, sexual_content, self_harm, illegal_activity" />
           </div>
 
           <div className="md:col-span-2 flex items-center gap-3">
             <Switch id={enabledToggleId} checked={enabled} onCheckedChange={setEnabled} />
             <Label htmlFor={enabledToggleId} className="font-normal text-foreground">
-              Guardrail enabled in production
+              {t("config.enabledInProduction")}
             </Label>
           </div>
         </div>
@@ -209,13 +250,15 @@ export function GuardrailConfig({ guardrailName, guardrailType, provider }: Guar
           <div>
             <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
               <Code className="size-4 text-muted-foreground" />
-              Custom Code Override
+              {t("config.customCodeOverride")}
             </h3>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Replace the built-in guardrail with custom evaluation code
-            </p>
+            <p className="text-xs text-muted-foreground mt-0.5">{t("config.customCodeOverrideDescription")}</p>
           </div>
-          <Switch aria-label="Custom Code Override" checked={useCustomCode} onCheckedChange={setUseCustomCode} />
+          <Switch
+            aria-label={t("config.customCodeOverride")}
+            checked={useCustomCode}
+            onCheckedChange={setUseCustomCode}
+          />
         </div>
 
         {useCustomCode && (
@@ -236,20 +279,18 @@ export function GuardrailConfig({ guardrailName, guardrailType, provider }: Guar
 
       {/* Re-run on Failing Logs */}
       <div className="bg-card border border-border rounded-lg p-6">
-        <h3 className="text-base font-semibold text-foreground mb-1">Test Configuration</h3>
-        <p className="text-xs text-muted-foreground mb-4">
-          Re-run this guardrail on recent failing logs to validate your changes
-        </p>
+        <h3 className="text-base font-semibold text-foreground mb-1">{t("config.testConfiguration")}</h3>
+        <p className="text-xs text-muted-foreground mb-4">{t("config.rerunDescription")}</p>
 
         <div className="flex items-center gap-3">
           <Button disabled={rerunStatus === "running"} aria-busy={rerunStatus === "running"} onClick={handleRerun}>
             {rerunStatus === "running" ? null : <CirclePlay />}
-            {rerunStatus === "running" ? "Running on 10 samples..." : "Re-run on failing logs"}
+            {rerunStatus === "running" ? t("config.rerunRunning") : t("config.rerunAction")}
           </Button>
 
           {rerunStatus === "success" && (
             <span className="text-sm text-success flex items-center gap-2">
-              <CircleCheck className="size-4" /> 7/10 would now pass with new config
+              <CircleCheck className="size-4" /> {t("config.rerunSuccess")}
             </span>
           )}
 
