@@ -1,3 +1,4 @@
+import i18n from "@/i18n/bootstrapI18n";
 import { toast } from "@/lib/toast";
 
 export function updateExistingKeys<Source extends object>(target: Source, source: object): Source {
@@ -65,7 +66,7 @@ export const getSpendString = (value: number | null | undefined, decimals: numbe
 
 export const copyToClipboard = async (
   text: string | null | undefined,
-  messageText: string = "Copied to clipboard",
+  messageText: string = i18n.t("copyToClipboard.success"),
 ): Promise<boolean> => {
   if (!text) return false;
 
@@ -112,7 +113,7 @@ const fallbackCopyToClipboard = (text: string, messageText: string): boolean => 
       throw new Error("execCommand failed");
     }
   } catch (err) {
-    toast.fromError("Failed to copy to clipboard");
+    toast.fromError(i18n.t("copyToClipboard.failure"));
     console.error("Failed to copy: ", err);
     return false;
   }

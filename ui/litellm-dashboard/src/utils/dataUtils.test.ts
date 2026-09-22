@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 
-import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
+import { describe, it, expect, beforeAll, beforeEach, vi, afterEach } from "vitest";
+import i18n from "@/i18n/bootstrapI18n";
 import { copyToClipboard, formatNumberWithCommas, getSpendString, updateExistingKeys } from "./dataUtils";
 
 // Import the mocked module
@@ -8,6 +9,10 @@ import { toast } from "@/lib/toast";
 const mockToast = vi.mocked(toast);
 
 describe("dataUtils", () => {
+  beforeAll(async () => {
+    await i18n.changeLanguage("en");
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
     // Reset document.execCommand mock
@@ -303,6 +308,38 @@ describe("dataUtils", () => {
 
         expect(document.execCommand).toHaveBeenCalledWith("copy");
         expect(result).toBe(true);
+      });
+    });
+
+    describe("localized copy", () => {
+      beforeEach(async () => {
+        await i18n.changeLanguage("zh");
+      });
+
+      afterEach(async () => {
+        await i18n.changeLanguage("en");
+      });
+
+      it("shows the Chinese success message and not the English one", async () => {
+        Object.assign(navigator, {
+          clipboard: { writeText: vi.fn().mockResolvedValue(undefined) },
+        });
+
+        await copyToClipboard("test text");
+
+        expect(mockToast.success).toHaveBeenCalledWith("已复制到剪贴板");
+        expect(mockToast.success).not.toHaveBeenCalledWith("Copied to clipboard");
+      });
+
+      it("shows the Chinese failure message and not the English one", async () => {
+        Object.assign(navigator, { clipboard: undefined });
+        document.execCommand = vi.fn().mockReturnValue(false);
+
+        const result = await copyToClipboard("test text");
+
+        expect(mockToast.fromError).toHaveBeenCalledWith("复制到剪贴板失败");
+        expect(mockToast.fromError).not.toHaveBeenCalledWith("Failed to copy to clipboard");
+        expect(result).toBe(false);
       });
     });
   });

@@ -425,5 +425,22 @@
     "triggerLabel": "账户菜单 — {{role}} — 已登录为 {{user}}",
     "unknownRole": "未知角色",
     "unknown": "未知"
+  },
+  "toastTitles": {
+    "error": "错误",
+    "serverError": "服务器错误",
+    "requestError": "请求错误",
+    "authenticationError": "认证错误",
+    "accessDenied": "访问被拒绝",
+    "notFound": "未找到",
+    "validationError": "验证错误",
+    "alreadyExists": "已存在",
+    "rateLimitExceeded": "速率限制已超出",
+    "budgetExceeded": "超出预算",
+    "serviceUnavailable": "服务不可用"
+  },
+  "copyToClipboard": {
+    "success": "已复制到剪贴板",
+    "failure": "复制到剪贴板失败"
   }
 }

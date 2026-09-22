@@ -425,5 +425,22 @@
     "triggerLabel": "Account menu — {{role}} — signed in as {{user}}",
     "unknownRole": "Unknown role",
     "unknown": "unknown"
+  },
+  "toastTitles": {
+    "error": "Error",
+    "serverError": "Server Error",
+    "requestError": "Request Error",
+    "authenticationError": "Authentication Error",
+    "accessDenied": "Access Denied",
+    "notFound": "Not Found",
+    "validationError": "Validation Error",
+    "alreadyExists": "Already Exists",
+    "rateLimitExceeded": "Rate Limit Exceeded",
+    "budgetExceeded": "Budget Exceeded",
+    "serviceUnavailable": "Service Unavailable"
+  },
+  "copyToClipboard": {
+    "success": "Copied to clipboard",
+    "failure": "Failed to copy to clipboard"
   }
 }

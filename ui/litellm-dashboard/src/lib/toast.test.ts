@@ -1,4 +1,5 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import i18n from "@/i18n/bootstrapI18n";
 import { ApiError } from "@/lib/http/client";
 
 const sonner = vi.hoisted(() => ({
@@ -17,6 +18,10 @@ import { toast } from "./toast";
 const lastCall = (fn: ReturnType<typeof vi.fn>) => fn.mock.calls.at(-1) as [unknown, Record<string, unknown>];
 
 describe("toast", () => {
+  beforeAll(async () => {
+    await i18n.changeLanguage("en");
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -173,6 +178,76 @@ describe("toast", () => {
     it("lets a caller override the duration", () => {
       toast.fromError(new ApiError("x", 500, "x"), { durationMs: 10000 });
       expect(lastCall(sonner.error)[1].duration).toBe(10000);
+    });
+  });
+
+  describe("fromError localizes the title", () => {
+    beforeEach(async () => {
+      await i18n.changeLanguage("zh");
+    });
+
+    afterEach(async () => {
+      await i18n.changeLanguage("en");
+    });
+
+    it.each([
+      [400, "请求错误", "Request Error", sonner.error],
+      [401, "认证错误", "Authentication Error", sonner.error],
+      [403, "访问被拒绝", "Access Denied", sonner.error],
+      [404, "未找到", "Not Found", sonner.error],
+      [409, "已存在", "Already Exists", sonner.error],
+      [422, "验证错误", "Validation Error", sonner.error],
+      [429, "速率限制已超出", "Rate Limit Exceeded", sonner.warning],
+      [500, "服务器错误", "Server Error", sonner.error],
+      [503, "服务不可用", "Service Unavailable", sonner.error],
+      [418, "请求错误", "Request Error", sonner.error],
+    ] as const)("status %i renders %s and not %s", (status, zhTitle, enTitle, fn) => {
+      toast.fromError(new ApiError("boom", status, "boom"));
+      expect(fn).toHaveBeenCalledWith(zhTitle, { description: "boom", duration: 6000 });
+      expect(fn).not.toHaveBeenCalledWith(enTitle, { description: "boom", duration: 6000 });
+    });
+
+    it.each([
+      ["budget_exceeded", "超出预算", "Budget Exceeded", sonner.warning],
+      ["no_db_connection", "服务不可用", "Service Unavailable", sonner.error],
+      ["expired_key", "认证错误", "Authentication Error", sonner.error],
+      ["token_not_found_in_db", "认证错误", "Authentication Error", sonner.error],
+      ["team_member_permission_error", "访问被拒绝", "Access Denied", sonner.error],
+      ["not_found_error", "未找到", "Not Found", sonner.error],
+      ["validation_error", "验证错误", "Validation Error", sonner.error],
+      ["bad_request_error", "请求错误", "Request Error", sonner.error],
+      ["team_member_already_in_team", "已存在", "Already Exists", sonner.error],
+    ] as const)("proxy type %s renders %s and not %s", (type, zhTitle, enTitle, fn) => {
+      toast.fromError({ message: "no", type, code: "400" });
+      expect(fn).toHaveBeenCalledWith(zhTitle, { description: "no", duration: 6000 });
+      expect(fn).not.toHaveBeenCalledWith(enTitle, { description: "no", duration: 6000 });
+    });
+
+    it("renders the access-denied suffix in Chinese", () => {
+      toast.fromError({ message: "no", type: "team_model_access_denied", code: "401" });
+      expect(sonner.error).toHaveBeenCalledWith("访问被拒绝", { description: "no", duration: 6000 });
+      expect(sonner.error).not.toHaveBeenCalledWith("Access Denied", { description: "no", duration: 6000 });
+    });
+
+    it("renders the generic title in Chinese without a status or proxy type", () => {
+      toast.fromError("Please select at least one model");
+      expect(sonner.error).toHaveBeenCalledWith("错误", {
+        description: "Please select at least one model",
+        duration: 6000,
+      });
+      expect(sonner.error).not.toHaveBeenCalledWith("Error", {
+        description: "Please select at least one model",
+        duration: 6000,
+      });
+    });
+
+    it("resolves the title in the language active when the toast is raised", async () => {
+      toast.fromError(new ApiError("boom", 500, "boom"));
+      expect(sonner.error).toHaveBeenLastCalledWith("服务器错误", { description: "boom", duration: 6000 });
+
+      await i18n.changeLanguage("en");
+      toast.fromError(new ApiError("boom", 500, "boom"));
+      expect(sonner.error).toHaveBeenLastCalledWith("Server Error", { description: "boom", duration: 6000 });
     });
   });
 });

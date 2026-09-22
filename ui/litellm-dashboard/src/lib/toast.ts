@@ -1,6 +1,12 @@
+import type { ParseKeys } from "i18next";
 import type { ReactNode } from "react";
 import { toast as sonner } from "sonner";
+import i18n from "@/i18n/bootstrapI18n";
 import { ApiError, deriveErrorMessage, unwrapProxyErrorMessage } from "@/lib/http/client";
+
+// fromError has 253 importers, many of them non-React helpers, so it resolves the title from the
+// i18n instance at call time instead of taking a `t`. Toasts are created in event handlers and
+// catch blocks, never during render, so a language switch applies to the next toast.
 
 export type ToastKind = "success" | "info" | "warning" | "error";
 
@@ -15,6 +21,11 @@ type ErrorFacts = {
   readonly text: string;
 };
 
+type ErrorTitle = {
+  readonly key: ParseKeys<"common">;
+  readonly warning: boolean;
+};
+
 const DEFAULT_DURATION_MS: Readonly<Record<ToastKind, number>> = {
   success: 4000,
   info: 4000,
@@ -22,30 +33,40 @@ const DEFAULT_DURATION_MS: Readonly<Record<ToastKind, number>> = {
   error: 6000,
 };
 
-const PROXY_TYPE_TITLES: Readonly<Record<string, string>> = {
-  budget_exceeded: "Budget Exceeded",
-  no_db_connection: "Service Unavailable",
-  expired_key: "Authentication Error",
-  token_not_found_in_db: "Authentication Error",
-  team_member_permission_error: "Access Denied",
-  not_found_error: "Not Found",
-  validation_error: "Validation Error",
-  bad_request_error: "Request Error",
-  team_member_already_in_team: "Already Exists",
+const BUDGET_EXCEEDED: ErrorTitle = { key: "toastTitles.budgetExceeded", warning: true };
+const RATE_LIMIT_EXCEEDED: ErrorTitle = { key: "toastTitles.rateLimitExceeded", warning: true };
+const SERVICE_UNAVAILABLE: ErrorTitle = { key: "toastTitles.serviceUnavailable", warning: false };
+const AUTHENTICATION_ERROR: ErrorTitle = { key: "toastTitles.authenticationError", warning: false };
+const ACCESS_DENIED: ErrorTitle = { key: "toastTitles.accessDenied", warning: false };
+const NOT_FOUND: ErrorTitle = { key: "toastTitles.notFound", warning: false };
+const VALIDATION_ERROR: ErrorTitle = { key: "toastTitles.validationError", warning: false };
+const REQUEST_ERROR: ErrorTitle = { key: "toastTitles.requestError", warning: false };
+const ALREADY_EXISTS: ErrorTitle = { key: "toastTitles.alreadyExists", warning: false };
+const SERVER_ERROR: ErrorTitle = { key: "toastTitles.serverError", warning: false };
+const GENERIC_ERROR: ErrorTitle = { key: "toastTitles.error", warning: false };
+
+const PROXY_TYPE_TITLES: Readonly<Record<string, ErrorTitle>> = {
+  budget_exceeded: BUDGET_EXCEEDED,
+  no_db_connection: SERVICE_UNAVAILABLE,
+  expired_key: AUTHENTICATION_ERROR,
+  token_not_found_in_db: AUTHENTICATION_ERROR,
+  team_member_permission_error: ACCESS_DENIED,
+  not_found_error: NOT_FOUND,
+  validation_error: VALIDATION_ERROR,
+  bad_request_error: REQUEST_ERROR,
+  team_member_already_in_team: ALREADY_EXISTS,
 };
 
-const STATUS_TITLES: Readonly<Record<number, string>> = {
-  400: "Request Error",
-  401: "Authentication Error",
-  403: "Access Denied",
-  404: "Not Found",
-  409: "Already Exists",
-  422: "Validation Error",
-  429: "Rate Limit Exceeded",
-  503: "Service Unavailable",
+const STATUS_TITLES: Readonly<Record<number, ErrorTitle>> = {
+  400: REQUEST_ERROR,
+  401: AUTHENTICATION_ERROR,
+  403: ACCESS_DENIED,
+  404: NOT_FOUND,
+  409: ALREADY_EXISTS,
+  422: VALIDATION_ERROR,
+  429: RATE_LIMIT_EXCEEDED,
+  503: SERVICE_UNAVAILABLE,
 };
-
-const WARNING_TITLES: ReadonlySet<string> = new Set(["Budget Exceeded", "Rate Limit Exceeded"]);
 
 const asRecord = (value: unknown): Record<string, unknown> | undefined =>
   value !== null && typeof value === "object" ? (value as Record<string, unknown>) : undefined;
@@ -110,19 +131,19 @@ const describeError = (input: unknown): ErrorFacts => {
   };
 };
 
-const titleForStatus = (status: number): string => {
+const titleForStatus = (status: number): ErrorTitle => {
   const known = STATUS_TITLES[status];
   if (known !== undefined) return known;
-  if (status >= 500) return "Server Error";
-  if (status >= 400) return "Request Error";
-  return "Error";
+  if (status >= 500) return SERVER_ERROR;
+  if (status >= 400) return REQUEST_ERROR;
+  return GENERIC_ERROR;
 };
 
-const titleFor = ({ status, proxyType }: ErrorFacts): string => {
-  if (proxyType?.endsWith("_access_denied")) return "Access Denied";
+const titleFor = ({ status, proxyType }: ErrorFacts): ErrorTitle => {
+  if (proxyType?.endsWith("_access_denied")) return ACCESS_DENIED;
   const byType = proxyType === undefined ? undefined : PROXY_TYPE_TITLES[proxyType];
   if (byType !== undefined) return byType;
-  return status === undefined ? "Error" : titleForStatus(status);
+  return status === undefined ? GENERIC_ERROR : titleForStatus(status);
 };
 
 const show = (kind: ToastKind, message: ReactNode, options?: ToastOptions): void => {
@@ -140,7 +161,7 @@ export const toast = {
   fromError: (input: unknown, options?: ToastOptions): void => {
     const facts = describeError(input);
     const title = titleFor(facts);
-    show(WARNING_TITLES.has(title) ? "warning" : "error", title, { description: facts.text, ...options });
+    show(title.warning ? "warning" : "error", i18n.t(title.key), { description: facts.text, ...options });
   },
   dismiss: (): void => {
     sonner.dismiss();
