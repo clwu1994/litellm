@@ -1,6 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
 import type { MountedFieldControlProps } from "@/components/common_components/MountedFormField";
+import i18n from "@/i18n/bootstrapI18n";
 import { tagsControl } from "./mcpFieldRules";
+
+const en = i18n.getFixedT("en", "mcpServers");
+const zh = i18n.getFixedT("zh", "mcpServers");
 
 const controlWith = (value: unknown, onChange = vi.fn()): MountedFieldControlProps =>
   ({ id: "field", name: "field", value, onChange, onBlur: vi.fn() }) as unknown as MountedFieldControlProps;
@@ -11,39 +15,47 @@ const controlWith = (value: unknown, onChange = vi.fn()): MountedFieldControlPro
 // comma inside one and a deliberately repeated flag both have to survive a round trip.
 describe("tagsControl", () => {
   it("keeps a stored argument that contains a comma as one argument", () => {
-    expect(tagsControl(controlWith(["--filter=a,b", "--verbose"])).value).toStrictEqual(["--filter=a,b", "--verbose"]);
+    expect(tagsControl(controlWith(["--filter=a,b", "--verbose"]), en).value).toStrictEqual([
+      "--filter=a,b",
+      "--verbose",
+    ]);
   });
 
   it("keeps a repeated stdio flag rather than collapsing it to one", () => {
-    expect(tagsControl(controlWith(["-v", "-v"])).value).toStrictEqual(["-v", "-v"]);
+    expect(tagsControl(controlWith(["-v", "-v"]), en).value).toStrictEqual(["-v", "-v"]);
   });
 
   it("offers each repeated tag once, since the dropdown keys its entries by value", () => {
-    expect(tagsControl(controlWith(["-v", "-v"])).options).toStrictEqual([{ label: "-v", value: "-v" }]);
+    expect(tagsControl(controlWith(["-v", "-v"]), en).options).toStrictEqual([{ label: "-v", value: "-v" }]);
   });
 
   it("stores the edited tags exactly as the input committed them", () => {
     const onChange = vi.fn();
-    tagsControl(controlWith(["npx"], onChange)).onValueChange(["npx", "--header=X-Trace: on"]);
+    tagsControl(controlWith(["npx"], onChange), en).onValueChange(["npx", "--header=X-Trace: on"]);
 
     expect(onChange).toHaveBeenCalledWith(["npx", "--header=X-Trace: on"]);
   });
 
   it("renders a stored list unchanged", () => {
-    expect(tagsControl(controlWith(["run", "--flag a"])).value).toStrictEqual(["run", "--flag a"]);
+    expect(tagsControl(controlWith(["run", "--flag a"]), en).value).toStrictEqual(["run", "--flag a"]);
   });
 
   it("clears to an empty list rather than a blank tag when the field is emptied", () => {
-    expect(tagsControl(controlWith("")).value).toStrictEqual([]);
-    expect(tagsControl(controlWith([""])).value).toStrictEqual([]);
+    expect(tagsControl(controlWith(""), en).value).toStrictEqual([]);
+    expect(tagsControl(controlWith([""]), en).value).toStrictEqual([]);
   });
 
   it("ignores a stored value that is neither a string nor a list", () => {
-    expect(tagsControl(controlWith(null)).value).toStrictEqual([]);
-    expect(tagsControl(controlWith(42)).value).toStrictEqual([]);
+    expect(tagsControl(controlWith(null), en).value).toStrictEqual([]);
+    expect(tagsControl(controlWith(42), en).value).toStrictEqual([]);
   });
 
   it("wraps a bare stored string into the single tag the antd field would have shown", () => {
-    expect(tagsControl(controlWith("Authorization")).value).toStrictEqual(["Authorization"]);
+    expect(tagsControl(controlWith("Authorization"), en).value).toStrictEqual(["Authorization"]);
+  });
+
+  it("renders the empty-state hint from the active locale", () => {
+    expect(tagsControl(controlWith([]), en).emptyText).toBe("Type to add");
+    expect(tagsControl(controlWith([]), zh).emptyText).toBe("输入以添加");
   });
 });

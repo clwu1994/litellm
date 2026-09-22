@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { parseConnectorConfig } from "./importConnectorConfig";
+import i18n from "@/i18n/bootstrapI18n";
+import { parseConnectorConfig as parseConnectorConfigWithT } from "./importConnectorConfig";
+
+const en = i18n.getFixedT("en", "mcpServers");
+const zh = i18n.getFixedT("zh", "mcpServers");
+
+// The parser takes the translation function so it never reaches for the global singleton. This
+// wrapper keeps every existing assertion on the English copy; the last case pins the Chinese.
+const parseConnectorConfig = (text: string) => parseConnectorConfigWithT(text, en);
 
 describe("parseConnectorConfig", () => {
   it("accepts a Claude Desktop mcpServers mapping", () => {
@@ -70,5 +78,21 @@ describe("parseConnectorConfig", () => {
     const result = parseConnectorConfig(JSON.stringify({ mcpServers: [] }));
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.error).toContain("must be an object");
+  });
+
+  it("renders every parse error in Chinese through the passed translation function", () => {
+    const errorFor = (text: string): string => {
+      const result = parseConnectorConfigWithT(text, zh);
+      expect(result.ok).toBe(false);
+      return result.ok ? "" : result.error;
+    };
+
+    expect(errorFor("   ")).toBe("导入前请先粘贴连接器 JSON。");
+    expect(errorFor("{ not json")).toBe("JSON 无效。请检查缺失的引号、逗号或括号。");
+    expect(errorFor(JSON.stringify({ servers: {} }))).toBe("需要一个包含 mcpServers 或 mcp_servers 键的 JSON 对象。");
+    expect(errorFor(JSON.stringify({ mcpServers: [] }))).toBe("mcpServers 必须是连接器名称到定义的映射对象。");
+    expect(errorFor(JSON.stringify({ mcpServers: {} }))).toBe("mcpServers 不包含任何连接器。");
+    expect(errorFor(JSON.stringify({ mcp_servers: { a: 1 } }))).toBe("mcp_servers 必须是连接器定义数组。");
+    expect(errorFor(JSON.stringify({ mcp_servers: [] }))).toBe("mcp_servers 不包含任何连接器。");
   });
 });

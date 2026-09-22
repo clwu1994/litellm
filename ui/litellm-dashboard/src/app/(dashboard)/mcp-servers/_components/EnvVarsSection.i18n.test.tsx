@@ -34,7 +34,7 @@ describe("EnvVarsSection Chinese copy", () => {
     await expectTooltipPair(
       user,
       "变量",
-      "定义可在 Static Headers 或认证中使用",
+      "定义可在静态请求头或认证中使用",
       "Define variables you can interpolate in Static Headers or Authentication using",
     );
   });
@@ -68,7 +68,7 @@ describe("EnvVarsSection Chinese copy", () => {
   it("renders the Chinese reference hint and example and hides the English originals", () => {
     renderInMcpForm(<EnvVarsSection />);
 
-    expect(screen.getByText("在 Static Headers 或认证中按以下方式引用这些变量", { exact: false })).toBeInTheDocument();
+    expect(screen.getByText("在静态请求头或认证中按以下方式引用这些变量", { exact: false })).toBeInTheDocument();
     expect(screen.getByText("例如：", { exact: false })).toBeInTheDocument();
     expect(
       screen.queryByText("Reference these in Static Headers or Authentication as", { exact: false }),

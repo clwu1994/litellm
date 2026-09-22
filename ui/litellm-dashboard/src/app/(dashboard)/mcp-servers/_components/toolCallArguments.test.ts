@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { InputSchema, InputSchemaProperty } from "@/components/mcp_tools/types";
+import i18n from "@/i18n/bootstrapI18n";
 import {
   ToolArgumentField,
   argumentsFormKey,
@@ -9,9 +10,19 @@ import {
   initialArgumentValues,
   resolveSchemaProperty,
   toolArgumentFields,
-  toolArgumentsResolver,
-  validateToolArgument,
+  toolArgumentsResolver as toolArgumentsResolverWithT,
+  validateToolArgument as validateToolArgumentWithT,
 } from "./toolCallArguments";
+
+const en = i18n.getFixedT("en", "mcpServers");
+const zh = i18n.getFixedT("zh", "mcpServers");
+
+// The resolver and validator take the translation function explicitly so they never reach for the
+// global singleton. These wrappers pin the English output, which is what the rest of this file
+// asserts; the last describe block pins the Chinese output through the same functions.
+const validateToolArgument = (field: ToolArgumentField, value: unknown) => validateToolArgumentWithT(field, value, en);
+
+const toolArgumentsResolver = (fields: readonly ToolArgumentField[]) => toolArgumentsResolverWithT(fields, en);
 
 const field = (
   key: string,
@@ -446,6 +457,33 @@ describe("union-typed properties", () => {
       ]);
 
       expect(payload).toBe(JSON.stringify({ tags: [""] }, null, 2));
+    });
+  });
+});
+
+describe("tool argument validation in Chinese", () => {
+  it("renders the required, enum, and JSON messages from the passed translation function", () => {
+    expect(validateToolArgumentWithT(field("name", "string", true), "   ", zh)).toBe("请输入 name");
+    expect(validateToolArgumentWithT(field("mode", "string", false, { enum: ["a"] }), "b", zh)).toBe(
+      "请选择有效的 mode",
+    );
+    expect(validateToolArgumentWithT(field("o", "object"), "{oops", zh)).toBe("JSON 无效");
+    expect(validateToolArgumentWithT(field("o", "object"), "[1,2]", zh)).toBe("请输入 JSON 对象");
+    expect(validateToolArgumentWithT(field("a", "array"), '{"k":1}', zh)).toBe("请输入 JSON 数组");
+  });
+
+  it("resolves the resolver's error messages in Chinese", async () => {
+    const fields = [field("a", "string", true), field("o", "object")];
+    const result = await toolArgumentsResolverWithT(fields, zh)({ args: ["", "{oops"] }, undefined, {
+      fields: {},
+      shouldUseNativeValidation: false,
+    });
+
+    expect(result.errors).toEqual({
+      args: {
+        0: { type: "validate", message: "请输入 a" },
+        1: { type: "validate", message: "JSON 无效" },
+      },
     });
   });
 });

@@ -1,11 +1,21 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { getCurlCommand, runSemanticFilterTest } from "./semanticFilterTestUtils";
+import i18n from "@/i18n/bootstrapI18n";
+import { getCurlCommand, runSemanticFilterTest as runSemanticFilterTestWithT } from "./semanticFilterTestUtils";
 import { testMCPSemanticFilter } from "@/components/networking";
 import { toast } from "@/lib/toast";
 
 vi.mock("@/components/networking", () => ({
   testMCPSemanticFilter: vi.fn(),
 }));
+
+const en = i18n.getFixedT("en", "mcpServers");
+const zh = i18n.getFixedT("zh", "mcpServers");
+
+// The helper takes the translation function so it never reaches for the global singleton. This
+// wrapper keeps every existing assertion on the English copy; the last block pins the Chinese.
+const runSemanticFilterTest = (
+  args: Omit<Parameters<typeof runSemanticFilterTestWithT>[0], "t">,
+): ReturnType<typeof runSemanticFilterTestWithT> => runSemanticFilterTestWithT({ ...args, t: en });
 
 describe("getCurlCommand", () => {
   it("should include the model name in the curl command", () => {
@@ -141,5 +151,49 @@ describe("runSemanticFilterTest", () => {
     await runSemanticFilterTest(baseArgs);
 
     expect(mockSetTestError).toHaveBeenLastCalledWith("Failed to test semantic filter");
+  });
+});
+
+describe("runSemanticFilterTest Chinese copy", () => {
+  const mockSetIsTesting = vi.fn();
+  const mockSetTestResult = vi.fn();
+  const mockSetTestError = vi.fn();
+  const baseArgs = {
+    accessToken: "test-token",
+    testModel: "gpt-4o",
+    testQuery: "find relevant files",
+    setIsTesting: mockSetIsTesting,
+    setTestResult: mockSetTestResult,
+    setTestError: mockSetTestError,
+    t: zh,
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("should toast the Chinese validation, empty, success and failure copy", async () => {
+    await runSemanticFilterTestWithT({ ...baseArgs, testQuery: "" });
+    expect(toast.error).toHaveBeenCalledWith("请输入查询并选择模型");
+    expect(toast.error).not.toHaveBeenCalledWith("Please enter a query and select a model");
+
+    vi.mocked(testMCPSemanticFilter).mockResolvedValueOnce({ data: {}, headers: { filter: null, tools: null } });
+    await runSemanticFilterTestWithT(baseArgs);
+    expect(toast.warning).toHaveBeenCalledWith("语义筛选未启用，或没有工具被筛除");
+    expect(toast.warning).not.toHaveBeenCalledWith("Semantic filter is not enabled or no tools were filtered");
+
+    vi.mocked(testMCPSemanticFilter).mockResolvedValueOnce({
+      data: {},
+      headers: { filter: "10->3", tools: "wiki,github,slack" },
+    });
+    await runSemanticFilterTestWithT(baseArgs);
+    expect(toast.success).toHaveBeenCalledWith("语义筛选测试已成功完成");
+    expect(toast.success).not.toHaveBeenCalledWith("Semantic filter test completed successfully");
+
+    vi.mocked(testMCPSemanticFilter).mockRejectedValueOnce(new Error(""));
+    await runSemanticFilterTestWithT(baseArgs);
+    expect(toast.error).toHaveBeenCalledWith("测试语义筛选失败");
+    expect(mockSetTestError).toHaveBeenLastCalledWith("测试语义筛选失败");
+    expect(toast.error).not.toHaveBeenCalledWith("Failed to test semantic filter");
   });
 });

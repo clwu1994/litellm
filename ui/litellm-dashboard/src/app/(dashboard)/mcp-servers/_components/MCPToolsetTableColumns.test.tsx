@@ -3,7 +3,10 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { DataTable } from "@/components/shared/DataTable";
 import { MCPToolset } from "@/components/mcp_tools/types";
+import i18n from "@/i18n/bootstrapI18n";
 import { getMCPToolsetTableColumns } from "./MCPToolsetTableColumns";
+
+const t = i18n.getFixedT("en", "mcpServers");
 
 vi.mock("@/components/networking", () => ({
   getProxyBaseUrl: () => "http://localhost:4000",
@@ -29,7 +32,7 @@ const serverPrefixById = new Map([
 ]);
 
 function renderTable({ isAdmin = true, onEditClick = vi.fn(), onDeleteClick = vi.fn() } = {}) {
-  const deps = { isAdmin, serverPrefixById, onEditClick, onDeleteClick };
+  const deps = { isAdmin, serverPrefixById, onEditClick, onDeleteClick, t };
   render(
     <DataTable
       data={[mockToolset]}

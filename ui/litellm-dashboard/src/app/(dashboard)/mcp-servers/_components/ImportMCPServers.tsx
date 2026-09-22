@@ -39,7 +39,7 @@ const ImportMCPServers: React.FC<ImportMCPServersProps> = ({ accessToken, open, 
   };
 
   const handleImport = async () => {
-    const parsed = parseConnectorConfig(configText);
+    const parsed = parseConnectorConfig(configText, t);
     if (!parsed.ok) {
       setParseError(parsed.error);
       return;

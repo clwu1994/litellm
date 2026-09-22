@@ -54,33 +54,20 @@ export function groupToolsByCrud(tools: MCPToolEntry[]): Record<CrudOp, MCPToolE
   return groups;
 }
 
-export const CRUD_GROUP_META: Record<
-  CrudOp,
-  { label: string; description: string; risk: "low" | "medium" | "high" | "unknown" }
-> = {
+export const CRUD_GROUP_META: Record<CrudOp, { risk: "low" | "medium" | "high" | "unknown" }> = {
   read: {
-    label: "Read",
-    description: "Safe operations — fetch, list, search. No side effects.",
     risk: "low",
   },
   create: {
-    label: "Create",
-    description: "Add new resources — insert, upload, register.",
     risk: "medium",
   },
   update: {
-    label: "Update",
-    description: "Modify existing resources — edit, patch, rename.",
     risk: "medium",
   },
   delete: {
-    label: "Delete",
-    description: "Destructive operations — remove, purge, destroy.",
     risk: "high",
   },
   unknown: {
-    label: "Other",
-    description: "Operations that could not be automatically classified.",
     risk: "unknown",
   },
 };

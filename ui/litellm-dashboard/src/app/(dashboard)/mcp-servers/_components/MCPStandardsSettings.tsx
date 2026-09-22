@@ -1,66 +1,68 @@
 "use client";
 
+import type { ParseKeys } from "i18next";
+
 import { MCPServer } from "@/components/mcp_tools/types";
 
 export interface RequiredFieldDef {
   key: string;
-  label: string;
-  description: string;
+  labelKey: ParseKeys<"mcpServers">;
+  descriptionKey: ParseKeys<"mcpServers">;
   check: (server: MCPServer) => boolean;
 }
 
 export interface FieldGroup {
-  label: string;
+  labelKey: ParseKeys<"mcpServers">;
   fields: RequiredFieldDef[];
 }
 
 export const FIELD_GROUPS: FieldGroup[] = [
   {
-    label: "Documentation",
+    labelKey: "standards.groupDocumentation",
     fields: [
       {
         key: "description",
-        label: "Description",
-        description: "Must have a non-empty description",
+        labelKey: "view.fields.description",
+        descriptionKey: "standards.descriptionRequired",
         check: (s) => !!s.description?.trim(),
       },
       {
         key: "alias",
-        label: "Alias",
-        description: "Must have a display alias",
+        labelKey: "view.fields.alias",
+        descriptionKey: "standards.aliasRequired",
         check: (s) => !!s.alias?.trim(),
       },
     ],
   },
   {
-    label: "Source",
+    labelKey: "standards.groupSource",
     fields: [
       {
         key: "source_url",
-        label: "GitHub / Source URL",
-        description: "Must link to a source repository",
+        labelKey: "form.sourceUrl.label",
+        descriptionKey: "standards.sourceUrlRequired",
         check: (s) => !!s.source_url?.trim(),
       },
     ],
   },
   {
-    label: "Connection",
+    labelKey: "standards.groupConnection",
     fields: [
       {
         key: "url",
-        label: "Server URL",
-        description: "Must have a URL configured",
+        labelKey: "standards.serverUrlLabel",
+        descriptionKey: "standards.serverUrlRequired",
         check: (s) => !!s.url?.trim(),
       },
     ],
   },
   {
-    label: "Security",
+    labelKey: "standards.groupSecurity",
     fields: [
       {
         key: "auth_type",
-        label: "Auth configured",
-        description: "Must use authentication (not 'none')",
+        labelKey: "standards.authConfiguredLabel",
+        descriptionKey: "standards.authConfiguredRequired",
         check: (s) => !!s.auth_type && s.auth_type !== "none",
       },
     ],

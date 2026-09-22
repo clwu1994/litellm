@@ -36,14 +36,14 @@ const toTags = (value: unknown): string[] =>
     (entry): entry is string => typeof entry === "string" && entry !== "",
   );
 
-export const tagsControl = (control: MountedFieldControlProps, t?: TFunction<"mcpServers">) => {
+export const tagsControl = (control: MountedFieldControlProps, t: TFunction<"mcpServers">) => {
   const value = toTags(control.value);
   return {
     id: control.id,
     options: [...new Set(value)].map((tag) => ({ label: tag, value: tag })),
     value,
     onValueChange: control.onChange,
-    emptyText: t ? t("form.tags.emptyText") : "Type to add",
+    emptyText: t("form.tags.emptyText"),
     allowCustomValues: true,
   };
 };

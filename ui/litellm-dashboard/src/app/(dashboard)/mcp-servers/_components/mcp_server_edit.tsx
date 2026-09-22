@@ -451,7 +451,7 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
     }
   }, [mcpServer]);
 
-  const toolPreview = getEditToolPreview(allFieldsValue(form), initialValues);
+  const toolPreview = getEditToolPreview(allFieldsValue(form), initialValues, t);
   const toolPreviewKey = JSON.stringify(toolPreview);
 
   useEffect(() => {

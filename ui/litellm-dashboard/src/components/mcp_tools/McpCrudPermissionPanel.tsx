@@ -10,6 +10,8 @@
  */
 
 import React, { useMemo, useState } from "react";
+import type { ParseKeys } from "i18next";
+import { useTranslation } from "react-i18next";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ChevronDownIcon, ChevronRightIcon } from "lucide-react";
 import { CrudOp, MCPToolEntry, CRUD_GROUP_META, groupToolsByCrud } from "../../utils/mcpToolCrudClassification";
@@ -40,6 +42,29 @@ interface McpCrudPermissionPanelProps {
 }
 
 const CRUD_ORDER: CrudOp[] = ["read", "create", "update", "delete", "unknown"];
+
+const CRUD_LABEL_KEYS: Record<CrudOp, ParseKeys<"mcpServers">> = {
+  read: "crud.read",
+  create: "crud.create",
+  update: "crud.update",
+  delete: "crud.delete",
+  unknown: "crud.other",
+};
+
+const CRUD_DESCRIPTION_KEYS: Record<CrudOp, ParseKeys<"mcpServers">> = {
+  read: "crud.readDescription",
+  create: "crud.createDescription",
+  update: "crud.updateDescription",
+  delete: "crud.deleteDescription",
+  unknown: "crud.otherDescription",
+};
+
+const RISK_LABEL_KEYS: Record<"low" | "medium" | "high" | "unknown", ParseKeys<"mcpServers">> = {
+  low: "crud.safe",
+  medium: "crud.mediumRisk",
+  high: "crud.highRisk",
+  unknown: "crud.unclassified",
+};
 
 const RISK_BADGE: Record<string, string> = {
   low: "bg-success/15 text-success",
@@ -76,6 +101,7 @@ const McpCrudPermissionPanel: React.FC<McpCrudPermissionPanelProps> = ({
   readOnly = false,
   searchFilter = "",
 }) => {
+  const { t } = useTranslation("mcpServers");
   const [collapsed, setCollapsed] = useState<Record<CrudOp, boolean>>({
     read: false,
     create: false,
@@ -179,29 +205,26 @@ const McpCrudPermissionPanel: React.FC<McpCrudPermissionPanelProps> = ({
                 ) : (
                   <ChevronDownIcon className="w-4 h-4 text-muted-foreground shrink-0" />
                 )}
-                <span className="font-semibold text-foreground text-sm">{meta.label}</span>
+                <span className="font-semibold text-foreground text-sm">{t(CRUD_LABEL_KEYS[op])}</span>
                 <span className={`text-xs px-2 py-0.5 rounded-full ${RISK_BADGE[meta.risk]}`}>
-                  {meta.risk === "high"
-                    ? "High Risk"
-                    : meta.risk === "medium"
-                      ? "Medium Risk"
-                      : meta.risk === "low"
-                        ? "Safe"
-                        : "Unclassified"}
+                  {t(RISK_LABEL_KEYS[meta.risk])}
                 </span>
                 <span className="text-xs text-muted-foreground ml-1">
-                  {group.filter((t) => effectiveAllowed.has(t.name)).length}/{group.length} allowed
+                  {t("crud.allowedCount", {
+                    allowed: group.filter((tool) => effectiveAllowed.has(tool.name)).length,
+                    total: group.length,
+                  })}
                 </span>
               </button>
 
               {!readOnly && (
                 <div className="flex items-center gap-2 ml-4">
                   <p className="text-xs text-muted-foreground">
-                    {fullyAllowed ? "All on" : partial ? "Partial" : "All off"}
+                    {fullyAllowed ? t("crud.allOn") : partial ? t("crud.partial") : t("crud.allOff")}
                   </p>
                   {/* Checkbox supports `indeterminate`; Switch does not. */}
                   <Checkbox
-                    aria-label={`Allow all ${meta.label} tools`}
+                    aria-label={t("crud.allowAll", { label: t(CRUD_LABEL_KEYS[op]) })}
                     checked={fullyAllowed}
                     indeterminate={partial}
                     onCheckedChange={(checked) => toggleGroup(op, checked)}
@@ -214,7 +237,7 @@ const McpCrudPermissionPanel: React.FC<McpCrudPermissionPanelProps> = ({
             {/* Description row */}
             {!isCollapsed && (
               <div className="px-4 pt-2 pb-1 text-xs text-muted-foreground bg-card border-b border-border">
-                {meta.description}
+                {t(CRUD_DESCRIPTION_KEYS[op])}
               </div>
             )}
 
@@ -256,7 +279,7 @@ const McpCrudPermissionPanel: React.FC<McpCrudPermissionPanelProps> = ({
                             allowed ? "bg-success/15 text-success" : "bg-muted text-muted-foreground"
                           }`}
                         >
-                          {allowed ? "on" : "off"}
+                          {allowed ? t("crud.on") : t("crud.off")}
                         </span>
                       </div>
                     );

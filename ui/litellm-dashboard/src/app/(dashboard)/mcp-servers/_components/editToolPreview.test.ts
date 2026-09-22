@@ -1,5 +1,16 @@
 import { describe, expect, it } from "vitest";
-import { getEditToolPreview } from "./editToolPreview";
+import i18n from "@/i18n/bootstrapI18n";
+import { getEditToolPreview as getEditToolPreviewWithT } from "./editToolPreview";
+
+const en = i18n.getFixedT("en", "mcpServers");
+const zh = i18n.getFixedT("zh", "mcpServers");
+
+// The helper takes the translation function so it never reaches for the global singleton. This
+// wrapper keeps every existing assertion on the English output; the last case pins the Chinese.
+const getEditToolPreview = (
+  values: Readonly<Record<string, unknown>>,
+  initialValues: Readonly<Record<string, unknown>>,
+) => getEditToolPreviewWithT(values, initialValues, en);
 
 const saved = {
   url: "https://example.com/mcp",
@@ -101,5 +112,14 @@ describe("getEditToolPreview", () => {
     for (const transport of ["stdio", "openapi"]) {
       expect(getEditToolPreview({ ...saved, transport }, saved)).toEqual({ kind: "saved" });
     }
+  });
+
+  it("renders the changed-origin message in Chinese through the passed translation function", () => {
+    expect(
+      getEditToolPreviewWithT({ ...saved, url: "https://other.example/mcp", static_headers: [] }, saved, zh),
+    ).toEqual({
+      kind: "incomplete",
+      message: "服务器源已更改。请输入凭据，并替换或移除已保存的静态请求头，以预览工具。",
+    });
   });
 });
