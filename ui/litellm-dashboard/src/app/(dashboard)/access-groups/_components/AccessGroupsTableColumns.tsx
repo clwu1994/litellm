@@ -1,6 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+import type { TFunction } from "i18next";
 import { Bot, Layers, MoreHorizontal, Server, Trash2 } from "lucide-react";
 
 import { DataTableSortHeader } from "@/components/shared/DataTable";
@@ -31,11 +32,17 @@ const RESOURCE_TONES: Record<"models" | "mcpServers" | "agents", ResourceTone> =
   },
 };
 
-function ResourcesCell({ group }: { group: AccessGroup }) {
+const RESOURCE_COUNT_KEYS = {
+  models: "table.resourceCounts.models",
+  mcpServers: "table.resourceCounts.mcpServers",
+  agents: "table.resourceCounts.agents",
+} as const;
+
+function ResourcesCell({ group, t }: { group: AccessGroup; t: TFunction<"accessGroups"> }) {
   const items = [
-    { key: "models" as const, label: "Models", count: group.modelIds.length },
-    { key: "mcpServers" as const, label: "MCP Servers", count: group.mcpServerIds.length },
-    { key: "agents" as const, label: "Agents", count: group.agentIds.length },
+    { key: "models" as const, count: group.modelIds.length },
+    { key: "mcpServers" as const, count: group.mcpServerIds.length },
+    { key: "agents" as const, count: group.agentIds.length },
   ];
 
   return (
@@ -46,7 +53,7 @@ function ResourcesCell({ group }: { group: AccessGroup }) {
         return (
           <span
             key={item.key}
-            title={`${item.count} ${item.label}`}
+            title={t(RESOURCE_COUNT_KEYS[item.key], { total: item.count })}
             className={cn(
               "inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset [&_svg]:size-3.5",
               tone.className,
@@ -64,14 +71,16 @@ function ResourcesCell({ group }: { group: AccessGroup }) {
 function AccessGroupRowActions({
   group,
   onDeleteClick,
+  t,
 }: {
   group: AccessGroup;
   onDeleteClick: (group: AccessGroup) => void;
+  t: TFunction<"accessGroups">;
 }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        aria-label="Open access group actions"
+        aria-label={t("table.openActions")}
         data-testid={`access-group-actions-${group.id}`}
         className={cn(buttonVariants({ variant: "ghost", size: "icon-sm" }), "text-muted-foreground")}
       >
@@ -84,7 +93,7 @@ function AccessGroupRowActions({
           onClick={() => onDeleteClick(group)}
         >
           <Trash2 />
-          Delete access group
+          {t("table.delete")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -97,17 +106,16 @@ interface AccessGroupsTableColumnsDeps {
   onDeleteClick: (group: AccessGroup) => void;
 }
 
-export const getAccessGroupsTableColumns = ({
-  canModify,
-  onGroupClick,
-  onDeleteClick,
-}: AccessGroupsTableColumnsDeps): ColumnDef<AccessGroup>[] => {
+export const getAccessGroupsTableColumns = (
+  { canModify, onGroupClick, onDeleteClick }: AccessGroupsTableColumnsDeps,
+  t: TFunction<"accessGroups">,
+): ColumnDef<AccessGroup>[] => {
   const columns: ColumnDef<AccessGroup>[] = [
     {
       id: "id",
       accessorKey: "id",
-      meta: { title: "ID" },
-      header: "ID",
+      meta: { title: t("table.columns.id") },
+      header: t("table.columns.id"),
       size: 200,
       enableSorting: false,
       cell: ({ row }) => (
@@ -121,8 +129,8 @@ export const getAccessGroupsTableColumns = ({
     {
       id: "name",
       accessorKey: "name",
-      meta: { title: "Name" },
-      header: ({ column }) => <DataTableSortHeader column={column} title="Name" />,
+      meta: { title: t("table.columns.name") },
+      header: ({ column }) => <DataTableSortHeader column={column} title={t("table.columns.name")} />,
       size: 220,
       enableSorting: true,
       cell: ({ row }) => {
@@ -136,17 +144,17 @@ export const getAccessGroupsTableColumns = ({
     },
     {
       id: "resources",
-      meta: { title: "Resources" },
-      header: "Resources",
+      meta: { title: t("table.columns.resources") },
+      header: t("table.columns.resources"),
       size: 220,
       enableSorting: false,
-      cell: ({ row }) => <ResourcesCell group={row.original} />,
+      cell: ({ row }) => <ResourcesCell group={row.original} t={t} />,
     },
     {
       id: "createdAt",
       accessorKey: "createdAt",
-      meta: { title: "Created" },
-      header: ({ column }) => <DataTableSortHeader column={column} title="Created" />,
+      meta: { title: t("table.columns.created") },
+      header: ({ column }) => <DataTableSortHeader column={column} title={t("table.columns.created")} />,
       size: 150,
       enableSorting: true,
       sortingFn: "datetime",
@@ -155,8 +163,8 @@ export const getAccessGroupsTableColumns = ({
     {
       id: "updatedAt",
       accessorKey: "updatedAt",
-      meta: { title: "Updated" },
-      header: "Updated",
+      meta: { title: t("table.columns.updated") },
+      header: t("table.columns.updated"),
       size: 150,
       enableSorting: false,
       cell: ({ row }) => <DateCell value={row.original.updatedAt} precision="date" />,
@@ -172,13 +180,13 @@ export const getAccessGroupsTableColumns = ({
     {
       id: "actions",
       meta: { className: "text-right", headerClassName: "text-right" },
-      header: () => <span className="sr-only">Actions</span>,
+      header: () => <span className="sr-only">{t("table.columns.actions")}</span>,
       size: 64,
       enableSorting: false,
       enableHiding: false,
       cell: ({ row }) => (
         <div className="flex justify-end">
-          <AccessGroupRowActions group={row.original} onDeleteClick={onDeleteClick} />
+          <AccessGroupRowActions group={row.original} onDeleteClick={onDeleteClick} t={t} />
         </div>
       ),
     },

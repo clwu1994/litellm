@@ -1,0 +1,95 @@
+{
+  "page": {
+    "title": "Access Groups",
+    "subtitle": "Manage resource permissions for your organization",
+    "create": "Create Access Group",
+    "searchPlaceholder": "Search groups by name, ID, or description...",
+    "clearSearchAria": "Clear search"
+  },
+  "table": {
+    "loading": "Loading access groups…",
+    "emptyTitle": "No access groups yet",
+    "emptyDescription": "Create an access group to manage resource permissions for your organization.",
+    "emptyFilteredTitle": "No matching access groups",
+    "emptyFilteredDescription": "Try a different search term.",
+    "columns": {
+      "id": "ID",
+      "name": "Name",
+      "resources": "Resources",
+      "created": "Created",
+      "updated": "Updated",
+      "actions": "Actions"
+    },
+    "resourceCounts": {
+      "models": "{{total}} Models",
+      "mcpServers": "{{total}} MCP Servers",
+      "agents": "{{total}} Agents"
+    },
+    "openActions": "Open access group actions",
+    "delete": "Delete access group"
+  },
+  "deleteModal": {
+    "title": "Delete Access Group",
+    "message": "Are you sure you want to delete this access group? This action cannot be undone.",
+    "informationTitle": "Access Group Information",
+    "labels": {
+      "id": "ID",
+      "name": "Name",
+      "description": "Description"
+    }
+  },
+  "details": {
+    "backAria": "Back",
+    "notFound": "Access group not found",
+    "idLabel": "ID: {{id}}",
+    "copyIdAria": "Copy access group ID",
+    "edit": "Edit Access Group",
+    "groupDetails": "Group Details",
+    "description": "Description",
+    "created": "Created",
+    "by": "by",
+    "lastUpdated": "Last Updated",
+    "attachedKeys": "Attached Keys",
+    "attachedTeams": "Attached Teams",
+    "showLess": "Show Less",
+    "viewAll": "View All ({{total}})",
+    "noKeys": "No keys attached",
+    "noTeams": "No teams attached",
+    "noModels": "No models assigned to this group",
+    "noMcpServers": "No MCP servers assigned to this group",
+    "noAgents": "No agents assigned to this group"
+  },
+  "tabs": {
+    "generalInfo": "General Info",
+    "models": "Models",
+    "mcpServers": "MCP Servers",
+    "agents": "Agents"
+  },
+  "form": {
+    "groupName": "Group Name",
+    "groupNamePlaceholder": "e.g. Engineering Team",
+    "description": "Description",
+    "descriptionPlaceholder": "Describe the purpose of this access group...",
+    "allowedModels": "Allowed Models",
+    "allowedMcpServers": "Allowed MCP Servers",
+    "selectMcpServers": "Select MCP servers",
+    "allowedAgents": "Allowed Agents",
+    "selectAgents": "Select agents"
+  },
+  "modals": {
+    "createTitle": "Create Access Group",
+    "editTitle": "Edit Access Group",
+    "cancel": "Cancel",
+    "createSubmit": "Create Group",
+    "creating": "Creating...",
+    "saveChanges": "Save Changes"
+  },
+  "validation": {
+    "nameRequired": "Please enter the access group name"
+  },
+  "toasts": {
+    "created": "Access group created successfully",
+    "createFailed": "Failed to create access group",
+    "updated": "Access group updated successfully"
+  }
+}

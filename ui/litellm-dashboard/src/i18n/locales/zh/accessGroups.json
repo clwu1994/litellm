@@ -1,0 +1,95 @@
+{
+  "page": {
+    "title": "访问组",
+    "subtitle": "管理组织的资源权限",
+    "create": "创建访问组",
+    "searchPlaceholder": "按名称、ID 或描述搜索访问组...",
+    "clearSearchAria": "清除搜索"
+  },
+  "table": {
+    "loading": "正在加载访问组…",
+    "emptyTitle": "暂无访问组",
+    "emptyDescription": "创建访问组以管理组织的资源权限。",
+    "emptyFilteredTitle": "没有匹配的访问组",
+    "emptyFilteredDescription": "尝试其他搜索词。",
+    "columns": {
+      "id": "ID",
+      "name": "名称",
+      "resources": "资源",
+      "created": "创建时间",
+      "updated": "更新时间",
+      "actions": "操作"
+    },
+    "resourceCounts": {
+      "models": "{{total}} 个模型",
+      "mcpServers": "{{total}} 个 MCP 服务器",
+      "agents": "{{total}} 个 Agent"
+    },
+    "openActions": "打开访问组操作",
+    "delete": "删除访问组"
+  },
+  "deleteModal": {
+    "title": "删除访问组",
+    "message": "确定要删除此访问组？此操作无法撤销。",
+    "informationTitle": "访问组信息",
+    "labels": {
+      "id": "ID",
+      "name": "名称",
+      "description": "描述"
+    }
+  },
+  "details": {
+    "backAria": "返回",
+    "notFound": "未找到访问组",
+    "idLabel": "ID：{{id}}",
+    "copyIdAria": "复制访问组 ID",
+    "edit": "编辑访问组",
+    "groupDetails": "组详情",
+    "description": "描述",
+    "created": "创建时间",
+    "by": "由",
+    "lastUpdated": "最后更新",
+    "attachedKeys": "已附加的密钥",
+    "attachedTeams": "已附加的团队",
+    "showLess": "收起",
+    "viewAll": "查看全部（{{total}}）",
+    "noKeys": "未附加密钥",
+    "noTeams": "未附加团队",
+    "noModels": "此组未分配模型",
+    "noMcpServers": "此组未分配 MCP 服务器",
+    "noAgents": "此组未分配 Agent"
+  },
+  "tabs": {
+    "generalInfo": "常规信息",
+    "models": "模型",
+    "mcpServers": "MCP 服务器",
+    "agents": "Agent"
+  },
+  "form": {
+    "groupName": "组名称",
+    "groupNamePlaceholder": "例如：工程团队",
+    "description": "描述",
+    "descriptionPlaceholder": "描述此访问组的用途...",
+    "allowedModels": "允许的模型",
+    "allowedMcpServers": "允许的 MCP 服务器",
+    "selectMcpServers": "选择 MCP 服务器",
+    "allowedAgents": "允许的 Agent",
+    "selectAgents": "选择 Agent"
+  },
+  "modals": {
+    "createTitle": "创建访问组",
+    "editTitle": "编辑访问组",
+    "cancel": "取消",
+    "createSubmit": "创建组",
+    "creating": "创建中...",
+    "saveChanges": "保存更改"
+  },
+  "validation": {
+    "nameRequired": "请输入访问组名称"
+  },
+  "toasts": {
+    "created": "访问组创建成功",
+    "createFailed": "创建访问组失败",
+    "updated": "访问组更新成功"
+  }
+}
