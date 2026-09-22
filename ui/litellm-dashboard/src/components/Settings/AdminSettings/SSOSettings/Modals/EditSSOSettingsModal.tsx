@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import BaseSSOSettingsForm, {
   emptySSOSettingsFormValues,
   submitMountedSSOValues,
@@ -74,6 +75,7 @@ export const toSSOFormValues = (values: SSOSettingsValues): SSOSettingsFormValue
 };
 
 const EditSSOSettingsModal: React.FC<EditSSOSettingsModalProps> = ({ isVisible, onCancel, onSuccess }) => {
+  const { t } = useTranslation("settings");
   const ssoSettings = useSSOSettings();
   const { mutateAsync, isPending } = useEditSSOSettings();
 
@@ -90,15 +92,15 @@ const EditSSOSettingsModal: React.FC<EditSSOSettingsModalProps> = ({ isVisible, 
 
       await mutateAsync(payload, {
         onSuccess: () => {
-          toast.success("SSO settings updated successfully");
+          toast.success(t("sso.editModal.success"));
           onSuccess();
         },
         onError: (error) => {
-          toast.fromError("Failed to save SSO settings: " + parseErrorMessage(error));
+          toast.fromError(t("sso.saveFailed", { error: String(parseErrorMessage(error)) }));
         },
       });
     } catch (error) {
-      toast.fromError("Failed to process SSO settings: " + parseErrorMessage(error));
+      toast.fromError(t("sso.processFailed", { error: parseErrorMessage(error) }));
     }
   };
 
@@ -111,13 +113,13 @@ const EditSSOSettingsModal: React.FC<EditSSOSettingsModalProps> = ({ isVisible, 
     <Dialog open={isVisible} onOpenChange={(open) => !open && handleCancel()}>
       <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[800px]">
         <DialogHeader>
-          <DialogTitle>Edit SSO Settings</DialogTitle>
+          <DialogTitle>{t("sso.editSettings")}</DialogTitle>
         </DialogHeader>
         <BaseSSOSettingsForm form={form} onFormSubmit={handleFormSubmit} />
         <DialogFooter>
           <div className="flex items-center justify-end gap-2">
             <Button type="button" variant="outline" onClick={handleCancel} disabled={isPending}>
-              Cancel
+              {t("shared.cancel")}
             </Button>
             <Button
               type="button"
@@ -125,7 +127,7 @@ const EditSSOSettingsModal: React.FC<EditSSOSettingsModalProps> = ({ isVisible, 
               onClick={submitMountedSSOValues(form, "sso-settings", handleFormSubmit)}
             >
               {isPending && <UiLoadingSpinner className="size-4 mr-1" />}
-              {isPending ? "Saving..." : "Save"}
+              {isPending ? t("shared.saving") : t("shared.save")}
             </Button>
           </div>
         </DialogFooter>

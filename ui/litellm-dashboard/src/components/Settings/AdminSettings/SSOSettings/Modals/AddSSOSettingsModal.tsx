@@ -3,6 +3,7 @@
 import { toast } from "@/lib/toast";
 import { parseErrorMessage } from "@/components/shared/errorUtils";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import BaseSSOSettingsForm, {
   emptySSOSettingsFormValues,
   submitMountedSSOValues,
@@ -22,6 +23,7 @@ interface AddSSOSettingsModalProps {
 }
 
 const AddSSOSettingsModal: React.FC<AddSSOSettingsModalProps> = ({ isVisible, onCancel, onSuccess }) => {
+  const { t } = useTranslation("settings");
   const form = useSSOSettingsForm("sso-settings");
   const { mutateAsync, isPending } = useEditSSOSettings();
 
@@ -30,11 +32,11 @@ const AddSSOSettingsModal: React.FC<AddSSOSettingsModalProps> = ({ isVisible, on
 
     await mutateAsync(payload, {
       onSuccess: () => {
-        toast.success("SSO settings added successfully");
+        toast.success(t("sso.addModal.success"));
         onSuccess();
       },
       onError: (error) => {
-        toast.fromError("Failed to save SSO settings: " + parseErrorMessage(error));
+        toast.fromError(t("sso.saveFailed", { error: parseErrorMessage(error) }));
       },
     });
   };
@@ -48,13 +50,13 @@ const AddSSOSettingsModal: React.FC<AddSSOSettingsModalProps> = ({ isVisible, on
     <Dialog open={isVisible} onOpenChange={(open) => !open && handleCancel()}>
       <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[800px]">
         <DialogHeader>
-          <DialogTitle>Add SSO</DialogTitle>
+          <DialogTitle>{t("sso.addModal.title")}</DialogTitle>
         </DialogHeader>
         <BaseSSOSettingsForm form={form} onFormSubmit={handleFormSubmit} />
         <DialogFooter>
           <div className="flex items-center justify-end gap-2">
             <Button type="button" variant="outline" onClick={handleCancel} disabled={isPending}>
-              Cancel
+              {t("shared.cancel")}
             </Button>
             <Button
               type="button"
@@ -62,7 +64,7 @@ const AddSSOSettingsModal: React.FC<AddSSOSettingsModalProps> = ({ isVisible, on
               onClick={submitMountedSSOValues(form, "sso-settings", handleFormSubmit)}
             >
               {isPending && <UiLoadingSpinner className="size-4 mr-1" />}
-              {isPending ? "Adding..." : "Add SSO"}
+              {isPending ? t("sso.addModal.adding") : t("sso.addModal.title")}
             </Button>
           </div>
         </DialogFooter>

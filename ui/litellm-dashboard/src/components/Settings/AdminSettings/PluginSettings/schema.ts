@@ -1,3 +1,4 @@
+import type { TFunction } from "i18next";
 import { z } from "zod/v4";
 
 const IPV4 = "(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]\\d|\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]\\d|\\d)){3}";
@@ -24,16 +25,16 @@ const URL_RULE_PATTERN = new RegExp(
 
 const isUrl = (value: string): boolean => value.length <= 2048 && URL_RULE_PATTERN.test(value);
 
-const pluginShape = {
-  name: z.string().min(1, "Required"),
-  display_name: z.string().min(1, "Required"),
+const pluginShape = (t: TFunction<"settings">) => ({
+  name: z.string().min(1, t("plugins.validation.required")),
+  display_name: z.string().min(1, t("plugins.validation.required")),
   url: z
     .string()
-    .min(1, "Required")
-    .refine((value) => value === "" || isUrl(value), "Must be a valid URL"),
+    .min(1, t("plugins.validation.required"))
+    .refine((value) => value === "" || isUrl(value), t("plugins.validation.invalidUrl")),
   plugin_key: z.string().optional(),
-};
+});
 
-export const pluginSchema = z.object(pluginShape);
+export const buildPluginSchema = (t: TFunction<"settings">) => z.object(pluginShape(t));
 
-export type PluginFormValues = z.output<typeof pluginSchema>;
+export type PluginFormValues = z.output<ReturnType<typeof buildPluginSchema>>;

@@ -1,7 +1,9 @@
 "use client";
 
+import type { ParseKeys } from "i18next";
 import { Copy, Edit, Shield, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { useSSOSettings, type SSOSettingsValues } from "@/app/(dashboard)/hooks/sso/useSSOSettings";
 import { Logo } from "@/components/molecules/logo/Logo";
@@ -17,11 +19,17 @@ import RedactableField from "./RedactableField";
 import RoleMappings from "./RoleMappings";
 import SSOSettingsEmptyPlaceholder from "./SSOSettingsEmptyPlaceholder";
 import SSOSettingsLoadingSkeleton from "./SSOSettingsLoadingSkeleton";
-import { ssoProviderDisplayNames, ssoProviderLogoMap } from "./constants";
+import { ssoProviderDisplayNameKeys, ssoProviderLogoMap } from "./constants";
 import { detectSSOProvider } from "./utils";
 
-function NotConfigured() {
-  return <span className="text-muted-foreground italic">Not configured</span>;
+interface SSODetailField {
+  labelKey: ParseKeys<"settings">;
+  render: (values: SSOSettingsValues) => React.ReactNode;
+}
+
+interface SSODetailConfig {
+  providerText: string;
+  fields: ReadonlyArray<SSODetailField | null>;
 }
 
 function DetailRow({ children, label }: { children: React.ReactNode; label: string }) {
@@ -34,6 +42,8 @@ function DetailRow({ children, label }: { children: React.ReactNode; label: stri
 }
 
 function EndpointValue({ value }: { value?: string | null }) {
+  const { t } = useTranslation("settings");
+
   if (!value) return <span className="font-mono text-muted-foreground">-</span>;
 
   return (
@@ -43,8 +53,8 @@ function EndpointValue({ value }: { value?: string | null }) {
         type="button"
         variant="ghost"
         size="icon-sm"
-        aria-label="Copy value"
-        onClick={() => void copyToClipboard(value, "Copied to clipboard")}
+        aria-label={t("sso.copyValue")}
+        onClick={() => void copyToClipboard(value, t("sso.copiedToClipboard"))}
       >
         <Copy className="size-3.5" />
       </Button>
@@ -53,6 +63,7 @@ function EndpointValue({ value }: { value?: string | null }) {
 }
 
 export default function SSOSettings() {
+  const { t } = useTranslation("settings");
   const { data: ssoSettings, refetch, isLoading } = useSSOSettings();
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
@@ -68,146 +79,177 @@ export default function SSOSettings() {
   const isRoleMappingsEnabled = Boolean(ssoSettings?.values.role_mappings);
   const isTeamMappingsEnabled = Boolean(ssoSettings?.values.team_mappings);
 
-  const renderSimpleValue = (value?: string | null) => value || <NotConfigured />;
+  const notConfigured = <span className="text-muted-foreground italic">{t("shared.notConfigured")}</span>;
+  const renderSimpleValue = (value?: string | null) => value || notConfigured;
   const renderTeamMappingsField = (values: SSOSettingsValues) =>
     values.team_mappings?.team_ids_jwt_field ? (
       <Badge variant="secondary">{values.team_mappings.team_ids_jwt_field}</Badge>
     ) : (
-      <NotConfigured />
+      notConfigured
     );
 
-  const providerConfigs = {
+  const providerConfigs: Record<string, SSODetailConfig> = {
     google: {
-      providerText: ssoProviderDisplayNames.google,
+      providerText: t(ssoProviderDisplayNameKeys.google),
       fields: [
         {
-          label: "Client ID",
+          labelKey: "sso.fields.clientId",
           render: (values: SSOSettingsValues) => <RedactableField value={values.google_client_id} />,
         },
         {
-          label: "Client Secret",
+          labelKey: "sso.fields.clientSecret",
           render: (values: SSOSettingsValues) => <RedactableField value={values.google_client_secret} />,
         },
-        { label: "Proxy Base URL", render: (values: SSOSettingsValues) => renderSimpleValue(values.proxy_base_url) },
+        {
+          labelKey: "sso.fields.proxyBaseUrl",
+          render: (values: SSOSettingsValues) => renderSimpleValue(values.proxy_base_url),
+        },
       ],
     },
     microsoft: {
-      providerText: ssoProviderDisplayNames.microsoft,
+      providerText: t(ssoProviderDisplayNameKeys.microsoft),
       fields: [
         {
-          label: "Client ID",
+          labelKey: "sso.fields.clientId",
           render: (values: SSOSettingsValues) => <RedactableField value={values.microsoft_client_id} />,
         },
         {
-          label: "Client Secret",
+          labelKey: "sso.fields.clientSecret",
           render: (values: SSOSettingsValues) => <RedactableField value={values.microsoft_client_secret} />,
         },
-        { label: "Tenant", render: (values: SSOSettingsValues) => renderSimpleValue(values.microsoft_tenant) },
-        { label: "Proxy Base URL", render: (values: SSOSettingsValues) => renderSimpleValue(values.proxy_base_url) },
+        {
+          labelKey: "sso.fields.tenant",
+          render: (values: SSOSettingsValues) => renderSimpleValue(values.microsoft_tenant),
+        },
+        {
+          labelKey: "sso.fields.proxyBaseUrl",
+          render: (values: SSOSettingsValues) => renderSimpleValue(values.proxy_base_url),
+        },
       ],
     },
     okta: {
-      providerText: ssoProviderDisplayNames.okta,
+      providerText: t(ssoProviderDisplayNameKeys.okta),
       fields: [
         {
-          label: "Client ID",
+          labelKey: "sso.fields.clientId",
           render: (values: SSOSettingsValues) => <RedactableField value={values.generic_client_id} />,
         },
         {
-          label: "Client Secret",
+          labelKey: "sso.fields.clientSecret",
           render: (values: SSOSettingsValues) => <RedactableField value={values.generic_client_secret} />,
         },
         {
-          label: "Authorization Endpoint",
+          labelKey: "sso.fields.authorizationEndpoint",
           render: (values: SSOSettingsValues) => <EndpointValue value={values.generic_authorization_endpoint} />,
         },
         {
-          label: "Token Endpoint",
+          labelKey: "sso.fields.tokenEndpoint",
           render: (values: SSOSettingsValues) => <EndpointValue value={values.generic_token_endpoint} />,
         },
         {
-          label: "User Info Endpoint",
+          labelKey: "sso.fields.userInfoEndpoint",
           render: (values: SSOSettingsValues) => <EndpointValue value={values.generic_userinfo_endpoint} />,
         },
-        { label: "Scopes", render: (values: SSOSettingsValues) => renderSimpleValue(values.generic_scope) },
-        { label: "Proxy Base URL", render: (values: SSOSettingsValues) => renderSimpleValue(values.proxy_base_url) },
+        {
+          labelKey: "sso.fields.scopes",
+          render: (values: SSOSettingsValues) => renderSimpleValue(values.generic_scope),
+        },
+        {
+          labelKey: "sso.fields.proxyBaseUrl",
+          render: (values: SSOSettingsValues) => renderSimpleValue(values.proxy_base_url),
+        },
         isTeamMappingsEnabled
-          ? { label: "Team IDs JWT Field", render: (values: SSOSettingsValues) => renderTeamMappingsField(values) }
+          ? {
+              labelKey: "sso.fields.teamIdsJwtField",
+              render: (values: SSOSettingsValues) => renderTeamMappingsField(values),
+            }
           : null,
       ],
     },
     generic: {
-      providerText: ssoProviderDisplayNames.generic,
+      providerText: t(ssoProviderDisplayNameKeys.generic),
       fields: [
         {
-          label: "Client ID",
+          labelKey: "sso.fields.clientId",
           render: (values: SSOSettingsValues) => <RedactableField value={values.generic_client_id} />,
         },
         {
-          label: "Client Secret",
+          labelKey: "sso.fields.clientSecret",
           render: (values: SSOSettingsValues) => <RedactableField value={values.generic_client_secret} />,
         },
         {
-          label: "Authorization Endpoint",
+          labelKey: "sso.fields.authorizationEndpoint",
           render: (values: SSOSettingsValues) => <EndpointValue value={values.generic_authorization_endpoint} />,
         },
         {
-          label: "Token Endpoint",
+          labelKey: "sso.fields.tokenEndpoint",
           render: (values: SSOSettingsValues) => <EndpointValue value={values.generic_token_endpoint} />,
         },
         {
-          label: "User Info Endpoint",
+          labelKey: "sso.fields.userInfoEndpoint",
           render: (values: SSOSettingsValues) => <EndpointValue value={values.generic_userinfo_endpoint} />,
         },
-        { label: "Scopes", render: (values: SSOSettingsValues) => renderSimpleValue(values.generic_scope) },
-        { label: "Proxy Base URL", render: (values: SSOSettingsValues) => renderSimpleValue(values.proxy_base_url) },
+        {
+          labelKey: "sso.fields.scopes",
+          render: (values: SSOSettingsValues) => renderSimpleValue(values.generic_scope),
+        },
+        {
+          labelKey: "sso.fields.proxyBaseUrl",
+          render: (values: SSOSettingsValues) => renderSimpleValue(values.proxy_base_url),
+        },
         isTeamMappingsEnabled
-          ? { label: "Team IDs JWT Field", render: (values: SSOSettingsValues) => renderTeamMappingsField(values) }
+          ? {
+              labelKey: "sso.fields.teamIdsJwtField",
+              render: (values: SSOSettingsValues) => renderTeamMappingsField(values),
+            }
           : null,
       ],
     },
     saml: {
-      providerText: ssoProviderDisplayNames.saml,
+      providerText: t(ssoProviderDisplayNameKeys.saml),
       fields: [
         {
-          label: "IdP Metadata URL",
+          labelKey: "sso.fields.idpMetadataUrl",
           render: (values: SSOSettingsValues) => <EndpointValue value={values.saml_idp_metadata_url} />,
         },
         {
-          label: "IdP Metadata XML",
+          labelKey: "sso.fields.idpMetadataXml",
           render: (values: SSOSettingsValues) =>
-            values.saml_idp_metadata_xml ? <Badge variant="secondary">Provided</Badge> : <NotConfigured />,
+            values.saml_idp_metadata_xml ? <Badge variant="secondary">{t("sso.provided")}</Badge> : notConfigured,
         },
         {
-          label: "SP Entity ID",
+          labelKey: "sso.fields.spEntityId",
           render: (values: SSOSettingsValues) => <EndpointValue value={values.saml_sp_entity_id} />,
         },
         {
-          label: "Allow IdP-initiated (unsolicited) responses",
+          labelKey: "sso.fields.allowIdpInitiated",
           render: (values: SSOSettingsValues) => (
             <Badge variant={values.saml_allow_unsolicited === "true" ? "default" : "secondary"}>
-              {values.saml_allow_unsolicited === "true" ? "Enabled" : "Disabled"}
+              {values.saml_allow_unsolicited === "true" ? t("sso.enabled") : t("sso.disabled")}
             </Badge>
           ),
         },
-        { label: "Proxy Base URL", render: (values: SSOSettingsValues) => renderSimpleValue(values.proxy_base_url) },
+        {
+          labelKey: "sso.fields.proxyBaseUrl",
+          render: (values: SSOSettingsValues) => renderSimpleValue(values.proxy_base_url),
+        },
       ],
     },
   };
 
   const renderSSOSettings = () => {
     if (!ssoSettings?.values || !selectedProvider) return null;
-    const config = providerConfigs[selectedProvider as keyof typeof providerConfigs];
+    const config = providerConfigs[selectedProvider];
     if (!config) return null;
 
     return (
       <dl className="divide-y divide-border overflow-hidden rounded-md border border-border">
-        <DetailRow label="Provider">
+        <DetailRow label={t("sso.provider")}>
           <div className="flex items-center gap-2">
             {ssoProviderLogoMap[selectedProvider] && (
               <Logo
                 src={ssoProviderLogoMap[selectedProvider]}
-                label={ssoProviderDisplayNames[selectedProvider] || selectedProvider}
+                label={t(ssoProviderDisplayNameKeys[selectedProvider] ?? "sso.providers.generic")}
                 className="size-6 object-contain"
               />
             )}
@@ -217,7 +259,7 @@ export default function SSOSettings() {
         {config.fields.map(
           (field) =>
             field && (
-              <DetailRow key={field.label} label={field.label}>
+              <DetailRow key={field.labelKey} label={t(field.labelKey)}>
                 {field.render(ssoSettings.values)}
               </DetailRow>
             ),
@@ -238,20 +280,20 @@ export default function SSOSettings() {
                 <Shield className="size-6 text-muted-foreground" />
                 <div>
                   <CardTitle>
-                    <h3>SSO Configuration</h3>
+                    <h3>{t("sso.title")}</h3>
                   </CardTitle>
-                  <CardDescription>Manage Single Sign-On authentication settings</CardDescription>
+                  <CardDescription>{t("sso.description")}</CardDescription>
                 </div>
               </div>
               {isSSOConfigured && (
                 <CardAction className="flex gap-2">
                   <Button type="button" variant="outline" onClick={() => setIsEditModalVisible(true)}>
                     <Edit />
-                    Edit SSO Settings
+                    {t("sso.editSettings")}
                   </Button>
                   <Button type="button" variant="destructive" onClick={() => setIsDeleteModalVisible(true)}>
                     <Trash2 />
-                    Delete SSO Settings
+                    {t("sso.deleteSettings")}
                   </Button>
                 </CardAction>
               )}

@@ -1,6 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import type { ParseKeys } from "i18next";
+import React, { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import { useUpdateUserBanner } from "@/app/(dashboard)/hooks/userBanner/useUpdateUserBanner";
 import { useUserBanner } from "@/app/(dashboard)/hooks/userBanner/useUserBanner";
@@ -16,16 +18,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { SEVERITY_ICONS, UserBannerMarkdown } from "@/components/UserBanner";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const SEVERITY_LABELS: Record<UserBannerSeverity, string> = {
-  info: "Info",
-  warning: "Warning",
-  error: "Error",
+const SEVERITY_LABEL_KEYS: Record<UserBannerSeverity, ParseKeys<"settings">> = {
+  info: "userBanner.severities.info",
+  warning: "userBanner.severities.warning",
+  error: "userBanner.severities.error",
 };
-
-const SEVERITY_ITEMS = (Object.keys(SEVERITY_LABELS) as UserBannerSeverity[]).map((severity) => ({
-  value: severity,
-  label: SEVERITY_LABELS[severity],
-}));
 
 const EMPTY_BANNER: UserBanner = { enabled: false, message: "", severity: "info", revision: "" };
 
@@ -54,6 +51,7 @@ interface UserBannerSettingsFormProps {
 }
 
 function UserBannerSettingsForm({ persisted, isLoading, isPending, saveBanner }: UserBannerSettingsFormProps) {
+  const { t } = useTranslation("settings");
   const [draft, setDraft] = useState<UserBannerUpdate>({
     enabled: persisted.enabled,
     message: persisted.message,
@@ -61,11 +59,19 @@ function UserBannerSettingsForm({ persisted, isLoading, isPending, saveBanner }:
   });
 
   const messageMissing = draft.enabled && draft.message.trim() === "";
+  const severityItems = useMemo(
+    () =>
+      (Object.keys(SEVERITY_LABEL_KEYS) as UserBannerSeverity[]).map((severity) => ({
+        value: severity,
+        label: t(SEVERITY_LABEL_KEYS[severity]),
+      })),
+    [t],
+  );
 
   const handleSave = () => {
     saveBanner(draft, {
       onSuccess: () => {
-        toast.success("User banner updated successfully");
+        toast.success(t("userBanner.updatedSuccess"));
       },
       onError: (error) => {
         toast.fromError(error);
@@ -76,11 +82,8 @@ function UserBannerSettingsForm({ persisted, isLoading, isPending, saveBanner }:
   return (
     <Card>
       <CardHeader>
-        <CardTitle>User Banner</CardTitle>
-        <CardDescription>
-          Publish an announcement to all dashboard users. Markdown is supported; the banner appears below the header on
-          every page until you unpublish it. Users can dismiss it, and it reappears whenever the content changes.
-        </CardDescription>
+        <CardTitle>{t("userBanner.title")}</CardTitle>
+        <CardDescription>{t("userBanner.description")}</CardDescription>
       </CardHeader>
       <CardContent>
         {isLoading ? (
@@ -91,13 +94,13 @@ function UserBannerSettingsForm({ persisted, isLoading, isPending, saveBanner }:
               <Switch
                 checked={draft.enabled}
                 onCheckedChange={(checked: boolean) => setDraft({ ...draft, enabled: checked })}
-                aria-label="Publish user banner"
+                aria-label={t("userBanner.publish")}
               />
-              <Label>Publish user banner</Label>
+              <Label>{t("userBanner.publish")}</Label>
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label htmlFor="user-banner-message">Message</Label>
+              <Label htmlFor="user-banner-message">{t("userBanner.message")}</Label>
               <Textarea
                 id="user-banner-message"
                 value={draft.message}
@@ -108,23 +111,23 @@ function UserBannerSettingsForm({ persisted, isLoading, isPending, saveBanner }:
                   setDraft({ ...draft, message: event.target.value })
                 }
               />
-              {messageMissing && <p className="text-sm text-destructive">Add a message before publishing.</p>}
+              {messageMissing && <p className="text-sm text-destructive">{t("userBanner.missingMessage")}</p>}
             </div>
 
             <div className="flex flex-col gap-2">
-              <Label>Severity</Label>
+              <Label>{t("userBanner.severity")}</Label>
               <Select
-                items={SEVERITY_ITEMS}
+                items={severityItems}
                 value={draft.severity}
                 onValueChange={(value: string | null) =>
                   setDraft({ ...draft, severity: (value ?? "info") as UserBannerSeverity })
                 }
               >
-                <SelectTrigger className="w-48" aria-label="Banner severity">
-                  <SelectValue placeholder="Severity" />
+                <SelectTrigger className="w-48" aria-label={t("userBanner.severityAria")}>
+                  <SelectValue placeholder={t("userBanner.severity")} />
                 </SelectTrigger>
                 <SelectContent>
-                  {SEVERITY_ITEMS.map((item) => (
+                  {severityItems.map((item) => (
                     <SelectItem key={item.value} value={item.value}>
                       {item.label}
                     </SelectItem>
@@ -135,7 +138,7 @@ function UserBannerSettingsForm({ persisted, isLoading, isPending, saveBanner }:
 
             {draft.message.trim() !== "" && (
               <div className="flex flex-col gap-2">
-                <Label>Preview</Label>
+                <Label>{t("userBanner.preview")}</Label>
                 <Alert variant={draft.severity}>
                   {SEVERITY_ICONS[draft.severity]}
                   <AlertDescription>
@@ -147,7 +150,7 @@ function UserBannerSettingsForm({ persisted, isLoading, isPending, saveBanner }:
 
             <div>
               <Button onClick={handleSave} disabled={isPending || messageMissing}>
-                {isPending ? "Saving..." : "Save banner"}
+                {isPending ? t("shared.saving") : t("userBanner.save")}
               </Button>
             </div>
           </div>

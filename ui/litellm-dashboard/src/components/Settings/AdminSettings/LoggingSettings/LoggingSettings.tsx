@@ -1,5 +1,6 @@
 "use client";
 
+import type { ParseKeys } from "i18next";
 import {
   ConfigType,
   GeneralSettingsFieldName,
@@ -25,56 +26,53 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CircleHelp, Clock } from "lucide-react";
 import React, { useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 
 const STORE_PROMPTS_FIELD_NAME = "store_prompts_in_spend_logs";
 
 interface OptionalField {
   readonly name: GeneralSettingsFieldName;
   readonly kind: "duration" | "count";
-  readonly label: string;
-  readonly placeholder: string;
-  readonly fallbackTooltip: string;
+  readonly labelKey: ParseKeys<"settings">;
+  readonly placeholderKey: ParseKeys<"settings">;
+  readonly fallbackTooltipKey: ParseKeys<"settings">;
 }
 
 const OPTIONAL_FIELDS: readonly OptionalField[] = [
   {
     name: GeneralSettingsFieldName.MAXIMUM_SPEND_LOGS_RETENTION_PERIOD,
     kind: "duration",
-    label: "Maximum Spend Logs Retention Period (Optional)",
-    placeholder: "e.g., 7d, 30d",
-    fallbackTooltip:
-      "Set the maximum retention period for spend logs (e.g., '7d' for 7 days, '30d' for 30 days). Leave empty for no limit.",
+    labelKey: "loggingSettings.retentionLabel",
+    placeholderKey: "loggingSettings.retentionPlaceholder",
+    fallbackTooltipKey: "loggingSettings.retentionTooltip",
   },
   {
     name: GeneralSettingsFieldName.MAXIMUM_SPEND_LOGS_CLEANUP_BATCH_SIZE,
     kind: "count",
-    label: "Spend Logs Cleanup Batch Size (Optional)",
-    placeholder: "e.g., 1000",
-    fallbackTooltip: "Rows deleted per DELETE statement during cleanup. Leave empty to use the default of 1000.",
+    labelKey: "loggingSettings.batchSizeLabel",
+    placeholderKey: "loggingSettings.batchSizePlaceholder",
+    fallbackTooltipKey: "loggingSettings.batchSizeTooltip",
   },
   {
     name: GeneralSettingsFieldName.MAXIMUM_SPEND_LOGS_CLEANUP_MAX_BATCHES,
     kind: "count",
-    label: "Spend Logs Cleanup Max Batches (Optional)",
-    placeholder: "e.g., 500",
-    fallbackTooltip:
-      "Maximum number of DELETE statements run per table per cleanup run. Leave empty to use the default of 500.",
+    labelKey: "loggingSettings.maxBatchesLabel",
+    placeholderKey: "loggingSettings.maxBatchesPlaceholder",
+    fallbackTooltipKey: "loggingSettings.maxBatchesTooltip",
   },
   {
     name: GeneralSettingsFieldName.MAXIMUM_SPEND_LOGS_CLEANUP_RUN_BUDGET,
     kind: "duration",
-    label: "Spend Logs Cleanup Run Budget (Optional)",
-    placeholder: "e.g., 5m",
-    fallbackTooltip:
-      "Wall-clock budget for a whole cleanup run, shared across every table it cleans (e.g., '5m'). Leave empty to use the default of 5m.",
+    labelKey: "loggingSettings.runBudgetLabel",
+    placeholderKey: "loggingSettings.runBudgetPlaceholder",
+    fallbackTooltipKey: "loggingSettings.runBudgetTooltip",
   },
   {
     name: GeneralSettingsFieldName.MAXIMUM_SPEND_LOGS_CLEANUP_BATCH_TIMEOUT,
     kind: "duration",
-    label: "Spend Logs Cleanup Batch Timeout (Optional)",
-    placeholder: "e.g., 30s",
-    fallbackTooltip:
-      "Postgres statement and lock timeout applied to each cleanup batch, so cleanup never monopolizes a connection (e.g., '30s'). Leave empty to use the default of 30s.",
+    labelKey: "loggingSettings.batchTimeoutLabel",
+    placeholderKey: "loggingSettings.batchTimeoutPlaceholder",
+    fallbackTooltipKey: "loggingSettings.batchTimeoutTooltip",
   },
 ];
 
@@ -158,6 +156,7 @@ const LoggingSettingsForm: React.FC<LoggingSettingsFormProps> = ({
   isSaving,
   onSubmit,
 }) => {
+  const { t } = useTranslation("settings");
   const form = useForm<LoggingSettingsFormValues>({ defaultValues: initialValues });
 
   return (
@@ -168,11 +167,8 @@ const LoggingSettingsForm: React.FC<LoggingSettingsFormProps> = ({
             control={form.control}
             name={STORE_PROMPTS_FIELD_NAME}
             label={labelWithHint(
-              "Store Prompts in Spend Logs",
-              describeField(
-                STORE_PROMPTS_FIELD_NAME,
-                "When enabled, prompts will be stored in spend logs for tracking and analysis purposes.",
-              ),
+              t("loggingSettings.storePrompts"),
+              describeField(STORE_PROMPTS_FIELD_NAME, t("loggingSettings.storePromptsTooltip")),
             )}
           >
             {({ id, value, onChange, onBlur }) => (
@@ -185,7 +181,7 @@ const LoggingSettingsForm: React.FC<LoggingSettingsFormProps> = ({
               key={field.name}
               control={form.control}
               name={field.name}
-              label={labelWithHint(field.label, describeField(field.name, field.fallbackTooltip))}
+              label={labelWithHint(t(field.labelKey), describeField(field.name, t(field.fallbackTooltipKey)))}
             >
               {({ ref, onChange, onBlur, ...control }) =>
                 field.kind === "duration" ? (
@@ -195,7 +191,7 @@ const LoggingSettingsForm: React.FC<LoggingSettingsFormProps> = ({
                       ref={ref}
                       onChange={(event) => onChange(event.target.value)}
                       onBlur={onBlur}
-                      placeholder={field.placeholder}
+                      placeholder={t(field.placeholderKey)}
                     />
                     <InputGroupAddon>
                       <Clock />
@@ -211,7 +207,7 @@ const LoggingSettingsForm: React.FC<LoggingSettingsFormProps> = ({
                       onChange(countDisplay(event.target.value));
                       onBlur();
                     }}
-                    placeholder={field.placeholder}
+                    placeholder={t(field.placeholderKey)}
                   />
                 )
               }
@@ -220,8 +216,8 @@ const LoggingSettingsForm: React.FC<LoggingSettingsFormProps> = ({
         </FieldGroup>
 
         <Button type="submit" className="mt-6" disabled={isSaving}>
-          {isSaving && <UiLoadingSpinner role="img" aria-label="loading" className="size-4" />}
-          {isSaving ? "Saving..." : "Save Settings"}
+          {isSaving && <UiLoadingSpinner role="img" aria-label={t("shared.loading")} className="size-4" />}
+          {isSaving ? t("shared.saving") : t("loggingSettings.saveSettings")}
         </Button>
       </form>
     </TooltipProvider>
@@ -229,6 +225,7 @@ const LoggingSettingsForm: React.FC<LoggingSettingsFormProps> = ({
 };
 
 const LoggingSettings: React.FC = () => {
+  const { t } = useTranslation("settings");
   const { mutate, isPending } = useStoreRequestInSpendLogs();
   const { mutate: deleteField, isPending: isDeletingField } = useDeleteProxyConfigField();
   const { data: proxyConfigData, isLoading: isLoadingConfig } = useProxyConfig(ConfigType.GENERAL_SETTINGS);
@@ -295,8 +292,8 @@ const LoggingSettings: React.FC = () => {
     const updateParams = buildUpdateParams(formValues);
     const submitUpdate = () =>
       mutate(updateParams, {
-        onSuccess: () => toast.success("Spend logs settings updated successfully"),
-        onError: (error) => toast.fromError("Failed to save spend logs settings: " + parseErrorMessage(error)),
+        onSuccess: () => toast.success(t("loggingSettings.updatedSuccess")),
+        onError: (error) => toast.fromError(t("loggingSettings.saveFailed", { error: parseErrorMessage(error) })),
       });
 
     const fieldsToClear = omittedFieldNames(updateParams, isStored);
@@ -309,7 +306,7 @@ const LoggingSettings: React.FC = () => {
       if (failed.length > 0) {
         // Reporting an unqualified success here would tell the admin a setting
         // was reset to its default while the old value is still in force.
-        toast.fromError(`Failed to clear saved value for: ${failed.join(", ")}`);
+        toast.fromError(t("loggingSettings.clearFailed", { fields: failed.join(", ") }));
         return;
       }
       submitUpdate();
@@ -319,13 +316,11 @@ const LoggingSettings: React.FC = () => {
   return (
     <Card>
       <CardHeader className="border-b">
-        <CardTitle>Logging Settings</CardTitle>
+        <CardTitle>{t("loggingSettings.title")}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex w-full flex-col gap-6">
-          <p className="mb-0 text-muted-foreground">
-            Proxy-wide settings that control how request and response data are written to spend logs.
-          </p>
+          <p className="mb-0 text-muted-foreground">{t("loggingSettings.description")}</p>
 
           {isLoadingConfig ? (
             <div className="flex flex-col gap-3">

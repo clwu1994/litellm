@@ -23,6 +23,7 @@ import type zhPrompts from "./locales/zh/prompts.json";
 import type zhProjects from "./locales/zh/projects.json";
 import type zhRouterSettings from "./locales/zh/routerSettings.json";
 import type zhSearchTools from "./locales/zh/searchTools.json";
+import type zhSettings from "./locales/zh/settings.json";
 import type zhSkills from "./locales/zh/skills.json";
 import type zhTagManagement from "./locales/zh/tagManagement.json";
 import type zhTeams from "./locales/zh/teams.json";
@@ -64,6 +65,7 @@ declare module "i18next" {
       projects: typeof zhProjects;
       routerSettings: typeof zhRouterSettings;
       searchTools: typeof zhSearchTools;
+      settings: typeof zhSettings;
       skills: typeof zhSkills;
       tagManagement: typeof zhTagManagement;
       transformRequest: typeof zhTransformRequest;
