@@ -91,6 +91,34 @@ describe("TagInfoView Chinese copy", () => {
     }
   });
 
+  it.each([
+    ["1h", "每小时"],
+    ["24h", "每天"],
+    ["7d", "每周"],
+    ["30d", "每月"],
+  ] as const)("renders the Chinese budget duration for the %s value", async (raw, zh) => {
+    mockTagInfoCall.mockResolvedValue({
+      "prod-tag": { ...tag, litellm_budget_table: { ...tag.litellm_budget_table, budget_duration: raw } },
+    });
+    renderView();
+
+    await screen.findByRole("button", { name: "← 返回标签" });
+
+    expect(screen.getByText(zh)).toBeInTheDocument();
+    expect(screen.queryByText(raw)).not.toBeInTheDocument();
+  });
+
+  it("falls back to the raw budget duration for an unknown value", async () => {
+    mockTagInfoCall.mockResolvedValue({
+      "prod-tag": { ...tag, litellm_budget_table: { ...tag.litellm_budget_table, budget_duration: "45d" } },
+    });
+    renderView();
+
+    await screen.findByRole("button", { name: "← 返回标签" });
+
+    expect(screen.getByText("45d")).toBeInTheDocument();
+  });
+
   it("renders the Chinese all-models badge when the tag has no models", async () => {
     mockTagInfoCall.mockResolvedValue({ "prod-tag": { ...tag, models: [] } });
     renderView();

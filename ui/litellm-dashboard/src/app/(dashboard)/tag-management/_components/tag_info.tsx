@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { SimpleTooltip } from "@/components/ui/tooltip";
-import type { TFunction } from "i18next";
+import type { ParseKeys, TFunction } from "i18next";
 import { Trans, useTranslation } from "react-i18next";
 import { z } from "zod/v4";
 import { fetchUserModels } from "@/components/organisms/create_key_button";
@@ -36,6 +36,18 @@ const tagEditShape = (t: TFunction<"tagManagement">) => ({
 const tagEditSchema = (t: TFunction<"tagManagement">) => z.object(tagEditShape(t));
 
 type TagEditFormValues = z.output<ReturnType<typeof tagEditSchema>>;
+
+const BUDGET_DURATION_LABEL_KEYS: Readonly<Record<string, ParseKeys<"tagManagement">>> = {
+  "1h": "details.budgetDurationValues.1h",
+  "24h": "details.budgetDurationValues.24h",
+  "7d": "details.budgetDurationValues.7d",
+  "30d": "details.budgetDurationValues.30d",
+};
+
+const budgetDurationLabel = (t: TFunction<"tagManagement">, value: string): string => {
+  const key = BUDGET_DURATION_LABEL_KEYS[value];
+  return key === undefined ? value : t(key);
+};
 
 interface TagEditFormProps {
   tag: Tag;
@@ -330,7 +342,7 @@ const TagInfoView: React.FC<TagInfoViewProps> = ({ tagId, onClose, accessToken, 
                   {tagDetails.litellm_budget_table.budget_duration && (
                     <div>
                       <p className="font-medium">{t("details.budgetDuration")}</p>
-                      <p>{tagDetails.litellm_budget_table.budget_duration}</p>
+                      <p>{budgetDurationLabel(t, tagDetails.litellm_budget_table.budget_duration)}</p>
                     </div>
                   )}
                   {tagDetails.litellm_budget_table.tpm_limit !== undefined &&

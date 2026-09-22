@@ -43,6 +43,12 @@
     "budgetTitle": "预算与速率限制",
     "maxBudget": "最大预算",
     "budgetDuration": "预算周期",
+    "budgetDurationValues": {
+      "1h": "每小时",
+      "24h": "每天",
+      "7d": "每周",
+      "30d": "每月"
+    },
     "tpmLimit": "TPM 限制",
     "rpmLimit": "RPM 限制",
     "modelIdTooltip": "ID：{{id}}"
