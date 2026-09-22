@@ -8,6 +8,7 @@ import {
   removeLocalStorageItem,
   setLocalStorageItem,
 } from "@/utils/localStorageUtils";
+import { userRoleLabelKey } from "@/utils/roles";
 import { navAccountDisplayName } from "@/components/Navbar/navDisplayName";
 import { ChevronDown, ChevronsUpDown, Crown, LogOut, Mail, ShieldCheck, User } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -121,7 +122,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onLogout, variant = "navbar
           <ShieldCheck className="size-4" />
           <span className="text-muted-foreground">{t("topbar.role")}</span>
         </div>
-        <span>{userRole}</span>
+        <span>{roleLabel}</span>
       </div>
       <Separator className="my-2" />
       <div className="flex w-full items-center justify-between gap-2">
@@ -200,8 +201,9 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onLogout, variant = "navbar
   const initials = initialsFromIdentity(userEmail, userId);
   const hue = hueFromString(seed);
   const displayName = navAccountDisplayName(userEmail, userId, t);
+  const roleLabel = userRole ? tCommon(userRoleLabelKey(userRole)) : userRole;
   const accountMenuLabel = t("topbar.accountMenu", {
-    role: userRole ?? t("topbar.unknownRole"),
+    role: roleLabel ?? t("topbar.unknownRole"),
     identity: userEmail || userId || t("topbar.unknownIdentity"),
   });
 
@@ -231,7 +233,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onLogout, variant = "navbar
             <>
               <span className="min-w-0 flex-1 leading-tight">
                 <span className="block truncate text-[13px] font-medium text-sidebar-foreground">{displayName}</span>
-                {userRole && <span className="block truncate text-[11px] text-muted-foreground">{userRole}</span>}
+                {userRole && <span className="block truncate text-[11px] text-muted-foreground">{roleLabel}</span>}
               </span>
               <ChevronsUpDown size={16} strokeWidth={1.75} className="shrink-0 text-muted-foreground" aria-hidden />
             </>

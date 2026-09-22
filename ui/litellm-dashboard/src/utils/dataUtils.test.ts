@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 
+import { cleanup } from "@testing-library/react";
 import { describe, it, expect, beforeAll, beforeEach, vi, afterEach } from "vitest";
 import i18n from "@/i18n/bootstrapI18n";
 import { copyToClipboard, formatNumberWithCommas, getSpendString, updateExistingKeys } from "./dataUtils";
@@ -317,6 +318,7 @@ describe("dataUtils", () => {
       });
 
       afterEach(async () => {
+        cleanup();
         await i18n.changeLanguage("en");
       });
 

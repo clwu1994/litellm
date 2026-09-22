@@ -1,3 +1,4 @@
+import { cleanup } from "@testing-library/react";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import i18n from "@/i18n/bootstrapI18n";
 import { ApiError } from "@/lib/http/client";
@@ -187,6 +188,7 @@ describe("toast", () => {
     });
 
     afterEach(async () => {
+      cleanup();
       await i18n.changeLanguage("en");
     });
 
@@ -205,6 +207,7 @@ describe("toast", () => {
       toast.fromError(new ApiError("boom", status, "boom"));
       expect(fn).toHaveBeenCalledWith(zhTitle, { description: "boom", duration: 6000 });
       expect(fn).not.toHaveBeenCalledWith(enTitle, { description: "boom", duration: 6000 });
+      expect(fn === sonner.warning ? sonner.error : sonner.warning).not.toHaveBeenCalled();
     });
 
     it.each([
@@ -221,6 +224,7 @@ describe("toast", () => {
       toast.fromError({ message: "no", type, code: "400" });
       expect(fn).toHaveBeenCalledWith(zhTitle, { description: "no", duration: 6000 });
       expect(fn).not.toHaveBeenCalledWith(enTitle, { description: "no", duration: 6000 });
+      expect(fn === sonner.warning ? sonner.error : sonner.warning).not.toHaveBeenCalled();
     });
 
     it("renders the access-denied suffix in Chinese", () => {

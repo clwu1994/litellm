@@ -442,5 +442,16 @@
   "copyToClipboard": {
     "success": "已复制到剪贴板",
     "failure": "复制到剪贴板失败"
+  },
+  "userRoles": {
+    "appOwner": "应用所有者",
+    "admin": "管理员",
+    "adminViewer": "管理员查看者",
+    "orgAdmin": "组织管理员",
+    "internalUser": "内部用户",
+    "internalViewer": "内部查看者",
+    "appUser": "应用用户",
+    "undefinedRole": "未定义角色",
+    "unknownRole": "未知角色"
   }
 }

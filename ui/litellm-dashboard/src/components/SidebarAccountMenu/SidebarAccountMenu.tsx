@@ -5,6 +5,7 @@ import { useDisableBouncingIcon } from "@/app/(dashboard)/hooks/useDisableBounci
 import { useDisableShowNewBadge } from "@/app/(dashboard)/hooks/useDisableShowNewBadge";
 import { useDisableShowPrompts } from "@/app/(dashboard)/hooks/useDisableShowPrompts";
 import { emitLocalStorageChange, removeLocalStorageItem, setLocalStorageItem } from "@/utils/localStorageUtils";
+import { userRoleLabelKey } from "@/utils/roles";
 import { navAccountDisplayName } from "@/components/Navbar/navDisplayName";
 import LanguageSwitcher from "@/components/Navbar/UserDropdown/LanguageSwitcher";
 import CopyButton from "@/components/shared/CopyButton";
@@ -137,8 +138,9 @@ const SidebarAccountMenu: React.FC<SidebarAccountMenuProps> = ({ onLogout, colla
   const initials = initialsFromIdentity(userEmail, userId);
   const hue = hueFromString(seed);
   const displayName = navAccountDisplayName(userEmail, userId, tNav);
+  const roleLabel = userRole ? t(userRoleLabelKey(userRole)) : userRole;
   const triggerLabel = t("accountMenu.triggerLabel", {
-    role: userRole,
+    role: roleLabel,
     user: userEmail || userId || t("accountMenu.unknown"),
   });
 
@@ -161,7 +163,7 @@ const SidebarAccountMenu: React.FC<SidebarAccountMenuProps> = ({ onLogout, colla
           <>
             <span className="min-w-0 flex-1 leading-tight">
               <span className="block truncate text-[13px] font-medium text-sidebar-foreground">{displayName}</span>
-              {userRole && <span className="block truncate text-[11px] text-muted-foreground">{userRole}</span>}
+              {userRole && <span className="block truncate text-[11px] text-muted-foreground">{roleLabel}</span>}
             </span>
             <ChevronsUpDown size={16} strokeWidth={1.75} className="shrink-0 text-muted-foreground" aria-hidden />
           </>
@@ -214,7 +216,7 @@ const SidebarAccountMenu: React.FC<SidebarAccountMenuProps> = ({ onLogout, colla
             )}
           </InfoRow>
           <InfoRow icon={<ShieldCheck className="size-[17px]" />} label={t("accountMenu.role")}>
-            <Badge variant="secondary">{userRole}</Badge>
+            <Badge variant="secondary">{roleLabel}</Badge>
           </InfoRow>
           <InfoRow icon={<Mail className="size-[17px]" />} label={t("accountMenu.email")}>
             <MonoValue value={userEmail} copyLabel={t("accountMenu.copyEmail")} />

@@ -1,3 +1,4 @@
+import type { ParseKeys } from "i18next";
 import { Member, Organization, Team } from "@/components/networking";
 
 const ORG_ADMIN_MEMBERSHIP_ROLE = "org_admin";
@@ -88,6 +89,23 @@ export const formatUserRole = (userRole: string): string => {
 
 export const isOrgAdminSessionRole = (userRole?: string | null): boolean =>
   userRole === ORG_ADMIN_MEMBERSHIP_ROLE || userRole === formatUserRole(ORG_ADMIN_MEMBERSHIP_ROLE);
+
+// formatUserRole stays language-neutral because its output is compared as data (see
+// isOrgAdminSessionRole and teamListScopeUserId); callers translate at the render site.
+const USER_ROLE_KEYS: Readonly<Record<string, ParseKeys<"common">>> = {
+  "App Owner": "userRoles.appOwner",
+  Admin: "userRoles.admin",
+  "Admin Viewer": "userRoles.adminViewer",
+  "Org Admin": "userRoles.orgAdmin",
+  "Internal User": "userRoles.internalUser",
+  "Internal Viewer": "userRoles.internalViewer",
+  "App User": "userRoles.appUser",
+  "Undefined Role": "userRoles.undefinedRole",
+  "Unknown Role": "userRoles.unknownRole",
+};
+
+export const userRoleLabelKey = (roleLabel: string): ParseKeys<"common"> =>
+  USER_ROLE_KEYS[roleLabel] ?? "userRoles.unknownRole";
 
 const viewOnlyRawRoles = ["proxy_admin_viewer", "internal_user_viewer", "internal_viewer"];
 

@@ -442,5 +442,16 @@
   "copyToClipboard": {
     "success": "Copied to clipboard",
     "failure": "Failed to copy to clipboard"
+  },
+  "userRoles": {
+    "appOwner": "App Owner",
+    "admin": "Admin",
+    "adminViewer": "Admin Viewer",
+    "orgAdmin": "Org Admin",
+    "internalUser": "Internal User",
+    "internalViewer": "Internal Viewer",
+    "appUser": "App User",
+    "undefinedRole": "Undefined Role",
+    "unknownRole": "Unknown Role"
   }
 }

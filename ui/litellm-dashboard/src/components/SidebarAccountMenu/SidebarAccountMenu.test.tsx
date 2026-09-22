@@ -1,7 +1,7 @@
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { cleanup, renderWithProviders, screen, waitFor } from "../../../tests/test-utils";
+import { cleanup, renderWithProviders, screen, waitFor, within } from "../../../tests/test-utils";
 import i18n from "@/i18n/bootstrapI18n";
 import SidebarAccountMenu from "./SidebarAccountMenu";
 
@@ -330,7 +330,7 @@ describe("SidebarAccountMenu Chinese copy", () => {
   it("renders the trigger label in Chinese", () => {
     renderWithProviders(<SidebarAccountMenu onLogout={vi.fn()} />);
 
-    expect(screen.getByRole("button", { name: "账户菜单 — Admin — 已登录为 test@example.com" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "账户菜单 — 管理员 — 已登录为 test@example.com" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /Account menu/ })).not.toBeInTheDocument();
   });
 
@@ -349,6 +349,9 @@ describe("SidebarAccountMenu Chinese copy", () => {
     expect(screen.queryByTitle("Upgrade to Premium for advanced features")).not.toBeInTheDocument();
     expect(screen.getByText("角色")).toBeInTheDocument();
     expect(screen.queryByText("Role")).not.toBeInTheDocument();
+    const panel = screen.getByTestId("sidebar-account-menu-panel");
+    expect(within(panel).getByText("管理员")).toBeInTheDocument();
+    expect(within(panel).queryByText("Admin")).not.toBeInTheDocument();
     expect(screen.getByText("邮箱")).toBeInTheDocument();
     expect(screen.queryByText("Email")).not.toBeInTheDocument();
     expect(screen.getByText("用户 ID")).toBeInTheDocument();
@@ -405,7 +408,7 @@ describe("SidebarAccountMenu Chinese copy", () => {
     });
     renderWithProviders(<SidebarAccountMenu onLogout={vi.fn()} />);
 
-    expect(screen.getByRole("button", { name: "账户菜单 — Admin — 已登录为 未知" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "账户菜单 — 管理员 — 已登录为 未知" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /signed in as unknown/ })).not.toBeInTheDocument();
   });
 });

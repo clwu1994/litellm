@@ -1,3 +1,5 @@
+// copyToClipboard resolves its default and failure messages from the i18n instance because its 48
+// importers call it from non-React helpers where no `t` is available; the read happens at call time.
 import i18n from "@/i18n/bootstrapI18n";
 import { toast } from "@/lib/toast";
 

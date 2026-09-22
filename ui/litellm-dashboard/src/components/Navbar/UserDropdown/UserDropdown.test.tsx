@@ -318,9 +318,13 @@ describe("UserDropdown localization", () => {
 
     await user.click(screen.getByRole("button", { name: /账户菜单/ }));
 
+    expect(screen.getByRole("button", { name: "账户菜单 — 管理员 — 登录身份：test@example.com" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /account menu — Admin/ })).not.toBeInTheDocument();
     expect(screen.getByText("标准版")).toBeInTheDocument();
     expect(screen.getByText("用户 ID")).toBeInTheDocument();
     expect(screen.getByText("角色")).toBeInTheDocument();
+    expect(screen.getByText("管理员")).toBeInTheDocument();
+    expect(screen.queryByText("Admin")).not.toBeInTheDocument();
     expect(screen.getByText("隐藏新功能提示")).toBeInTheDocument();
     expect(screen.getByLabelText("切换隐藏所有提示词")).toBeInTheDocument();
     expect(screen.getByText("退出登录")).toBeInTheDocument();

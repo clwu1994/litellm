@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   all_admin_roles,
   effectiveSessionRole,
+  formatUserRole,
   hasProxyWideSpendView,
   isAdminRole,
   spendScopeUserId,
@@ -14,6 +15,7 @@ import {
   rolesAllowedToViewWriteScopedPages,
   rolesWithWriteAccess,
   teamListScopeUserId,
+  userRoleLabelKey,
 } from "./roles";
 import { Organization, Team } from "@/components/networking";
 
@@ -370,6 +372,28 @@ describe("roles", () => {
       const scopedByAllAdminRoles = all_admin_roles.filter((role) => spendScopeUserId(role, SESSION_USER_ID) !== null);
 
       expect(scopedByAllAdminRoles).toEqual(["org_admin"]);
+    });
+  });
+
+  describe("userRoleLabelKey", () => {
+    it.each([
+      ["app_owner", "userRoles.appOwner"],
+      ["demo_app_owner", "userRoles.appOwner"],
+      ["proxy_admin", "userRoles.admin"],
+      ["proxy_admin_viewer", "userRoles.adminViewer"],
+      ["org_admin", "userRoles.orgAdmin"],
+      ["internal_user", "userRoles.internalUser"],
+      ["internal_user_viewer", "userRoles.internalViewer"],
+      ["internal_viewer", "userRoles.internalViewer"],
+      ["app_user", "userRoles.appUser"],
+      ["", "userRoles.undefinedRole"],
+      ["something_else", "userRoles.unknownRole"],
+    ])("maps the canonical label for %s to %s", (rawRole, key) => {
+      expect(userRoleLabelKey(formatUserRole(rawRole))).toBe(key);
+    });
+
+    it("falls back to the unknown-role key for a label the map does not carry", () => {
+      expect(userRoleLabelKey("Not A Role")).toBe("userRoles.unknownRole");
     });
   });
 });
