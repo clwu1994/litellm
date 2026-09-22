@@ -84,19 +84,37 @@ describe("CoordinationRedisSettings", () => {
 
   describe("the source badge", () => {
     it.each([
-      ["coordination_redis", "Configured here"],
-      ["cache_backend", "Borrowed from response cache"],
-      ["environment", "From REDIS_* environment"],
-    ] as const)("should render %s as %s", async (source, label) => {
+      [
+        "coordination_redis",
+        "Configured here",
+        "general_settings.coordination_redis is set, so coordination uses its own Redis connection.",
+      ],
+      [
+        "cache_backend",
+        "Borrowed from response cache",
+        "No coordination Redis is configured; the proxy reuses the response cache's Redis connection.",
+      ],
+      [
+        "environment",
+        "From REDIS_* environment",
+        "No coordination Redis is configured; the proxy falls back to the REDIS_* environment variables.",
+      ],
+    ] as const)("should render %s as %s", async (source, label, tooltip) => {
       getSettings.mockResolvedValue(settingsResponse({}, source));
       renderSettings();
       expect(await screen.findByTestId("coordination-redis-source")).toHaveTextContent(label);
+      expect(screen.getByText(tooltip)).toBeInTheDocument();
     });
 
     it("should render a null source as not configured", async () => {
       getSettings.mockResolvedValue(settingsResponse({}, null));
       renderSettings();
       expect(await screen.findByTestId("coordination-redis-source")).toHaveTextContent("Not configured");
+      expect(
+        screen.getByText(
+          "Cross-pod rate limits, spend tracking, and the pod lock manager have no Redis to coordinate through.",
+        ),
+      ).toBeInTheDocument();
     });
 
     it("should tell the admin that saved changes need a proxy restart", async () => {

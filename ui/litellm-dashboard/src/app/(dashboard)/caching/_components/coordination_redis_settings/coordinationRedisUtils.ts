@@ -1,3 +1,5 @@
+import type { ParseKeys } from "i18next";
+
 import type { StatusTone } from "@/components/shared/table_cells/status_badge";
 import {
   COORDINATION_FIELDS,
@@ -114,32 +116,32 @@ export const buildCoordinationPayload = (
 
 export interface SourceBadgeDescriptor {
   readonly tone: StatusTone;
-  readonly label: string;
-  readonly tooltip: string;
+  readonly labelKey: ParseKeys<"caching">;
+  readonly tooltipKey: ParseKeys<"caching">;
 }
 
 const SOURCE_BADGES: Readonly<Record<CoordinationRedisSource, SourceBadgeDescriptor>> = {
   coordination_redis: {
     tone: "success",
-    label: "Configured here",
-    tooltip: "general_settings.coordination_redis is set, so coordination uses its own Redis connection.",
+    labelKey: "coordinationRedis.sourceConfiguredHere",
+    tooltipKey: "coordinationRedis.sourceConfiguredHereTooltip",
   },
   cache_backend: {
     tone: "info",
-    label: "Borrowed from response cache",
-    tooltip: "No coordination Redis is configured; the proxy reuses the response cache's Redis connection.",
+    labelKey: "coordinationRedis.sourceBorrowed",
+    tooltipKey: "coordinationRedis.sourceBorrowedTooltip",
   },
   environment: {
     tone: "info",
-    label: "From REDIS_* environment",
-    tooltip: "No coordination Redis is configured; the proxy falls back to the REDIS_* environment variables.",
+    labelKey: "coordinationRedis.sourceEnvironment",
+    tooltipKey: "coordinationRedis.sourceEnvironmentTooltip",
   },
 };
 
 const NOT_CONFIGURED_BADGE: SourceBadgeDescriptor = {
   tone: "neutral",
-  label: "Not configured",
-  tooltip: "Cross-pod rate limits, spend tracking, and the pod lock manager have no Redis to coordinate through.",
+  labelKey: "coordinationRedis.sourceNotConfigured",
+  tooltipKey: "coordinationRedis.sourceNotConfiguredTooltip",
 };
 
 export const sourceBadge = (source: string | null | undefined): SourceBadgeDescriptor => {

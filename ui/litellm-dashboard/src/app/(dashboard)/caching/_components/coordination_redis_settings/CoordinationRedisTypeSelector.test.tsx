@@ -4,7 +4,6 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderWithProviders } from "@/../tests/test-utils";
 import CoordinationRedisTypeSelector from "./CoordinationRedisTypeSelector";
-import { COORDINATION_REDIS_TYPE_DESCRIPTIONS } from "./coordinationRedisFields";
 import { chooseSelectOption } from "../../../../../../tests/test-utils";
 
 describe("CoordinationRedisTypeSelector", () => {
@@ -19,17 +18,17 @@ describe("CoordinationRedisTypeSelector", () => {
   it("shows the description for the selected type", () => {
     renderWithProviders(<CoordinationRedisTypeSelector redisType="cluster" onTypeChange={vi.fn()} />);
 
-    expect(screen.getByText(COORDINATION_REDIS_TYPE_DESCRIPTIONS.cluster)).toBeInTheDocument();
+    expect(screen.getByText("Redis Cluster mode for high availability and horizontal scaling")).toBeInTheDocument();
   });
 
   it("switches the description when the selected type changes", () => {
     const { rerender } = renderWithProviders(<CoordinationRedisTypeSelector redisType="node" onTypeChange={vi.fn()} />);
-    expect(screen.getByText(COORDINATION_REDIS_TYPE_DESCRIPTIONS.node)).toBeInTheDocument();
+    expect(screen.getByText("Standard Redis node/single instance")).toBeInTheDocument();
 
     rerender(<CoordinationRedisTypeSelector redisType="sentinel" onTypeChange={vi.fn()} />);
 
-    expect(screen.getByText(COORDINATION_REDIS_TYPE_DESCRIPTIONS.sentinel)).toBeInTheDocument();
-    expect(screen.queryByText(COORDINATION_REDIS_TYPE_DESCRIPTIONS.node)).not.toBeInTheDocument();
+    expect(screen.getByText("Redis Sentinel mode for high availability with automatic failover")).toBeInTheDocument();
+    expect(screen.queryByText("Standard Redis node/single instance")).not.toBeInTheDocument();
   });
 
   it("reports the newly picked type to the caller", async () => {

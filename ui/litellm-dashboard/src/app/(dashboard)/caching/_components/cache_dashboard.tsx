@@ -1,5 +1,6 @@
 import type { DateRangePickerValue } from "@/components/shared/date_picker_types";
 import React, { useEffect, useState } from "react";
+import { Trans, useTranslation } from "react-i18next";
 import { toast } from "@/lib/toast";
 import AdvancedDatePicker from "@/components/shared/advanced_date_picker";
 import { BarChart } from "@/components/shared/charts";
@@ -36,9 +37,6 @@ const REQUEST_SERIES = {
 } as const;
 
 const UNKNOWN_CALL_TYPE = "Unknown";
-
-const UNKNOWN_CALL_TYPE_NOTE =
-  "Unknown groups spend logs that recorded no endpoint. Older proxy versions wrote those for requests rejected before routing, so they are not necessarily LLM API requests.";
 
 const toChartDatum = (group: CacheActivityGroup) => ({
   name: group.call_type,
@@ -80,6 +78,7 @@ interface CachePageProps {
 // Helper function to deep-parse a JSON string if possible
 
 const CacheDashboard: React.FC<CachePageProps> = ({ accessToken, token, userRole, userID, premiumUser }) => {
+  const { t } = useTranslation("caching");
   const anchor1 = useComboboxAnchor();
   const anchor2 = useComboboxAnchor();
   const [selectedApiKeys, setSelectedApiKeys] = useState<string[]>([]);
@@ -118,7 +117,7 @@ const CacheDashboard: React.FC<CachePageProps> = ({ accessToken, token, userRole
 
   const runCachingHealthCheck = async () => {
     try {
-      toast.info("Running cache health check...");
+      toast.info(t("health.runningHealthCheckToast"));
       setHealthCheckResponse("");
       const response = await cachingHealthCheckCall(accessToken !== null ? accessToken : "");
       setHealthCheckResponse(response);
@@ -138,7 +137,7 @@ const CacheDashboard: React.FC<CachePageProps> = ({ accessToken, token, userRole
           errorData = { message: error.message };
         }
       } else {
-        errorData = { message: "Unknown error occurred" };
+        errorData = { message: t("analytics.unknownErrorOccurred") };
       }
       setHealthCheckResponse({ error: errorData });
     }
@@ -147,9 +146,17 @@ const CacheDashboard: React.FC<CachePageProps> = ({ accessToken, token, userRole
   const totals = activity?.totals;
   const hasRequests = totals != null && totals.api_requests + totals.cache_hits + totals.failed_requests > 0;
   const statCards = [
-    { label: "Cache Hit Ratio", value: `${hasRequests ? totals.cache_hit_ratio.toFixed(2) : "0"}%` },
-    { label: "Cache Hits", value: valueFormatterNumbers(totals?.cache_hits ?? 0) },
-    { label: "Cached Completion Tokens", value: valueFormatterNumbers(totals?.cached_completion_tokens ?? 0) },
+    {
+      id: "cacheHitRatio",
+      label: t("analytics.cacheHitRatio"),
+      value: `${hasRequests ? totals.cache_hit_ratio.toFixed(2) : "0"}%`,
+    },
+    { id: "cacheHits", label: t("analytics.cacheHits"), value: valueFormatterNumbers(totals?.cache_hits ?? 0) },
+    {
+      id: "cachedCompletionTokens",
+      label: t("analytics.cachedCompletionTokens"),
+      value: valueFormatterNumbers(totals?.cached_completion_tokens ?? 0),
+    },
   ];
 
   return (
@@ -157,22 +164,24 @@ const CacheDashboard: React.FC<CachePageProps> = ({ accessToken, token, userRole
       <div className="mt-2 flex w-full items-center justify-between border-b">
         <TabsList variant="line" className="h-auto rounded-none p-0">
           <TabsTrigger value="analytics" className="flex-none rounded-none px-4 py-2">
-            Cache Analytics
+            {t("tabs.analytics")}
           </TabsTrigger>
           <TabsTrigger value="health" className="flex-none rounded-none px-4 py-2">
-            Cache Health
+            {t("tabs.health")}
           </TabsTrigger>
           <TabsTrigger value="settings" className="flex-none rounded-none px-4 py-2">
-            Cache Settings
+            {t("tabs.settings")}
           </TabsTrigger>
           <TabsTrigger value="coordination" className="flex-none rounded-none px-4 py-2">
-            Coordination Redis
+            {t("tabs.coordination")}
           </TabsTrigger>
         </TabsList>
 
         <div className="flex items-center space-x-2">
-          {lastRefreshed && <p className="text-sm text-muted-foreground">Last Refreshed: {lastRefreshed}</p>}
-          <Button variant="outline" size="icon-sm" onClick={handleRefreshClick} aria-label="Refresh">
+          {lastRefreshed && (
+            <p className="text-sm text-muted-foreground">{t("analytics.lastRefreshed", { time: lastRefreshed })}</p>
+          )}
+          <Button variant="outline" size="icon-sm" onClick={handleRefreshClick} aria-label={t("analytics.refresh")}>
             <RefreshCw />
           </Button>
         </div>
@@ -182,26 +191,28 @@ const CacheDashboard: React.FC<CachePageProps> = ({ accessToken, token, userRole
         <Card>
           <CardContent>
             <p className="text-sm text-muted-foreground">
-              Analytics for LiteLLM&apos;s{" "}
-              <a
-                href="https://docs.litellm.ai/docs/proxy/caching"
-                target="_blank"
-                rel="noreferrer"
-                className="underline"
-              >
-                response cache
-              </a>{" "}
-              (e.g. Redis / in-memory): requests answered from cache without calling the LLM provider. Provider-side{" "}
-              <a
-                href="https://docs.litellm.ai/docs/completion/prompt_caching"
-                target="_blank"
-                rel="noreferrer"
-                className="underline"
-              >
-                prompt caching
-              </a>{" "}
-              (cached input tokens from Anthropic, OpenAI, etc.) is not shown here; see &quot;Prompt Caching
-              Metrics&quot; on the Usage page or individual requests in the Logs page.
+              <Trans
+                ns="caching"
+                i18nKey="analytics.description"
+                components={{
+                  cacheLink: (
+                    <a
+                      href="https://docs.litellm.ai/docs/proxy/caching"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="underline"
+                    />
+                  ),
+                  promptLink: (
+                    <a
+                      href="https://docs.litellm.ai/docs/completion/prompt_caching"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="underline"
+                    />
+                  ),
+                }}
+              />
             </p>
 
             <div className="mt-4 grid grid-cols-1 items-center gap-4 md:grid-cols-[1fr_1fr_auto]">
@@ -221,10 +232,10 @@ const CacheDashboard: React.FC<CachePageProps> = ({ accessToken, token, userRole
                       ))
                     }
                   </ComboboxValue>
-                  <ComboboxChipsInput placeholder="Select Virtual Keys" />
+                  <ComboboxChipsInput placeholder={t("analytics.selectVirtualKeys")} />
                 </ComboboxChips>
                 <ComboboxContent anchor={anchor1}>
-                  <ComboboxEmpty>No virtual keys found</ComboboxEmpty>
+                  <ComboboxEmpty>{t("analytics.noVirtualKeysFound")}</ComboboxEmpty>
                   <ComboboxList>
                     {(key: string) => (
                       <ComboboxItem key={key} value={key}>
@@ -251,10 +262,10 @@ const CacheDashboard: React.FC<CachePageProps> = ({ accessToken, token, userRole
                       ))
                     }
                   </ComboboxValue>
-                  <ComboboxChipsInput placeholder="Select Models" />
+                  <ComboboxChipsInput placeholder={t("analytics.selectModels")} />
                 </ComboboxChips>
                 <ComboboxContent anchor={anchor2}>
-                  <ComboboxEmpty>No models found</ComboboxEmpty>
+                  <ComboboxEmpty>{t("analytics.noModelsFound")}</ComboboxEmpty>
                   <ComboboxList>
                     {(model: string) => (
                       <ComboboxItem key={model} value={model}>
@@ -275,7 +286,7 @@ const CacheDashboard: React.FC<CachePageProps> = ({ accessToken, token, userRole
 
             <div className="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {statCards.map((stat) => (
-                <Card key={stat.label}>
+                <Card key={stat.id}>
                   <CardContent>
                     <p className="text-sm font-medium text-muted-foreground">{stat.label}</p>
                     <div className="mt-2 flex items-baseline space-x-2.5">
@@ -288,13 +299,13 @@ const CacheDashboard: React.FC<CachePageProps> = ({ accessToken, token, userRole
 
             <Card className="mt-4">
               <CardHeader>
-                <CardTitle className="text-base font-semibold">Cache Hits vs API Requests</CardTitle>
+                <CardTitle className="text-base font-semibold">{t("analytics.requestsChartTitle")}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Click a red failed-requests segment to see which error codes caused those failures.
-                </p>
-                {hasUnknownGroup && <p className="mt-1 text-sm text-muted-foreground">{UNKNOWN_CALL_TYPE_NOTE}</p>}
+                <p className="text-sm text-muted-foreground">{t("analytics.requestsChartHint")}</p>
+                {hasUnknownGroup && (
+                  <p className="mt-1 text-sm text-muted-foreground">{t("analytics.unknownCallTypeNote")}</p>
+                )}
                 <BarChart
                   data={chartData}
                   stack={true}
@@ -322,9 +333,7 @@ const CacheDashboard: React.FC<CachePageProps> = ({ accessToken, token, userRole
 
             <Card className="mt-6">
               <CardHeader>
-                <CardTitle className="text-base font-semibold">
-                  Cached Completion Tokens vs Generated Completion Tokens
-                </CardTitle>
+                <CardTitle className="text-base font-semibold">{t("analytics.tokensChartTitle")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <BarChart

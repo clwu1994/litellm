@@ -1,17 +1,19 @@
+import type { ParseKeys } from "i18next";
+
 export type CoordinationFieldType = "string" | "password" | "integer" | "boolean" | "list";
 
 export type CoordinationRedisType = "node" | "cluster" | "sentinel";
 
 export type CoordinationSection = "connection" | "cluster" | "sentinel" | "ssl";
 
-export type CoordinationFieldRule = (value: unknown) => string | null;
+export type CoordinationFieldRule = (value: unknown) => ParseKeys<"caching"> | null;
 
 export interface CoordinationField {
   readonly name: string;
-  readonly label: string;
+  readonly labelKey: ParseKeys<"caching">;
   readonly type: CoordinationFieldType;
   readonly section: CoordinationSection;
-  readonly helpText: string;
+  readonly helpTextKey: ParseKeys<"caching">;
   readonly redisType: CoordinationRedisType | null;
   readonly secret: boolean;
   readonly defaultValue?: string | number | boolean;
@@ -20,16 +22,16 @@ export interface CoordinationField {
 
 export const COORDINATION_REDIS_TYPES: readonly CoordinationRedisType[] = ["node", "cluster", "sentinel"];
 
-export const COORDINATION_REDIS_TYPE_DESCRIPTIONS: Readonly<Record<CoordinationRedisType, string>> = {
-  node: "Standard Redis node/single instance",
-  cluster: "Redis Cluster mode for high availability and horizontal scaling",
-  sentinel: "Redis Sentinel mode for high availability with automatic failover",
+export const COORDINATION_REDIS_TYPE_DESCRIPTION_KEYS: Readonly<Record<CoordinationRedisType, ParseKeys<"caching">>> = {
+  node: "redisType.nodeDescription",
+  cluster: "redisType.clusterDescription",
+  sentinel: "redisType.sentinelDescription",
 };
 
-export const COORDINATION_REDIS_TYPE_LABELS: Readonly<Record<CoordinationRedisType, string>> = {
-  node: "Node (Single Instance)",
-  cluster: "Cluster",
-  sentinel: "Sentinel",
+export const COORDINATION_REDIS_TYPE_LABEL_KEYS: Readonly<Record<CoordinationRedisType, ParseKeys<"caching">>> = {
+  node: "redisType.node",
+  cluster: "redisType.cluster",
+  sentinel: "redisType.sentinel",
 };
 
 const isBlank = (value: unknown): boolean => value === undefined || value === null || String(value).trim() === "";
@@ -39,7 +41,7 @@ const portRule: CoordinationFieldRule = (value) => {
     return null;
   }
   const port = Number(value);
-  return Number.isInteger(port) && port >= 1 && port <= 65535 ? null : "Port must be an integer between 1 and 65535";
+  return Number.isInteger(port) && port >= 1 && port <= 65535 ? null : "fields.rules.portRange";
 };
 
 const jsonListRule: CoordinationFieldRule = (value) => {
@@ -50,37 +52,36 @@ const jsonListRule: CoordinationFieldRule = (value) => {
   try {
     parsed = JSON.parse(String(value));
   } catch {
-    return "Must be a valid JSON array (use double quotes)";
+    return "fields.rules.jsonArraySyntax";
   }
-  return Array.isArray(parsed) ? null : "Must be a JSON array";
+  return Array.isArray(parsed) ? null : "fields.rules.jsonArray";
 };
 
 export const COORDINATION_FIELDS: readonly CoordinationField[] = [
   {
     name: "url",
-    label: "Redis URL",
+    labelKey: "fields.url.label",
     type: "password",
     section: "connection",
-    helpText:
-      "Full Redis/Valkey connection URL (e.g. redis://:password@host:6379/1). When set, it takes precedence over Host, Port, Username, and Password.",
+    helpTextKey: "fields.url.coordinationHelp",
     redisType: null,
     secret: true,
   },
   {
     name: "host",
-    label: "Host",
+    labelKey: "fields.host.label",
     type: "string",
     section: "connection",
-    helpText: "Redis server hostname or IP address",
+    helpTextKey: "fields.host.help",
     redisType: null,
     secret: false,
   },
   {
     name: "port",
-    label: "Port",
+    labelKey: "fields.port.label",
     type: "integer",
     section: "connection",
-    helpText: "Redis server port number",
+    helpTextKey: "fields.port.help",
     redisType: null,
     secret: false,
     defaultValue: "6379",
@@ -88,66 +89,66 @@ export const COORDINATION_FIELDS: readonly CoordinationField[] = [
   },
   {
     name: "username",
-    label: "Username",
+    labelKey: "fields.username.label",
     type: "string",
     section: "connection",
-    helpText: "Redis server username (if required)",
+    helpTextKey: "fields.username.help",
     redisType: null,
     secret: false,
   },
   {
     name: "password",
-    label: "Password",
+    labelKey: "fields.password.label",
     type: "password",
     section: "connection",
-    helpText: "Redis server password",
+    helpTextKey: "fields.password.help",
     redisType: null,
     secret: true,
   },
   {
     name: "startup_nodes",
-    label: "Startup Nodes",
+    labelKey: "fields.startupNodes.label",
     type: "list",
     section: "cluster",
-    helpText: 'List of startup nodes for Redis Cluster (e.g., [{"host": "127.0.0.1", "port": 7001}])',
+    helpTextKey: "fields.startupNodes.coordinationHelp",
     redisType: "cluster",
     secret: false,
     rules: [jsonListRule],
   },
   {
     name: "sentinel_nodes",
-    label: "Sentinel Nodes",
+    labelKey: "fields.sentinelNodes.label",
     type: "list",
     section: "sentinel",
-    helpText: 'List of Sentinel nodes (e.g., [["localhost", 26379]])',
+    helpTextKey: "fields.sentinelNodes.help",
     redisType: "sentinel",
     secret: false,
     rules: [jsonListRule],
   },
   {
     name: "service_name",
-    label: "Service Name",
+    labelKey: "fields.serviceName.label",
     type: "string",
     section: "sentinel",
-    helpText: "Master service name for Redis Sentinel",
+    helpTextKey: "fields.serviceName.help",
     redisType: "sentinel",
     secret: false,
   },
   {
     name: "sentinel_password",
-    label: "Sentinel Password",
+    labelKey: "fields.sentinelPassword.label",
     type: "password",
     section: "sentinel",
-    helpText: "Password for Redis Sentinel authentication",
+    helpTextKey: "fields.sentinelPassword.help",
     redisType: "sentinel",
     secret: true,
   },
   {
     name: "ssl",
-    label: "SSL",
+    labelKey: "fields.ssl.label",
     type: "boolean",
     section: "ssl",
-    helpText: "Enable SSL/TLS connection",
+    helpTextKey: "fields.ssl.help",
     redisType: null,
     secret: false,
     defaultValue: false,

@@ -1,3 +1,5 @@
+import type { ParseKeys } from "i18next";
+
 export type CacheFieldType =
   | "string"
   | "password"
@@ -10,14 +12,14 @@ export type CacheFieldType =
 
 export interface CacheFieldOption {
   readonly value: string;
-  readonly label: string;
+  readonly labelKey: ParseKeys<"caching">;
 }
 
 export type RedisType = "node" | "cluster" | "sentinel" | "semantic";
 
 export type CacheSection = "connection" | "cluster" | "sentinel" | "semantic" | "ssl" | "cacheManagement" | "gcp";
 
-export type CacheFieldRule = (value: unknown) => string | null;
+export type CacheFieldRule = (value: unknown) => ParseKeys<"caching"> | null;
 
 // Marker the backend returns for a configured credential and maps back to the
 // stored secret on save, so the plaintext never round-trips through the form.
@@ -25,10 +27,10 @@ export const REDACTED_VALUE = "***REDACTED***";
 
 export interface CacheField {
   readonly name: string;
-  readonly label: string;
+  readonly labelKey: ParseKeys<"caching">;
   readonly type: CacheFieldType;
   readonly section: CacheSection;
-  readonly helpText: string;
+  readonly helpTextKey: ParseKeys<"caching">;
   readonly redisType: RedisType | null;
   readonly defaultValue?: string | number | boolean;
   readonly options?: readonly CacheFieldOption[];
@@ -40,11 +42,11 @@ export interface CacheField {
 
 export const REDIS_TYPES: readonly RedisType[] = ["node", "cluster", "sentinel", "semantic"];
 
-export const REDIS_TYPE_DESCRIPTIONS: Readonly<Record<RedisType, string>> = {
-  node: "Standard Redis node/single instance",
-  cluster: "Redis Cluster mode for high availability and horizontal scaling",
-  sentinel: "Redis Sentinel mode for high availability with automatic failover",
-  semantic: "Semantic caching that reuses responses for similar prompts",
+export const REDIS_TYPE_DESCRIPTION_KEYS: Readonly<Record<RedisType, ParseKeys<"caching">>> = {
+  node: "redisType.nodeDescription",
+  cluster: "redisType.clusterDescription",
+  sentinel: "redisType.sentinelDescription",
+  semantic: "redisType.semanticDescription",
 };
 
 const isBlank = (value: unknown): boolean => value === undefined || value === null || String(value).trim() === "";
@@ -54,7 +56,7 @@ const portRule: CacheFieldRule = (value) => {
     return null;
   }
   const port = Number(value);
-  return Number.isInteger(port) && port >= 1 && port <= 65535 ? null : "Port must be an integer between 1 and 65535";
+  return Number.isInteger(port) && port >= 1 && port <= 65535 ? null : "fields.rules.portRange";
 };
 
 const jsonListRule: CacheFieldRule = (value) => {
@@ -65,9 +67,9 @@ const jsonListRule: CacheFieldRule = (value) => {
   try {
     parsed = JSON.parse(String(value));
   } catch {
-    return "Must be a valid JSON array (use double quotes)";
+    return "fields.rules.jsonArraySyntax";
   }
-  return Array.isArray(parsed) ? null : "Must be a JSON array";
+  return Array.isArray(parsed) ? null : "fields.rules.jsonArray";
 };
 
 const nonNegativeIntegerRule: CacheFieldRule = (value) => {
@@ -75,205 +77,202 @@ const nonNegativeIntegerRule: CacheFieldRule = (value) => {
     return null;
   }
   const parsed = Number(value);
-  return Number.isInteger(parsed) && parsed >= 0 ? null : "Must be a non-negative integer";
+  return Number.isInteger(parsed) && parsed >= 0 ? null : "fields.rules.nonNegativeInteger";
 };
 
 const numberRule: CacheFieldRule = (value) => {
   if (isBlank(value)) {
     return null;
   }
-  return Number.isNaN(Number(value)) ? "Must be a number" : null;
+  return Number.isNaN(Number(value)) ? "fields.rules.number" : null;
 };
 
 export const CACHE_FIELDS: readonly CacheField[] = [
   {
     name: "url",
-    label: "Redis URL",
+    labelKey: "fields.url.label",
     type: "string",
     section: "connection",
-    helpText:
-      "Full Redis/Valkey connection URL (e.g. redis://:password@host:6379/1). When set, it takes precedence over Host, Port, Password, and Database Index.",
+    helpTextKey: "fields.url.help",
     redisType: null,
     secret: true,
   },
   {
     name: "host",
-    label: "Host",
+    labelKey: "fields.host.label",
     type: "string",
     section: "connection",
-    helpText: "Redis server hostname or IP address",
+    helpTextKey: "fields.host.help",
     redisType: null,
   },
   {
     name: "port",
-    label: "Port",
+    labelKey: "fields.port.label",
     type: "string",
     section: "connection",
-    helpText: "Redis server port number",
+    helpTextKey: "fields.port.help",
     redisType: null,
     defaultValue: "6379",
     rules: [portRule],
   },
   {
     name: "db",
-    label: "Database Index",
+    labelKey: "fields.databaseIndex.label",
     type: "integer",
     section: "connection",
-    helpText: "Logical database index to isolate the cache (e.g. 1 for redis://host:6379/1)",
+    helpTextKey: "fields.databaseIndex.help",
     redisType: null,
     rules: [nonNegativeIntegerRule],
   },
   {
     name: "password",
-    label: "Password",
+    labelKey: "fields.password.label",
     type: "password",
     section: "connection",
-    helpText: "Redis server password",
+    helpTextKey: "fields.password.help",
     redisType: null,
     secret: true,
   },
   {
     name: "username",
-    label: "Username",
+    labelKey: "fields.username.label",
     type: "string",
     section: "connection",
-    helpText: "Redis server username (if required)",
+    helpTextKey: "fields.username.help",
     redisType: null,
   },
   {
     name: "redis_startup_nodes",
-    label: "Startup Nodes",
+    labelKey: "fields.startupNodes.label",
     type: "list",
     section: "cluster",
-    helpText: 'List of startup nodes for Redis Cluster (e.g., [{"host": "127.0.0.1", "port": "7001"}])',
+    helpTextKey: "fields.startupNodes.help",
     redisType: "cluster",
     rules: [jsonListRule],
   },
   {
     name: "sentinel_nodes",
-    label: "Sentinel Nodes",
+    labelKey: "fields.sentinelNodes.label",
     type: "list",
     section: "sentinel",
-    helpText: 'List of Sentinel nodes (e.g., [["localhost", 26379]])',
+    helpTextKey: "fields.sentinelNodes.help",
     redisType: "sentinel",
     rules: [jsonListRule],
   },
   {
     name: "service_name",
-    label: "Service Name",
+    labelKey: "fields.serviceName.label",
     type: "string",
     section: "sentinel",
-    helpText: "Master service name for Redis Sentinel",
+    helpTextKey: "fields.serviceName.help",
     redisType: "sentinel",
   },
   {
     name: "sentinel_password",
-    label: "Sentinel Password",
+    labelKey: "fields.sentinelPassword.label",
     type: "password",
     section: "sentinel",
-    helpText: "Password for Redis Sentinel authentication",
+    helpTextKey: "fields.sentinelPassword.help",
     redisType: "sentinel",
     secret: true,
   },
   {
     name: "similarity_threshold",
-    label: "Similarity Threshold",
+    labelKey: "fields.similarityThreshold.label",
     type: "float",
     section: "semantic",
-    helpText: "Similarity threshold for semantic cache",
+    helpTextKey: "fields.similarityThreshold.help",
     redisType: "semantic",
     defaultValue: 0.8,
     rules: [numberRule],
   },
   {
     name: "redis_semantic_cache_embedding_model",
-    label: "Embedding Model",
+    labelKey: "fields.embeddingModel.label",
     type: "model-select",
     section: "semantic",
-    helpText: "Embedding model for semantic cache",
+    helpTextKey: "fields.embeddingModel.help",
     redisType: "semantic",
   },
   {
     name: "semantic_cache_scope",
-    label: "Semantic Cache Scope",
+    labelKey: "fields.semanticCacheScope.label",
     type: "select",
     section: "semantic",
-    helpText:
-      "Who can share a semantic cache hit. Key shares hits between all end users of a key/team/org. End user also isolates per end user; requests without an end user fall back to the key scope.",
+    helpTextKey: "fields.semanticCacheScope.help",
     redisType: "semantic",
     defaultValue: "key",
     options: [
-      { value: "key", label: "Key (shared by all end users of the key/team/org)" },
-      { value: "end_user", label: "End user (isolated per end user)" },
+      { value: "key", labelKey: "fields.semanticCacheScope.key" },
+      { value: "end_user", labelKey: "fields.semanticCacheScope.endUser" },
     ],
   },
   {
     name: "ssl",
-    label: "SSL",
+    labelKey: "fields.ssl.label",
     type: "boolean",
     section: "ssl",
-    helpText: "Enable SSL/TLS connection",
+    helpTextKey: "fields.ssl.help",
     redisType: null,
     defaultValue: false,
   },
   {
     name: "ssl_cert_reqs",
-    label: "SSL Cert Reqs",
+    labelKey: "fields.sslCertReqs.label",
     type: "string",
     section: "ssl",
-    helpText: "SSL certificate requirements (None, CERT_REQUIRED, CERT_OPTIONAL)",
+    helpTextKey: "fields.sslCertReqs.help",
     redisType: null,
   },
   {
     name: "ssl_check_hostname",
-    label: "SSL Check Hostname",
+    labelKey: "fields.sslCheckHostname.label",
     type: "boolean",
     section: "ssl",
-    helpText: "Enable SSL hostname verification",
+    helpTextKey: "fields.sslCheckHostname.help",
     redisType: null,
     defaultValue: false,
   },
   {
     name: "namespace",
-    label: "Namespace",
+    labelKey: "fields.namespace.label",
     type: "string",
     section: "cacheManagement",
-    helpText: "Namespace prefix for cache keys",
+    helpTextKey: "fields.namespace.help",
     redisType: null,
   },
   {
     name: "ttl",
-    label: "TTL (seconds)",
+    labelKey: "fields.ttl.label",
     type: "float",
     section: "cacheManagement",
-    helpText: "Time-to-live for cached items in seconds",
+    helpTextKey: "fields.ttl.help",
     redisType: null,
     rules: [numberRule],
   },
   {
     name: "max_connections",
-    label: "Max Connections",
+    labelKey: "fields.maxConnections.label",
     type: "integer",
     section: "cacheManagement",
-    helpText: "Maximum number of connections in the connection pool",
+    helpTextKey: "fields.maxConnections.help",
     redisType: null,
     rules: [nonNegativeIntegerRule],
   },
   {
     name: "gcp_service_account",
-    label: "GCP Service Account",
+    labelKey: "fields.gcpServiceAccount.label",
     type: "string",
     section: "gcp",
-    helpText:
-      "GCP service account for IAM authentication (e.g., projects/-/serviceAccounts/your-sa@project.iam.gserviceaccount.com)",
+    helpTextKey: "fields.gcpServiceAccount.help",
     redisType: null,
   },
   {
     name: "gcp_ssl_ca_certs",
-    label: "GCP SSL CA Certs",
+    labelKey: "fields.gcpSslCaCerts.label",
     type: "string",
     section: "gcp",
-    helpText: "Path to SSL CA certificate file for GCP Memorystore Redis",
+    helpTextKey: "fields.gcpSslCaCerts.help",
     redisType: null,
   },
 ];

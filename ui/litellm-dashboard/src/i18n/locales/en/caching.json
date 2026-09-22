@@ -1,0 +1,217 @@
+{
+  "tabs": {
+    "analytics": "Cache Analytics",
+    "health": "Cache Health",
+    "settings": "Cache Settings",
+    "coordination": "Coordination Redis"
+  },
+  "analytics": {
+    "description": "Analytics for LiteLLM's <cacheLink>response cache</cacheLink> (e.g. Redis / in-memory): requests answered from cache without calling the LLM provider. Provider-side <promptLink>prompt caching</promptLink> (cached input tokens from Anthropic, OpenAI, etc.) is not shown here; see \"Prompt Caching Metrics\" on the Usage page or individual requests in the Logs page.",
+    "lastRefreshed": "Last Refreshed: {{time}}",
+    "refresh": "Refresh",
+    "unknownCallTypeNote": "Unknown groups spend logs that recorded no endpoint. Older proxy versions wrote those for requests rejected before routing, so they are not necessarily LLM API requests.",
+    "unknownErrorOccurred": "Unknown error occurred",
+    "selectVirtualKeys": "Select Virtual Keys",
+    "noVirtualKeysFound": "No virtual keys found",
+    "selectModels": "Select Models",
+    "noModelsFound": "No models found",
+    "cacheHitRatio": "Cache Hit Ratio",
+    "cacheHits": "Cache Hits",
+    "cachedCompletionTokens": "Cached Completion Tokens",
+    "requestsChartTitle": "Cache Hits vs API Requests",
+    "requestsChartHint": "Click a red failed-requests segment to see which error codes caused those failures.",
+    "tokensChartTitle": "Cached Completion Tokens vs Generated Completion Tokens"
+  },
+  "health": {
+    "runHealthCheck": "Run Health Check",
+    "runningHealthCheck": "Running Health Check...",
+    "runningHealthCheckToast": "Running cache health check...",
+    "status": "Cache Status: {{status}}",
+    "statusHealthy": "healthy",
+    "statusUnhealthy": "unhealthy",
+    "notAvailable": "N/A",
+    "unknownError": "Unknown error",
+    "noTraceback": "No traceback available",
+    "errorParsingDetails": "Error parsing details",
+    "errorFormattingJson": "Error formatting JSON: {{message}}",
+    "summary": "Summary",
+    "rawResponse": "Raw Response",
+    "errorDetails": "Error Details",
+    "errorMessage": "Error Message",
+    "traceback": "Traceback",
+    "cacheDetails": "Cache Details",
+    "cacheConfiguration": "Cache Configuration",
+    "pingResponse": "Ping Response",
+    "setCacheResponse": "Set Cache Response",
+    "redisDetails": "Redis Details",
+    "redisHost": "Redis Host",
+    "redisPort": "Redis Port",
+    "redisVersion": "Redis Version",
+    "startupNodes": "Startup Nodes",
+    "namespace": "Namespace"
+  },
+  "sections": {
+    "connection": "Connection Settings",
+    "cluster": "Cluster Configuration",
+    "sentinel": "Sentinel Configuration",
+    "semantic": "Semantic Configuration",
+    "advanced": "Advanced Settings",
+    "ssl": "SSL Settings",
+    "cacheManagement": "Cache Management",
+    "gcp": "GCP Authentication"
+  },
+  "actions": {
+    "testConnection": "Test Connection",
+    "testing": "Testing...",
+    "saveChanges": "Save Changes",
+    "saving": "Saving..."
+  },
+  "cacheSettings": {
+    "title": "Cache Settings",
+    "subtitle": "Configure Redis cache for LiteLLM",
+    "loadFailed": "Failed to load cache settings",
+    "connectionTestSuccess": "Cache connection test successful!",
+    "connectionTestFailed": "Connection test failed: {{message}}",
+    "unknownError": "Unknown error",
+    "saveSuccess": "Cache settings updated successfully",
+    "updateFailed": "Failed to update cache settings"
+  },
+  "coordinationRedis": {
+    "title": "Coordination Redis",
+    "description": "Redis used to coordinate work across proxy pods: cross-pod rate limits, spend tracking, and the pod lock manager. It is configured independently of the response cache.",
+    "restartNotice": "Saved changes take effect on proxy restart.",
+    "loadFailed": "Failed to load coordination Redis settings",
+    "connectionTestSuccess": "Coordination Redis connection test successful!",
+    "connectionTestFailed": "Connection test failed: {{message}}",
+    "unknownError": "Unknown error",
+    "saveSuccess": "Coordination Redis settings saved. Restart the proxy to apply them.",
+    "updateFailed": "Failed to update coordination Redis settings",
+    "sourceConfiguredHere": "Configured here",
+    "sourceConfiguredHereTooltip": "general_settings.coordination_redis is set, so coordination uses its own Redis connection.",
+    "sourceBorrowed": "Borrowed from response cache",
+    "sourceBorrowedTooltip": "No coordination Redis is configured; the proxy reuses the response cache's Redis connection.",
+    "sourceEnvironment": "From REDIS_* environment",
+    "sourceEnvironmentTooltip": "No coordination Redis is configured; the proxy falls back to the REDIS_* environment variables.",
+    "sourceNotConfigured": "Not configured",
+    "sourceNotConfiguredTooltip": "Cross-pod rate limits, spend tracking, and the pod lock manager have no Redis to coordinate through."
+  },
+  "fields": {
+    "secretAlreadySet": "Already set. Enter a new value to replace it.",
+    "selectPlaceholder": "Select an option",
+    "searchModelPlaceholder": "Search and select a model...",
+    "noModelsFound": "No models found",
+    "rules": {
+      "portRange": "Port must be an integer between 1 and 65535",
+      "jsonArraySyntax": "Must be a valid JSON array (use double quotes)",
+      "jsonArray": "Must be a JSON array",
+      "nonNegativeInteger": "Must be a non-negative integer",
+      "number": "Must be a number"
+    },
+    "url": {
+      "label": "Redis URL",
+      "help": "Full Redis/Valkey connection URL (e.g. redis://:password@host:6379/1). When set, it takes precedence over Host, Port, Password, and Database Index.",
+      "coordinationHelp": "Full Redis/Valkey connection URL (e.g. redis://:password@host:6379/1). When set, it takes precedence over Host, Port, Username, and Password."
+    },
+    "host": {
+      "label": "Host",
+      "help": "Redis server hostname or IP address"
+    },
+    "port": {
+      "label": "Port",
+      "help": "Redis server port number"
+    },
+    "databaseIndex": {
+      "label": "Database Index",
+      "help": "Logical database index to isolate the cache (e.g. 1 for redis://host:6379/1)"
+    },
+    "password": {
+      "label": "Password",
+      "help": "Redis server password"
+    },
+    "username": {
+      "label": "Username",
+      "help": "Redis server username (if required)"
+    },
+    "startupNodes": {
+      "label": "Startup Nodes",
+      "help": "List of startup nodes for Redis Cluster (e.g., [{\"host\": \"127.0.0.1\", \"port\": \"7001\"}])",
+      "coordinationHelp": "List of startup nodes for Redis Cluster (e.g., [{\"host\": \"127.0.0.1\", \"port\": 7001}])"
+    },
+    "sentinelNodes": {
+      "label": "Sentinel Nodes",
+      "help": "List of Sentinel nodes (e.g., [[\"localhost\", 26379]])"
+    },
+    "serviceName": {
+      "label": "Service Name",
+      "help": "Master service name for Redis Sentinel"
+    },
+    "sentinelPassword": {
+      "label": "Sentinel Password",
+      "help": "Password for Redis Sentinel authentication"
+    },
+    "similarityThreshold": {
+      "label": "Similarity Threshold",
+      "help": "Similarity threshold for semantic cache"
+    },
+    "embeddingModel": {
+      "label": "Embedding Model",
+      "help": "Embedding model for semantic cache"
+    },
+    "semanticCacheScope": {
+      "label": "Semantic Cache Scope",
+      "help": "Who can share a semantic cache hit. Key shares hits between all end users of a key/team/org. End user also isolates per end user; requests without an end user fall back to the key scope.",
+      "key": "Key (shared by all end users of the key/team/org)",
+      "endUser": "End user (isolated per end user)"
+    },
+    "ssl": {
+      "label": "SSL",
+      "help": "Enable SSL/TLS connection"
+    },
+    "sslCertReqs": {
+      "label": "SSL Cert Reqs",
+      "help": "SSL certificate requirements (None, CERT_REQUIRED, CERT_OPTIONAL)"
+    },
+    "sslCheckHostname": {
+      "label": "SSL Check Hostname",
+      "help": "Enable SSL hostname verification"
+    },
+    "namespace": {
+      "label": "Namespace",
+      "help": "Namespace prefix for cache keys"
+    },
+    "ttl": {
+      "label": "TTL (seconds)",
+      "help": "Time-to-live for cached items in seconds"
+    },
+    "maxConnections": {
+      "label": "Max Connections",
+      "help": "Maximum number of connections in the connection pool"
+    },
+    "gcpServiceAccount": {
+      "label": "GCP Service Account",
+      "help": "GCP service account for IAM authentication (e.g., projects/-/serviceAccounts/your-sa@project.iam.gserviceaccount.com)"
+    },
+    "gcpSslCaCerts": {
+      "label": "GCP SSL CA Certs",
+      "help": "Path to SSL CA certificate file for GCP Memorystore Redis"
+    }
+  },
+  "redisType": {
+    "label": "Redis Type",
+    "node": "Node (Single Instance)",
+    "cluster": "Cluster",
+    "sentinel": "Sentinel",
+    "semantic": "Semantic",
+    "nodeDescription": "Standard Redis node/single instance",
+    "clusterDescription": "Redis Cluster mode for high availability and horizontal scaling",
+    "sentinelDescription": "Redis Sentinel mode for high availability with automatic failover",
+    "semanticDescription": "Semantic caching that reuses responses for similar prompts",
+    "fallbackDescription": "Select the type of Redis deployment you're using"
+  },
+  "errorDrilldown": {
+    "title": "Failed requests by error code: {{callType}}",
+    "close": "Close error breakdown",
+    "hint": "Hover a bar to see the error classes behind that code.",
+    "tooltip": "Error code {{code}}: {{total}} failed"
+  }
+}

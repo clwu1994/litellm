@@ -1,0 +1,217 @@
+{
+  "tabs": {
+    "analytics": "缓存分析",
+    "health": "缓存健康",
+    "settings": "缓存设置",
+    "coordination": "协调 Redis"
+  },
+  "analytics": {
+    "description": "用于 LiteLLM 的 <cacheLink>响应缓存</cacheLink>（例如 Redis / 内存缓存）：这些请求由缓存直接应答，无需调用 LLM 提供商。提供商侧的 <promptLink>提示词缓存</promptLink>（来自 Anthropic、OpenAI 等的缓存输入 Token）不在此处显示；请查看 Usage 页面上的 “Prompt Caching Metrics” 或 Logs 页面中的单个请求。",
+    "lastRefreshed": "上次刷新：{{time}}",
+    "refresh": "刷新",
+    "unknownCallTypeNote": "Unknown 分组来自未记录 Endpoint 的消费日志。旧版代理会在请求被路由前拒绝时写入这些记录，因此它们不一定是 LLM API 请求。",
+    "unknownErrorOccurred": "发生未知错误",
+    "selectVirtualKeys": "选择 Virtual Key",
+    "noVirtualKeysFound": "未找到 Virtual Key",
+    "selectModels": "选择模型",
+    "noModelsFound": "未找到模型",
+    "cacheHitRatio": "缓存命中率",
+    "cacheHits": "缓存命中",
+    "cachedCompletionTokens": "缓存补全 Token",
+    "requestsChartTitle": "缓存命中与 API 请求对比",
+    "requestsChartHint": "点击红色的失败请求分段，查看哪些错误码导致了这些失败。",
+    "tokensChartTitle": "缓存补全 Token 与生成的补全 Token 对比"
+  },
+  "health": {
+    "runHealthCheck": "运行健康检查",
+    "runningHealthCheck": "正在运行健康检查...",
+    "runningHealthCheckToast": "正在运行缓存健康检查...",
+    "status": "缓存状态：{{status}}",
+    "statusHealthy": "健康",
+    "statusUnhealthy": "异常",
+    "notAvailable": "不适用",
+    "unknownError": "未知错误",
+    "noTraceback": "无可用回溯信息",
+    "errorParsingDetails": "解析详情时出错",
+    "errorFormattingJson": "格式化 JSON 时出错：{{message}}",
+    "summary": "摘要",
+    "rawResponse": "原始响应",
+    "errorDetails": "错误详情",
+    "errorMessage": "错误消息",
+    "traceback": "回溯信息",
+    "cacheDetails": "缓存详情",
+    "cacheConfiguration": "缓存配置",
+    "pingResponse": "Ping 响应",
+    "setCacheResponse": "设置缓存响应",
+    "redisDetails": "Redis 详情",
+    "redisHost": "Redis 主机",
+    "redisPort": "Redis 端口",
+    "redisVersion": "Redis 版本",
+    "startupNodes": "启动节点",
+    "namespace": "Namespace"
+  },
+  "sections": {
+    "connection": "连接设置",
+    "cluster": "集群配置",
+    "sentinel": "哨兵配置",
+    "semantic": "语义配置",
+    "advanced": "高级设置",
+    "ssl": "SSL 设置",
+    "cacheManagement": "缓存管理",
+    "gcp": "GCP 认证"
+  },
+  "actions": {
+    "testConnection": "测试连接",
+    "testing": "测试中...",
+    "saveChanges": "保存更改",
+    "saving": "保存中..."
+  },
+  "cacheSettings": {
+    "title": "缓存设置",
+    "subtitle": "为 LiteLLM 配置 Redis 缓存",
+    "loadFailed": "加载缓存设置失败",
+    "connectionTestSuccess": "缓存连接测试成功！",
+    "connectionTestFailed": "连接测试失败：{{message}}",
+    "unknownError": "未知错误",
+    "saveSuccess": "缓存设置更新成功",
+    "updateFailed": "更新缓存设置失败"
+  },
+  "coordinationRedis": {
+    "title": "协调 Redis",
+    "description": "用于在代理 Pod 之间协调工作的 Redis：跨 Pod 速率限制、消费跟踪和 Pod 锁管理器。它独立于响应缓存进行配置。",
+    "restartNotice": "保存的更改在代理重启后生效。",
+    "loadFailed": "加载协调 Redis 设置失败",
+    "connectionTestSuccess": "协调 Redis 连接测试成功！",
+    "connectionTestFailed": "连接测试失败：{{message}}",
+    "unknownError": "未知错误",
+    "saveSuccess": "协调 Redis 设置已保存。重启代理以应用这些设置。",
+    "updateFailed": "更新协调 Redis 设置失败",
+    "sourceConfiguredHere": "已在此处配置",
+    "sourceConfiguredHereTooltip": "已设置 general_settings.coordination_redis，因此协调功能使用其专属的 Redis 连接。",
+    "sourceBorrowed": "借用响应缓存",
+    "sourceBorrowedTooltip": "未配置协调 Redis；代理复用响应缓存的 Redis 连接。",
+    "sourceEnvironment": "来自 REDIS_* 环境变量",
+    "sourceEnvironmentTooltip": "未配置协调 Redis；代理回退到 REDIS_* 环境变量。",
+    "sourceNotConfigured": "未配置",
+    "sourceNotConfiguredTooltip": "跨 Pod 速率限制、消费跟踪和 Pod 锁管理器没有可用于协调的 Redis。"
+  },
+  "fields": {
+    "secretAlreadySet": "已设置。输入新值以替换。",
+    "selectPlaceholder": "选择一个选项",
+    "searchModelPlaceholder": "搜索并选择模型...",
+    "noModelsFound": "未找到模型",
+    "rules": {
+      "portRange": "端口必须是 1 到 65535 之间的整数",
+      "jsonArraySyntax": "必须是有效的 JSON 数组（使用双引号）",
+      "jsonArray": "必须是 JSON 数组",
+      "nonNegativeInteger": "必须是非负整数",
+      "number": "必须是数字"
+    },
+    "url": {
+      "label": "Redis URL",
+      "help": "完整的 Redis/Valkey 连接 URL（例如 redis://:password@host:6379/1）。设置后，其优先级高于主机、端口、密码和数据库索引。",
+      "coordinationHelp": "完整的 Redis/Valkey 连接 URL（例如 redis://:password@host:6379/1）。设置后，其优先级高于主机、端口、用户名和密码。"
+    },
+    "host": {
+      "label": "主机",
+      "help": "Redis 服务器主机名或 IP 地址"
+    },
+    "port": {
+      "label": "端口",
+      "help": "Redis 服务器端口号"
+    },
+    "databaseIndex": {
+      "label": "数据库索引",
+      "help": "用于隔离缓存的逻辑数据库索引（例如 redis://host:6379/1 中的 1）"
+    },
+    "password": {
+      "label": "密码",
+      "help": "Redis 服务器密码"
+    },
+    "username": {
+      "label": "用户名",
+      "help": "Redis 服务器用户名（如需要）"
+    },
+    "startupNodes": {
+      "label": "启动节点",
+      "help": "Redis Cluster 的启动节点列表（例如 [{\"host\": \"127.0.0.1\", \"port\": \"7001\"}]）",
+      "coordinationHelp": "Redis Cluster 的启动节点列表（例如 [{\"host\": \"127.0.0.1\", \"port\": 7001}]）"
+    },
+    "sentinelNodes": {
+      "label": "哨兵节点",
+      "help": "Sentinel 节点列表（例如 [[\"localhost\", 26379]]）"
+    },
+    "serviceName": {
+      "label": "服务名称",
+      "help": "Redis Sentinel 的主服务名称"
+    },
+    "sentinelPassword": {
+      "label": "哨兵密码",
+      "help": "用于 Redis Sentinel 认证的密码"
+    },
+    "similarityThreshold": {
+      "label": "相似度阈值",
+      "help": "语义缓存的相似度阈值"
+    },
+    "embeddingModel": {
+      "label": "嵌入模型",
+      "help": "用于语义缓存的嵌入模型"
+    },
+    "semanticCacheScope": {
+      "label": "语义缓存范围",
+      "help": "谁可以共享语义缓存命中。Key 范围会在某个 Key/团队/组织的所有最终用户之间共享命中；End user 范围还会按最终用户隔离，没有最终用户的请求回退到 Key 范围。",
+      "key": "Key（由该 Key/团队/组织的所有最终用户共享）",
+      "endUser": "End user（按最终用户隔离）"
+    },
+    "ssl": {
+      "label": "SSL",
+      "help": "启用 SSL/TLS 连接"
+    },
+    "sslCertReqs": {
+      "label": "SSL 证书要求",
+      "help": "SSL 证书要求（None、CERT_REQUIRED、CERT_OPTIONAL）"
+    },
+    "sslCheckHostname": {
+      "label": "SSL 主机名校验",
+      "help": "启用 SSL 主机名验证"
+    },
+    "namespace": {
+      "label": "Namespace",
+      "help": "缓存键的 Namespace 前缀"
+    },
+    "ttl": {
+      "label": "TTL（秒）",
+      "help": "缓存项的生存时间（秒）"
+    },
+    "maxConnections": {
+      "label": "最大连接数",
+      "help": "连接池中的最大连接数"
+    },
+    "gcpServiceAccount": {
+      "label": "GCP 服务账号",
+      "help": "用于 IAM 认证的 GCP 服务账号（例如 projects/-/serviceAccounts/your-sa@project.iam.gserviceaccount.com）"
+    },
+    "gcpSslCaCerts": {
+      "label": "GCP SSL CA 证书",
+      "help": "GCP Memorystore Redis 的 SSL CA 证书文件路径"
+    }
+  },
+  "redisType": {
+    "label": "Redis 类型",
+    "node": "Node（单实例）",
+    "cluster": "Cluster",
+    "sentinel": "Sentinel",
+    "semantic": "Semantic",
+    "nodeDescription": "标准 Redis 节点/单实例",
+    "clusterDescription": "用于高可用和水平扩展的 Redis Cluster 模式",
+    "sentinelDescription": "用于高可用和自动故障转移的 Redis Sentinel 模式",
+    "semanticDescription": "为相似提示词复用响应的语义缓存",
+    "fallbackDescription": "选择你正在使用的 Redis 部署类型"
+  },
+  "errorDrilldown": {
+    "title": "按错误码统计的失败请求：{{callType}}",
+    "close": "关闭错误细分",
+    "hint": "将鼠标悬停在柱条上，查看该错误码背后的错误类。",
+    "tooltip": "错误码 {{code}}：{{total}} 次失败"
+  }
+}

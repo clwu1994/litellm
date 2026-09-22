@@ -1,5 +1,6 @@
 import enAuth from "./locales/en/auth.json";
 import enBudgets from "./locales/en/budgets.json";
+import enCaching from "./locales/en/caching.json";
 import enCommon from "./locales/en/common.json";
 import enCostTracking from "./locales/en/costTracking.json";
 import enGuardrails from "./locales/en/guardrails.json";
@@ -20,6 +21,7 @@ import enUsers from "./locales/en/users.json";
 import enVectorStores from "./locales/en/vectorStores.json";
 import zhAuth from "./locales/zh/auth.json";
 import zhBudgets from "./locales/zh/budgets.json";
+import zhCaching from "./locales/zh/caching.json";
 import zhCommon from "./locales/zh/common.json";
 import zhCostTracking from "./locales/zh/costTracking.json";
 import zhGuardrails from "./locales/zh/guardrails.json";
@@ -45,6 +47,7 @@ export const resources = {
     nav: enNav,
     auth: enAuth,
     budgets: enBudgets,
+    caching: enCaching,
     costTracking: enCostTracking,
     guardrails: enGuardrails,
     guardrailsMonitor: enGuardrailsMonitor,
@@ -67,6 +70,7 @@ export const resources = {
     nav: zhNav,
     auth: zhAuth,
     budgets: zhBudgets,
+    caching: zhCaching,
     costTracking: zhCostTracking,
     guardrails: zhGuardrails,
     guardrailsMonitor: zhGuardrailsMonitor,
