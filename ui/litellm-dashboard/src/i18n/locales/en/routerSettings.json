@@ -1,0 +1,28 @@
+{
+  "tabs": {
+    "loadbalancing": "Loadbalancing",
+    "routingGroups": "Routing Groups",
+    "fallbacks": "Fallbacks",
+    "promptCaching": "Prompt Caching",
+    "general": "General"
+  },
+  "promptCaching": {
+    "title": "Prompt Caching",
+    "automaticAnthropic": "Automatic Anthropic prompt caching",
+    "cacheLifetime": "Cache lifetime (TTL)",
+    "defaultOption": "5m (default)"
+  },
+  "editor": {
+    "defaultOption": "Default"
+  },
+  "table": {
+    "setting": "Setting",
+    "value": "Value",
+    "status": "Status",
+    "action": "Action",
+    "inDb": "In DB",
+    "inConfig": "In Config",
+    "notSet": "Not Set",
+    "update": "Update"
+  }
+}

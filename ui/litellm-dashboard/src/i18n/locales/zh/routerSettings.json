@@ -1,0 +1,28 @@
+{
+  "tabs": {
+    "loadbalancing": "负载均衡",
+    "routingGroups": "路由组",
+    "fallbacks": "回退",
+    "promptCaching": "提示词缓存",
+    "general": "通用"
+  },
+  "promptCaching": {
+    "title": "提示词缓存",
+    "automaticAnthropic": "自动 Anthropic 提示词缓存",
+    "cacheLifetime": "缓存有效期（TTL）",
+    "defaultOption": "5m（默认）"
+  },
+  "editor": {
+    "defaultOption": "默认"
+  },
+  "table": {
+    "setting": "设置项",
+    "value": "值",
+    "status": "状态",
+    "action": "操作",
+    "inDb": "数据库中",
+    "inConfig": "配置文件中",
+    "notSet": "未设置",
+    "update": "更新"
+  }
+}

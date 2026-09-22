@@ -17,6 +17,7 @@ import type zhPlayground from "./locales/zh/playground.json";
 import type zhPolicies from "./locales/zh/policies.json";
 import type zhPrompts from "./locales/zh/prompts.json";
 import type zhProjects from "./locales/zh/projects.json";
+import type zhRouterSettings from "./locales/zh/routerSettings.json";
 import type zhSearchTools from "./locales/zh/searchTools.json";
 import type zhTagManagement from "./locales/zh/tagManagement.json";
 import type zhTeams from "./locales/zh/teams.json";
@@ -49,6 +50,7 @@ declare module "i18next" {
       policies: typeof zhPolicies;
       prompts: typeof zhPrompts;
       projects: typeof zhProjects;
+      routerSettings: typeof zhRouterSettings;
       searchTools: typeof zhSearchTools;
       tagManagement: typeof zhTagManagement;
       usage: typeof zhUsage;
