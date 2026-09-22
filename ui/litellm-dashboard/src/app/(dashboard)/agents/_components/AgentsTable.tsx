@@ -3,6 +3,7 @@
 import { SortingState } from "@tanstack/react-table";
 import { Bot, CircleCheck, Search as SearchIcon, X } from "lucide-react";
 import React, { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { Agent } from "@/components/agents/types";
 import { DataTable } from "@/components/shared/DataTable";
@@ -27,16 +28,17 @@ interface AgentsTableProps {
 const DEFAULT_SORTING: SortingState = [{ id: "created_at", desc: true }];
 
 function EmptyState({ isFiltered }: { isFiltered: boolean }) {
+  const { t } = useTranslation("agents");
   return (
     <div className="flex flex-col items-center gap-1 py-6">
       <div className="mb-1 flex size-10 items-center justify-center rounded-lg bg-muted">
         <Bot className="size-5 text-muted-foreground" />
       </div>
-      <div className="text-sm font-medium text-foreground">{isFiltered ? "No matching agents" : "No agents yet"}</div>
+      <div className="text-sm font-medium text-foreground">
+        {isFiltered ? t("table.empty.noMatch.title") : t("table.empty.none.title")}
+      </div>
       <div className="text-sm text-muted-foreground">
-        {isFiltered
-          ? "Adjust the search to see more agents."
-          : "Add an agent to make it available in your organization."}
+        {isFiltered ? t("table.empty.noMatch.description") : t("table.empty.none.description")}
       </div>
     </div>
   );
@@ -52,6 +54,7 @@ const AgentsTable: React.FC<AgentsTableProps> = ({
   onAgentClick,
   onDeleteClick,
 }) => {
+  const { t } = useTranslation("agents");
   const [sorting, setSorting] = useState<SortingState>(DEFAULT_SORTING);
   const [searchTerm, setSearchTerm] = useState("");
   const filteredAgents = useMemo(
@@ -64,10 +67,10 @@ const AgentsTable: React.FC<AgentsTableProps> = ({
     [agents, searchTerm],
   );
 
-  const columns = useMemo(
-    () => getAgentsTableColumns({ isAdmin, onAgentClick, onDeleteClick }),
-    [isAdmin, onAgentClick, onDeleteClick],
-  );
+  const columns = useMemo(() => {
+    const deps = { isAdmin, onAgentClick, onDeleteClick, t };
+    return getAgentsTableColumns(deps);
+  }, [isAdmin, onAgentClick, onDeleteClick, t]);
 
   return (
     <DataTable
@@ -79,7 +82,7 @@ const AgentsTable: React.FC<AgentsTableProps> = ({
       sorting={sorting}
       onSortingChange={setSorting}
       isLoading={isLoading}
-      loadingMessage="Loading agents…"
+      loadingMessage={t("table.loading")}
       noDataMessage={<EmptyState isFiltered={agents.length > 0} />}
       size="compact"
       toolbar={() => (
@@ -89,13 +92,13 @@ const AgentsTable: React.FC<AgentsTableProps> = ({
               <SearchIcon className="size-4 text-muted-foreground" />
             </InputGroupAddon>
             <InputGroupInput
-              placeholder="Search agents by name, ID, or description..."
+              placeholder={t("table.search.placeholder")}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
             {searchTerm && (
               <InputGroupAddon align="inline-end">
-                <InputGroupButton size="icon-xs" aria-label="Clear search" onClick={() => setSearchTerm("")}>
+                <InputGroupButton size="icon-xs" aria-label={t("table.search.clear")} onClick={() => setSearchTerm("")}>
                   <X />
                 </InputGroupButton>
               </InputGroupAddon>
@@ -109,7 +112,7 @@ const AgentsTable: React.FC<AgentsTableProps> = ({
                     <CircleCheck
                       className={healthCheckEnabled ? "size-4 text-success" : "size-4 text-muted-foreground"}
                     />
-                    <span className="text-sm text-muted-foreground">Health Check</span>
+                    <span className="text-sm text-muted-foreground">{t("table.healthCheck.label")}</span>
                     <Switch
                       size="sm"
                       checked={healthCheckEnabled}
@@ -119,7 +122,7 @@ const AgentsTable: React.FC<AgentsTableProps> = ({
                   </div>
                 }
               />
-              <TooltipContent>When enabled, only agents with reachable URLs are shown</TooltipContent>
+              <TooltipContent>{t("table.healthCheck.tooltip")}</TooltipContent>
             </Tooltip>
           </TooltipProvider>
         </div>
