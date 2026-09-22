@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { ArrowLeft, CircleHelp } from "lucide-react";
+import type { TFunction } from "i18next";
+import { useTranslation } from "react-i18next";
 import { z } from "zod/v4";
 import {
   vectorStoreInfoCall,
@@ -41,17 +43,17 @@ interface VectorStoreInfoViewProps {
   editVectorStore: boolean;
 }
 
-const vectorStoreEditShape = {
-  vector_store_id: z.string().min(1, "Please input a vector store ID"),
+const buildVectorStoreEditShape = (t: TFunction<"vectorStores">) => ({
+  vector_store_id: z.string().min(1, t("info.validation.vectorStoreIdRequired")),
   vector_store_name: z.string().nullish(),
   vector_store_description: z.string().nullish(),
-  custom_llm_provider: z.string().min(1, "Please select a provider"),
+  custom_llm_provider: z.string().min(1, t("info.validation.providerRequired")),
   litellm_credential_name: z.string().nullable().optional(),
-};
+});
 
-const vectorStoreEditSchema = z.object(vectorStoreEditShape);
+const buildVectorStoreEditSchema = (t: TFunction<"vectorStores">) => z.object(buildVectorStoreEditShape(t));
 
-type VectorStoreEditValues = z.output<typeof vectorStoreEditSchema>;
+type VectorStoreEditValues = z.output<ReturnType<typeof buildVectorStoreEditSchema>>;
 
 const EMPTY_VALUES: VectorStoreEditValues = {
   vector_store_id: "",
@@ -88,14 +90,16 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
   is_admin,
   editVectorStore,
 }) => {
-  const form = useZodForm(vectorStoreEditSchema, { defaultValues: EMPTY_VALUES });
+  const { t } = useTranslation("vectorStores");
+  const schema = useMemo(() => buildVectorStoreEditSchema(t), [t]);
+  const form = useZodForm(schema, { defaultValues: EMPTY_VALUES });
   const [vectorStoreDetails, setVectorStoreDetails] = useState<VectorStore | null>(null);
   const [loadFailed, setLoadFailed] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(editVectorStore);
   const [metadataString, setMetadataString] = useState<string>("{}");
   const [credentials, setCredentials] = useState<CredentialItem[]>([]);
 
-  const fetchVectorStoreDetails = async () => {
+  const fetchVectorStoreDetails = useCallback(async () => {
     if (!accessToken) return;
     try {
       setLoadFailed(false);
@@ -117,12 +121,12 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
       form.reset(toFormValues(response.vector_store));
     } catch (error) {
       console.error("Error fetching vector store details:", error);
-      toast.fromError("Error fetching vector store details: " + error);
+      toast.fromError(t("info.toast.fetchFailed", { error: String(error) }));
       setLoadFailed(true);
     }
-  };
+  }, [accessToken, vectorStoreId, form, t]);
 
-  const fetchCredentials = async () => {
+  const fetchCredentials = useCallback(async () => {
     if (!accessToken) return;
     try {
       const response = await credentialListCall(accessToken);
@@ -130,12 +134,12 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
     } catch (error) {
       console.error("Error fetching credentials:", error);
     }
-  };
+  }, [accessToken]);
 
   useEffect(() => {
     fetchVectorStoreDetails();
     fetchCredentials();
-  }, [vectorStoreId, accessToken]);
+  }, [fetchVectorStoreDetails, fetchCredentials]);
 
   const startEditing = () => {
     if (vectorStoreDetails) {
@@ -151,7 +155,7 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
       try {
         metadata = metadataString ? JSON.parse(metadataString) : {};
       } catch (e) {
-        toast.fromError("Invalid JSON in metadata field");
+        toast.fromError(t("info.toast.invalidMetadata"));
         return;
       }
 
@@ -164,17 +168,17 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
       };
 
       await vectorStoreUpdateCall(accessToken, updateData);
-      toast.success("Vector store updated successfully");
+      toast.success(t("info.toast.updated"));
       setIsEditing(false);
       fetchVectorStoreDetails();
     } catch (error) {
       console.error("Error updating vector store:", error);
-      toast.fromError("Error updating vector store: " + error);
+      toast.fromError(t("info.toast.updateFailed", { error: String(error) }));
     }
   };
 
   const credentialOptions: CredentialOption[] = [
-    { value: null, label: "None" },
+    { value: null, label: t("info.none") },
     ...credentials.map((credential) => ({
       value: credential.credential_name,
       label: credential.credential_name,
@@ -186,18 +190,16 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
       <div className="p-4 max-w-full">
         <Button variant="ghost" className="mb-4" onClick={onClose}>
           <ArrowLeft />
-          Back to Vector Stores
+          {t("info.backToList")}
         </Button>
-        <h1 className="text-xl font-semibold">Vector store not found</h1>
-        <p className="text-sm text-muted-foreground">
-          Vector store {vectorStoreId} could not be loaded. It may have been deleted.
-        </p>
+        <h1 className="text-xl font-semibold">{t("info.notFound")}</h1>
+        <p className="text-sm text-muted-foreground">{t("info.notFoundDescription", { vectorStoreId })}</p>
       </div>
     );
   }
 
   if (!vectorStoreDetails) {
-    return <div>Loading...</div>;
+    return <div>{t("info.loading")}</div>;
   }
 
   return (
@@ -206,23 +208,25 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
         <div>
           <Button variant="ghost" className="mb-4" onClick={onClose}>
             <ArrowLeft />
-            Back to Vector Stores
+            {t("info.backToList")}
           </Button>
-          <h1 className="text-xl font-semibold">Vector Store ID: {vectorStoreDetails.vector_store_id}</h1>
+          <h1 className="text-xl font-semibold">
+            {t("info.title", { vectorStoreId: vectorStoreDetails.vector_store_id })}
+          </h1>
           <p className="text-sm text-muted-foreground">
-            {vectorStoreDetails.vector_store_description || "No description"}
+            {vectorStoreDetails.vector_store_description || t("info.noDescription")}
           </p>
         </div>
-        {is_admin && !isEditing && <Button onClick={startEditing}>Edit Vector Store</Button>}
+        {is_admin && !isEditing && <Button onClick={startEditing}>{t("info.edit")}</Button>}
       </div>
 
       <Tabs defaultValue="details">
         <TabsList variant="line" className="mb-6 h-auto w-full justify-start rounded-none p-0">
           <TabsTrigger value="details" className="flex-none rounded-none px-4 py-2">
-            Details
+            {t("info.detailsTab")}
           </TabsTrigger>
           <TabsTrigger value="test" className="flex-none rounded-none px-4 py-2">
-            Test Vector Store
+            {t("info.testTab")}
           </TabsTrigger>
         </TabsList>
 
@@ -230,29 +234,37 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
           {isEditing ? (
             <div>
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-medium">Edit Vector Store</h3>
+                <h3 className="text-lg font-medium">{t("info.edit")}</h3>
               </div>
               <Card>
                 <CardContent>
                   <TooltipProvider>
                     <form onSubmit={form.handleSubmit(handleSave)}>
                       <FieldGroup>
-                        <FormField control={form.control} name="vector_store_id" label="Vector Store ID">
+                        <FormField control={form.control} name="vector_store_id" label={t("info.fields.vectorStoreId")}>
                           {({ ref, ...field }) => <Input {...field} ref={ref} disabled />}
                         </FormField>
 
-                        <FormField control={form.control} name="vector_store_name" label="Vector Store Name">
+                        <FormField
+                          control={form.control}
+                          name="vector_store_name"
+                          label={t("info.fields.vectorStoreName")}
+                        >
                           {({ ref, value, ...field }) => <Input {...field} ref={ref} value={value ?? ""} />}
                         </FormField>
 
-                        <FormField control={form.control} name="vector_store_description" label="Description">
+                        <FormField
+                          control={form.control}
+                          name="vector_store_description"
+                          label={t("info.fields.description")}
+                        >
                           {({ ref, value, ...field }) => <Textarea {...field} ref={ref} value={value ?? ""} rows={4} />}
                         </FormField>
 
                         <FormField
                           control={form.control}
                           name="custom_llm_provider"
-                          label={labelWithHint("Provider", "Select the provider for this vector store")}
+                          label={labelWithHint(t("info.fields.provider"), t("info.providerHint"))}
                         >
                           {({
                             id,
@@ -294,11 +306,13 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
                           )}
                         </FormField>
 
-                        <p className="text-sm text-muted-foreground">
-                          Either select existing credentials OR enter provider credentials below
-                        </p>
+                        <p className="text-sm text-muted-foreground">{t("info.credentialsHint")}</p>
 
-                        <FormField control={form.control} name="litellm_credential_name" label="Existing Credentials">
+                        <FormField
+                          control={form.control}
+                          name="litellm_credential_name"
+                          label={t("info.fields.existingCredentials")}
+                        >
                           {({
                             id,
                             value,
@@ -321,12 +335,12 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
                                 id={id}
                                 aria-invalid={ariaInvalid}
                                 aria-describedby={ariaDescribedBy}
-                                placeholder="Select or search for existing credentials"
+                                placeholder={t("info.credentialsPlaceholder")}
                                 className="w-full"
                                 showClear={value !== undefined}
                               />
                               <ComboboxContent>
-                                <ComboboxEmpty>No matching credentials</ComboboxEmpty>
+                                <ComboboxEmpty>{t("info.noMatchingCredentials")}</ComboboxEmpty>
                                 <ComboboxList>
                                   {(option: CredentialOption) => (
                                     <ComboboxItem key={option.label} value={option}>
@@ -341,13 +355,13 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
 
                         <div className="flex items-center">
                           <div className="grow border-t border-border"></div>
-                          <span className="px-4 text-muted-foreground text-sm">OR</span>
+                          <span className="px-4 text-muted-foreground text-sm">{t("info.or")}</span>
                           <div className="grow border-t border-border"></div>
                         </div>
 
                         <div role="group" className="flex w-full flex-col gap-3">
                           <span className="flex w-fit gap-2 text-sm leading-snug font-medium">
-                            {labelWithHint("Metadata", "JSON metadata for the vector store")}
+                            {labelWithHint(t("info.fields.metadata"), t("info.metadataHint"))}
                           </span>
                           <Textarea
                             rows={4}
@@ -360,9 +374,9 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
 
                       <div className="mt-6 flex justify-end space-x-2">
                         <Button type="button" variant="outline" onClick={() => setIsEditing(false)}>
-                          Cancel
+                          {t("info.cancel")}
                         </Button>
-                        <Button type="submit">Save Changes</Button>
+                        <Button type="submit">{t("info.save")}</Button>
                       </div>
                     </form>
                   </TooltipProvider>
@@ -372,26 +386,26 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
           ) : (
             <div>
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-medium">Vector Store Details</h3>
-                {is_admin && <Button onClick={startEditing}>Edit Vector Store</Button>}
+                <h3 className="text-lg font-medium">{t("info.detailsTitle")}</h3>
+                {is_admin && <Button onClick={startEditing}>{t("info.edit")}</Button>}
               </div>
               <Card>
                 <CardContent>
                   <div className="space-y-4">
                     <div>
-                      <p className="font-medium">ID</p>
+                      <p className="font-medium">{t("info.fields.id")}</p>
                       <p>{vectorStoreDetails.vector_store_id}</p>
                     </div>
                     <div>
-                      <p className="font-medium">Name</p>
+                      <p className="font-medium">{t("info.fields.name")}</p>
                       <p>{vectorStoreDetails.vector_store_name || "-"}</p>
                     </div>
                     <div>
-                      <p className="font-medium">Description</p>
+                      <p className="font-medium">{t("info.fields.description")}</p>
                       <p>{vectorStoreDetails.vector_store_description || "-"}</p>
                     </div>
                     <div>
-                      <p className="font-medium">Provider</p>
+                      <p className="font-medium">{t("info.fields.provider")}</p>
                       <div className="flex items-center space-x-2 mt-1">
                         {(() => {
                           const provider = vectorStoreDetails.custom_llm_provider || "bedrock";
@@ -407,19 +421,19 @@ const VectorStoreInfoView: React.FC<VectorStoreInfoViewProps> = ({
                       </div>
                     </div>
                     <div>
-                      <p className="font-medium">Metadata</p>
+                      <p className="font-medium">{t("info.fields.metadata")}</p>
                       <div className="bg-muted p-3 rounded-sm mt-2 font-mono text-xs overflow-auto max-h-48">
                         <pre>{metadataString}</pre>
                       </div>
                     </div>
                     <div>
-                      <p className="font-medium">Created</p>
+                      <p className="font-medium">{t("info.fields.createdAt")}</p>
                       <p>
                         {vectorStoreDetails.created_at ? new Date(vectorStoreDetails.created_at).toLocaleString() : "-"}
                       </p>
                     </div>
                     <div>
-                      <p className="font-medium">Last Updated</p>
+                      <p className="font-medium">{t("info.fields.updatedAt")}</p>
                       <p>
                         {vectorStoreDetails.updated_at ? new Date(vectorStoreDetails.updated_at).toLocaleString() : "-"}
                       </p>

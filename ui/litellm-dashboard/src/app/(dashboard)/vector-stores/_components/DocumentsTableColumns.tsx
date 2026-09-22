@@ -1,7 +1,9 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+import type { TFunction } from "i18next";
 import { Copy, MoreHorizontal, Trash2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { StatusBadge, type StatusTone } from "@/components/shared/table_cells";
 import { buttonVariants } from "@/components/ui/button";
@@ -15,10 +17,16 @@ import { DocumentUpload } from "@/components/vector_store_management/types";
 import { cn } from "@/lib/cva.config";
 import { copyToClipboard } from "@/utils/dataUtils";
 
-const STATUS_CONFIG: Record<DocumentUpload["status"], { tone: StatusTone; label: string }> = {
-  uploading: { tone: "info", label: "Uploading" },
-  done: { tone: "success", label: "Ready" },
-  error: { tone: "error", label: "Error" },
+interface StatusConfig {
+  tone: StatusTone;
+  labelKey?: "documents.status.uploading" | "documents.status.done" | "documents.status.error";
+  label?: string;
+}
+
+const STATUS_CONFIG: Record<DocumentUpload["status"], StatusConfig> = {
+  uploading: { tone: "info", labelKey: "documents.status.uploading" },
+  done: { tone: "success", labelKey: "documents.status.done" },
+  error: { tone: "error", labelKey: "documents.status.error" },
   removed: { tone: "neutral", label: "Removed" },
 };
 
@@ -30,10 +38,11 @@ function formatFileSize(bytes?: number): string {
 }
 
 function DocumentRowActions({ document, onRemove }: { document: DocumentUpload; onRemove: (uid: string) => void }) {
+  const { t } = useTranslation("vectorStores");
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        aria-label="Open document actions"
+        aria-label={t("documents.openActionsAria")}
         data-testid={`document-actions-${document.uid}`}
         className={cn(buttonVariants({ variant: "ghost", size: "icon-sm" }), "text-muted-foreground")}
       >
@@ -42,10 +51,10 @@ function DocumentRowActions({ document, onRemove }: { document: DocumentUpload; 
       <DropdownMenuContent align="end" className="w-52">
         <DropdownMenuItem
           data-testid="document-action-copy"
-          onClick={() => void copyToClipboard(document.uid, "Document ID copied to clipboard")}
+          onClick={() => void copyToClipboard(document.uid, t("documents.copyIdToast"))}
         >
           <Copy />
-          Copy document ID
+          {t("documents.copyId")}
         </DropdownMenuItem>
         <DropdownMenuItem
           variant="destructive"
@@ -53,7 +62,7 @@ function DocumentRowActions({ document, onRemove }: { document: DocumentUpload; 
           onClick={() => onRemove(document.uid)}
         >
           <Trash2 />
-          Remove
+          {t("documents.remove")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -64,12 +73,15 @@ interface DocumentsTableColumnsDeps {
   onRemove: (uid: string) => void;
 }
 
-export const getDocumentsTableColumns = ({ onRemove }: DocumentsTableColumnsDeps): ColumnDef<DocumentUpload>[] => [
+export const getDocumentsTableColumns = (
+  { onRemove }: DocumentsTableColumnsDeps,
+  t: TFunction<"vectorStores">,
+): ColumnDef<DocumentUpload>[] => [
   {
     id: "name",
     accessorKey: "name",
-    meta: { title: "Name" },
-    header: "Name",
+    meta: { title: t("documents.columns.name") },
+    header: t("documents.columns.name"),
     enableSorting: false,
     cell: ({ row }) => (
       <div className="flex items-center gap-2">
@@ -85,19 +97,27 @@ export const getDocumentsTableColumns = ({ onRemove }: DocumentsTableColumnsDeps
   {
     id: "status",
     accessorKey: "status",
-    meta: { title: "Status", skeleton: "badge" },
-    header: "Status",
+    meta: { title: t("documents.columns.status"), skeleton: "badge" },
+    header: t("documents.columns.status"),
     size: 150,
     enableSorting: false,
     cell: ({ row }) => {
-      const config = STATUS_CONFIG[row.original.status] ?? { tone: "neutral", label: row.original.status };
-      return <StatusBadge tone={config.tone} label={config.label} />;
+      const config: StatusConfig = STATUS_CONFIG[row.original.status] ?? {
+        tone: "neutral",
+        label: row.original.status,
+      };
+      return (
+        <StatusBadge
+          tone={config.tone}
+          label={config.labelKey !== undefined ? t(config.labelKey) : config.label ?? row.original.status}
+        />
+      );
     },
   },
   {
     id: "actions",
     meta: { className: "text-right", headerClassName: "text-right" },
-    header: () => <span className="sr-only">Actions</span>,
+    header: () => <span className="sr-only">{t("documents.columns.actions")}</span>,
     size: 64,
     enableSorting: false,
     enableHiding: false,

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { Trans } from "react-i18next";
 
 import { toast } from "@/lib/toast";
 import { indexesListCall } from "@/components/networking";
@@ -66,26 +67,29 @@ const IndexesTab: React.FC<IndexesTabProps> = ({ accessToken, vectorStores, onVi
   return (
     <div className="w-full">
       <p className="mb-4 text-sm text-muted-foreground">
-        Vector store indexes registered on this proxy via the <code>/v1/indexes</code> API. See the{" "}
-        <a
-          href="https://docs.litellm.ai/docs/providers/azure_ai/azure_ai_vector_stores_passthrough"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-info hover:underline"
-        >
-          vector store index docs
-        </a>{" "}
-        for how this works. Index passthrough is supported for Azure AI Search and Milvus today; support for more
-        providers can be added, so please{" "}
-        <a
-          href="https://github.com/BerriAI/litellm/issues"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-info hover:underline"
-        >
-          file a GitHub issue
-        </a>{" "}
-        if you want your provider supported.
+        <Trans
+          ns="vectorStores"
+          i18nKey="indexes.about"
+          components={{
+            code: <code />,
+            docs: (
+              <a
+                href="https://docs.litellm.ai/docs/providers/azure_ai/azure_ai_vector_stores_passthrough"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-info hover:underline"
+              />
+            ),
+            issues: (
+              <a
+                href="https://github.com/BerriAI/litellm/issues"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-info hover:underline"
+              />
+            ),
+          }}
+        />
       </p>
       <div className="grid grid-cols-1 gap-2 pt-2 pb-2 w-full">
         <IndexesTable

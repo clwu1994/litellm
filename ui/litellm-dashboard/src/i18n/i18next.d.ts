@@ -13,6 +13,7 @@ import type zhPolicies from "./locales/zh/policies.json";
 import type zhTeams from "./locales/zh/teams.json";
 import type zhUsage from "./locales/zh/usage.json";
 import type zhUsers from "./locales/zh/users.json";
+import type zhVectorStores from "./locales/zh/vectorStores.json";
 
 declare module "i18next" {
   interface CustomTypeOptions {
@@ -33,6 +34,7 @@ declare module "i18next" {
       playground: typeof zhPlayground;
       policies: typeof zhPolicies;
       usage: typeof zhUsage;
+      vectorStores: typeof zhVectorStores;
     };
   }
 }

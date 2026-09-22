@@ -13,6 +13,7 @@ import enPolicies from "./locales/en/policies.json";
 import enTeams from "./locales/en/teams.json";
 import enUsage from "./locales/en/usage.json";
 import enUsers from "./locales/en/users.json";
+import enVectorStores from "./locales/en/vectorStores.json";
 import zhAuth from "./locales/zh/auth.json";
 import zhBudgets from "./locales/zh/budgets.json";
 import zhCommon from "./locales/zh/common.json";
@@ -28,6 +29,7 @@ import zhPolicies from "./locales/zh/policies.json";
 import zhTeams from "./locales/zh/teams.json";
 import zhUsage from "./locales/zh/usage.json";
 import zhUsers from "./locales/zh/users.json";
+import zhVectorStores from "./locales/zh/vectorStores.json";
 
 export const resources = {
   en: {
@@ -46,6 +48,7 @@ export const resources = {
     playground: enPlayground,
     policies: enPolicies,
     usage: enUsage,
+    vectorStores: enVectorStores,
   },
   zh: {
     common: zhCommon,
@@ -63,5 +66,6 @@ export const resources = {
     playground: zhPlayground,
     policies: zhPolicies,
     usage: zhUsage,
+    vectorStores: zhVectorStores,
   },
 };

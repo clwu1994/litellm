@@ -1,0 +1,127 @@
+{
+  "list": {
+    "title": "向量存储管理",
+    "lastRefreshed": "上次刷新：{{timestamp}}",
+    "refresh": "刷新",
+    "description": "你可以使用向量存储来存储和检索 LLM Embedding。",
+    "tabs": {
+      "create": "创建向量存储",
+      "manage": "管理向量存储",
+      "test": "测试向量存储",
+      "indexes": "索引"
+    },
+    "addVectorStore": "+ 添加向量存储",
+    "deleteModal": {
+      "title": "删除向量存储",
+      "message": "确定要删除此向量存储？此操作无法撤销。",
+      "resourceInformationTitle": "向量存储信息",
+      "vectorStoreId": "向量存储 ID"
+    },
+    "toast": {
+      "fetchFailed": "获取向量存储失败：{{error}}",
+      "fetchCredentialsFailed": "获取凭证失败：{{error}}",
+      "deleted": "向量存储删除成功",
+      "deleteFailed": "删除向量存储失败：{{error}}"
+    }
+  },
+  "table": {
+    "loading": "正在加载向量存储…",
+    "emptyTitle": "未找到向量存储",
+    "emptyDescription": "连接向量存储以启用检索增强生成。",
+    "openActionsAria": "打开向量存储操作",
+    "edit": "编辑",
+    "copyId": "复制向量存储 ID",
+    "copyIdToast": "已复制向量存储 ID",
+    "delete": "删除",
+    "unknownFile": "未知",
+    "filesSingle": "1 个文件",
+    "filesCount": "{{fileCount}} 个文件",
+    "columns": {
+      "vectorStoreId": "向量存储 ID",
+      "name": "名称",
+      "description": "描述",
+      "files": "文件",
+      "provider": "提供方",
+      "createdAt": "创建时间",
+      "updatedAt": "更新时间",
+      "actions": "操作"
+    }
+  },
+  "info": {
+    "loading": "加载中...",
+    "notFound": "未找到向量存储",
+    "notFoundDescription": "无法加载向量存储 {{vectorStoreId}}，它可能已被删除。",
+    "backToList": "返回向量存储",
+    "title": "向量存储 ID：{{vectorStoreId}}",
+    "noDescription": "无描述",
+    "edit": "编辑向量存储",
+    "detailsTab": "详情",
+    "testTab": "测试向量存储",
+    "detailsTitle": "向量存储详情",
+    "cancel": "取消",
+    "save": "保存更改",
+    "fields": {
+      "id": "ID",
+      "name": "名称",
+      "description": "描述",
+      "provider": "提供方",
+      "metadata": "元数据",
+      "createdAt": "创建时间",
+      "updatedAt": "最后更新",
+      "vectorStoreId": "向量存储 ID",
+      "vectorStoreName": "向量存储名称",
+      "existingCredentials": "现有凭证"
+    },
+    "providerHint": "选择此向量存储的提供方",
+    "metadataHint": "向量存储的 JSON 元数据",
+    "credentialsHint": "选择现有凭证，或在下方输入提供方凭证",
+    "credentialsPlaceholder": "选择或搜索现有凭证",
+    "noMatchingCredentials": "未找到匹配的凭证",
+    "or": "或",
+    "none": "无",
+    "validation": {
+      "vectorStoreIdRequired": "请输入向量存储 ID",
+      "providerRequired": "请选择提供方"
+    },
+    "toast": {
+      "fetchFailed": "获取向量存储详情失败：{{error}}",
+      "invalidMetadata": "元数据字段中的 JSON 无效",
+      "updated": "向量存储更新成功",
+      "updateFailed": "更新向量存储失败：{{error}}"
+    }
+  },
+  "documents": {
+    "emptyTitle": "尚未上传任何文档",
+    "emptyDescription": "请在上方上传文档以开始。",
+    "openActionsAria": "打开文档操作",
+    "copyId": "复制文档 ID",
+    "copyIdToast": "已复制文档 ID 到剪贴板",
+    "remove": "移除",
+    "status": {
+      "uploading": "上传中",
+      "done": "就绪",
+      "error": "错误"
+    },
+    "columns": {
+      "name": "名称",
+      "status": "状态",
+      "actions": "操作"
+    }
+  },
+  "indexes": {
+    "loading": "正在加载索引…",
+    "emptyTitle": "尚未注册任何索引",
+    "emptyDescription": "在此代理上注册的索引将显示在这里。",
+    "about": "向量存储索引通过 <code>/v1/indexes</code> API 在此代理上注册。有关工作原理，请参阅<docs>向量存储索引文档</docs>。目前 Azure AI Search 和 Milvus 支持索引透传；未来可以添加对更多提供方的支持，因此如果你希望支持你的提供方，请<issues>提交 GitHub Issue</issues>。",
+    "columns": {
+      "indexName": "索引名称",
+      "vectorStore": "向量存储",
+      "providerIndex": "提供方索引",
+      "createdBy": "创建者",
+      "createdAt": "创建时间"
+    }
+  },
+  "selector": {
+    "placeholder": "选择向量存储"
+  }
+}

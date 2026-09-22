@@ -1,7 +1,9 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+import type { TFunction } from "i18next";
 import { Copy, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { DataTableSortHeader } from "@/components/shared/DataTable";
 import { CellTooltip, DateCell, IdentityCell } from "@/components/shared/table_cells";
@@ -38,16 +40,17 @@ function VectorStoreProviderCell({ provider }: { provider: string }) {
 }
 
 function VectorStoreFilesCell({ vectorStore }: { vectorStore: VectorStore }) {
+  const { t } = useTranslation("vectorStores");
   const ingestedFiles = vectorStore.vector_store_metadata?.ingested_files || [];
   if (ingestedFiles.length === 0) {
     return <span className="text-sm text-muted-foreground">-</span>;
   }
 
-  const filenames = ingestedFiles.map((file) => file.filename || file.file_url || "Unknown").join(", ");
+  const filenames = ingestedFiles.map((file) => file.filename || file.file_url || t("table.unknownFile")).join(", ");
   const displayText =
     ingestedFiles.length === 1
-      ? ingestedFiles[0].filename || ingestedFiles[0].file_url || "1 file"
-      : `${ingestedFiles.length} files`;
+      ? ingestedFiles[0].filename || ingestedFiles[0].file_url || t("table.filesSingle")
+      : t("table.filesCount", { fileCount: ingestedFiles.length });
 
   return (
     <CellTooltip
@@ -64,10 +67,11 @@ interface VectorStoreRowActionsProps {
 }
 
 function VectorStoreRowActions({ vectorStore, onEdit, onDelete }: VectorStoreRowActionsProps) {
+  const { t } = useTranslation("vectorStores");
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        aria-label="Open vector store actions"
+        aria-label={t("table.openActionsAria")}
         data-testid={`vector-store-actions-${vectorStore.vector_store_id}`}
         className={cn(buttonVariants({ variant: "ghost", size: "icon-sm" }), "text-muted-foreground")}
       >
@@ -76,14 +80,14 @@ function VectorStoreRowActions({ vectorStore, onEdit, onDelete }: VectorStoreRow
       <DropdownMenuContent align="end" className="w-52">
         <DropdownMenuItem data-testid="vector-store-action-edit" onClick={() => onEdit(vectorStore.vector_store_id)}>
           <Pencil />
-          Edit
+          {t("table.edit")}
         </DropdownMenuItem>
         <DropdownMenuItem
           data-testid="vector-store-action-copy"
-          onClick={() => void copyToClipboard(vectorStore.vector_store_id, "Vector store ID copied")}
+          onClick={() => void copyToClipboard(vectorStore.vector_store_id, t("table.copyIdToast"))}
         >
           <Copy />
-          Copy vector store ID
+          {t("table.copyId")}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
@@ -92,7 +96,7 @@ function VectorStoreRowActions({ vectorStore, onEdit, onDelete }: VectorStoreRow
           onClick={() => onDelete(vectorStore.vector_store_id)}
         >
           <Trash2 />
-          Delete
+          {t("table.delete")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -105,16 +109,15 @@ interface VectorStoreTableColumnsDeps {
   onDelete: (vectorStoreId: string) => void;
 }
 
-export const getVectorStoreTableColumns = ({
-  onView,
-  onEdit,
-  onDelete,
-}: VectorStoreTableColumnsDeps): ColumnDef<VectorStore>[] => [
+export const getVectorStoreTableColumns = (
+  { onView, onEdit, onDelete }: VectorStoreTableColumnsDeps,
+  t: TFunction<"vectorStores">,
+): ColumnDef<VectorStore>[] => [
   {
     id: "vector_store_id",
     accessorKey: "vector_store_id",
-    meta: { title: "Vector Store ID" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Vector Store ID" />,
+    meta: { title: t("table.columns.vectorStoreId") },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("table.columns.vectorStoreId")} />,
     size: 220,
     enableSorting: true,
     cell: ({ row }) => (
@@ -129,8 +132,8 @@ export const getVectorStoreTableColumns = ({
   {
     id: "vector_store_name",
     accessorKey: "vector_store_name",
-    meta: { title: "Name" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Name" />,
+    meta: { title: t("table.columns.name") },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("table.columns.name")} />,
     size: 200,
     enableSorting: true,
     cell: ({ row }) => {
@@ -145,8 +148,8 @@ export const getVectorStoreTableColumns = ({
   {
     id: "vector_store_description",
     accessorKey: "vector_store_description",
-    meta: { title: "Description" },
-    header: "Description",
+    meta: { title: t("table.columns.description") },
+    header: t("table.columns.description"),
     size: 280,
     enableSorting: false,
     cell: ({ row }) => {
@@ -160,8 +163,8 @@ export const getVectorStoreTableColumns = ({
   },
   {
     id: "files",
-    meta: { title: "Files" },
-    header: "Files",
+    meta: { title: t("table.columns.files") },
+    header: t("table.columns.files"),
     size: 160,
     enableSorting: false,
     cell: ({ row }) => <VectorStoreFilesCell vectorStore={row.original} />,
@@ -169,8 +172,8 @@ export const getVectorStoreTableColumns = ({
   {
     id: "provider",
     accessorKey: "custom_llm_provider",
-    meta: { title: "Provider" },
-    header: "Provider",
+    meta: { title: t("table.columns.provider") },
+    header: t("table.columns.provider"),
     size: 160,
     enableSorting: false,
     cell: ({ row }) => <VectorStoreProviderCell provider={row.original.custom_llm_provider} />,
@@ -179,8 +182,8 @@ export const getVectorStoreTableColumns = ({
     id: "created_at",
     accessorKey: "created_at",
     sortingFn: "datetime",
-    meta: { title: "Created At" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Created At" />,
+    meta: { title: t("table.columns.createdAt") },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("table.columns.createdAt")} />,
     size: 150,
     enableSorting: true,
     cell: ({ row }) => <DateCell value={row.original.created_at} precision="date" />,
@@ -189,8 +192,8 @@ export const getVectorStoreTableColumns = ({
     id: "updated_at",
     accessorKey: "updated_at",
     sortingFn: "datetime",
-    meta: { title: "Updated At" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Updated At" />,
+    meta: { title: t("table.columns.updatedAt") },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("table.columns.updatedAt")} />,
     size: 150,
     enableSorting: true,
     cell: ({ row }) => <DateCell value={row.original.updated_at} precision="date" />,
@@ -198,7 +201,7 @@ export const getVectorStoreTableColumns = ({
   {
     id: "actions",
     meta: { className: "text-right", headerClassName: "text-right" },
-    header: () => <span className="sr-only">Actions</span>,
+    header: () => <span className="sr-only">{t("table.columns.actions")}</span>,
     size: 64,
     enableSorting: false,
     enableHiding: false,
