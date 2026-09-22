@@ -1,0 +1,191 @@
+{
+  "list": {
+    "title": "MCP 服务器",
+    "subtitle": "配置和管理你的 MCP 服务器",
+    "importFromJson": "从 JSON 导入",
+    "addNewServer": "+ 添加新 MCP 服务器",
+    "submitServer": "+ 提交 MCP 服务器",
+    "missingAuth": "缺少必要的认证参数。",
+    "loading": "正在加载 MCP 服务器…",
+    "serverCount": "{{total}} 个服务器中的 {{shown}} 个",
+    "search": {
+      "placeholder": "按名称、别名、URL 或 ID 搜索"
+    },
+    "sort": {
+      "label": "排序",
+      "recentlyCreated": "最近创建",
+      "recentlyUpdated": "最近更新",
+      "nameAsc": "名称（A→Z）",
+      "health": "健康状态（异常优先）"
+    },
+    "filters": {
+      "team": "团队",
+      "personal": "个人",
+      "allServers": "全部服务器",
+      "allAvailableServers": "所有可用服务器",
+      "accessGroup": "访问组",
+      "allAccessGroups": "所有访问组",
+      "aboutAccessGroups": "关于访问组",
+      "accessGroupsTooltip": "MCP 访问组是一组有权访问特定 MCP 服务器的用户或团队。使用访问组来管理谁可以连接哪些服务器。"
+    },
+    "tabs": {
+      "servers": "所有服务器",
+      "toolsets": "工具集",
+      "connect": "连接",
+      "semanticFilter": "语义筛选",
+      "toolSearch": "工具搜索",
+      "networkSettings": "网络设置",
+      "submitted": "已提交的 MCP"
+    },
+    "empty": {
+      "none": "尚未配置 MCP 服务器。点击“+ 添加新 MCP 服务器”开始。",
+      "noMatch": "没有服务器符合当前筛选或搜索条件。"
+    },
+    "deleteDialog": {
+      "title": "删除 MCP 服务器？",
+      "description": "此操作不可撤销，所有关联配置都将被删除。",
+      "name": "名称",
+      "id": "ID",
+      "url": "URL",
+      "cancel": "取消",
+      "deleting": "正在删除…",
+      "delete": "删除"
+    },
+    "toast": {
+      "deleted": "MCP 服务器删除成功"
+    }
+  },
+  "card": {
+    "serverActions": "服务器操作",
+    "testConnection": "测试连接",
+    "delete": "删除",
+    "oauthFlowNotSet": "未设置 OAuth 流程",
+    "oauthFlowNotSetTooltip": "此 OAuth 服务器未设置流程（Machine-to-Machine 还是 Interactive）。打开它并选择 OAuth 流程类型，让 LiteLLM 按你的预期进行认证。",
+    "public": "公开",
+    "internal": "内部",
+    "missingFields": {
+      "singular": "缺少 {{count}} 个用户字段",
+      "plural": "缺少 {{count}} 个用户字段"
+    },
+    "missingUserFields": "缺少的用户字段：",
+    "set": "设置",
+    "health": {
+      "checking": "检查中",
+      "healthy": "健康",
+      "unhealthy": "异常",
+      "unknown": "未知",
+      "tooltipTitle": "健康状态：{{status}}",
+      "lastCheck": "上次检查：{{time}}",
+      "error": "错误",
+      "noData": "暂无健康数据",
+      "clickToRecheck": "点击重新检查"
+    },
+    "byok": {
+      "credential": "BYOK 凭证",
+      "connected": "已连接",
+      "update": "更新",
+      "connect": "连接"
+    }
+  },
+  "view": {
+    "back": "返回所有服务器",
+    "unnamed": "未命名服务器",
+    "copyServerName": "复制服务器名称",
+    "copyServerId": "复制服务器 ID",
+    "showFullUrl": "显示完整 URL",
+    "hideFullUrl": "隐藏完整 URL",
+    "tabs": {
+      "overview": "概览",
+      "tools": "MCP 工具",
+      "settings": "设置"
+    },
+    "settings": {
+      "title": "MCP 服务器设置",
+      "edit": "编辑设置"
+    },
+    "fields": {
+      "transport": "传输方式",
+      "authentication": "认证",
+      "hostUrl": "主机 URL",
+      "costConfiguration": "成本配置",
+      "serverName": "服务器名称",
+      "alias": "别名",
+      "description": "描述",
+      "url": "URL",
+      "extraHeaders": "额外请求头",
+      "allowAllKeys": "允许所有密钥",
+      "networkAccess": "网络访问",
+      "delegateAuthToUpstream": "将认证委托给上游",
+      "oauthPassthrough": "OAuth 透传",
+      "accessGroups": "访问组",
+      "allowedTools": "允许的工具",
+      "cost": "成本"
+    },
+    "enabled": "已启用",
+    "disabled": "已禁用",
+    "public": "公开",
+    "internalOnly": "仅内部",
+    "enabledPkcePassthrough": "已启用（PKCE 透传）",
+    "allToolsEnabled": "已启用所有工具"
+  },
+  "connection": {
+    "title": "连接状态",
+    "incomplete": {
+      "title": "填写必填字段以测试连接",
+      "description": "填写 URL、传输方式和认证信息以测试 MCP 服务器连接"
+    },
+    "status": {
+      "testing": "正在测试与 MCP 服务器的连接…",
+      "success": "连接成功",
+      "readyToSubmit": "可以提交",
+      "failed": "连接已失败",
+      "readyToTest": "可以测试连接"
+    },
+    "server": "服务器：{{target}}",
+    "connecting": "正在连接…",
+    "connected": "已连接",
+    "failed": "失败",
+    "testingAndLoading": "正在测试连接并加载工具…",
+    "previewUnavailable": "工具预览不可用",
+    "failedTitle": "连接失败",
+    "stackTrace": "堆栈跟踪",
+    "retry": "重试",
+    "successTitle": "连接成功！",
+    "noTools": "此 MCP 服务器未找到任何工具"
+  },
+  "logo": {
+    "label": "标志",
+    "about": "关于标志",
+    "tooltip": "选择一个常见标志，或粘贴任意图片的 URL。该标志会显示在管理页面和聊天页面。",
+    "selected": "已选择",
+    "customUrlPlaceholder": "或粘贴自定义标志 URL…"
+  },
+  "discovery": {
+    "title": "添加 MCP 服务器",
+    "customServer": "+ 自定义服务器",
+    "categoryAll": "全部",
+    "categoryOther": "其他",
+    "searchPlaceholder": "搜索服务器…",
+    "loadFailed": "加载服务器失败：{{error}}",
+    "loadFailedFallback": "加载 MCP 服务器失败",
+    "noResults": "未找到服务器。",
+    "addCustomServer": "添加自定义服务器",
+    "logoAlt": "MCP 标志"
+  },
+  "import": {
+    "title": "导入 MCP 连接器",
+    "description": "粘贴 Anthropic 连接器配置：来自 Claude Desktop / Claude Code 配置文件的 <code>mcpServers</code> 映射，或来自 Anthropic Messages API 的 <code>mcp_servers</code> 数组。",
+    "connectorJson": "连接器 JSON",
+    "requestFailed": "导入请求失败。请查看 Proxy 日志了解详情。",
+    "imported": "已导入：",
+    "skipped": "已跳过：",
+    "failed": "失败：",
+    "close": "关闭",
+    "importing": "正在导入…",
+    "import": "导入",
+    "toast": {
+      "singular": "已导入 {{count}} 个 MCP 服务器",
+      "plural": "已导入 {{count}} 个 MCP 服务器"
+    }
+  }
+}

@@ -1,0 +1,191 @@
+{
+  "list": {
+    "title": "MCP Servers",
+    "subtitle": "Configure and manage your MCP servers",
+    "importFromJson": "Import from JSON",
+    "addNewServer": "+ Add New MCP Server",
+    "submitServer": "+ Submit MCP Server",
+    "missingAuth": "Missing required authentication parameters.",
+    "loading": "Loading MCP servers...",
+    "serverCount": "{{shown}} of {{total}} servers",
+    "search": {
+      "placeholder": "Search by name, alias, URL, or ID"
+    },
+    "sort": {
+      "label": "Sort",
+      "recentlyCreated": "Recently created",
+      "recentlyUpdated": "Recently updated",
+      "nameAsc": "Name (A→Z)",
+      "health": "Health (unhealthy first)"
+    },
+    "filters": {
+      "team": "Team",
+      "personal": "Personal",
+      "allServers": "All Servers",
+      "allAvailableServers": "All Available Servers",
+      "accessGroup": "Access Group",
+      "allAccessGroups": "All Access Groups",
+      "aboutAccessGroups": "About access groups",
+      "accessGroupsTooltip": "An MCP Access Group is a set of users or teams that have permission to access specific MCP servers. Use access groups to control and organize who can connect to which servers."
+    },
+    "tabs": {
+      "servers": "All Servers",
+      "toolsets": "Toolsets",
+      "connect": "Connect",
+      "semanticFilter": "Semantic Filter",
+      "toolSearch": "Tool Search",
+      "networkSettings": "Network Settings",
+      "submitted": "Submitted MCPs"
+    },
+    "empty": {
+      "none": "No MCP servers configured. Click '+ Add New MCP Server' to get started.",
+      "noMatch": "No servers match the current filters or search."
+    },
+    "deleteDialog": {
+      "title": "Delete MCP Server?",
+      "description": "This action is permanent and cannot be undone. All associated configurations will be removed.",
+      "name": "Name",
+      "id": "ID",
+      "url": "URL",
+      "cancel": "Cancel",
+      "deleting": "Deleting...",
+      "delete": "Delete"
+    },
+    "toast": {
+      "deleted": "Deleted MCP Server successfully"
+    }
+  },
+  "card": {
+    "serverActions": "Server actions",
+    "testConnection": "Test Connection",
+    "delete": "Delete",
+    "oauthFlowNotSet": "OAuth flow not set",
+    "oauthFlowNotSetTooltip": "This OAuth server has no flow set (Machine-to-Machine vs Interactive). Open it and choose an OAuth Flow Type so LiteLLM authenticates it as you intend.",
+    "public": "Public",
+    "internal": "Internal",
+    "missingFields": {
+      "singular": "{{count}} user field missing",
+      "plural": "{{count}} user fields missing"
+    },
+    "missingUserFields": "Missing user fields:",
+    "set": "Set",
+    "health": {
+      "checking": "Checking",
+      "healthy": "healthy",
+      "unhealthy": "unhealthy",
+      "unknown": "unknown",
+      "tooltipTitle": "Health: {{status}}",
+      "lastCheck": "Last check: {{time}}",
+      "error": "Error",
+      "noData": "No health data",
+      "clickToRecheck": "Click to recheck"
+    },
+    "byok": {
+      "credential": "BYOK credential",
+      "connected": "Connected",
+      "update": "Update",
+      "connect": "Connect"
+    }
+  },
+  "view": {
+    "back": "Back to All Servers",
+    "unnamed": "Unnamed Server",
+    "copyServerName": "Copy server name",
+    "copyServerId": "Copy server id",
+    "showFullUrl": "Show full URL",
+    "hideFullUrl": "Hide full URL",
+    "tabs": {
+      "overview": "Overview",
+      "tools": "MCP Tools",
+      "settings": "Settings"
+    },
+    "settings": {
+      "title": "MCP Server Settings",
+      "edit": "Edit Settings"
+    },
+    "fields": {
+      "transport": "Transport",
+      "authentication": "Authentication",
+      "hostUrl": "Host URL",
+      "costConfiguration": "Cost Configuration",
+      "serverName": "Server Name",
+      "alias": "Alias",
+      "description": "Description",
+      "url": "URL",
+      "extraHeaders": "Extra Headers",
+      "allowAllKeys": "Allow All Keys",
+      "networkAccess": "Network Access",
+      "delegateAuthToUpstream": "Delegate Auth to Upstream",
+      "oauthPassthrough": "OAuth Pass-through",
+      "accessGroups": "Access Groups",
+      "allowedTools": "Allowed Tools",
+      "cost": "Cost"
+    },
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "public": "Public",
+    "internalOnly": "Internal only",
+    "enabledPkcePassthrough": "Enabled (PKCE passthrough)",
+    "allToolsEnabled": "All tools enabled"
+  },
+  "connection": {
+    "title": "Connection Status",
+    "incomplete": {
+      "title": "Complete required fields to test connection",
+      "description": "Fill in URL, Transport, and Authentication to test MCP server connection"
+    },
+    "status": {
+      "testing": "Testing connection to MCP server...",
+      "success": "Connection successful",
+      "readyToSubmit": "Ready to submit",
+      "failed": "Connection failed",
+      "readyToTest": "Ready to test connection"
+    },
+    "server": "Server: {{target}}",
+    "connecting": "Connecting...",
+    "connected": "Connected",
+    "failed": "Failed",
+    "testingAndLoading": "Testing connection and loading tools...",
+    "previewUnavailable": "Tool preview unavailable",
+    "failedTitle": "Connection Failed",
+    "stackTrace": "Stack Trace",
+    "retry": "Retry",
+    "successTitle": "Connection successful!",
+    "noTools": "No tools found for this MCP server"
+  },
+  "logo": {
+    "label": "Logo",
+    "about": "About the logo",
+    "tooltip": "Select a well-known logo or paste a URL to any image. The logo is shown on the admin and chat pages.",
+    "selected": "Selected",
+    "customUrlPlaceholder": "Or paste a custom logo URL..."
+  },
+  "discovery": {
+    "title": "Add MCP Server",
+    "customServer": "+ Custom Server",
+    "categoryAll": "All",
+    "categoryOther": "Other",
+    "searchPlaceholder": "Search servers...",
+    "loadFailed": "Failed to load servers: {{error}}",
+    "loadFailedFallback": "Failed to load MCP servers",
+    "noResults": "No servers found.",
+    "addCustomServer": "Add a custom server",
+    "logoAlt": "MCP Logo"
+  },
+  "import": {
+    "title": "Import MCP Connectors",
+    "description": "Paste an Anthropic connector configuration: the <code>mcpServers</code> mapping from a Claude Desktop / Claude Code config file, or the <code>mcp_servers</code> array from the Anthropic Messages API.",
+    "connectorJson": "Connector JSON",
+    "requestFailed": "Import request failed. Check the proxy logs for details.",
+    "imported": "Imported:",
+    "skipped": "Skipped:",
+    "failed": "Failed:",
+    "close": "Close",
+    "importing": "Importing...",
+    "import": "Import",
+    "toast": {
+      "singular": "Imported {{count}} MCP server",
+      "plural": "Imported {{count}} MCP servers"
+    }
+  }
+}

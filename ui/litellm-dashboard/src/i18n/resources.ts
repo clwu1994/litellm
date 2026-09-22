@@ -8,6 +8,7 @@ import enGuardrails from "./locales/en/guardrails.json";
 import enGuardrailsMonitor from "./locales/en/guardrailsMonitor.json";
 import enKeys from "./locales/en/keys.json";
 import enLogs from "./locales/en/logs.json";
+import enMcpServers from "./locales/en/mcpServers.json";
 import enModels from "./locales/en/models.json";
 import enNav from "./locales/en/nav.json";
 import enOrganizations from "./locales/en/organizations.json";
@@ -31,6 +32,7 @@ import zhGuardrails from "./locales/zh/guardrails.json";
 import zhGuardrailsMonitor from "./locales/zh/guardrailsMonitor.json";
 import zhKeys from "./locales/zh/keys.json";
 import zhLogs from "./locales/zh/logs.json";
+import zhMcpServers from "./locales/zh/mcpServers.json";
 import zhModels from "./locales/zh/models.json";
 import zhNav from "./locales/zh/nav.json";
 import zhOrganizations from "./locales/zh/organizations.json";
@@ -58,6 +60,7 @@ export const resources = {
     guardrailsMonitor: enGuardrailsMonitor,
     keys: enKeys,
     logs: enLogs,
+    mcpServers: enMcpServers,
     models: enModels,
     teams: enTeams,
     users: enUsers,
@@ -83,6 +86,7 @@ export const resources = {
     guardrailsMonitor: zhGuardrailsMonitor,
     keys: zhKeys,
     logs: zhLogs,
+    mcpServers: zhMcpServers,
     models: zhModels,
     teams: zhTeams,
     users: zhUsers,
