@@ -355,22 +355,25 @@ describe("getMissingTiersError", () => {
   });
 
   it("names the specific missing tier when only one is blank", () => {
-    expect(getMissingTiersError(activeTierRows({ tiers: { ...tiers, REASONING: [] } }))).toBe(
-      "Select a model for the following tier(s): REASONING",
-    );
+    expect(getMissingTiersError(activeTierRows({ tiers: { ...tiers, REASONING: [] } }))).toMatchObject({
+      key: "autoRouterConfig.complexity.missingTiersError",
+      values: { names: "REASONING" },
+    });
   });
 
   it("names multiple missing tiers in SIMPLE/MEDIUM/COMPLEX/REASONING order", () => {
-    expect(getMissingTiersError(activeTierRows({ tiers: { ...tiers, SIMPLE: [], REASONING: [] } }))).toBe(
-      "Select a model for the following tier(s): SIMPLE, REASONING",
-    );
+    expect(getMissingTiersError(activeTierRows({ tiers: { ...tiers, SIMPLE: [], REASONING: [] } }))).toMatchObject({
+      key: "autoRouterConfig.complexity.missingTiersError",
+      values: { names: "SIMPLE, REASONING" },
+    });
   });
 
   it("names all four tiers when none are filled", () => {
     const noTiers = { SIMPLE: [], MEDIUM: [], COMPLEX: [], REASONING: [] };
-    expect(getMissingTiersError(activeTierRows({ tiers: noTiers }))).toBe(
-      "Select a model for the following tier(s): SIMPLE, MEDIUM, COMPLEX, REASONING",
-    );
+    expect(getMissingTiersError(activeTierRows({ tiers: noTiers }))).toMatchObject({
+      key: "autoRouterConfig.complexity.missingTiersError",
+      values: { names: "SIMPLE, MEDIUM, COMPLEX, REASONING" },
+    });
   });
 
   it("treats a tier with more than one model as filled", () => {
@@ -390,13 +393,13 @@ describe("getSemanticConfigError", () => {
   it("errors when enabled without an embedding model", () => {
     expect(
       getSemanticConfigError({ semanticMatchingEnabled: true, embeddingModel: undefined, keywordTierRules: [rule] }),
-    ).toMatch(/embedding model/i);
+    ).toMatchObject({ key: "autoRouterConfig.complexity.semanticError.embedding" });
   });
 
   it("errors when enabled with an embedding model but no keyword tier rules", () => {
     expect(
       getSemanticConfigError({ semanticMatchingEnabled: true, embeddingModel: "voyage-3-5", keywordTierRules: [] }),
-    ).toMatch(/keyword tier rule/i);
+    ).toMatchObject({ key: "autoRouterConfig.complexity.semanticError.rules" });
   });
 
   it("returns null when enabled with both an embedding model and rules", () => {
@@ -426,17 +429,17 @@ describe("getKeywordTierRulesError", () => {
   // The whole point of the ticket: the semantic toggle is off by default, and an unfilled row
   // used to be discarded silently on an otherwise successful create.
   it("rejects a row left empty while semantic matching is off", () => {
-    expect(getKeywordTierRulesError([{ id: "r1", keywords: [], tier: "COMPLEX" }], activeTierRows({ tiers }))).toBe(
-      "Add at least one keyword to keyword rule(s): 1",
-    );
+    expect(
+      getKeywordTierRulesError([{ id: "r1", keywords: [], tier: "COMPLEX" }], activeTierRows({ tiers })),
+    ).toMatchObject({ key: "autoRouterConfig.complexity.keywordRuleError.empty", values: { rules: "1" } });
   });
 
   it.each([
     ["whitespace only", ["   "]],
     ["blank strings, as an unfilled row between filled ones leaves behind", ["", " ", ""]],
   ])("treats %s as empty rather than as a keyword", (_label, keywords) => {
-    expect(getKeywordTierRulesError([{ id: "r1", keywords, tier: "SIMPLE" }], activeTierRows({ tiers }))).toMatch(
-      /keyword rule\(s\): 1/,
+    expect(getKeywordTierRulesError([{ id: "r1", keywords, tier: "SIMPLE" }], activeTierRows({ tiers }))).toMatchObject(
+      { key: "autoRouterConfig.complexity.keywordRuleError.empty", values: { rules: "1" } },
     );
   });
 
@@ -449,7 +452,7 @@ describe("getKeywordTierRulesError", () => {
         { id: "r3", keywords: ["billing"], tier: "SIMPLE" },
         { id: "r4", keywords: ["  "], tier: "REASONING" },
       ]),
-    ).toBe("Add at least one keyword to keyword rule(s): 2, 4");
+    ).toMatchObject({ key: "autoRouterConfig.complexity.keywordRuleError.empty", values: { rules: "2, 4" } });
   });
 
   it("keeps a keyword whose surrounding whitespace is the only thing trimmed", () => {
@@ -639,19 +642,27 @@ describe("getTierLabelsError", () => {
   });
 
   it("rejects two tiers sharing a name, which would be ambiguous in the logs", () => {
-    expect(getTierLabelsError({ SIMPLE: "Cheap", MEDIUM: "Cheap" })).toMatch(/unique/i);
+    expect(getTierLabelsError({ SIMPLE: "Cheap", MEDIUM: "Cheap" })).toMatchObject({
+      key: "autoRouterConfig.complexity.tierError.duplicates",
+    });
   });
 
   it("rejects names that differ only by case, since the logs would not tell them apart", () => {
-    expect(getTierLabelsError({ SIMPLE: "Cheap", MEDIUM: "cheap" })).toMatch(/unique/i);
+    expect(getTierLabelsError({ SIMPLE: "Cheap", MEDIUM: "cheap" })).toMatchObject({
+      key: "autoRouterConfig.complexity.tierError.duplicates",
+    });
   });
 
   it("rejects a rename that collides with an untouched tier's name", () => {
-    expect(getTierLabelsError({ SIMPLE: "Medium" })).toMatch(/another tier's name/i);
+    expect(getTierLabelsError({ SIMPLE: "Medium" })).toMatchObject({
+      key: "autoRouterConfig.complexity.tierError.shadowing",
+    });
   });
 
   it("rejects a label that is another tier's canonical name", () => {
-    expect(getTierLabelsError({ SIMPLE: "COMPLEX" })).toMatch(/another tier's name/i);
+    expect(getTierLabelsError({ SIMPLE: "COMPLEX" })).toMatchObject({
+      key: "autoRouterConfig.complexity.tierError.shadowing",
+    });
   });
 
   it("allows a label equal to that tier's own canonical name, which is a no-op", () => {
@@ -802,7 +813,10 @@ describe("getPlanModeTierError", () => {
   });
 
   it("blocks a tier whose models were removed, which the backend would reject with a 400", () => {
-    expect(getPlanModeTierError("COMPLEX", activeTierRows({ tiers: tiersWithEmptyComplex }))).toContain("COMPLEX");
+    expect(getPlanModeTierError("COMPLEX", activeTierRows({ tiers: tiersWithEmptyComplex }))).toMatchObject({
+      key: "autoRouterConfig.complexity.planModeError.noModels",
+      values: { tier: "COMPLEX" },
+    });
   });
 });
 
@@ -833,9 +847,9 @@ describe("getClassifierModelError", () => {
   });
 
   it("blocks an LLM classifier with no model, which the router cannot start without", () => {
-    expect(getClassifierModelError({ classifier_type: "llm" })).toBe(
-      "Please select a classifier model, or switch back to Heuristic",
-    );
+    expect(getClassifierModelError({ classifier_type: "llm" })).toMatchObject({
+      key: "autoRouterConfig.complexity.classifierError.heuristic",
+    });
   });
 
   it("asks for a model under an edited tier set even while the stored type still reads heuristic", () => {
@@ -846,9 +860,9 @@ describe("getClassifierModelError", () => {
       ],
       fallback_tier_id: "a",
     };
-    expect(getClassifierModelError({ classifier_type: "heuristic", custom_tier_set: customSet })).toContain(
-      "an edited tier set routes with the LLM classifier",
-    );
+    expect(getClassifierModelError({ classifier_type: "heuristic", custom_tier_set: customSet })).toMatchObject({
+      key: "autoRouterConfig.complexity.classifierError.editedSet",
+    });
   });
 
   it("stays quiet once a model is chosen", () => {
@@ -866,14 +880,14 @@ describe("getClassifierReasoningEffortError", () => {
 
   it.each([
     [["low", "medium"], null],
-    [["medium", "high"], "low reasoning effort is not supported"],
+    [["medium", "high"], "autoRouterConfig.complexity.classifierReasoningError.unsupported"],
     [null, null],
     [undefined, null],
   ])("validates capability levels %o", (supportedReasoningEfforts, expectedError) => {
     const error = getClassifierReasoningEffortError(classifier, [
       { model_group: "classifier", supported_reasoning_efforts: supportedReasoningEfforts },
     ]);
-    if (expectedError) expect(error).toContain(expectedError);
+    if (expectedError) expect(error).toMatchObject({ key: expectedError });
     else expect(error).toBeNull();
   });
 });
@@ -886,21 +900,24 @@ describe("getKeywordTierRulesError orphaned tiers", () => {
   });
 
   it("names the rule pointing at a tier this router does not have", () => {
-    expect(getKeywordTierRulesError([{ id: "r1", keywords: ["k"], tier: "AUDIT" }], rows)).toBe(
-      "Keyword rule(s) 1 route to a tier this router no longer has",
-    );
+    expect(getKeywordTierRulesError([{ id: "r1", keywords: ["k"], tier: "AUDIT" }], rows)).toMatchObject({
+      key: "autoRouterConfig.complexity.keywordRuleError.orphaned",
+      values: { rules: "1" },
+    });
   });
 
   it("rejects a differently cased tier, because _validate_keyword_rule_tiers matches exactly", () => {
-    expect(getKeywordTierRulesError([{ id: "r1", keywords: ["k"], tier: "complex" }], rows)).toBe(
-      "Keyword rule(s) 1 route to a tier this router no longer has",
-    );
+    expect(getKeywordTierRulesError([{ id: "r1", keywords: ["k"], tier: "complex" }], rows)).toMatchObject({
+      key: "autoRouterConfig.complexity.keywordRuleError.orphaned",
+      values: { rules: "1" },
+    });
   });
 
   it("reports an empty keyword row before an orphaned tier, since that is the nearer problem", () => {
-    expect(getKeywordTierRulesError([{ id: "r1", keywords: [], tier: "AUDIT" }], rows)).toContain(
-      "Add at least one keyword",
-    );
+    expect(getKeywordTierRulesError([{ id: "r1", keywords: [], tier: "AUDIT" }], rows)).toMatchObject({
+      key: "autoRouterConfig.complexity.keywordRuleError.empty",
+      values: { rules: "1" },
+    });
   });
 });
 
@@ -1237,15 +1254,24 @@ describe("buildComplexityRouterConfig stall escalation", () => {
 
 describe("dryRunRejection", () => {
   it("blocks the save on a rejection whose message is missing, which the write would return as a raw 400", () => {
-    expect(dryRunRejection({ valid: false })).toBe("The proxy rejected this auto-router configuration");
-    expect(dryRunRejection({ valid: false, error: null })).toBe("The proxy rejected this auto-router configuration");
-    expect(dryRunRejection({ valid: false, error: "   " })).toBe("The proxy rejected this auto-router configuration");
+    expect(dryRunRejection({ valid: false })).toMatchObject({
+      key: "autoRouterConfig.complexity.dryRun.fallback",
+    });
+    expect(dryRunRejection({ valid: false, error: null })).toMatchObject({
+      key: "autoRouterConfig.complexity.dryRun.fallback",
+    });
+    expect(dryRunRejection({ valid: false, error: "   " })).toMatchObject({
+      key: "autoRouterConfig.complexity.dryRun.fallback",
+    });
   });
 
   it("surfaces the backend's own message when it sent one", () => {
-    expect(dryRunRejection({ valid: false, error: "session_affinity cannot be combined with tier_definitions" })).toBe(
-      "session_affinity cannot be combined with tier_definitions",
-    );
+    expect(
+      dryRunRejection({ valid: false, error: "session_affinity cannot be combined with tier_definitions" }),
+    ).toMatchObject({
+      key: "autoRouterConfig.complexity.dryRun.raw",
+      values: { error: "session_affinity cannot be combined with tier_definitions" },
+    });
   });
 
   it("lets a valid verdict through, including the fail-open one a transport failure returns", () => {

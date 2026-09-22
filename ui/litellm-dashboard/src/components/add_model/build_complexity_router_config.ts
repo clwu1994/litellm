@@ -1,4 +1,5 @@
 import type { ModelGroup } from "../llm_calls/fetch_models";
+import type { ValidationMessage } from "../common_components/formRules";
 import { KeywordTierRule } from "./KeywordTierRules";
 import {
   type CustomTierSet,
@@ -15,6 +16,7 @@ import { type CustomDimension, type CustomDimensionRow, serializeCustomDimension
 import {
   TierModelParams,
   TierModelParamsByTier,
+  DEFAULT_TIER_LABELS,
   normalizeTierModels,
   serializeTierModelConfigs,
 } from "./complexity_router_tiers";
@@ -32,10 +34,8 @@ import {
   DimensionWeights,
   TIER_KEYS,
   effectiveClassifierType,
-  TIER_DESCRIPTIONS,
   TierBoundaries,
   TokenThresholds,
-  effectiveTierLabel,
   heuristicScoringRoleFor,
   usesLlmClassifier,
 } from "./ComplexityRouterConfig";
@@ -181,8 +181,13 @@ export interface BuildComplexityRouterConfigParams {
  * message is missing or blank through to the write and back as a raw 400. A transport failure fails
  * open as `{valid: true}`, which this passes, leaving the write gate authoritative.
  */
-export const dryRunRejection = (verdict: { valid: boolean; error?: string | null }): string | null =>
-  verdict.valid ? null : verdict.error?.trim() || "The proxy rejected this auto-router configuration";
+export const dryRunRejection = (verdict: { valid: boolean; error?: string | null }): ValidationMessage | null => {
+  if (verdict.valid) return null;
+  const error = verdict.error?.trim();
+  return error
+    ? { key: "autoRouterConfig.complexity.dryRun.raw", values: { error } }
+    : { key: "autoRouterConfig.complexity.dryRun.fallback" };
+};
 
 export interface TierDefinitionPayload {
   name: string;
@@ -240,7 +245,7 @@ export interface ComplexityRouterConfigPayload {
 
 export const serializeTierLabels = (tierLabels: ComplexityTierLabels | undefined): ComplexityTierLabels | undefined => {
   const renamed = TIER_KEYS.map((tier) => [tier, tierLabels?.[tier]?.trim() ?? ""] as const).filter(
-    ([tier, label]) => label !== "" && label !== TIER_DESCRIPTIONS[tier].label,
+    ([tier, label]) => label !== "" && label !== DEFAULT_TIER_LABELS[tier],
   );
   if (renamed.length === 0) return undefined;
   return Object.fromEntries(renamed);
@@ -256,18 +261,18 @@ export const hydrateTierLabels = (stored: unknown): ComplexityTierLabels | undef
   return Object.fromEntries(entries);
 };
 
-export const getTierLabelsError = (tierLabels: ComplexityTierLabels | undefined): string | null => {
+export const getTierLabelsError = (tierLabels: ComplexityTierLabels | undefined): ValidationMessage | null => {
   const shadowing = TIER_KEYS.filter((tier) => {
     const label = tierLabels?.[tier]?.trim().toUpperCase() ?? "";
     return label !== "" && label !== tier && (TIER_KEYS as string[]).includes(label);
   });
   if (shadowing.length > 0) {
-    return `A tier's display name can't be another tier's name: ${shadowing.join(", ")}`;
+    return { key: "autoRouterConfig.complexity.tierError.shadowing", values: { names: shadowing.join(", ") } };
   }
-  const labels = TIER_KEYS.map((tier) => effectiveTierLabel(tier, tierLabels).toLowerCase());
+  const labels = TIER_KEYS.map((tier) => (tierLabels?.[tier]?.trim() || DEFAULT_TIER_LABELS[tier]).toLowerCase());
   const duplicates = Array.from(new Set(labels.filter((label, index) => labels.indexOf(label) !== index)));
   if (duplicates.length > 0) {
-    return `Tier display names must be unique. Repeated: ${duplicates.join(", ")}`;
+    return { key: "autoRouterConfig.complexity.tierError.duplicates", values: { names: duplicates.join(", ") } };
   }
   return null;
 };
@@ -275,17 +280,23 @@ export const getTierLabelsError = (tierLabels: ComplexityTierLabels | undefined)
 // Requires every active tier non-empty, so the create form can never reach the
 // resolveComplexityDefaultModel === undefined case. The edit modal allows a partially filled
 // built-in set, which is why it keeps its own !defaultModel guard after deriving.
-export const getMissingTiersError = (rows: readonly TierRow[]): string | null => {
+export const getMissingTiersError = (rows: readonly TierRow[]): ValidationMessage | null => {
   const missing = rows.filter((row) => row.models.length === 0).map(activeTierName);
   if (missing.length === 0) return null;
-  return `Select a model for the following tier(s): ${missing.join(", ")}`;
+  return { key: "autoRouterConfig.complexity.missingTiersError", values: { names: missing.join(", ") } };
 };
 
-export const getPlanModeTierError = (planModeMinTier: string | undefined, rows: readonly TierRow[]): string | null => {
+export const getPlanModeTierError = (
+  planModeMinTier: string | undefined,
+  rows: readonly TierRow[],
+): ValidationMessage | null => {
   if (!planModeMinTier) return null;
   const floor = tierRowById(rows, planModeMinTier);
   if (floor && floor.models.length > 0) return null;
-  return `The plan-mode minimum tier (${floor ? activeTierName(floor) : planModeMinTier}) has no models. Add one or turn the override off.`;
+  return {
+    key: "autoRouterConfig.complexity.planModeError.noModels",
+    values: { tier: floor ? activeTierName(floor) : planModeMinTier },
+  };
 };
 
 // The orphan check compares exactly, not casefold: _validate_keyword_rule_tiers is exact
@@ -294,31 +305,34 @@ export const getPlanModeTierError = (planModeMinTier: string | undefined, rows: 
 export const getKeywordTierRulesError = (
   keywordTierRules: KeywordTierRule[],
   rows: readonly TierRow[],
-): string | null => {
+): ValidationMessage | null => {
   const emptyRows = emptyKeywordTierRuleIndexes(keywordTierRules);
   if (emptyRows.length > 0)
-    return `Add at least one keyword to keyword rule(s): ${emptyRows.map((index) => index + 1).join(", ")}`;
+    return {
+      key: "autoRouterConfig.complexity.keywordRuleError.empty",
+      values: { rules: emptyRows.map((index) => index + 1).join(", ") },
+    };
   const names = rows.map(activeTierName);
   const orphaned = keywordTierRules.flatMap((rule, index) => (names.includes(rule.tier) ? [] : [index + 1]));
   if (orphaned.length === 0) return null;
-  return `Keyword rule(s) ${orphaned.join(", ")} route to a tier this router no longer has`;
+  return { key: "autoRouterConfig.complexity.keywordRuleError.orphaned", values: { rules: orphaned.join(", ") } };
 };
 
 // An edited tier set forces the LLM classifier, so the model requirement follows the EFFECTIVE type.
 // Both forms' submit gates and their submit handlers read this one answer so they cannot drift.
 export const getClassifierModelError = (
   config: Pick<ComplexityRouterConfigValue, "custom_tier_set" | "classifier_type" | "classifier_llm_config">,
-): string | null => {
+): ValidationMessage | null => {
   if (!usesLlmClassifier(effectiveClassifierType(config)) || config.classifier_llm_config?.model) return null;
   return config.custom_tier_set
-    ? "Please select a classifier model: an edited tier set routes with the LLM classifier"
-    : "Please select a classifier model, or switch back to Heuristic";
+    ? { key: "autoRouterConfig.complexity.classifierError.editedSet" }
+    : { key: "autoRouterConfig.complexity.classifierError.heuristic" };
 };
 
 export const getClassifierReasoningEffortError = (
   config: Pick<ComplexityRouterConfigValue, "custom_tier_set" | "classifier_type" | "classifier_llm_config">,
   modelInfo: readonly ModelGroup[],
-): string | null => {
+): ValidationMessage | null => {
   if (!usesLlmClassifier(effectiveClassifierType(config))) return null;
   const classifierConfig = config.classifier_llm_config;
   if (!classifierConfig?.model || !classifierConfig.reasoning_effort) return null;
@@ -326,19 +340,23 @@ export const getClassifierReasoningEffortError = (
     (model) => model.model_group === classifierConfig.model,
   )?.supported_reasoning_efforts;
   if (!Array.isArray(supported) || supported.includes(classifierConfig.reasoning_effort)) return null;
-  return `${classifierConfig.reasoning_effort} reasoning effort is not supported by every deployment in ${classifierConfig.model}. Choose Default or a supported value.`;
+  return {
+    key: "autoRouterConfig.complexity.classifierReasoningError.unsupported",
+    values: { effort: classifierConfig.reasoning_effort, model: classifierConfig.model },
+  };
 };
 
 export const getSemanticConfigError = ({
   semanticMatchingEnabled,
   embeddingModel,
   keywordTierRules,
-}: Pick<BuildComplexityRouterConfigParams, "semanticMatchingEnabled" | "embeddingModel" | "keywordTierRules">):
-  | string
-  | null => {
+}: Pick<
+  BuildComplexityRouterConfigParams,
+  "semanticMatchingEnabled" | "embeddingModel" | "keywordTierRules"
+>): ValidationMessage | null => {
   if (!semanticMatchingEnabled) return null;
-  if (!embeddingModel) return "Select an embedding model to use semantic keyword matching";
-  if (keywordTierRules.length === 0) return "Add at least one keyword tier rule to use semantic keyword matching";
+  if (!embeddingModel) return { key: "autoRouterConfig.complexity.semanticError.embedding" };
+  if (keywordTierRules.length === 0) return { key: "autoRouterConfig.complexity.semanticError.rules" };
   return null;
 };
 

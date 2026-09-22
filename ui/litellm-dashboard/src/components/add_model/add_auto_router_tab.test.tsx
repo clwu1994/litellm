@@ -1,4 +1,5 @@
 import {
+  cleanup,
   renderWithProviders,
   screen,
   waitFor,
@@ -9,6 +10,7 @@ import {
 } from "../../../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import { vi } from "vitest";
+import i18n from "@/i18n/bootstrapI18n";
 import AddAutoRouterTab from "./add_auto_router_tab";
 import { toast } from "@/lib/toast";
 import { handleAddAutoRouterSubmit } from "./handle_add_auto_router_submit";
@@ -1327,9 +1329,9 @@ describe("getSubmitBlockedReason", () => {
   });
 
   it("blocks an LLM classifier with no model, which the button previously left enabled", () => {
-    expect(getSubmitBlockedReason({ tiers, classifier_type: "llm" }, [], referenced, availability)).toContain(
-      "Please select a classifier model",
-    );
+    expect(getSubmitBlockedReason({ tiers, classifier_type: "llm" }, [], referenced, availability)).toMatchObject({
+      key: "autoRouterConfig.complexity.classifierError.heuristic",
+    });
   });
 
   it("blocks an edited tier set with no classifier model, since the set forces the LLM classifier", () => {
@@ -1344,16 +1346,16 @@ describe("getSubmitBlockedReason", () => {
         fallback_tier_id: "a",
       },
     };
-    expect(getSubmitBlockedReason(config, [], referenced, availability)).toContain(
-      "an edited tier set routes with the LLM classifier",
-    );
+    expect(getSubmitBlockedReason(config, [], referenced, availability)).toMatchObject({
+      key: "autoRouterConfig.complexity.classifierError.editedSet",
+    });
   });
 
   it("blocks a keyword rule aimed at a tier this router does not have", () => {
     const rules = [{ id: "r1", keywords: ["audit"], tier: "AUDIT" }];
-    expect(getSubmitBlockedReason({ tiers, classifier_type: "heuristic" }, rules, referenced, availability)).toContain(
-      "no longer has",
-    );
+    expect(
+      getSubmitBlockedReason({ tiers, classifier_type: "heuristic" }, rules, referenced, availability),
+    ).toMatchObject({ key: "autoRouterConfig.complexity.keywordRuleError.orphaned" });
   });
 });
 
@@ -1403,5 +1405,45 @@ describe("preset catalog fetch states", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Retry" }));
     expect(refetch).toHaveBeenCalled();
+  });
+});
+
+describe("AddAutoRouterTab Chinese copy", () => {
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    testQueryClient.clear();
+    mockFetchAvailableModels.mockResolvedValue([]);
+    mockFetchAllModelDeployments.mockResolvedValue([]);
+    await i18n.changeLanguage("zh");
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  const expectChinese = (zh: string, en: string) => {
+    expect(screen.getAllByText(zh, { exact: false }).length).toBeGreaterThan(0);
+    expect(screen.queryAllByText(en, { exact: false })).toHaveLength(0);
+  };
+
+  it("renders the create-form labels, summary and buttons in Chinese", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<Harness />);
+
+    expectChinese("自动路由器名称", "Auto Router Name");
+    expectChinese("模板", "Template");
+    expectChinese("尚未配置任何层级", "No tiers configured yet");
+    expectChinese("详细配置", "Detailed Configuration");
+    expectChinese("模型访问组", "Model Access Group");
+    expectChinese("需要帮助？", "Need Help?");
+    expectChinese("测试路由", "Test Routing");
+    expectChinese("测试连接", "Test Connection");
+    expectChinese("添加自动路由器", "Add Auto Router");
+
+    await user.click(screen.getByTestId("template-selector"));
+    expect(await screen.findByText("自定义配置")).toBeInTheDocument();
+    expect(screen.queryByText("Custom Configuration")).not.toBeInTheDocument();
+    expectChinese("从头定义你的自动路由器", "Define your auto router from scratch");
   });
 });

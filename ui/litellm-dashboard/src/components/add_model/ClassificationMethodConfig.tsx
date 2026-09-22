@@ -9,6 +9,8 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
 import React from "react";
+import { useTranslation } from "react-i18next";
+import type { ParseKeys } from "i18next";
 import ClassifierPromptEditor from "./ClassifierPromptEditor";
 import OpeningPromptEditor, { type OpeningPromptSelection } from "./OpeningPromptEditor";
 import { RestrictedSection, restrictedBy } from "./TierRestrictions";
@@ -44,42 +46,24 @@ import {
   effectiveClassifierType,
 } from "./ComplexityRouterConfig";
 
-const DEFAULT_SCORING_EXPLANATION =
-  "The router scores each request across 7 built-in dimensions: token count, code presence, reasoning markers, technical " +
-  "terms, simple indicators, multi-step patterns, and question complexity, plus any custom dimensions you add. " +
-  "The weighted score determines the tier:";
-
-const HEURISTIC_V2_EXPLANATION =
-  "The router estimates success probability for all four tiers with the bundled calibrated model, then selects " +
-  "the first tier that meets its trained threshold. It runs locally with no classifier API call.";
-
 const CLASSIFIER_TIMEOUT_ID = "classifier-timeout-ms";
 const CLASSIFIER_CONTEXT_WINDOW_SIZE_ID = "classifier-context-window-size";
 const CLASSIFIER_CONTEXT_BUDGET_CHARS_ID = "classifier-context-budget-chars";
 const HYBRID_BOUNDARY_MARGIN_ID = "hybrid-boundary-margin";
-
-const CUSTOM_PROMPT_WITH_HEURISTIC_FALLBACK =
-  "This router classifies with your own prompt, so the tier comes from whatever rubric it states. The four tier " +
-  "names stay fixed. The scoring below is the heuristic, which now runs only when the classifier call fails:";
-
-const CUSTOM_PROMPT_WITH_DEFAULT_MODEL_FALLBACK =
-  "This router classifies with your own prompt, so the tier comes from whatever rubric it states. The four tier " +
-  "names stay fixed. The scoring below no longer runs at all, since a failed classifier routes to the default " +
-  "model instead:";
 
 /**
  * What the scoring breakdown below it actually describes. A custom prompt means the score no longer
  * decides the tier, and pairing one with the default-model fallback means the heuristic never runs
  * at all, so the panel must not keep implying a score is involved on either router.
  */
-const scoringExplanation = (value: ComplexityRouterConfigValue): string => {
-  if (value.classifier_type === "heuristic_v2") return HEURISTIC_V2_EXPLANATION;
+const scoringExplanationKey = (value: ComplexityRouterConfigValue): ParseKeys<"models"> => {
+  if (value.classifier_type === "heuristic_v2") return "autoRouterConfig.classifier.scoring.heuristicV2";
   const usesCustomPrompt =
     usesLlmClassifier(value.classifier_type) && Boolean(value.classifier_llm_config?.system_prompt?.trim());
-  if (!usesCustomPrompt) return DEFAULT_SCORING_EXPLANATION;
+  if (!usesCustomPrompt) return "autoRouterConfig.classifier.scoring.default";
   return value.classifier_fallback === "default_model"
-    ? CUSTOM_PROMPT_WITH_DEFAULT_MODEL_FALLBACK
-    : CUSTOM_PROMPT_WITH_HEURISTIC_FALLBACK;
+    ? "autoRouterConfig.classifier.scoring.customDefault"
+    : "autoRouterConfig.classifier.scoring.customHeuristic";
 };
 
 /**
@@ -109,6 +93,7 @@ const boundaryRanges = (
 };
 
 const HowClassificationWorks: React.FC<{ value: ComplexityRouterConfigValue }> = ({ value }) => {
+  const { t } = useTranslation("models");
   // The shipped boundaries come from the proxy, so this card cannot state ranges the router stopped using.
   const { data: scorerDefaults, isError } = useComplexityScorerDefaults();
   const scorerRuns = heuristicScoringRole(value) !== "never";
@@ -123,31 +108,40 @@ const HowClassificationWorks: React.FC<{ value: ComplexityRouterConfigValue }> =
   return (
     <Card className="bg-muted mt-4">
       <CardContent>
-        <strong className="block mb-2 font-semibold">How Classification Works</strong>
-        <span className="text-[13px] text-muted-foreground">{scoringExplanation(value)}</span>
+        <strong className="block mb-2 font-semibold">{t("autoRouterConfig.classifier.howItWorks.heading")}</strong>
+        <span className="text-[13px] text-muted-foreground">{t(scoringExplanationKey(value))}</span>
         {scorerRuns && ranges && (
           <ul className="mt-2 pl-5 text-[13px] text-muted-foreground">
             <li>
-              <strong>{effectiveTierLabel("SIMPLE", value.tier_labels)}</strong>: Score &lt; {ranges.simpleMedium}
+              <strong>{effectiveTierLabel("SIMPLE", value.tier_labels, t)}</strong>:{" "}
+              {t("autoRouterConfig.classifier.howItWorks.simple", { value: ranges.simpleMedium })}
             </li>
             <li>
-              <strong>{effectiveTierLabel("MEDIUM", value.tier_labels)}</strong>: Score {ranges.simpleMedium} -{" "}
-              {ranges.mediumComplex}
+              <strong>{effectiveTierLabel("MEDIUM", value.tier_labels, t)}</strong>:{" "}
+              {t("autoRouterConfig.classifier.howItWorks.range", {
+                low: ranges.simpleMedium,
+                high: ranges.mediumComplex,
+              })}
             </li>
             <li>
-              <strong>{effectiveTierLabel("COMPLEX", value.tier_labels)}</strong>: Score {ranges.mediumComplex} -{" "}
-              {ranges.complexReasoning}
+              <strong>{effectiveTierLabel("COMPLEX", value.tier_labels, t)}</strong>:{" "}
+              {t("autoRouterConfig.classifier.howItWorks.range", {
+                low: ranges.mediumComplex,
+                high: ranges.complexReasoning,
+              })}
             </li>
             <li>
-              <strong>{effectiveTierLabel("REASONING", value.tier_labels)}</strong>: Score &gt;{" "}
-              {ranges.complexReasoning} (or 2+ reasoning markers with a score of at least{" "}
-              {ranges.reasoningOverrideFloor})
+              <strong>{effectiveTierLabel("REASONING", value.tier_labels, t)}</strong>:{" "}
+              {t("autoRouterConfig.classifier.howItWorks.reasoning", {
+                value: ranges.complexReasoning,
+                floor: ranges.reasoningOverrideFloor,
+              })}
             </li>
           </ul>
         )}
         {!ranges && isError && (
           <span className="text-[13px] block mt-2 text-muted-foreground">
-            The tier score ranges could not be loaded from the proxy.
+            {t("autoRouterConfig.classifier.howItWorks.loadFailed")}
           </span>
         )}
       </CardContent>
@@ -172,8 +166,10 @@ const ClassifierTypeRadios: React.FC<{
   classifierType: ClassifierType;
   onTypeChange: (classifierType: ClassifierType) => void;
 }> = ({ value, classifierType, onTypeChange }) => {
+  const { t } = useTranslation("models");
   const scorerLocked = Boolean(value.custom_tier_set);
-  const scorerLockedReason = restrictedBy(value, "heuristicClassifier")?.reason;
+  const scorerLockedRestriction = restrictedBy(value, "heuristicClassifier");
+  const scorerLockedReason = scorerLockedRestriction ? t(scorerLockedRestriction.reasonKey) : undefined;
   return (
     <RadioGroup
       value={classifierType}
@@ -185,10 +181,8 @@ const ClassifierTypeRadios: React.FC<{
           <Label className="items-start font-normal leading-normal has-data-disabled:cursor-not-allowed has-data-disabled:opacity-50">
             <RadioGroupItem value="heuristic" className="mt-0.5" disabled={scorerLocked} />
             <span>
-              <strong className="font-semibold">Heuristic</strong>{" "}
-              <span className="text-muted-foreground">
-                (default), rule-based scoring with no API calls and &lt;1ms latency
-              </span>
+              <strong className="font-semibold">{t("autoRouterConfig.classifier.type.heuristicLabel")}</strong>{" "}
+              <span className="text-muted-foreground">{t("autoRouterConfig.classifier.type.heuristicSuffix")}</span>
             </span>
           </Label>
         </SimpleTooltip>
@@ -196,27 +190,25 @@ const ClassifierTypeRadios: React.FC<{
           <Label className="items-start font-normal leading-normal has-data-disabled:cursor-not-allowed has-data-disabled:opacity-50">
             <RadioGroupItem value="heuristic_v2" className="mt-0.5" disabled={scorerLocked} />
             <span>
-              <strong className="font-semibold">Heuristic v2</strong>{" "}
-              <span className="text-muted-foreground">
-                uses bundled calibrated four-tier probabilities with no API call
-              </span>
+              <strong className="font-semibold">{t("autoRouterConfig.classifier.type.heuristicV2Label")}</strong>{" "}
+              <span className="text-muted-foreground">{t("autoRouterConfig.classifier.type.heuristicV2Suffix")}</span>
             </span>
           </Label>
         </SimpleTooltip>
         <Label className="items-start font-normal leading-normal">
           <RadioGroupItem value="llm" className="mt-0.5" />
           <span>
-            <strong className="font-semibold">LLM Classifier</strong>{" "}
-            <span className="text-muted-foreground">calls a model to decide the tier (e.g. a small/fast model)</span>
+            <strong className="font-semibold">{t("autoRouterConfig.classifier.type.llmLabel")}</strong>{" "}
+            <span className="text-muted-foreground">{t("autoRouterConfig.classifier.type.llmSuffix")}</span>
           </span>
         </Label>
         <SimpleTooltip content={scorerLockedReason}>
           <Label className="items-start font-normal leading-normal has-data-disabled:cursor-not-allowed has-data-disabled:opacity-50">
             <RadioGroupItem value="heuristic_first" className="mt-0.5" disabled={scorerLocked} />
             <span>
-              <strong className="font-semibold">Heuristic first</strong>{" "}
+              <strong className="font-semibold">{t("autoRouterConfig.classifier.type.heuristicFirstLabel")}</strong>{" "}
               <span className="text-muted-foreground">
-                scores locally, and only pays for the classifier when the score does not confidently land a cheap tier
+                {t("autoRouterConfig.classifier.type.heuristicFirstSuffix")}
               </span>
             </span>
           </Label>
@@ -225,11 +217,8 @@ const ClassifierTypeRadios: React.FC<{
           <Label className="items-start font-normal leading-normal has-data-disabled:cursor-not-allowed has-data-disabled:opacity-50">
             <RadioGroupItem value="hybrid" className="mt-0.5" disabled={scorerLocked} />
             <span>
-              <strong className="font-semibold">Hybrid</strong>{" "}
-              <span className="text-muted-foreground">
-                keeps the local score at any tier, and only pays for the classifier when that score lands near a tier
-                boundary
-              </span>
+              <strong className="font-semibold">{t("autoRouterConfig.classifier.type.hybridLabel")}</strong>{" "}
+              <span className="text-muted-foreground">{t("autoRouterConfig.classifier.type.hybridSuffix")}</span>
             </span>
           </Label>
         </SimpleTooltip>
@@ -248,10 +237,12 @@ const ClassificationMethodConfig: React.FC<ClassificationMethodConfigProps> = ({
   showValidationErrors = false,
   defaultModel,
 }) => {
+  const { t } = useTranslation("models");
   const [draft, setDraft] = React.useState<{ id: string; raw: string } | null>(null);
   const hasDefaultModel = Boolean(defaultModel);
   const classifierType = effectiveClassifierType(value);
   const sessionFrequencyRestriction = restrictedBy(value, "sessionAffinity");
+  const classificationRubricRestriction = restrictedBy(value, "classificationRubric");
   const classifierModelMissing =
     showValidationErrors && usesLlmClassifier(classifierType) && !value.classifier_llm_config?.model;
   const usesCustomPrompt = Boolean(value.classifier_llm_config?.system_prompt?.trim());
@@ -439,7 +430,7 @@ const ClassificationMethodConfig: React.FC<ClassificationMethodConfigProps> = ({
 
       {classifierType === "heuristic_first" && (
         <div className="mt-4 space-y-2">
-          <strong className="block font-semibold">Decide locally up to</strong>
+          <strong className="block font-semibold">{t("autoRouterConfig.classifier.decideLocally.heading")}</strong>
           <Select
             value={value.heuristic_first_max_tier}
             onValueChange={(tier: unknown) => handleHeuristicFirstMaxTierChange(tier as string)}
@@ -450,21 +441,18 @@ const ClassificationMethodConfig: React.FC<ClassificationMethodConfigProps> = ({
             <SelectContent>
               {HEURISTIC_FIRST_MAX_TIER_KEYS.map((tier) => (
                 <SelectItem key={tier} value={tier}>
-                  {effectiveTierLabel(tier, value.tier_labels)}
+                  {effectiveTierLabel(tier, value.tier_labels, t)}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
-          <p className="text-sm text-muted-foreground">
-            A request the scorer places at or below this tier routes there without a classifier call. Anything the
-            scorer places higher, and anything it found no signal for at all, goes to the classifier instead
-          </p>
+          <p className="text-sm text-muted-foreground">{t("autoRouterConfig.classifier.decideLocally.help")}</p>
         </div>
       )}
 
       {classifierType === "hybrid" && (
         <div className="mt-4 space-y-2">
-          <strong className="block font-semibold">Boundary margin</strong>
+          <strong className="block font-semibold">{t("autoRouterConfig.classifier.boundaryMargin.heading")}</strong>
           <Input
             id={HYBRID_BOUNDARY_MARGIN_ID}
             type="text"
@@ -478,16 +466,12 @@ const ClassificationMethodConfig: React.FC<ClassificationMethodConfigProps> = ({
             onBlur={() => setDraft(null)}
             className="w-full"
           />
-          <p className="text-sm text-muted-foreground">
-            A score further than this from every tier boundary routes on the scorer&apos;s own tier, however expensive
-            that tier is. A score closer than this, and anything the scorer found no signal for at all, goes to the
-            classifier to break the tie
-          </p>
+          <p className="text-sm text-muted-foreground">{t("autoRouterConfig.classifier.boundaryMargin.help")}</p>
         </div>
       )}
 
       <div className="mt-4 space-y-2">
-        <strong className="block font-semibold">How often to classify</strong>
+        <strong className="block font-semibold">{t("autoRouterConfig.classifier.frequency.heading")}</strong>
         <RadioGroup
           value={classificationFrequency(value)}
           onValueChange={(frequency: unknown) =>
@@ -498,52 +482,52 @@ const ClassificationMethodConfig: React.FC<ClassificationMethodConfigProps> = ({
             <Label className="items-start font-normal leading-normal">
               <RadioGroupItem value="every_request" className="mt-0.5" />
               <span>
-                <span>Every request</span>{" "}
-                <span className="text-muted-foreground">: score every turn, tool-result continuations included</span>
+                <span>{t("autoRouterConfig.classifier.frequency.everyRequest")}</span>{" "}
+                <span className="text-muted-foreground">
+                  {t("autoRouterConfig.classifier.frequency.everyRequestHelp")}
+                </span>
               </span>
             </Label>
             <Label className="items-start font-normal leading-normal">
               <RadioGroupItem value="user_turn" className="mt-0.5" />
               <span>
-                <span>Every new user message</span>{" "}
-                <span className="text-muted-foreground">
-                  : score each new human ask, then hold that tier for the tool calls that follow it
-                </span>
+                <span>{t("autoRouterConfig.classifier.frequency.userTurn")}</span>{" "}
+                <span className="text-muted-foreground">{t("autoRouterConfig.classifier.frequency.userTurnHelp")}</span>
               </span>
             </Label>
             <Label className="items-start font-normal leading-normal">
               <RadioGroupItem value="session" className="mt-0.5" disabled={Boolean(sessionFrequencyRestriction)} />
               <span>
-                <span>Once per session</span>{" "}
+                <span>{t("autoRouterConfig.classifier.frequency.session")}</span>{" "}
                 <span className="text-muted-foreground">
-                  {sessionFrequencyRestriction?.reason ??
-                    ": score the first turn only, then hold that tier and its deployment for the whole session"}
+                  {sessionFrequencyRestriction
+                    ? t(sessionFrequencyRestriction.reasonKey)
+                    : t("autoRouterConfig.classifier.frequency.sessionHelp")}
                 </span>
               </span>
             </Label>
           </div>
         </RadioGroup>
-        <p className="text-sm text-muted-foreground">
-          Holding the tier keeps an agent on one model for a whole tool loop and cuts scoring cost. A turn the router
-          cannot match to a held decision, such as one with no session id or an expired one, is scored again
-        </p>
+        <p className="text-sm text-muted-foreground">{t("autoRouterConfig.classifier.frequency.help")}</p>
       </div>
 
       {usesLlmClassifier(classifierType) && (
         <div className="mt-4 space-y-3">
           <div>
-            <strong className="block mb-1 font-semibold">Classifier Model</strong>
+            <strong className="block mb-1 font-semibold">{t("autoRouterConfig.classifier.model.heading")}</strong>
             <SearchSelect
               options={modelOptions}
               value={value.classifier_llm_config?.model ?? ""}
               onValueChange={handleClassifierModelChange}
-              placeholder="Select the model that will classify request complexity"
-              emptyText="No models found"
+              placeholder={t("autoRouterConfig.classifier.model.placeholder")}
+              emptyText={t("autoRouterConfig.complexity.tierRow.noModelsFound")}
               allowClear={false}
               className={classifierModelMissing ? "border-destructive" : undefined}
-              aria-label="Classifier Model"
+              aria-label={t("autoRouterConfig.classifier.model.heading")}
             />
-            {classifierModelMissing && <span className="text-xs text-destructive">A classifier model is required</span>}
+            {classifierModelMissing && (
+              <span className="text-xs text-destructive">{t("autoRouterConfig.classifier.model.required")}</span>
+            )}
           </div>
           <ClassifierReasoningEffortSelect
             model={classifierModel}
@@ -553,7 +537,7 @@ const ClassificationMethodConfig: React.FC<ClassificationMethodConfigProps> = ({
           />
           <div>
             <Label htmlFor={CLASSIFIER_TIMEOUT_ID} className="block mb-1 font-semibold">
-              Timeout (ms)
+              {t("autoRouterConfig.classifier.timeout.label")}
             </Label>
             <Input
               id={CLASSIFIER_TIMEOUT_ID}
@@ -575,9 +559,7 @@ const ClassificationMethodConfig: React.FC<ClassificationMethodConfigProps> = ({
               onBlur={() => setDraft(null)}
               className="w-full"
             />
-            <span className="text-xs text-muted-foreground">
-              How long the classifier call has before it fails and the fallback below takes over.
-            </span>
+            <span className="text-xs text-muted-foreground">{t("autoRouterConfig.classifier.timeout.help")}</span>
           </div>
           <ClassifierCircuitBreakerConfig
             value={value.classifier_llm_config ?? { model: "", timeout_ms: DEFAULT_CLASSIFIER_TIMEOUT_MS }}
@@ -589,8 +571,8 @@ const ClassificationMethodConfig: React.FC<ClassificationMethodConfigProps> = ({
           />
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <strong className="font-semibold">Classifier Prompt</strong>
-              <SimpleTooltip content="Every rubric uses the same four tiers. They differ in the worked examples that show the classifier where the boundary between tiers sits, and the Business rubric also rewrites the tier definitions for business traffic. Pick the rubric, and write your own opening instructions and calibration examples, inside the prompt editor.">
+              <strong className="font-semibold">{t("autoRouterConfig.classifier.prompt.heading")}</strong>
+              <SimpleTooltip content={t("autoRouterConfig.classifier.prompt.tooltip")}>
                 <Info className="size-4 text-muted-foreground" />
               </SimpleTooltip>
             </div>
@@ -614,14 +596,19 @@ const ClassificationMethodConfig: React.FC<ClassificationMethodConfigProps> = ({
                         kind: "builtIn",
                         tierLabels: value.tier_labels,
                         classificationRubric,
-                        rubricRestriction: restrictedBy(value, "classificationRubric")?.reason,
+                        rubricRestriction: classificationRubricRestriction
+                          ? t(classificationRubricRestriction.reasonKey)
+                          : undefined,
                       }
                 }
                 contextWindowSize={value.classifier_context_window_size ?? DEFAULT_CLASSIFIER_CONTEXT_WINDOW_SIZE}
               />
             )}
           </div>
-          <RestrictedSection heading="If the classifier fails" by={restrictedBy(value, "classifierFallback")}>
+          <RestrictedSection
+            heading={t("autoRouterConfig.classifier.fallback.heading")}
+            by={restrictedBy(value, "classifierFallback")}
+          >
             <RadioGroup
               value={value.classifier_fallback ?? DEFAULT_CLASSIFIER_FALLBACK}
               onValueChange={(fallback: unknown) => handleClassifierFallbackChange(fallback as ClassifierFallback)}
@@ -630,8 +617,10 @@ const ClassificationMethodConfig: React.FC<ClassificationMethodConfigProps> = ({
                 <Label className="items-start font-normal leading-normal">
                   <RadioGroupItem value="heuristic" className="mt-0.5" />
                   <span>
-                    <span>Score with the heuristic</span>{" "}
-                    <span className="text-muted-foreground">— right when the classifier grades complexity too</span>
+                    <span>{t("autoRouterConfig.classifier.fallback.heuristic")}</span>{" "}
+                    <span className="text-muted-foreground">
+                      {t("autoRouterConfig.classifier.fallback.heuristicHelp")}
+                    </span>
                   </span>
                 </Label>
                 <Label className="items-start font-normal leading-normal has-data-disabled:cursor-not-allowed has-data-disabled:opacity-50">
@@ -639,14 +628,18 @@ const ClassificationMethodConfig: React.FC<ClassificationMethodConfigProps> = ({
                   <SimpleTooltip
                     content={
                       hasDefaultModel
-                        ? "Change it from the Default Model select."
-                        : "Set a default model on this router to use this option"
+                        ? t("autoRouterConfig.classifier.fallback.defaultModelTooltipSet")
+                        : t("autoRouterConfig.classifier.fallback.defaultModelTooltipUnset")
                     }
                   >
                     <span>
-                      <span>Route to the default model{defaultModel ? ` (${defaultModel})` : ""}</span>{" "}
+                      <span>
+                        {t("autoRouterConfig.classifier.fallback.defaultModel", {
+                          model: defaultModel ? ` (${defaultModel})` : "",
+                        })}
+                      </span>{" "}
                       <span className="text-muted-foreground">
-                        — right when your prompt grades something other than complexity
+                        {t("autoRouterConfig.classifier.fallback.defaultModelHelp")}
                       </span>
                     </span>
                   </SimpleTooltip>
@@ -654,12 +647,12 @@ const ClassificationMethodConfig: React.FC<ClassificationMethodConfigProps> = ({
               </div>
             </RadioGroup>
             <span className="block text-xs text-muted-foreground">
-              Applies when the classifier call errors, times out, or returns an unparseable response.
+              {t("autoRouterConfig.classifier.fallback.help")}
             </span>
           </RestrictedSection>
           <div>
             <Label htmlFor={CLASSIFIER_CONTEXT_WINDOW_SIZE_ID} className="block mb-1 font-semibold">
-              Context Window Size
+              {t("autoRouterConfig.classifier.contextWindow.label")}
             </Label>
             <Input
               id={CLASSIFIER_CONTEXT_WINDOW_SIZE_ID}
@@ -681,15 +674,11 @@ const ClassificationMethodConfig: React.FC<ClassificationMethodConfigProps> = ({
               onBlur={() => setDraft(null)}
               className="w-full"
             />
-            <span className="text-xs text-muted-foreground">
-              Number of prior user turns (tool output and harness reminders excluded) sent to the classifier as context,
-              so a referring follow-up like &quot;now do the same for the streaming path&quot; is classified against
-              what it refers to. Set to 0 to send only the current message.
-            </span>
+            <span className="text-xs text-muted-foreground">{t("autoRouterConfig.classifier.contextWindow.help")}</span>
           </div>
           <div>
             <Label htmlFor={CLASSIFIER_CONTEXT_BUDGET_CHARS_ID} className="block mb-1 font-semibold">
-              Context Character Budget
+              {t("autoRouterConfig.classifier.contextBudget.label")}
             </Label>
             <Input
               id={CLASSIFIER_CONTEXT_BUDGET_CHARS_ID}
@@ -711,15 +700,10 @@ const ClassificationMethodConfig: React.FC<ClassificationMethodConfigProps> = ({
               onBlur={() => setDraft(null)}
               className="w-full"
             />
-            <span className="text-xs text-muted-foreground">
-              Total characters of prior conversation sent to the classifier. Turns are taken newest first and quoted
-              whole while they fit, so a short conversation is never cut.
-            </span>
+            <span className="text-xs text-muted-foreground">{t("autoRouterConfig.classifier.contextBudget.help")}</span>
             {contextBudgetQuotesNothing && (
               <span className="block text-xs text-destructive">
-                Under {MIN_QUOTED_CONTEXT_TURN_CHARS} characters there is no room to quote a turn that does not already
-                fit, so a long conversation reaches the classifier with no context at all. Set Context Window Size to 0
-                to turn context off deliberately.
+                {t("autoRouterConfig.classifier.contextBudget.warning", { min: MIN_QUOTED_CONTEXT_TURN_CHARS })}
               </span>
             )}
           </div>
@@ -729,18 +713,15 @@ const ClassificationMethodConfig: React.FC<ClassificationMethodConfigProps> = ({
                 checked={value.classifier_context_include_assistant_turns ?? false}
                 onCheckedChange={handleClassifierContextIncludeAssistantTurnsChange}
                 size="sm"
-                aria-label="Include Assistant Turns"
+                aria-label={t("autoRouterConfig.classifier.includeAssistant.label")}
               />
-              <strong className="font-semibold">Include Assistant Turns</strong>
-              <SimpleTooltip content="Off by default. Enabling it changes tier decisions, and therefore spend, for an existing router, and sends assistant text to the classifier model, which may be a different provider than the routed model.">
+              <strong className="font-semibold">{t("autoRouterConfig.classifier.includeAssistant.label")}</strong>
+              <SimpleTooltip content={t("autoRouterConfig.classifier.includeAssistant.tooltip")}>
                 <Info className="size-4 text-muted-foreground" />
               </SimpleTooltip>
             </div>
             <span className="text-xs text-muted-foreground">
-              Let the classifier read the assistant&apos;s replies, so difficulty the model stated rather than the user
-              stays visible: a plan the assistant calls complex, approved with &quot;yes&quot;, is classified on the
-              work being approved. Context Window Size then counts the last N turns across both roles rather than the
-              last N user turns.
+              {t("autoRouterConfig.classifier.includeAssistant.help")}
             </span>
           </div>
         </div>
@@ -749,14 +730,13 @@ const ClassificationMethodConfig: React.FC<ClassificationMethodConfigProps> = ({
       {heuristicScoringRole(value) !== "never" && (
         <div className="mt-4">
           <div className="flex items-center gap-2 mb-1">
-            <strong className="font-semibold">Custom Technical Keywords</strong>
-            <SimpleTooltip content="Domain-specific terms appended to the built-in technical keyword list. Prompts containing these terms score higher on the technical dimension and route to more capable models.">
+            <strong className="font-semibold">{t("autoRouterConfig.classifier.keywords.heading")}</strong>
+            <SimpleTooltip content={t("autoRouterConfig.classifier.keywords.tooltip")}>
               <Info className="size-4 text-muted-foreground" />
             </SimpleTooltip>
           </div>
           <span className="block mb-2 text-xs text-muted-foreground">
-            Optional: Add terms to the built-in list to improve classification accuracy on the technical dimension.
-            (e.g., udp, kafka, terraform).
+            {t("autoRouterConfig.classifier.keywords.help")}
           </span>
           <MultiSelect
             options={(customTechnicalKeywords ?? []).map((keyword) => ({ label: keyword, value: keyword }))}
@@ -768,8 +748,8 @@ const ClassificationMethodConfig: React.FC<ClassificationMethodConfigProps> = ({
                 ),
               )
             }
-            placeholder="Type a keyword and press Enter"
-            emptyText="Type to add a keyword"
+            placeholder={t("autoRouterConfig.classifier.keywords.placeholder")}
+            emptyText={t("autoRouterConfig.classifier.keywords.empty")}
             allowCustomValues
             className="w-full"
           />

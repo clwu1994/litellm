@@ -29,8 +29,6 @@ export interface AutoRouterParams {
 
 export interface AutoRouterStrategy {
   kind: AutoRouterKind;
-  /** Type-pill label. The complexity router overrides this with its classifier. */
-  label: string;
   configKey: keyof AutoRouterParams;
   defaultModelKey: keyof AutoRouterParams;
   /** Whether the dashboard has a form that understands this strategy's config shape. */
@@ -44,7 +42,6 @@ const startsWith = (params: AutoRouterParams, prefix: string): boolean => params
 export const AUTO_ROUTER_STRATEGIES: readonly AutoRouterStrategy[] = [
   {
     kind: "complexity",
-    label: "Complexity",
     configKey: "complexity_router_config",
     defaultModelKey: "complexity_router_default_model",
     hasEditor: true,
@@ -54,7 +51,6 @@ export const AUTO_ROUTER_STRATEGIES: readonly AutoRouterStrategy[] = [
   },
   {
     kind: "adaptive",
-    label: "Adaptive",
     configKey: "adaptive_router_config",
     defaultModelKey: "adaptive_router_default_model",
     hasEditor: false,
@@ -62,7 +58,6 @@ export const AUTO_ROUTER_STRATEGIES: readonly AutoRouterStrategy[] = [
   },
   {
     kind: "quality",
-    label: "Quality",
     configKey: "quality_router_config",
     defaultModelKey: "quality_router_default_model",
     hasEditor: false,
@@ -70,7 +65,6 @@ export const AUTO_ROUTER_STRATEGIES: readonly AutoRouterStrategy[] = [
   },
   {
     kind: "semantic",
-    label: "Semantic",
     configKey: "auto_router_config",
     defaultModelKey: "auto_router_default_model",
     hasEditor: true,

@@ -1,3 +1,5 @@
+import type { ParseKeys, TFunction } from "i18next";
+
 import type { ComplexityTier } from "./KeywordTierRules";
 import type { ModelGroup } from "@/components/llm_calls/fetch_models";
 import { ALL_BUILT_IN_TIERS, TIER_ORDER } from "./tier_rows";
@@ -144,6 +146,7 @@ export const pruneTierModelParams = (
   return Object.keys(next).length > 0 ? next : undefined;
 };
 
+/** The canonical English labels, read only by logic that must not depend on the active locale. */
 export const DEFAULT_TIER_LABELS: Record<ComplexityTier, string> = {
   NON_REASONING: "Non-reasoning",
   SIMPLE: "Simple",
@@ -152,30 +155,41 @@ export const DEFAULT_TIER_LABELS: Record<ComplexityTier, string> = {
   REASONING: "Reasoning",
 };
 
+export const TIER_LABEL_KEYS: Record<ComplexityTier, ParseKeys<"models">> = {
+  NON_REASONING: "autoRouterConfig.complexity.tier.NON_REASONING.label",
+  SIMPLE: "autoRouterConfig.complexity.tier.SIMPLE.label",
+  MEDIUM: "autoRouterConfig.complexity.tier.MEDIUM.label",
+  COMPLEX: "autoRouterConfig.complexity.tier.COMPLEX.label",
+  REASONING: "autoRouterConfig.complexity.tier.REASONING.label",
+};
+
 const isBuiltInTier = (tier: string): tier is ComplexityTier => (ALL_BUILT_IN_TIERS as string[]).includes(tier);
 
 const builtInTierLabel = (
   tierLabels: Partial<Record<ComplexityTier, string>> | undefined,
   tier: ComplexityTier,
-): string => tierLabels?.[tier]?.trim() || DEFAULT_TIER_LABELS[tier];
+  t: TFunction<"models">,
+): string => tierLabels?.[tier]?.trim() || t(TIER_LABEL_KEYS[tier]);
 
 // What a tier row is called on screen. A row the operator named shows that name; an untouched
 // built-in row shows its display label. The one owner for every surface that renders a tier.
 export const tierRowLabel = (
   row: { id: string; name: string },
-  tierLabels?: Partial<Record<ComplexityTier, string>>,
+  tierLabels: Partial<Record<ComplexityTier, string>> | undefined,
+  t: TFunction<"models">,
 ): string => {
   const builtIn = ALL_BUILT_IN_TIERS.find((tier) => tier === row.id);
   const named = row.name.trim();
-  if (!builtIn || named !== builtIn) return named || "New";
-  return builtInTierLabel(tierLabels, builtIn);
+  if (!builtIn || named !== builtIn) return named || t("autoRouterConfig.complexity.tierLabel.new");
+  return builtInTierLabel(tierLabels, builtIn, t);
 };
 
 export const tierOptions = (
   tierLabels: Partial<Record<ComplexityTier, string>> | undefined,
+  t: TFunction<"models">,
   tierNames?: readonly string[],
 ): { value: string; label: string }[] =>
   (tierNames ?? TIER_ORDER).map((tier) => ({
     value: tier,
-    label: isBuiltInTier(tier) ? builtInTierLabel(tierLabels, tier) : tier,
+    label: isBuiltInTier(tier) ? builtInTierLabel(tierLabels, tier, t) : tier,
   }));

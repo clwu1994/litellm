@@ -1,6 +1,8 @@
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import React from "react";
+import { useTranslation } from "react-i18next";
+import type { ParseKeys } from "i18next";
 import { type ComplexityRouterConfigValue, classificationFrequency } from "./ComplexityRouterConfig";
 
 export const DEFAULT_STALL_ESCALATION_WINDOW = 6;
@@ -11,12 +13,10 @@ export const DEFAULT_STALL_ESCALATION_REPEAT_THRESHOLD = 3;
  * routing decision instead of classifying most turns, so detection would never see the tool
  * calls it reads.
  */
-export const stallEscalationBlockedReason = (value: ComplexityRouterConfigValue): string | null => {
+export const stallEscalationBlockedReason = (value: ComplexityRouterConfigValue): ParseKeys<"models"> | null => {
   const frequency = classificationFrequency(value);
-  if (frequency === "session")
-    return 'Set "How often to classify" to every request under Advanced: Classification Method to use this. Scoring once per session replays that model instead of classifying, so a stall never reaches the classifier.';
-  if (frequency === "user_turn")
-    return 'Set "How often to classify" to every request under Advanced: Classification Method to use this. Scoring only new user messages skips the tool-call turns a stall shows up in.';
+  if (frequency === "session") return "autoRouterConfig.matching.stall.blockedSession";
+  if (frequency === "user_turn") return "autoRouterConfig.matching.stall.blockedUserTurn";
   return null;
 };
 
@@ -30,6 +30,7 @@ const StallEscalationConfig: React.FC<{
   value: ComplexityRouterConfigValue;
   onChange: (value: ComplexityRouterConfigValue) => void;
 }> = ({ value, onChange }) => {
+  const { t } = useTranslation("models");
   const enabled = value.stall_escalation_enabled ?? false;
   const blockedReason = stallEscalationBlockedReason(value);
   const window = value.stall_escalation_window ?? DEFAULT_STALL_ESCALATION_WINDOW;
@@ -70,21 +71,19 @@ const StallEscalationConfig: React.FC<{
           // this back off, since the backend rejects saving both together.
           disabled={blockedReason !== null && !enabled}
           onCheckedChange={toggle}
-          aria-label="Escalate a stalled task to a stronger model"
+          aria-label={t("autoRouterConfig.matching.stall.label")}
         />
-        <strong className="font-semibold">Escalate a stalled task to a stronger model</strong>
+        <strong className="font-semibold">{t("autoRouterConfig.matching.stall.label")}</strong>
       </div>
       <span className="block text-xs mb-3 text-muted-foreground">
-        When the model keeps repeating the same tool call, or the same call keeps erroring, bump the request one tier
-        higher for as long as it looks stuck. The automatic counterpart to an escalation keyword: nobody has to notice
-        the loop and ask. Off means a stuck task keeps the model it was classified onto.
-        {blockedReason !== null && ` ${blockedReason}`}
+        {t("autoRouterConfig.matching.stall.help")}
+        {blockedReason !== null && ` ${t(blockedReason)}`}
       </span>
       {enabled && blockedReason === null && (
         <div className="flex flex-wrap gap-4">
           <div style={{ maxWidth: 240 }}>
             <label className="block text-sm font-medium mb-1" htmlFor="stall-escalation-repeat-threshold">
-              Repeats before escalating
+              {t("autoRouterConfig.matching.stall.repeatsLabel")}
             </label>
             <Input
               id="stall-escalation-repeat-threshold"
@@ -93,12 +92,12 @@ const StallEscalationConfig: React.FC<{
               onChange={(event) => commitThreshold(event.target.value)}
             />
             <span className="block text-xs mt-1 text-muted-foreground">
-              How many identical or failing calls count as stuck. At least 2; lower reacts sooner and misfires more.
+              {t("autoRouterConfig.matching.stall.repeatsHelp")}
             </span>
           </div>
           <div style={{ maxWidth: 240 }}>
             <label className="block text-sm font-medium mb-1" htmlFor="stall-escalation-window">
-              Recent calls examined
+              {t("autoRouterConfig.matching.stall.windowLabel")}
             </label>
             <Input
               id="stall-escalation-window"
@@ -107,7 +106,7 @@ const StallEscalationConfig: React.FC<{
               onChange={(event) => commitWindow(event.target.value)}
             />
             <span className="block text-xs mt-1 text-muted-foreground">
-              How far back to look, in tool calls. Never below the repeat count, since that could never be reached.
+              {t("autoRouterConfig.matching.stall.windowHelp")}
             </span>
           </div>
         </div>

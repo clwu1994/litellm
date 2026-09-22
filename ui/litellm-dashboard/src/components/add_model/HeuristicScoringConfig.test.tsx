@@ -5,7 +5,8 @@ import { useComplexityScorerDefaults } from "@/app/(dashboard)/hooks/autoRouter/
 import ClassificationMethodConfig from "./ClassificationMethodConfig";
 import HeuristicScoringConfig from "./HeuristicScoringConfig";
 import { ClassifierFallback, ClassifierType, ComplexityRouterConfigValue } from "./ComplexityRouterConfig";
-import { DIMENSION_LABELS } from "./heuristic_scoring_knobs";
+import { DIMENSION_LABEL_KEYS } from "./heuristic_scoring_knobs";
+import i18n from "@/i18n/bootstrapI18n";
 import { LOADED_SCORER_DEFAULTS_QUERY, SHIPPED_SCORER_DEFAULTS } from "../../../tests/mocks/complexityScorerDefaults";
 
 vi.mock(
@@ -206,8 +207,9 @@ describe("ClassificationMethodConfig scorer gating", () => {
   it("renders a row for every scored dimension", async () => {
     await render(BASE);
 
+    const t = i18n.getFixedT(null, "models");
     for (const key of Object.keys(SHIPPED_SCORER_DEFAULTS.dimension_weights)) {
-      expect(screen.getByLabelText(DIMENSION_LABELS[key])).toBeInTheDocument();
+      expect(screen.getByLabelText(t(DIMENSION_LABEL_KEYS[key]))).toBeInTheDocument();
     }
   });
 });

@@ -1,3 +1,4 @@
+import type { ValidationMessage } from "@/components/common_components/formRules";
 import {
   ComplexityRouterConfigPayload,
   hydrateTierLabels,
@@ -200,7 +201,7 @@ export const getReferencedModelsError = (
     defaultModel?: string;
   },
   availability: ModelAvailability,
-): string | null => {
+): ValidationMessage | null => {
   const missing = getMissingModels(
     {
       tiers: params.tiers,
@@ -210,7 +211,9 @@ export const getReferencedModelsError = (
     },
     availability,
   );
-  return missing.length > 0 ? `Model(s) no longer available: ${missing.join(", ")}` : null;
+  return missing.length > 0
+    ? { key: "autoRouterConfig.setup.referencedModelsError", values: { missing: missing.join(", ") } }
+    : null;
 };
 
 // Every piece of AddAutoRouterTab's config state that a preset (or a reset to Custom) prefills in

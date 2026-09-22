@@ -32,6 +32,74 @@ const SOURCE_TESTS = {
     "src/components/add_model/cache_control_settings.i18n.test.tsx",
   ],
   "src/utils/ptuValidation.ts": ["src/components/add_model/advanced_settings.i18n.test.tsx"],
+  "src/components/add_model/ComplexityRouterConfig.tsx": [
+    "src/components/add_model/ComplexityRouterConfig.i18n.test.tsx",
+  ],
+  "src/components/add_model/ComplexityRouterConfigSections.tsx": [
+    "src/components/add_model/ComplexityRouterConfig.i18n.test.tsx",
+  ],
+  "src/components/add_model/complexity_router_metadata.ts": [
+    "src/components/add_model/ComplexityRouterConfig.i18n.test.tsx",
+  ],
+  "src/components/add_model/TierConfigIntro.tsx": ["src/components/add_model/ComplexityRouterConfig.i18n.test.tsx"],
+  "src/components/add_model/TierModelEffortRows.tsx": ["src/components/add_model/ComplexityRouterConfig.i18n.test.tsx"],
+  "src/components/add_model/NonReasoningTierToggle.tsx": [
+    "src/components/add_model/ComplexityRouterConfig.i18n.test.tsx",
+  ],
+  "src/components/add_model/ModalityRoutingControls.tsx": [
+    "src/components/add_model/ComplexityRouterConfig.i18n.test.tsx",
+  ],
+  "src/components/add_model/ContextWindowEscalationConfig.tsx": [
+    "src/components/add_model/ComplexityRouterConfig.i18n.test.tsx",
+  ],
+  "src/components/add_model/ResponseFormatControls.tsx": [
+    "src/components/add_model/ComplexityRouterConfig.i18n.test.tsx",
+  ],
+  "src/components/add_model/tier_rows.ts": ["src/components/add_model/ComplexityRouterConfig.i18n.test.tsx"],
+  "src/components/add_model/complexity_router_tiers.ts": [
+    "src/components/add_model/ComplexityRouterConfig.i18n.test.tsx",
+  ],
+  "src/components/add_model/build_complexity_router_config.ts": [
+    "src/components/add_model/ComplexityRouterConfig.i18n.test.tsx",
+  ],
+  "src/components/add_model/ClassificationMethodConfig.tsx": [
+    "src/components/add_model/autoRouterClassifier.i18n.test.tsx",
+  ],
+  "src/components/add_model/OpeningPromptEditor.tsx": ["src/components/add_model/autoRouterClassifier.i18n.test.tsx"],
+  "src/components/add_model/ClassifierPromptEditor.tsx": [
+    "src/components/add_model/autoRouterClassifier.i18n.test.tsx",
+  ],
+  "src/components/add_model/ClassifierReasoningEffortSelect.tsx": [
+    "src/components/add_model/autoRouterClassifier.i18n.test.tsx",
+  ],
+  "src/components/add_model/ClassifierCircuitBreakerConfig.tsx": [
+    "src/components/add_model/autoRouterClassifier.i18n.test.tsx",
+  ],
+  "src/components/add_model/ClassifierVisionConfig.tsx": [
+    "src/components/add_model/autoRouterClassifier.i18n.test.tsx",
+  ],
+  "src/components/add_model/ModelChoiceCombobox.tsx": ["src/components/add_model/autoRouterClassifier.i18n.test.tsx"],
+  "src/components/add_model/add_auto_router_tab.tsx": ["src/components/add_model/add_auto_router_tab.test.tsx"],
+  "src/components/add_model/RouterConfigBuilder.tsx": ["src/components/add_model/autoRouterSetup.i18n.test.tsx"],
+  "src/components/add_model/HeuristicScoringConfig.tsx": ["src/components/add_model/autoRouterSetup.i18n.test.tsx"],
+  "src/components/add_model/heuristic_scoring_knobs.ts": ["src/components/add_model/autoRouterSetup.i18n.test.tsx"],
+  "src/components/add_model/CustomDimensionRows.tsx": ["src/components/add_model/autoRouterSetup.i18n.test.tsx"],
+  "src/components/add_model/custom_dimensions.ts": ["src/components/add_model/autoRouterSetup.i18n.test.tsx"],
+  "src/components/add_model/handle_add_auto_router_submit.tsx": [
+    "src/components/add_model/autoRouterSetup.i18n.test.tsx",
+  ],
+  "src/components/add_model/KeywordTierRules.tsx": ["src/components/add_model/autoRouterMatching.i18n.test.tsx"],
+  "src/components/add_model/SemanticKeywordMatching.tsx": ["src/components/add_model/autoRouterMatching.i18n.test.tsx"],
+  "src/components/add_model/StallEscalationConfig.tsx": ["src/components/add_model/autoRouterMatching.i18n.test.tsx"],
+  "src/components/add_model/AdaptiveRoutingConfig.tsx": ["src/components/add_model/autoRouterMatching.i18n.test.tsx"],
+  "src/components/add_model/AffinityControls.tsx": ["src/components/add_model/autoRouterMatching.i18n.test.tsx"],
+  "src/components/add_model/CompressionControls.tsx": ["src/components/add_model/autoRouterMatching.i18n.test.tsx"],
+  "src/components/add_model/EscalationKeywords.tsx": ["src/components/add_model/autoRouterMatching.i18n.test.tsx"],
+  "src/components/add_model/auto_router_connection_test.tsx": [
+    "src/components/add_model/autoRouterMatching.i18n.test.tsx",
+  ],
+  "src/components/add_model/AutoRouterRoutingTest.tsx": ["src/components/add_model/autoRouterMatching.i18n.test.tsx"],
+  "src/lib/autorouter_presets.ts": ["src/components/add_model/autoRouterSetup.i18n.test.tsx"],
 };
 
 const flatten = (node, prefix = "") =>
@@ -89,7 +157,7 @@ const sources = productionSources(join(DASHBOARD, "src")).map((path) => [
   readFileSync(path, "utf8"),
 ]);
 
-const ASSERTION_TOKEN = /expect\s*\(|(?:get|find|query)(?:All)?By[A-Z]\w*|within\s*\(|to[A-Z]\w*\(/;
+const ASSERTION_TOKEN = /expect\w*\s*\(|(?:get|find|query)(?:All)?By[A-Z]\w*|within\s*\(|to[A-Z]\w*\(/;
 const IDENTIFIER = /[A-Za-z_$][\w$]*/g;
 const TEST_START = /^\s*(?:it|test)(?:\.\w+)?\s*\(/;
 
@@ -114,13 +182,23 @@ const assertedText = (source) => {
   return [...asserting, ...declarations].join("\n");
 };
 
+const CONTRACT_TEST = "src/components/add_model/autoRouterContractMessages.i18n.test.tsx";
+const contractKeys = new Set(
+  [...readFileSync(join(DASHBOARD, CONTRACT_TEST), "utf8").matchAll(/"([^"]*autoRouterConfig\.[^"]+)"/g)].map(
+    (match) => match[1],
+  ),
+);
+
 const testText = new Map();
-for (const file of Object.values(SOURCE_TESTS).flat()) {
+for (const file of [...Object.values(SOURCE_TESTS).flat(), CONTRACT_TEST]) {
   if (!testText.has(file)) testText.set(file, assertedText(readFileSync(join(DASHBOARD, file), "utf8")));
 }
 
 const renderersOf = (key) => sources.filter(([, text]) => text.includes(`"${key}"`)).map(([path]) => path);
-const testsFor = (key) => [...new Set(renderersOf(key).flatMap((source) => SOURCE_TESTS[source] ?? []))];
+const testsFor = (key) =>
+  contractKeys.has(key)
+    ? [CONTRACT_TEST]
+    : [...new Set(renderersOf(key).flatMap((source) => SOURCE_TESTS[source] ?? []))];
 const isCovered = (key, tests) =>
   tests.length > 0 && tests.every((file) => assertsCompleteLiteral(chinese[key], testText.get(file) ?? ""));
 

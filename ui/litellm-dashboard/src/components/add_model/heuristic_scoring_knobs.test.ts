@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 
+import i18n from "@/i18n/bootstrapI18n";
+
 import { heuristicScoringRoleFor } from "./ComplexityRouterConfig";
 import {
+  DIMENSION_LABEL_KEYS,
   dimensionLabel,
   effectiveDimensionWeights,
   rebalanceDimensionWeights,
@@ -65,8 +68,10 @@ describe("hydrating the scorer knobs", () => {
   });
 
   it("falls back to the raw key when a dimension has no label yet", () => {
-    expect(dimensionLabel("codePresence")).toBe("Code presence");
-    expect(dimensionLabel("somethingNew")).toBe("somethingNew");
+    const t = i18n.getFixedT("en", "models");
+    expect(dimensionLabel("codePresence", t)).toBe("Code presence");
+    expect(dimensionLabel("somethingNew", t)).toBe("somethingNew");
+    expect(t(DIMENSION_LABEL_KEYS.questionComplexity)).toBe("Question complexity");
   });
 });
 
@@ -82,7 +87,7 @@ describe("rebalancing the complete weight vector", () => {
   };
   const row = { id: "domain", name: "domainMarkers", weight: 0.2, keywords: ["orbitmesh"] };
   const success = (result: ReturnType<typeof rebalanceDimensionWeights>) => {
-    if (!result.ok) throw new Error(result.error);
+    if (!result.ok) throw new Error(result.error.key);
     const total =
       Object.keys(defaults).reduce((sum, name) => sum + result.dimension_weights[name], 0) +
       (result.custom_dimensions ?? []).reduce((sum, dimension) => sum + dimension.weight, 0);

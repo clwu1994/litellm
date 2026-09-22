@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 
 import type { AutoRouterDeployment } from "@/app/(dashboard)/hooks/models/useModels";
 import { hydrateTierLabels } from "@/components/add_model/build_complexity_router_config";
@@ -35,8 +36,11 @@ const asRecord = (value: unknown): Record<string, unknown> => {
 const isComplexityTier = (tier: string): tier is keyof ComplexityTiers =>
   (TIER_KEYS as readonly string[]).includes(tier);
 
-export const tierDisplayLabel = (tier: string, tierLabels: ComplexityTierLabels | undefined): string =>
-  isComplexityTier(tier) ? effectiveTierLabel(tier, tierLabels) : tier;
+export const tierDisplayLabel = (
+  tier: string,
+  tierLabels: ComplexityTierLabels | undefined,
+  t: TFunction<"models">,
+): string => (isComplexityTier(tier) ? effectiveTierLabel(tier, tierLabels, t) : tier);
 
 const CONFIG_KEY_BY_ROUTER_TYPE: Record<string, keyof NonNullable<AutoRouterDeployment["litellm_params"]>> = {
   complexity: "complexity_router_config",
@@ -86,6 +90,7 @@ interface TierTurnsChartProps {
 
 const TierTurnsChart: React.FC<TierTurnsChartProps> = ({ view, autoRouters }) => {
   const { t } = useTranslation("costTracking");
+  const { t: tModels } = useTranslation("models");
   const group = viewGroup(view);
   const entries = Object.entries(group?.tier_turns ?? {}).filter(([, turns]) => turns > 0);
   if (!group || entries.length === 0) return null;
@@ -93,7 +98,7 @@ const TierTurnsChart: React.FC<TierTurnsChartProps> = ({ view, autoRouters }) =>
   const tierLabels = tierLabelsFor(group.router_name, group.router_type, autoRouters);
   const total = entries.reduce((sum, [, turns]) => sum + turns, 0);
   const slices = entries.map(([tier, turns]) => ({
-    tier: tierDisplayLabel(tier, tierLabels),
+    tier: tierDisplayLabel(tier, tierLabels, tModels),
     turns,
     models: tierModelsFor(tier, group.router_name, group.router_type, autoRouters),
   }));

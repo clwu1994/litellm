@@ -2,6 +2,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { SimpleTooltip } from "@/components/ui/tooltip";
 import { Info } from "lucide-react";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { ReasoningEffort, TierModelParams } from "./complexity_router_tiers";
 
 const PROVIDER_DEFAULT = "__provider_default__";
@@ -52,15 +53,16 @@ const TierModelEffortRows: React.FC<TierModelEffortRowsProps> = ({
   paramsByModel,
   onEffortChange,
 }) => {
+  const { t } = useTranslation("models");
   const rows = tierEffortRows({ models, effortOptionsByModel, paramsByModel });
   if (rows.length === 0) return null;
   return (
     <div className="mt-2 space-y-1">
       <div className="flex items-center gap-1">
-        <span className="text-xs font-medium text-muted-foreground">Reasoning effort</span>
-        <SimpleTooltip
-          content={`Sent as reasoning_effort on requests this tier routes to the model, overriding the caller's value. Default leaves the request untouched.`}
-        >
+        <span className="text-xs font-medium text-muted-foreground">
+          {t("autoRouterConfig.complexity.effort.heading")}
+        </span>
+        <SimpleTooltip content={t("autoRouterConfig.complexity.effort.tooltip")}>
           <Info className="size-3 text-muted-foreground/70" />
         </SimpleTooltip>
       </div>
@@ -69,7 +71,7 @@ const TierModelEffortRows: React.FC<TierModelEffortRowsProps> = ({
           <span className="truncate text-xs">{model}</span>
           <Select
             items={[
-              { value: PROVIDER_DEFAULT, label: "Default" },
+              { value: PROVIDER_DEFAULT, label: t("autoRouterConfig.complexity.effort.default") },
               ...options.map((option) => ({ value: option, label: option })),
             ]}
             value={effort ?? PROVIDER_DEFAULT}
@@ -80,12 +82,12 @@ const TierModelEffortRows: React.FC<TierModelEffortRowsProps> = ({
             <SelectTrigger
               size="sm"
               className="w-36"
-              aria-label={`Reasoning effort for ${model} in the ${tierLabel} tier`}
+              aria-label={t("autoRouterConfig.complexity.effort.aria", { model, tier: tierLabel })}
             >
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={PROVIDER_DEFAULT}>Default</SelectItem>
+              <SelectItem value={PROVIDER_DEFAULT}>{t("autoRouterConfig.complexity.effort.default")}</SelectItem>
               {options.map((option) => (
                 <SelectItem key={option} value={option}>
                   {option}

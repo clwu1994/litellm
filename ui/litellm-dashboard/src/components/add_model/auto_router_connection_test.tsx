@@ -1,4 +1,6 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import type { ParseKeys } from "i18next";
 import { CircleCheck, CircleX, LoaderCircle } from "lucide-react";
 
 import { testModelGroupConnection, ModelGroupConnectionResult } from "../networking";
@@ -12,6 +14,12 @@ interface AutoRouterConnectionTestProps {
 
 type TargetResult = { status: "pending" } | ModelGroupConnectionResult;
 
+const TEST_TARGET_LABEL_KEYS: Record<string, ParseKeys<"models">> = {
+  Default: "autoRouterConfig.matching.connection.labelDefault",
+  Embedding: "autoRouterConfig.matching.connection.labelEmbedding",
+  Classifier: "autoRouterConfig.matching.connection.labelClassifier",
+};
+
 const cleanErrorMessage = (error: string): string => {
   const mainError = error.split("stack trace:")[0].trim();
   return mainError.replace(/^litellm\.(.*?)Error: /, "");
@@ -22,6 +30,7 @@ const AutoRouterConnectionTest: React.FC<AutoRouterConnectionTestProps> = ({
   targets,
   onTestComplete,
 }) => {
+  const { t } = useTranslation("models");
   const [results, setResults] = React.useState<TargetResult[]>(() => targets.map(() => ({ status: "pending" })));
 
   React.useEffect(() => {
@@ -48,19 +57,12 @@ const AutoRouterConnectionTest: React.FC<AutoRouterConnectionTestProps> = ({
   }, []);
 
   if (targets.length === 0) {
-    return (
-      <p className="text-sm text-muted-foreground">
-        No complexity tiers are configured yet, so there is nothing to test.
-      </p>
-    );
+    return <p className="text-sm text-muted-foreground">{t("autoRouterConfig.matching.connection.empty")}</p>;
   }
 
   return (
     <div className="space-y-3">
-      <p className="mb-2 text-sm text-muted-foreground">
-        Test Connection sends a minimal request to every configured tier, classifier, default, and embedding model. The
-        classifier probe includes its reasoning effort override.
-      </p>
+      <p className="mb-2 text-sm text-muted-foreground">{t("autoRouterConfig.matching.connection.help")}</p>
       {targets.map((target, index) => {
         const result = results[index] ?? { status: "pending" };
         return (
@@ -81,10 +83,17 @@ const AutoRouterConnectionTest: React.FC<AutoRouterConnectionTestProps> = ({
               )}
             </div>
             <div className="min-w-0 flex-1 text-sm">
-              <span className="font-medium">{target.labels.join(", ")}</span>{" "}
+              <span className="font-medium">
+                {target.labels
+                  .map((label) => {
+                    const labelKey = TEST_TARGET_LABEL_KEYS[label];
+                    return labelKey === undefined ? label : t(labelKey);
+                  })
+                  .join(", ")}
+              </span>{" "}
               <span className="text-muted-foreground">
                 {"->"} {target.modelGroup}
-                {target.mode === "embedding" ? " (embedding)" : ""}
+                {target.mode === "embedding" ? t("autoRouterConfig.matching.connection.embeddingSuffix") : ""}
               </span>
               {result.status === "error" && (
                 <p className="mt-1 text-xs text-destructive" data-testid="test-error-message">

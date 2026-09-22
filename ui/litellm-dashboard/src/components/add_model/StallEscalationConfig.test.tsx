@@ -20,11 +20,15 @@ const toggle = () => screen.getByRole("switch", { name: "Escalate a stalled task
 
 describe("stallEscalationBlockedReason", () => {
   it("blocks on session pinning, which replays a model instead of classifying", () => {
-    expect(stallEscalationBlockedReason({ ...baseValue, session_affinity: true })).toContain("Classification Method");
+    expect(stallEscalationBlockedReason({ ...baseValue, session_affinity: true })).toBe(
+      "autoRouterConfig.matching.stall.blockedSession",
+    );
   });
 
   it("blocks on user-turn classification, which skips the agent-loop turns a stall shows up in", () => {
-    expect(stallEscalationBlockedReason({ ...baseValue, classification_mode: "user_turn" })).toContain("every request");
+    expect(stallEscalationBlockedReason({ ...baseValue, classification_mode: "user_turn" })).toBe(
+      "autoRouterConfig.matching.stall.blockedUserTurn",
+    );
   });
 
   it("allows the default every-request router", () => {

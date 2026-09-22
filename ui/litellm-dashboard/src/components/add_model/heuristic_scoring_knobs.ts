@@ -1,3 +1,6 @@
+import type { ParseKeys, TFunction } from "i18next";
+
+import type { ValidationMessage } from "../common_components/formRules";
 import type { CustomDimensionRow } from "./custom_dimensions";
 
 export type TierBoundaries = Record<string, number>;
@@ -11,17 +14,20 @@ export type DimensionWeights = Record<string, number>;
  * shipped weights come from the proxy (GET /public/complexity_router/scorer_defaults), so a dimension
  * added backend-side still renders, under its raw key until it is given a label here.
  */
-export const DIMENSION_LABELS: Record<string, string> = {
-  codePresence: "Code presence",
-  reasoningMarkers: "Reasoning markers",
-  technicalTerms: "Technical terms",
-  tokenCount: "Token count",
-  simpleIndicators: "Simple indicators",
-  multiStepPatterns: "Multi-step patterns",
-  questionComplexity: "Question complexity",
+export const DIMENSION_LABEL_KEYS: Record<string, ParseKeys<"models">> = {
+  codePresence: "autoRouterConfig.setup.dimension.codePresence",
+  reasoningMarkers: "autoRouterConfig.setup.dimension.reasoningMarkers",
+  technicalTerms: "autoRouterConfig.setup.dimension.technicalTerms",
+  tokenCount: "autoRouterConfig.setup.dimension.tokenCount",
+  simpleIndicators: "autoRouterConfig.setup.dimension.simpleIndicators",
+  multiStepPatterns: "autoRouterConfig.setup.dimension.multiStepPatterns",
+  questionComplexity: "autoRouterConfig.setup.dimension.questionComplexity",
 };
 
-export const dimensionLabel = (key: string): string => DIMENSION_LABELS[key] ?? key;
+export const dimensionLabel = (key: string, t: TFunction<"models">): string => {
+  const labelKey = DIMENSION_LABEL_KEYS[key];
+  return labelKey === undefined ? key : t(labelKey);
+};
 
 const asRecord = (raw: unknown): Record<string, unknown> | undefined =>
   typeof raw === "object" && raw !== null && !Array.isArray(raw) ? (raw as Record<string, unknown>) : undefined;
@@ -75,7 +81,7 @@ export type WeightEdit =
   | { type: "remove"; id: string };
 type WeightResult =
   | { ok: true; dimension_weights: DimensionWeights; custom_dimensions: CustomDimensionRow[] | undefined }
-  | { ok: false; error: string };
+  | { ok: false; error: ValidationMessage };
 
 export const rebalanceDimensionWeights = (
   defaults: DimensionWeights | undefined,
@@ -84,7 +90,7 @@ export const rebalanceDimensionWeights = (
   edit: WeightEdit,
 ): WeightResult => {
   if (!defaults || !Object.keys(defaults).length)
-    return { ok: false, error: "Load the shipped defaults before changing weights" };
+    return { ok: false, error: { key: "autoRouterConfig.setup.weightError.loadDefaults" } };
   const builtin = effectiveDimensionWeights(defaults, stored);
   const rows =
     edit.type === "add"
@@ -97,24 +103,25 @@ export const rebalanceDimensionWeights = (
   if (!vector.every(weightValid))
     return {
       ok: false,
-      error: "Existing weights must be finite and nonnegative; custom weights must be greater than 0 and at most 1",
+      error: { key: "autoRouterConfig.setup.weightError.invalid" },
     };
   const target = edit.type === "set" ? edit.target : undefined;
   const pinned = (entry: WeightTarget) =>
     edit.type === "add"
       ? entry.kind === "custom" && entry.id === edit.row.id
       : entry.kind === target?.kind && entry.id === target.id;
-  if (edit.type === "set" && !vector.some(pinned)) return { ok: false, error: "The dimension is no longer available" };
+  if (edit.type === "set" && !vector.some(pinned))
+    return { ok: false, error: { key: "autoRouterConfig.setup.weightError.unavailable" } };
   const requestedWeight = (): number => {
     if (edit.type === "set") return edit.weight;
     return edit.type === "add" ? edit.row.weight : 0;
   };
   const weight = requestedWeight();
   if (!weightValid({ kind: target?.kind ?? "builtin", weight }))
-    return { ok: false, error: "Use a weight from 0 to 1; custom dimensions must stay greater than 0" };
+    return { ok: false, error: { key: "autoRouterConfig.setup.weightError.range" } };
   const others = vector.filter((entry) => !pinned(entry));
   const total = others.reduce((sum, entry) => sum + entry.weight, 0);
-  if (!Number.isFinite(total)) return { ok: false, error: "Existing weights are too large to rebalance" };
+  if (!Number.isFinite(total)) return { ok: false, error: { key: "autoRouterConfig.setup.weightError.tooLarge" } };
   const remainder = 1 - weight;
   const builtinCount = others.filter((entry) => entry.kind === "builtin").length;
   const redistributed = (entry: WeightTarget & { weight: number }): number => {
@@ -132,7 +139,7 @@ export const rebalanceDimensionWeights = (
   );
   const offBudget = Math.abs(corrected.reduce((sum, entry) => sum + entry.weight, 0) - 1) > 1e-12;
   if (!corrected.every(weightValid) || offBudget)
-    return { ok: false, error: "Leave a positive share for every custom dimension, or remove it first" };
+    return { ok: false, error: { key: "autoRouterConfig.setup.weightError.share" } };
   const weights = Object.fromEntries(
     corrected.filter((entry) => entry.kind === "builtin").map(({ id, weight }) => [id, weight]),
   );

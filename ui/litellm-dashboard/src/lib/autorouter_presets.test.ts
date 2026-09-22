@@ -657,7 +657,14 @@ describe("autorouter_presets", () => {
     ] as const)("%s", (_label, classifierType, semanticMatchingEnabled, missingModels) => {
       const config = { tiers, classifierType, semanticMatchingEnabled, ...params };
       const error = getReferencedModelsError(config, available);
-      expect(error).toBe(missingModels ? `Model(s) no longer available: ${missingModels}` : null);
+      if (missingModels) {
+        expect(error).toMatchObject({
+          key: "autoRouterConfig.setup.referencedModelsError",
+          values: { missing: missingModels },
+        });
+      } else {
+        expect(error).toBeNull();
+      }
     });
   });
 

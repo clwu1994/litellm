@@ -99,8 +99,8 @@ describe("activeTierRows with an edited set", () => {
 });
 
 describe("CUSTOM_TIER_RESTRICTIONS", () => {
-  it("gives every restriction a reason, since each one replaces or explains a control", () => {
-    const reasons = Object.values(CUSTOM_TIER_RESTRICTIONS).map((restriction) => restriction.reason);
+  it("gives every restriction a reason key, since each one replaces or explains a control", () => {
+    const reasons = Object.values(CUSTOM_TIER_RESTRICTIONS).map((restriction) => restriction.reasonKey);
     expect(reasons.every((reason) => reason.length > 0)).toBe(true);
     expect(new Set(reasons).size).toBe(reasons.length);
   });
@@ -122,20 +122,26 @@ describe("getCustomTierRowsError", () => {
   });
 
   it.each([
-    [set([definedRow("CASUAL")]), "A tier set needs 2 to 8 tiers"],
+    [set([definedRow("CASUAL")]), { key: "autoRouterConfig.complexity.rowsError.count", values: { min: 2, max: 8 } }],
     [
       set(Array.from({ length: MAX_TIER_COUNT + 1 }, (_, index) => definedRow(`T${index}`))),
-      "A tier set needs 2 to 8 tiers",
+      { key: "autoRouterConfig.complexity.rowsError.count", values: { min: 2, max: 8 } },
     ],
-    [set([definedRow(""), definedRow("AUDIT")], "audit"), "Name every tier"],
-    [set([definedRow("AUDIT"), { ...definedRow("audit"), id: "second" }]), "Tier names must be unique, ignoring case"],
+    [set([definedRow(""), definedRow("AUDIT")], "audit"), { key: "autoRouterConfig.complexity.rowsError.nameEvery" }],
+    [
+      set([definedRow("AUDIT"), { ...definedRow("audit"), id: "second" }]),
+      { key: "autoRouterConfig.complexity.rowsError.unique" },
+    ],
     [
       set([definedRow("CASUAL"), { ...definedRow("AUDIT"), definition: "  " }]),
-      "Every custom tier needs a definition: it is the rubric the classifier routes on",
+      { key: "autoRouterConfig.complexity.rowsError.definition" },
     ],
-    [set([definedRow("CASUAL"), definedRow("AUDIT")], "gone"), "Pick a Fallback Tier for classifier failures"],
+    [
+      set([definedRow("CASUAL"), definedRow("AUDIT")], "gone"),
+      { key: "autoRouterConfig.complexity.rowsError.fallback" },
+    ],
   ])("reports the row problem the backend would reject", (customTierSet, expected) => {
-    expect(getCustomTierRowsError(customTierSet)).toBe(expected);
+    expect(getCustomTierRowsError(customTierSet)).toMatchObject(expected);
   });
 
   it("lets a built-in name inherit its definition, which is the one blank the backend allows", () => {

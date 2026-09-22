@@ -1458,7 +1458,9 @@ describe("ComplexityRouterConfig tier editing", () => {
   });
 
   it("surfaces the caller's orphaned-rule verdict while editing, so Done is not a silent exit", () => {
-    renderEditor(customValue, { keywordRulesError: "Keyword rule(s) 1 route to a tier this router no longer has" });
+    renderEditor(customValue, {
+      keywordRulesError: { key: "autoRouterConfig.complexity.keywordRuleError.orphaned", values: { rules: "1" } },
+    });
     expect(
       screen.getByText("Keyword rule(s) 1 route to a tier this router no longer has", { exact: false }),
     ).toBeInTheDocument();
@@ -1470,7 +1472,7 @@ describe("ComplexityRouterConfig tier editing", () => {
         {...baseProps}
         value={customValue}
         onEditingTiersChange={vi.fn()}
-        keywordRulesError="Keyword rule(s) 1 route to a tier this router no longer has"
+        keywordRulesError={{ key: "autoRouterConfig.complexity.keywordRuleError.orphaned", values: { rules: "1" } }}
       />,
     );
     expect(screen.queryByText("route to a tier this router no longer has", { exact: false })).not.toBeInTheDocument();

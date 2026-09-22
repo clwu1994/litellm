@@ -18,6 +18,7 @@ import { useZodForm } from "@/lib/forms/useZodForm";
 import AccessGroupTagsCombobox from "../add_model/AccessGroupTagsCombobox";
 import ModelChoiceCombobox, { type ModelChoice } from "../add_model/ModelChoiceCombobox";
 import { modelAvailableCall, modelPatchUpdateCall, validateAutoRouterConfig } from "../networking";
+import type { ValidationMessage } from "../common_components/formRules";
 import { fetchAvailableModels, ModelGroup } from "@/components/llm_calls/fetch_models";
 import RouterConfigBuilder, { type RouterConfig, serializeRouterConfig } from "../add_model/RouterConfigBuilder";
 import { hydrateTierModelParams } from "../add_model/complexity_router_tiers";
@@ -470,6 +471,9 @@ const EditAutoRouterModal: React.FC<EditAutoRouterModalProps> = ({
         ? customDimensionsError(complexityRouterConfig.custom_dimensions)
         : null);
 
+  const resolveReason = (reason: ValidationMessage | string): string =>
+    typeof reason === "string" ? reason : t(reason.key, reason.values);
+
   useEffect(() => {
     if (isVisible && modelData) {
       initializeForm();
@@ -585,7 +589,7 @@ const EditAutoRouterModal: React.FC<EditAutoRouterModalProps> = ({
         : builtInTiersEmpty && t("editAutoRouter.noTierModels");
       if (tierSetError) {
         setShowValidationErrors(true);
-        toast.fromError(tierSetError);
+        toast.fromError(resolveReason(tierSetError));
         return;
       }
       const classifierError =
@@ -595,13 +599,13 @@ const EditAutoRouterModal: React.FC<EditAutoRouterModalProps> = ({
           : null);
       if (classifierError) {
         setShowValidationErrors(true);
-        toast.fromError(classifierError);
+        toast.fromError(resolveReason(classifierError));
         return;
       }
       const classifierEffortError = getClassifierReasoningEffortError(complexityRouterConfig, modelInfo);
       if (classifierEffortError) {
         setShowValidationErrors(true);
-        toast.fromError(classifierEffortError);
+        toast.fromError(resolveReason(classifierEffortError));
         return;
       }
       // Same guards the create form applies (add_auto_router_tab.tsx). The backend rejects a
@@ -611,14 +615,14 @@ const EditAutoRouterModal: React.FC<EditAutoRouterModalProps> = ({
       const keywordRulesError = getKeywordTierRulesError(keywordTierRules, rows);
       if (keywordRulesError) {
         setShowValidationErrors(true);
-        toast.fromError(keywordRulesError);
+        toast.fromError(resolveReason(keywordRulesError));
         return;
       }
 
       const semanticError = getSemanticConfigError({ semanticMatchingEnabled, embeddingModel, keywordTierRules });
       if (semanticError) {
         setShowValidationErrors(true);
-        toast.fromError(semanticError);
+        toast.fromError(resolveReason(semanticError));
         return;
       }
 
@@ -869,7 +873,7 @@ const EditAutoRouterModal: React.FC<EditAutoRouterModalProps> = ({
                     </Button>
                   }
                 />
-                <TooltipContent>{submitBlockedReason}</TooltipContent>
+                <TooltipContent>{resolveReason(submitBlockedReason)}</TooltipContent>
               </Tooltip>
             )}
           </DialogFooter>

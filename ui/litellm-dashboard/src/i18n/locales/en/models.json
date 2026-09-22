@@ -908,5 +908,594 @@
     "modelDeleted": "Model deleted successfully",
     "modelPaused": "Model paused",
     "modelResumed": "Model resumed"
+  },
+  "autoRouterConfig": {
+    "complexity": {
+      "tier": {
+        "NON_REASONING": {
+          "label": "Non-reasoning",
+          "description": "Operational relay work: passing information along with no judgment about it"
+        },
+        "SIMPLE": {
+          "label": "Simple",
+          "description": "Basic questions, greetings, simple factual queries"
+        },
+        "MEDIUM": {
+          "label": "Medium",
+          "description": "Standard queries requiring some reasoning or explanation"
+        },
+        "COMPLEX": {
+          "label": "Complex",
+          "description": "Technical, multi-part requests requiring deep knowledge"
+        },
+        "REASONING": {
+          "label": "Reasoning",
+          "description": "Chain-of-thought, analysis, explicit reasoning requests"
+        }
+      },
+      "rubric": {
+        "legacy": {
+          "label": "Legacy (uncalibrated)",
+          "description": "The rubric as it shipped before calibration examples, with no worked examples at all. Routers created before this setting existed use it, so their tier decisions and spend are unchanged. It over-routes ordinary engineering to the most expensive tier."
+        },
+        "agentic": {
+          "label": "Agentic",
+          "description": "Anchors routine installs, builds, multi-file edits, and standard debugging at Medium, so ordinary engineering does not route to your most expensive tier. Suits agent, terminal, and coding-assistant traffic, and mixed traffic."
+        },
+        "chat": {
+          "label": "Chat",
+          "description": "Drops the engineering examples, for a router serving only conversational traffic that never sees those requests."
+        },
+        "business": {
+          "label": "Business",
+          "description": "Business and sales examples plus business-oriented tier definitions: routine drafting and summarizing stay at Medium, data-determined analysis is Complex, and only decisions under conflicting tradeoffs reach Reasoning. Suits sales, support, and go-to-market traffic."
+        }
+      },
+      "restriction": {
+        "displayNames": "Display names rename the built-in tiers, which your tier set replaces. Name each tier directly",
+        "escalation": "Escalation bumps a request along the built-in tier ladder, which your tier set replaces",
+        "stallEscalation": "Stall escalation bumps a request along the built-in tier ladder, which your tier set replaces",
+        "adaptive": "Adaptive routing scores models along the built-in tier ladder, which your tier set replaces",
+        "sessionAffinity": "Session pinning escalates along the built-in tier ladder, which your tier set replaces",
+        "heuristicClassifier": "The heuristic scorer only produces the built-in tiers, so an edited set needs the LLM classifier. Heuristic first and hybrid are out for the same reason: their local scorer decides the traffic it is sure of",
+        "heuristicScoring": "The heuristic scorer never runs under an edited tier set, so its inputs have no effect",
+        "classificationRubric": "The preset calibration examples are written against the built-in tiers, which your tier set replaces",
+        "classifierFallback": "Fallback Tier is where an edited tier set routes when the classifier fails"
+      },
+      "rowsError": {
+        "count": "A tier set needs {{min}} to {{max}} tiers",
+        "nameEvery": "Name every tier",
+        "unique": "Tier names must be unique, ignoring case",
+        "definition": "Every custom tier needs a definition: it is the rubric the classifier routes on",
+        "fallback": "Pick a Fallback Tier for classifier failures"
+      },
+      "tierLabel": {
+        "new": "New"
+      },
+      "tierError": {
+        "shadowing": "A tier's display name can't be another tier's name: {{names}}",
+        "duplicates": "Tier display names must be unique. Repeated: {{names}}"
+      },
+      "classifierError": {
+        "editedSet": "Please select a classifier model: an edited tier set routes with the LLM classifier",
+        "heuristic": "Please select a classifier model, or switch back to Heuristic"
+      },
+      "planModeError": {
+        "noModels": "The plan-mode minimum tier ({{tier}}) has no models. Add one or turn the override off."
+      },
+      "keywordRuleError": {
+        "empty": "Add at least one keyword to keyword rule(s): {{rules}}",
+        "orphaned": "Keyword rule(s) {{rules}} route to a tier this router no longer has"
+      },
+      "classifierReasoningError": {
+        "unsupported": "{{effort}} reasoning effort is not supported by every deployment in {{model}}. Choose Default or a supported value."
+      },
+      "semanticError": {
+        "embedding": "Select an embedding model to use semantic keyword matching",
+        "rules": "Add at least one keyword tier rule to use semantic keyword matching"
+      },
+      "dryRun": {
+        "fallback": "The proxy rejected this auto-router configuration",
+        "raw": "{{error}}"
+      },
+      "missingTiersError": "Select a model for the following tier(s): {{names}}",
+      "heading": "Complexity Tier Configuration",
+      "headingTooltip": "Map each complexity tier to one or more models. Simple queries use cheaper/faster models, complex queries use more capable models.",
+      "defaultModel": {
+        "derived": "Derived from tiers: {{model}}",
+        "customSet": "Add a model to your fallback tier",
+        "builtIn": "Add a model to the Simple or Medium tier",
+        "label": "Default Model",
+        "tooltip": "Leave empty to follow the tiers. A model chosen here is pinned: it stays the default however the tiers change.",
+        "aria": "Default model",
+        "help": "Used when the tier the request lands in has no model, and when the classifier fails with \"Route to the default model\" selected."
+      },
+      "examplesLabel": "Examples:",
+      "tierRow": {
+        "title": "{{label}} Tier",
+        "customTooltip": "A tier you defined. The classifier routes requests matching its definition here.",
+        "position": "Tier {{index}} of {{count}}",
+        "originBuiltIn": "built-in",
+        "originCustom": "custom",
+        "removeAria": "Remove the {{label}} tier",
+        "remove": "Remove",
+        "namePlaceholder": "Tier name, e.g. SECURITY_REVIEW",
+        "nameAria": "Name for tier {{index}}",
+        "definitionBuiltInPlaceholder": "Leave blank to keep the built-in definition",
+        "definitionCustomPlaceholder": "What belongs in this tier, e.g. requests asking for a security audit",
+        "definitionAria": "Definition for tier {{index}}",
+        "definitionRequired": "A definition is required: it is the rubric the classifier routes on for this tier",
+        "modelPlaceholder": "Select model(s) for {{label}} queries",
+        "noModelsFound": "No models found",
+        "multipleModels": "Multiple models selected: the router randomly picks among them per request (or Thompson-samples within the pool when adaptive routing is on).",
+        "required": "The {{label}} tier is required",
+        "unnamedLabel": "tier {{index}}"
+      },
+      "displayName": {
+        "placeholder": "Display name (default: {{label}})",
+        "aria": "Display name for the {{label}} tier",
+        "clearAria": "Clear display name for the {{label}} tier"
+      },
+      "fallback": {
+        "heading": "Fallback Tier",
+        "tooltip": "Where requests route when the LLM classifier errors, times out, or returns an unparseable reply. Required for an edited tier set: the heuristic scorer cannot produce your tiers.",
+        "label": "Fallback tier",
+        "placeholder": "Pick the tier classifier failures route to"
+      },
+      "toolbar": {
+        "addTier": "Add tier",
+        "done": "Done",
+        "restoreDefaults": "Restore defaults",
+        "editTiers": "Edit tiers",
+        "editHint": "Add or remove tiers to define your own set. Every custom tier needs a definition the LLM classifier routes on, and an edited set requires the LLM classification method",
+        "keywordErrorSuffix": "Edit the rules under Advanced: Keyword/Semantic Matching, or bring the tier back"
+      },
+      "planMode": {
+        "label": "Route plan-mode requests to a minimum tier",
+        "help": "Requests from coding agents in plan mode (Claude Code, GitHub Copilot) route to at least this tier. The classifier still wins when it picks higher, and the override only lasts while plan mode is active.",
+        "helpEmpty": " Add models to a tier to enable this.",
+        "selectLabel": "Plan-mode minimum tier"
+      },
+      "advanced": {
+        "classifier": "Advanced: Classification Method",
+        "adaptive": "Advanced: Adaptive Routing",
+        "affinity": "Advanced: Affinity",
+        "modality": "Advanced: Modality Routing",
+        "planMode": "Advanced: Plan-Mode Override",
+        "contextWindow": "Advanced: Context Window Escalation",
+        "stallEscalation": "Advanced: Stalled Task Escalation",
+        "response": "Advanced: Response Format",
+        "escalation": "Advanced: Escalation Keywords",
+        "compression": "Advanced: Compression",
+        "keywordSemantic": "Advanced: Keyword/Semantic Matching"
+      },
+      "intro": {
+        "heuristicV2": "The complexity router classifies each request with a calibrated local four-tier model (no API calls). Configure which model(s) handle each tier.",
+        "classifier": "The complexity router classifies each request with your classifier model and routes it to that tier. Configure which model(s) handle each tier.",
+        "scoring": "The complexity router automatically classifies requests by complexity using rule-based scoring (no API calls, <1ms latency). Configure which model(s) handle each tier.",
+        "displayNames": "Rename a tier to use your own vocabulary in the dashboard and your spend logs. Renaming doesn't change how requests are classified, and callers never see these names.",
+        "classifierReads": " Your classifier model reads these names, so clearer ones can sharpen its choices."
+      },
+      "effort": {
+        "heading": "Reasoning effort",
+        "tooltip": "Sent as reasoning_effort on requests this tier routes to the model, overriding the caller's value. Default leaves the request untouched.",
+        "default": "Default",
+        "aria": "Reasoning effort for {{model}} in the {{tier}} tier"
+      },
+      "nonReasoning": {
+        "label": "Add a non-reasoning tier",
+        "help": "Adds NON_REASONING below Simple, for operational agent traffic that relays or reformats information rather than reasoning about it. Escalation still moves up out of it when a request needs more.",
+        "requiresLlm": " Requires the LLM classification method."
+      },
+      "modality": {
+        "routingLabel": "Route image requests to vision-capable models",
+        "routingHelp": "Replaces a routed model that cannot take image input with the nearest higher tier that can, then the default model, instead of failing with a provider 400. Only models explicitly declared supports_vision false are replaced, and a kept session pin still wins unless you turn on the override below.",
+        "overrideLabel": "Override session pin for image requests",
+        "overrideHelp": "Route an image turn to a capable model even when the session is pinned to one that cannot take images. The pin is kept, so the next text turn goes back to it. Needs image routing turned on."
+      },
+      "contextWindow": {
+        "label": "Escalate oversized prompts to a tier that fits",
+        "help": "When a prompt provably cannot fit the decided tier's context windows, route it to the lowest tier whose window holds it instead of letting the provider reject it. Off means requests dispatch on complexity alone.",
+        "bufferLabel": "Window fit buffer",
+        "bufferHelp": "Fraction of a model's window the counted prompt must fit within, above 0 up to 1. Empty tracks the backend default of 0.95."
+      },
+      "responseFormat": {
+        "label": "Return raw model name",
+        "help": "Return the resolved underlying model name in responses instead of the autorouter alias."
+      }
+    },
+    "setup": {
+      "dimensionError": {
+        "count": "A router can have at most 16 custom dimensions",
+        "nameFormat": "Custom dimension {{index}}: use a name starting with a letter, followed by letters, numbers or underscores (64 characters max)",
+        "builtin": "Custom dimension {{index}}: choose a name that is not already a built-in weight",
+        "unique": "Custom dimension {{index}}: names must be unique",
+        "weight": "Custom dimension {{index}}: weight must be greater than 0 and at most 1",
+        "matchers": "Custom dimension {{index}}: add at least one nonblank keyword or pattern",
+        "matcherLimits": "Custom dimension {{index}}: use at most 32 matchers, 256 characters each and 4096 characters combined"
+      },
+      "weightError": {
+        "loadDefaults": "Load the shipped defaults before changing weights",
+        "invalid": "Existing weights must be finite and nonnegative; custom weights must be greater than 0 and at most 1",
+        "unavailable": "The dimension is no longer available",
+        "range": "Use a weight from 0 to 1; custom dimensions must stay greater than 0",
+        "tooLarge": "Existing weights are too large to rebalance",
+        "share": "Leave a positive share for every custom dimension, or remove it first"
+      },
+      "dimension": {
+        "codePresence": "Code presence",
+        "reasoningMarkers": "Reasoning markers",
+        "technicalTerms": "Technical terms",
+        "tokenCount": "Token count",
+        "simpleIndicators": "Simple indicators",
+        "multiStepPatterns": "Multi-step patterns",
+        "questionComplexity": "Question complexity"
+      },
+      "referencedModelsError": "Model(s) no longer available: {{missing}}",
+      "addTab": {
+        "presetLoading": "Checking model availability...",
+        "presetUnverifiable": "Cannot verify these models are available",
+        "presetMissing": "Missing: {{models}}",
+        "noTiers": "No tiers configured yet",
+        "nameRequired": "Auto router name is required",
+        "teamRequired": "Please select a team to continue",
+        "automaticSetupCreated": "Automatic setup created",
+        "fillRequired": "Please fill in all required fields",
+        "enterName": "Please enter an Auto Router Name",
+        "selectModel": "Please select at least one model for a complexity tier",
+        "nameLabel": "Auto Router Name",
+        "nameHint": "Unique name for this auto router configuration",
+        "autoSetupTitle": "Not sure where to start?",
+        "autoSetupSubtitle": "Let us pick models for each complexity tier.",
+        "autoSetupButton": "Configure automatically",
+        "templateLabel": "Template",
+        "templatePlaceholder": "Choose a template or select Custom to define your own",
+        "templateMatches": "Matches your deployments",
+        "customLabel": "Custom Configuration",
+        "customDescription": "Define your auto router from scratch",
+        "modelsLoadFailed": "Could not load available models.",
+        "retry": "Retry",
+        "templatesLoading": "Loading templates...",
+        "templatesUnavailable": "Could not load templates, so only Custom Configuration is shown.",
+        "teamLabel": "Select Team",
+        "teamHint": "Select the team this auto router belongs to. Only keys for this team will be able to call it.",
+        "detailsTitle": "Detailed Configuration",
+        "accessGroupLabel": "Model Access Group",
+        "accessGroupHint": "Use model access groups to control who can access this auto router",
+        "helpLink": "Need Help?",
+        "helpTooltip": "Get help on our github",
+        "testRouting": "Test Routing",
+        "testConnection": "Test Connection",
+        "addButton": "Add Auto Router",
+        "routingDialogTitle": "Test Routing",
+        "connectionDialogTitle": "Connection Test Results",
+        "close": "Close"
+      },
+      "submit": {
+        "success": "Successfully created Auto Router: {{name}}",
+        "failed": "Failed to add auto router: {{error}}"
+      },
+      "builder": {
+        "routeModelRequired": "Please select a model for every route",
+        "removeUtterance": "Remove {{utterance}}",
+        "utterancesAria": "Example Utterances",
+        "utterancePlaceholder": "Type an utterance and press Enter...",
+        "heading": "Routes Configuration",
+        "help": "Configure routing logic to automatically select the best model based on user input patterns",
+        "addRoute": "Add Route",
+        "empty": "No routes configured. Click \"Add Route\" to get started.",
+        "routeTitle": "Route {{index}}: {{name}}",
+        "unnamed": "Unnamed",
+        "deleteAria": "delete",
+        "modelLabel": "Model",
+        "modelPlaceholder": "Select model",
+        "descriptionLabel": "Description",
+        "descriptionPlaceholder": "Describe when this route should be used...",
+        "thresholdLabel": "Score Threshold",
+        "thresholdHelp": "Minimum similarity score to route to this model (0-1)",
+        "utterancesLabel": "Example Utterances",
+        "utterancesHelp": "Training examples for this route. Type an utterance and press Enter to add it.",
+        "utterancesHint": "Type an utterance and press Enter to add it. You can also paste multiple lines.",
+        "jsonHeading": "JSON Preview",
+        "hide": "Hide",
+        "show": "Show"
+      },
+      "dimensionRows": {
+        "binary": "Binary",
+        "matchCount": "Match count",
+        "legend": "Custom dimension {{index}}",
+        "removeAria": "Remove custom dimension {{index}}",
+        "remove": "Remove",
+        "name": "Name",
+        "weight": "Weight",
+        "weightAria": "{{name}} weight",
+        "keywordsLabel": "Keywords (one per line)",
+        "patternsLabel": "Regex patterns (one per line)",
+        "scoring": "Scoring",
+        "scoringHelp": "Binary uses the full weight for any hit. Match count uses half for one distinct matcher and full weight for two or more.",
+        "add": "Add custom dimension",
+        "help": "Keywords match the current ask. Regex scans its first 2,048 characters and permits bounded single-character repeats up to 64. The proxy validates patterns on save."
+      },
+      "heuristic": {
+        "heading": "Advanced scoring",
+        "overrideSingular": "override",
+        "overridePlural": "overrides",
+        "optionalHint": "Every knob below is optional. Left untouched, the router follows the shipped defaults, so it picks up any recalibration of them rather than staying pinned to the numbers shown here.",
+        "loading": "Loading the shipped defaults...",
+        "loadFailed": "Could not load the shipped defaults, so only values this router already overrides are shown. Saving still works, and an untouched knob keeps following the defaults.",
+        "retry": "Retry",
+        "total": "total {{total}}",
+        "restoreWeights": "Restore default weights",
+        "resetDefaults": "Reset to defaults",
+        "weightAria": "{{label}} weight",
+        "overrideFloorHeading": "Reasoning override floor",
+        "overrideFloorHelp": "Two or more reasoning markers promote a request to the reasoning tier, but only once its weighted score reaches this floor.",
+        "overrideFloorTracksUntouched": "Left untouched, it tracks the Simple to Medium boundary.",
+        "overrideFloorTracksCurrent": "Left untouched, it tracks the Simple to Medium boundary, currently {{value}}.",
+        "overrideFloorSetZero": "Set it to 0 to promote on the markers alone.",
+        "minScore": "Minimum score",
+        "boundariesTitle": "Tier boundaries",
+        "boundariesBlurb": "The weighted score each tier starts at. Scores run from -1 to 1, and short or conversational prompts score below 0, so a negative boundary is a valid way to lift trivial traffic into a higher tier.",
+        "simpleMedium": "Simple to Medium",
+        "mediumComplex": "Medium to Complex",
+        "complexReasoning": "Complex to Reasoning",
+        "tokenTitle": "Token thresholds",
+        "tokenBlurb": "Estimated prompt length, in tokens, that pushes the token count dimension to its floor or ceiling. Lengths between the two score neutral.",
+        "shortBelow": "Short below",
+        "longAbove": "Long above",
+        "weightsTitle": "Dimension weights",
+        "weightsBlurb": "Changing a weight rebalances the other built-in and custom weights to total 1.00. Save stores those values. Untouched routers keep their existing weights.",
+        "warnBoundaries": "These boundaries decrease, so every tier between them is unreachable and its traffic routes elsewhere.",
+        "warnTokens": "The short threshold is not below the long one, so no prompt length scores neutral on length."
+      }
+    },
+    "classifier": {
+      "type": {
+        "heuristicLabel": "Heuristic",
+        "heuristicSuffix": "(default), rule-based scoring with no API calls and <1ms latency",
+        "heuristicV2Label": "Heuristic v2",
+        "heuristicV2Suffix": "uses bundled calibrated four-tier probabilities with no API call",
+        "llmLabel": "LLM Classifier",
+        "llmSuffix": "calls a model to decide the tier (e.g. a small/fast model)",
+        "heuristicFirstLabel": "Heuristic first",
+        "heuristicFirstSuffix": "scores locally, and only pays for the classifier when the score does not confidently land a cheap tier",
+        "hybridLabel": "Hybrid",
+        "hybridSuffix": "keeps the local score at any tier, and only pays for the classifier when that score lands near a tier boundary"
+      },
+      "scoring": {
+        "default": "The router scores each request across 7 built-in dimensions: token count, code presence, reasoning markers, technical terms, simple indicators, multi-step patterns, and question complexity, plus any custom dimensions you add. The weighted score determines the tier:",
+        "heuristicV2": "The router estimates success probability for all four tiers with the bundled calibrated model, then selects the first tier that meets its trained threshold. It runs locally with no classifier API call.",
+        "customHeuristic": "This router classifies with your own prompt, so the tier comes from whatever rubric it states. The four tier names stay fixed. The scoring below is the heuristic, which now runs only when the classifier call fails:",
+        "customDefault": "This router classifies with your own prompt, so the tier comes from whatever rubric it states. The four tier names stay fixed. The scoring below no longer runs at all, since a failed classifier routes to the default model instead:"
+      },
+      "howItWorks": {
+        "heading": "How Classification Works",
+        "simple": "Score < {{value}}",
+        "range": "Score {{low}} - {{high}}",
+        "reasoning": "Score > {{value}} (or 2+ reasoning markers with a score of at least {{floor}})",
+        "loadFailed": "The tier score ranges could not be loaded from the proxy."
+      },
+      "decideLocally": {
+        "heading": "Decide locally up to",
+        "help": "A request the scorer places at or below this tier routes there without a classifier call. Anything the scorer places higher, and anything it found no signal for at all, goes to the classifier instead"
+      },
+      "boundaryMargin": {
+        "heading": "Boundary margin",
+        "help": "A score further than this from every tier boundary routes on the scorer's own tier, however expensive that tier is. A score closer than this, and anything the scorer found no signal for at all, goes to the classifier to break the tie"
+      },
+      "frequency": {
+        "heading": "How often to classify",
+        "everyRequest": "Every request",
+        "everyRequestHelp": ": score every turn, tool-result continuations included",
+        "userTurn": "Every new user message",
+        "userTurnHelp": ": score each new human ask, then hold that tier for the tool calls that follow it",
+        "session": "Once per session",
+        "sessionHelp": ": score the first turn only, then hold that tier and its deployment for the whole session",
+        "help": "Holding the tier keeps an agent on one model for a whole tool loop and cuts scoring cost. A turn the router cannot match to a held decision, such as one with no session id or an expired one, is scored again"
+      },
+      "model": {
+        "heading": "Classifier Model",
+        "placeholder": "Select the model that will classify request complexity",
+        "required": "A classifier model is required"
+      },
+      "timeout": {
+        "label": "Timeout (ms)",
+        "help": "How long the classifier call has before it fails and the fallback below takes over."
+      },
+      "prompt": {
+        "heading": "Classifier Prompt",
+        "tooltip": "Every rubric uses the same four tiers. They differ in the worked examples that show the classifier where the boundary between tiers sits, and the Business rubric also rewrites the tier definitions for business traffic. Pick the rubric, and write your own opening instructions and calibration examples, inside the prompt editor."
+      },
+      "fallback": {
+        "heading": "If the classifier fails",
+        "heuristic": "Score with the heuristic",
+        "heuristicHelp": "— right when the classifier grades complexity too",
+        "defaultModel": "Route to the default model{{model}}",
+        "defaultModelTooltipSet": "Change it from the Default Model select.",
+        "defaultModelTooltipUnset": "Set a default model on this router to use this option",
+        "defaultModelHelp": "— right when your prompt grades something other than complexity",
+        "help": "Applies when the classifier call errors, times out, or returns an unparseable response."
+      },
+      "contextWindow": {
+        "label": "Context Window Size",
+        "help": "Number of prior user turns (tool output and harness reminders excluded) sent to the classifier as context, so a referring follow-up like \"now do the same for the streaming path\" is classified against what it refers to. Set to 0 to send only the current message."
+      },
+      "contextBudget": {
+        "label": "Context Character Budget",
+        "help": "Total characters of prior conversation sent to the classifier. Turns are taken newest first and quoted whole while they fit, so a short conversation is never cut.",
+        "warning": "Under {{min}} characters there is no room to quote a turn that does not already fit, so a long conversation reaches the classifier with no context at all. Set Context Window Size to 0 to turn context off deliberately."
+      },
+      "includeAssistant": {
+        "label": "Include Assistant Turns",
+        "tooltip": "Off by default. Enabling it changes tier decisions, and therefore spend, for an existing router, and sends assistant text to the classifier model, which may be a different provider than the routed model.",
+        "help": "Let the classifier read the assistant's replies, so difficulty the model stated rather than the user stays visible: a plan the assistant calls complex, approved with \"yes\", is classified on the work being approved. Context Window Size then counts the last N turns across both roles rather than the last N user turns."
+      },
+      "keywords": {
+        "heading": "Custom Technical Keywords",
+        "tooltip": "Domain-specific terms appended to the built-in technical keyword list. Prompts containing these terms score higher on the technical dimension and route to more capable models.",
+        "help": "Optional: Add terms to the built-in list to improve classification accuracy on the technical dimension. (e.g., udp, kafka, terraform).",
+        "placeholder": "Type a keyword and press Enter",
+        "empty": "Type to add a keyword"
+      },
+      "opening": {
+        "customOverridden": "This router opens with your own instructions and calibration examples. Your tier definitions and the injection guard are still appended below them.",
+        "customDefault": "Write the opening instructions and your own calibration examples. Your tier definitions and the injection guard are always appended below them.",
+        "customExplainer": "Your text is the opening of the classifier prompt, so it is where calibration examples of your own belong. The router appends your tier definitions and its injection guard underneath, and neither can be edited or removed from here. Edit the definitions themselves with Edit tiers above.",
+        "builtInOverridden": "This router opens with your own instructions and calibration examples in place of the base rubric's. Its tier criteria and the injection guard are still appended below them.",
+        "builtInDefault": "The base rubric supplies the opening instructions and calibration examples. Customize them to write your own; the tier criteria and the injection guard are always appended below them.",
+        "builtInExplainer": "The base rubric decides the tier criteria and, until you write your own, the opening instructions and calibration examples. Your text replaces that opening and those examples. The router appends the four tier criteria and its injection guard underneath, and neither can be edited or removed from here. Rename the tiers with the display names above.",
+        "editCustom": "Edit custom prompt",
+        "customize": "Customize prompt",
+        "reset": "Reset to default",
+        "customOnRubric": "Custom opening on the {{rubric}} rubric",
+        "rubricOnly": "{{rubric}} rubric",
+        "dialogTitle": "Classifier prompt",
+        "baseRubric": "Base rubric",
+        "baseRubricAria": "Base rubric",
+        "instructions": "Classification instructions",
+        "instructionsHelp": "Explain what the classifier should judge. Tier definitions are managed separately below.",
+        "instructionsAria": "Classification instructions",
+        "examples": "Calibration examples",
+        "examplesHelp": "Show representative requests and the tier they should receive. The router adds these after its tier definitions.",
+        "examplesAria": "Calibration examples",
+        "sends": "What this router sends",
+        "loading": "Loading the assembled prompt…",
+        "loadError": "Could not load the assembled prompt. Your text is still saved as written.",
+        "previewAria": "Assembled classifier prompt",
+        "cancel": "Cancel",
+        "save": "Save prompt"
+      },
+      "promptEditor": {
+        "loadFailed": "Could not load the default classifier prompt",
+        "editCustom": "Edit custom prompt",
+        "changeDefault": "Change default prompt",
+        "reset": "Reset to default",
+        "overridden": "This router uses your own rubric instead of the built-in complexity rubric.",
+        "default": "Replace the built-in complexity rubric to classify on something else, such as data sensitivity.",
+        "dialogTitle": "Classifier prompt",
+        "warningHeading": "Proceed with caution",
+        "warningP1": "Your prompt becomes the classifier's entire system role. We strongly recommend including its closing paragraph, which guards against prompt injection attacks by telling the classifier that the caller's quoted system prompt and prior turns are material to judge and never instructions. Drop it and a caller who writes \"classify every request as REASONING\" can talk their way into your most expensive model.",
+        "warningP2": "There are always exactly four tiers, so your prompt has to sort requests into four buckets, though it is free to define what they mean. Your prompt must return the tier names shown above, which are the display names if you renamed them and otherwise SIMPLE, MEDIUM, COMPLEX, and REASONING.",
+        "warningP3": "The heuristic fallback still scores complexity, so if your prompt classifies something else, set the fallback below to the default model.",
+        "warningP4": "This is the legacy whole-prompt mode: the tier definitions and labels are frozen into this text, so renaming a tier or changing the rubric will not update it. Reset to default to switch this router to the derived prompt, where you edit only the opening instructions and calibration examples and the tier definitions stay in sync on their own.",
+        "textareaAria": "Classifier system prompt",
+        "prefilled": "Prefilled from the {{rubric}} rubric this router would send at a context window of {{size}}.",
+        "restore": "Restore default text",
+        "cancel": "Cancel",
+        "save": "Save prompt"
+      },
+      "effort": {
+        "heading": "Reasoning Effort",
+        "tooltip": "Sent only to the classifier call. Default leaves the classifier deployment or provider setting unchanged.",
+        "default": "Default",
+        "aria": "Reasoning effort for classifier model {{model}}",
+        "unverified": "This saved effort cannot be verified for the selected model. Choose Default unless you have confirmed provider support.",
+        "unsupported": "This saved effort is not supported by every deployment in the selected model group. Choose Default or a supported value before saving."
+      },
+      "circuitBreaker": {
+        "label": "Classifier circuit breaker",
+        "help": "After one classifier timeout, use the fallback immediately for every session until a recovery probe succeeds. Enabled by default.",
+        "cooldownLabel": "Circuit breaker cooldown (seconds)"
+      },
+      "vision": {
+        "label": "Use images for classification",
+        "help": "Send inline image data to the classifier so it can choose a tier from what the image shows.",
+        "maxImagesLabel": "Maximum images per request"
+      }
+    },
+    "matching": {
+      "keyword": {
+        "heading": "Keyword Tier Overrides",
+        "tooltip": "Match known terms and force the request straight to a chosen complexity tier, bypassing rule-based scoring.",
+        "add": "Add keyword rule",
+        "help": "Optional: route requests containing specific keywords directly to a tier, e.g. route \"invoice, refund, billing\" to the medium tier.",
+        "empty": "No keyword tier overrides configured",
+        "rowTitle": "Keywords {{index}}",
+        "rowEmpty": "Type to add a keyword",
+        "required": "At least one keyword is required",
+        "routeTo": "Route to tier",
+        "routeAria": "Route keyword rule {{index}} to tier",
+        "removeAria": "Remove keyword rule {{index}}"
+      },
+      "semantic": {
+        "heading": "Semantic keyword matching",
+        "tooltip": "Recognize related phrasing beyond exact keyword matches by comparing embeddings instead of plain text. Overrides direct keyword matching",
+        "help": "Uses same keyword-tier pairs as above and overrides direct keyword matching. Adds latency based on embedding model network request.",
+        "embeddingLabel": "Embedding model",
+        "embeddingPlaceholder": "Select an embedding model",
+        "embeddingEmpty": "No embedding models found",
+        "embeddingAria": "Embedding model",
+        "embeddingRequired": "An embedding model is required",
+        "thresholdLabel": "Minimum match score",
+        "thresholdHelp": "Match only at or above this similarity score."
+      },
+      "stall": {
+        "label": "Escalate a stalled task to a stronger model",
+        "help": "When the model keeps repeating the same tool call, or the same call keeps erroring, bump the request one tier higher for as long as it looks stuck. The automatic counterpart to an escalation keyword: nobody has to notice the loop and ask. Off means a stuck task keeps the model it was classified onto.",
+        "blockedSession": "Set \"How often to classify\" to every request under Advanced: Classification Method to use this. Scoring once per session replays that model instead of classifying, so a stall never reaches the classifier.",
+        "blockedUserTurn": "Set \"How often to classify\" to every request under Advanced: Classification Method to use this. Scoring only new user messages skips the tool-call turns a stall shows up in.",
+        "repeatsLabel": "Repeats before escalating",
+        "repeatsHelp": "How many identical or failing calls count as stuck. At least 2; lower reacts sooner and misfires more.",
+        "windowLabel": "Recent calls examined",
+        "windowHelp": "How far back to look, in tool calls. Never below the repeat count, since that could never be reached."
+      },
+      "adaptive": {
+        "label": "Enable adaptive bandit selection",
+        "help": "When disabled, each request always uses the model assigned to its classified tier.",
+        "howHeading": "How Adaptive Routing Works",
+        "howHelp": "It learns from how each conversation actually goes: does the user have to rephrase or correct the model, does it get stuck repeating itself, does it run out of tool calls, does the user seem satisfied. Combined with cost, this live feedback shifts future routing toward the models that are actually working well, and improves as more conversations come in. Until there's enough feedback, it defaults to the classified tier's model.",
+        "qualityCost": "Quality vs. Cost ({{quality}}% quality / {{cost}}% cost)",
+        "qualityCostAria": "Quality vs. Cost",
+        "qualityHelp": "Higher quality weight favors more capable (pricier) models; higher cost weight favors cheaper models when the bandit has feedback to act on. Recommended: 30% quality / 70% cost split.",
+        "poolHeading": "Eligible Model Pool",
+        "allLabel": "All tiers (soft floor)",
+        "allHelp": "— router can pick across tiers, depending on the best fit for the prompt",
+        "classifiedLabel": "Classified tier only",
+        "classifiedHelp": "— router can only pick models within tier",
+        "penaltyHeading": "Tier Distance Penalty",
+        "penaltyHelp": "Score penalty applied per tier-step away from the classified tier."
+      },
+      "affinity": {
+        "label": "Pin a session to one deployment per model group",
+        "help": "Keeps a session on the same deployment within a group, so provider prompt caches stay warm. Turn off to load-balance every turn.",
+        "ttlLabel": "How long a pin survives idle (seconds)",
+        "ttlHelp": "Refreshes after every request that reuses a pin. Empty tracks the backend default of {{seconds}} seconds."
+      },
+      "compression": {
+        "routingLabel": "Routing decision",
+        "routingTooltip": "Compression applied to the classifier's own call that picks a tier, separate from the model the request routes to.",
+        "routingPlaceholder": "Inherit from the request's own compression guardrails",
+        "empty": "No compression guardrails found",
+        "routingAria": "Routing decision compression",
+        "modelLabel": "Model call",
+        "same": "Same as the routing decision",
+        "different": "Use a different compression",
+        "noneOption": "None (no compression)",
+        "modelAria": "Model call compression"
+      },
+      "escalation": {
+        "heading": "Escalation Keywords",
+        "tooltip": "Case-sensitive phrases a user can include in their message to force a bump to the next-higher complexity tier when they aren't happy with results. They can force a stronger model, but not choose which one.",
+        "help": "Optional: when a user message contains one of these phrases, the request is bumped one tier higher than it would otherwise route to. Matching is case-sensitive, so \"LITELLM ESCALATE\" only fires on the exact, shouted form. Leave empty to disable.",
+        "empty": "Type to add a phrase"
+      },
+      "connection": {
+        "empty": "No complexity tiers are configured yet, so there is nothing to test.",
+        "help": "Test Connection sends a minimal request to every configured tier, classifier, default, and embedding model. The classifier probe includes its reasoning effort override.",
+        "embeddingSuffix": " (embedding)",
+        "labelDefault": "Default",
+        "labelEmbedding": "Embedding",
+        "labelClassifier": "Classifier"
+      },
+      "routing": {
+        "help": "Send a prompt through this router's classifier to see which model it would pick, and why. The prompt is only classified: nothing is sent to the model it routes to.",
+        "placeholder": "Paste a prompt an end user would send",
+        "running": "Routing...",
+        "send": "Send Test Prompt",
+        "failedHeading": "Could not route this prompt",
+        "routedTo": "Routed to",
+        "unconfigured": "This proxy has no model group by that name"
+      }
+    }
   }
 }

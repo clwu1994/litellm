@@ -58,17 +58,19 @@ const deployment = (config: unknown): AutoRouterDeployment => ({
 });
 
 describe("tierDisplayLabel", () => {
+  const t = i18n.getFixedT(null, "models");
+
   it("prefers the admin's custom label for a canonical complexity tier", () => {
-    expect(tierDisplayLabel("SIMPLE", { SIMPLE: "Cheap" })).toBe("Cheap");
+    expect(tierDisplayLabel("SIMPLE", { SIMPLE: "Cheap" }, t)).toBe("Cheap");
   });
 
   it("falls back to the canonical name when that tier has no custom label", () => {
-    expect(tierDisplayLabel("COMPLEX", { SIMPLE: "Cheap" })).toBe("Complex");
-    expect(tierDisplayLabel("REASONING", undefined)).toBe("Reasoning");
+    expect(tierDisplayLabel("COMPLEX", { SIMPLE: "Cheap" }, t)).toBe("Complex");
+    expect(tierDisplayLabel("REASONING", undefined, t)).toBe("Reasoning");
   });
 
   it("shows a non-complexity tier verbatim, since no label map covers a quality router's tier", () => {
-    expect(tierDisplayLabel("3", { SIMPLE: "Cheap" })).toBe("3");
+    expect(tierDisplayLabel("3", { SIMPLE: "Cheap" }, t)).toBe("3");
   });
 });
 
