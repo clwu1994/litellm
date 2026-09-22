@@ -59,6 +59,8 @@ describe("UserSearchModal Chinese copy", () => {
     await user.click(screen.getByRole("combobox", { name: /成员角色/ }));
 
     const listbox = await screen.findByRole("listbox");
+    expect(within(listbox).getByText("admin")).toBeInTheDocument();
+    expect(within(listbox).getByText("user")).toBeInTheDocument();
     expect(within(listbox).getByText("- 管理员角色。可以创建团队密钥、添加成员并管理设置。")).toBeInTheDocument();
     expect(within(listbox).getByText("- 用户角色。可以查看团队信息，但不能管理团队。")).toBeInTheDocument();
     expect(

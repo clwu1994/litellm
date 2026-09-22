@@ -156,7 +156,7 @@ const buildColumns = ({
     cell: ({ row }) => (
       <span className="inline-flex items-center gap-2">
         {isAdminRole(row.original.role) ? <Crown className="size-3.5" /> : <User className="size-3.5" />}
-        <span className="capitalize">{row.original.role || "-"}</span>
+        <span className="capitalize">{t("rawValue", { value: row.original.role || "-" })}</span>
       </span>
     ),
   },
@@ -221,7 +221,7 @@ export default function MemberTable({
   const columns = buildColumns(columnDeps);
   const roleFilterItems = [
     { value: ALL_ROLES, label: t("memberTable.allRoles") },
-    ...memberRoleOptions(members).map((role) => ({ value: role, label: role })),
+    ...memberRoleOptions(members).map((role) => ({ value: role, label: t("rawValue", { value: role }) })),
   ];
 
   const isNarrowed = globalFilter !== "" || columnFilters.length > 0;

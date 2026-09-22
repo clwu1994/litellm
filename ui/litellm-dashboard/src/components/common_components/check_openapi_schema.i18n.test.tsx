@@ -1,4 +1,4 @@
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -61,6 +61,11 @@ const schema = {
           tags: { type: "string" },
           models: { type: "string" },
           mode: { type: "string", enum: ["alpha", "beta"] },
+        },
+      },
+      Other: {
+        properties: {
+          name: { type: "string" },
         },
       },
     },
@@ -175,5 +180,38 @@ describe("SchemaFormFields Chinese copy", () => {
 
     expect(await screen.findByText("错误：获取 schema 失败")).toBeInTheDocument();
     expect(screen.queryByText("Failed to fetch schema")).not.toBeInTheDocument();
+  });
+
+  it("re-translates a failed fetch when the language changes", async () => {
+    vi.mocked(getOpenAPISchema).mockRejectedValue("nope");
+    renderForm();
+
+    expect(await screen.findByText("错误：获取 schema 失败")).toBeInTheDocument();
+
+    await i18n.changeLanguage("en");
+
+    expect(await screen.findByText("Error: Failed to fetch schema")).toBeInTheDocument();
+    expect(screen.queryByText("错误：获取 schema 失败")).not.toBeInTheDocument();
+  });
+
+  it("clears a failed fetch when a later fetch succeeds", async () => {
+    vi.mocked(getOpenAPISchema).mockRejectedValue(new Error("boom"));
+    const setValue = vi.fn();
+    const { rerender } = renderWithProviders(
+      <Harness>
+        <SchemaFormFields schemaComponent="Team" setValue={setValue} />
+      </Harness>,
+    );
+    expect(await screen.findByText("错误：boom")).toBeInTheDocument();
+
+    vi.mocked(getOpenAPISchema).mockResolvedValue(schema as never);
+    rerender(
+      <Harness>
+        <SchemaFormFields schemaComponent="Other" setValue={setValue} />
+      </Harness>,
+    );
+
+    expect(await screen.findByText("文本输入")).toBeInTheDocument();
+    await waitFor(() => expect(screen.queryByText("错误：boom")).not.toBeInTheDocument());
   });
 });

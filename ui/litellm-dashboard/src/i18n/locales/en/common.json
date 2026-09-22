@@ -204,7 +204,8 @@
     "lastRotation": "Last Rotation",
     "nextScheduledRotation": "Next Scheduled Rotation",
     "noHistory": "No rotation history available",
-    "notEnabled": "Auto-rotation is not enabled for this key"
+    "notEnabled": "Auto-rotation is not enabled for this key",
+    "timestamp": "{{date}} at {{time}}"
   },
   "keyLifecycle": {
     "expirySettings": "Key Expiry Settings",
@@ -372,5 +373,6 @@
   },
   "summaryCard": {
     "howCalculated": "How {{label}} is calculated"
-  }
+  },
+  "rawValue": "{{value}}"
 }

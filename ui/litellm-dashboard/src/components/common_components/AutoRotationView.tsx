@@ -35,7 +35,7 @@ const AutoRotationView: React.FC<AutoRotationViewProps> = ({
       minute: "2-digit",
       hour12: true,
     });
-    return `${dateStr} at ${timeStr}`;
+    return t("autoRotation.timestamp", { date: dateStr, time: timeStr });
   };
 
   const content = (

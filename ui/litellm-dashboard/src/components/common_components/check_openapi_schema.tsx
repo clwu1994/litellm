@@ -27,6 +27,8 @@ interface OpenAPISchema {
   required?: string[];
 }
 
+type SchemaError = { readonly kind: "message"; readonly message: string } | { readonly kind: "fallback" };
+
 interface SchemaFormFieldsProps {
   schemaComponent: string;
   excludedFields?: string[];
@@ -123,7 +125,7 @@ const SchemaFormFields: React.FC<SchemaFormFieldsProps> = ({
 }) => {
   const { t } = useTranslation("common");
   const [schemaProperties, setSchemaProperties] = useState<OpenAPISchema | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<SchemaError | null>(null);
 
   useEffect(() => {
     const fetchOpenAPISchema = async () => {
@@ -136,6 +138,7 @@ const SchemaFormFields: React.FC<SchemaFormFieldsProps> = ({
         }
 
         setSchemaProperties(componentSchema);
+        setError(null);
 
         Object.keys(componentSchema.properties)
           .filter((key) => !excludedFields.includes(key) && defaultValues[key] !== undefined)
@@ -144,12 +147,12 @@ const SchemaFormFields: React.FC<SchemaFormFieldsProps> = ({
           });
       } catch (error) {
         console.error("Schema fetch error:", error);
-        setError(error instanceof Error ? error.message : t("schemaForm.failedToFetch"));
+        setError(error instanceof Error ? { kind: "message", message: error.message } : { kind: "fallback" });
       }
     };
 
     fetchOpenAPISchema();
-  }, [schemaComponent, setValue, excludedFields, t]);
+  }, [schemaComponent, setValue, excludedFields]);
 
   const getPropertyType = (property: SchemaProperty): string => {
     if (property.type) {
@@ -273,7 +276,8 @@ const SchemaFormFields: React.FC<SchemaFormFieldsProps> = ({
   };
 
   if (error) {
-    return <div className="text-destructive">{t("schemaForm.error", { message: error })}</div>;
+    const message = error.kind === "message" ? error.message : t("schemaForm.failedToFetch");
+    return <div className="text-destructive">{t("schemaForm.error", { message })}</div>;
   }
 
   if (!schemaProperties?.properties) {

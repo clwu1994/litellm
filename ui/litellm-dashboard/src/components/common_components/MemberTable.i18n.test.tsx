@@ -100,6 +100,21 @@ describe("MemberTable Chinese copy", () => {
     expect(screen.queryByText("No members match your search or filters")).not.toBeInTheDocument();
   });
 
+  it("renders raw role identifiers through the alias in the role cell and the filter options", async () => {
+    const user = userEvent.setup();
+    renderTable();
+
+    expect(screen.getByText("admin")).toBeInTheDocument();
+    expect(screen.getByText("user")).toBeInTheDocument();
+
+    await user.click(screen.getByTestId("datatable-filters-trigger"));
+    await user.click(await screen.findByTestId("filter-role"));
+
+    const listbox = await screen.findByRole("listbox");
+    expect(within(listbox).getByText("admin")).toBeInTheDocument();
+    expect(within(listbox).getByText("user")).toBeInTheDocument();
+  });
+
   it("renders the Chinese default-admin badge and hides the English original", () => {
     renderTable([{ user_id: "default_user_id", user_email: "admin@example.com", user_alias: "Admin", role: "admin" }]);
 

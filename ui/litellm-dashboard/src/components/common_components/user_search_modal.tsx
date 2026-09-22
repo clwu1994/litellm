@@ -61,8 +61,12 @@ const UserSearchModal: React.FC<UserSearchModalProps> = ({
   const { t } = useTranslation("common");
   const resolvedTitle = title ?? t("userSearchModal.title");
   const resolvedRoles: Role[] = roles ?? [
-    { label: "admin", value: "admin", description: t("userSearchModal.roleAdminDescription") },
-    { label: "user", value: "user", description: t("userSearchModal.roleUserDescription") },
+    {
+      label: t("rawValue", { value: "admin" }),
+      value: "admin",
+      description: t("userSearchModal.roleAdminDescription"),
+    },
+    { label: t("rawValue", { value: "user" }), value: "user", description: t("userSearchModal.roleUserDescription") },
   ];
   const emptyValues: FormValues = { user_email: undefined, user_id: undefined, role: defaultRole };
   const form = useForm<FormValues>({ defaultValues: emptyValues });

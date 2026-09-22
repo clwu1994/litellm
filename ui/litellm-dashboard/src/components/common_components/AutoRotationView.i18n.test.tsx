@@ -18,7 +18,9 @@ describe("AutoRotationView Chinese copy", () => {
   it("renders the Chinese card heading and description and hides the English originals", () => {
     renderWithProviders(<AutoRotationView autoRotate rotationInterval="7d" />);
 
-    expect(screen.getAllByText("自动轮换").length).toBeGreaterThan(0);
+    const titles = screen.getAllByText("自动轮换");
+    expect(titles[0]).toBeInTheDocument();
+    expect(titles[1]).toBeInTheDocument();
     expect(screen.getByText("此密钥的自动轮换设置和状态")).toBeInTheDocument();
     expect(screen.getByText("已启用")).toBeInTheDocument();
     expect(screen.getByText("每 7d")).toBeInTheDocument();
@@ -40,6 +42,17 @@ describe("AutoRotationView Chinese copy", () => {
     expect(screen.getByText("下次计划轮换")).toBeInTheDocument();
     expect(screen.queryByText("Last Rotation")).not.toBeInTheDocument();
     expect(screen.queryByText("Next Scheduled Rotation")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese date-time join and hides the English original", () => {
+    const date = new Date("2025-01-01T12:00:00.000Z");
+    const dateStr = date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+    const timeStr = date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true });
+
+    renderWithProviders(<AutoRotationView autoRotate lastRotationAt={date.toISOString()} />);
+
+    expect(screen.getByText(`${dateStr} ${timeStr}`)).toBeInTheDocument();
+    expect(screen.queryByText(`${dateStr} at ${timeStr}`)).not.toBeInTheDocument();
   });
 
   it("renders the Chinese disabled and no-history copy and hides the English originals", () => {

@@ -204,7 +204,8 @@
     "lastRotation": "上次轮换",
     "nextScheduledRotation": "下次计划轮换",
     "noHistory": "暂无轮换历史",
-    "notEnabled": "此密钥未启用自动轮换"
+    "notEnabled": "此密钥未启用自动轮换",
+    "timestamp": "{{date}} {{time}}"
   },
   "keyLifecycle": {
     "expirySettings": "密钥过期设置",
@@ -372,5 +373,6 @@
   },
   "summaryCard": {
     "howCalculated": "{{label}} 的计算方式"
-  }
+  },
+  "rawValue": "{{value}}"
 }
