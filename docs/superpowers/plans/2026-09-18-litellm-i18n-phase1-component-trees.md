@@ -70,6 +70,16 @@ This increment covers the component trees that no route-area increment owns. Som
 
 **Namespace:** `errors` (new) or `common` where the copy is generic. **Files:** `src/lib/toast.ts` (hardcoded English titles `"Error"`, `"Access Denied"` and siblings at `:31-49,124-129`, so every failure toast in the dashboard currently shows an English title above a Chinese description; surfaced by the Policies Task 2 review), plus any other `src/lib/**` or `src/utils/**` module that builds user-facing copy (`formatTime`/`toLocaleString` date-formatting helpers are the recorded browser-locale-vs-app-locale follow-up, not this task). `toast.ts` is not a React module, so it must take a `t` or a key and resolve at the call site rather than reading the singleton.
 
+### Task 9: The shared cross-route selectors
+
+**Why this task exists:** the Agents Task 1 report found these trees still English even though the routes that render them were called complete. They are shared, so no single route increment owns them.
+
+**Files:** `src/components/mcp_server_management/**` (`MCPServerSelector.tsx`, `MCPToolPermissions.tsx`; `effectiveMcpServers.ts` and `mcpEntitlement.ts` are logic and stay data-only) - imported by the Agents, Users, Organizations, Teams and templates trees plus `organisms/create_key_button.tsx`; and `src/components/guardrails/**` (`GuardrailSelector.tsx`) - imported by Playground, Agents, `templates/key_edit_view.tsx` and `common_components/PassThroughGuardrailsSection.tsx`.
+
+**Namespace:** extend `mcpServers` for the MCP selectors and `guardrails` for the guardrail selector, reusing their existing keys where the copy is byte-identical; never rename an existing key.
+
+- [ ] Same shape as the other tasks. Report every remaining English string with importer evidence, plus the per-key coverage count. Note the recorded cross-cutting `DeprecationBanner` and `ui/dialog.tsx` sr-only `Close` gaps if they surface here.
+
 ---
 
 Each task follows the same steps:
