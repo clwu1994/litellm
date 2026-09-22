@@ -5,10 +5,13 @@
 
 import type { ParseKeys, TFunction } from "i18next";
 
-export interface FieldConfig {
+/** A label is either a literal (data or dead copy) or a catalog key, never neither. */
+export type FieldLabelText = { label: string; labelKey?: never } | { label?: never; labelKey: ParseKeys<"agents"> };
+
+export type SectionTitleText = { title: string; titleKey?: never } | { title?: never; titleKey: ParseKeys<"agents"> };
+
+interface FieldConfigBase {
   name: string;
-  label?: string;
-  labelKey?: ParseKeys<"agents">;
   type: "text" | "textarea" | "url" | "switch" | "list" | "select";
   required?: boolean;
   tooltip?: string;
@@ -23,32 +26,32 @@ export interface FieldConfig {
   helpTextKey?: ParseKeys<"agents">;
 }
 
-export interface SectionConfig {
+export type FieldConfig = FieldConfigBase & FieldLabelText;
+
+export type SectionConfig = {
   key: string;
-  title?: string;
-  titleKey?: ParseKeys<"agents">;
   fields: FieldConfig[];
   defaultExpanded?: boolean;
-}
+} & SectionTitleText;
 
-export const sectionTitle = (section: SectionConfig, t: TFunction<"agents">): string =>
-  section.titleKey ? t(section.titleKey) : section.title ?? "";
+export const sectionTitle = (section: SectionTitleText, t: TFunction<"agents">): string =>
+  section.titleKey ? t(section.titleKey) : section.title;
 
-export const fieldLabel = (field: Pick<FieldConfig, "label" | "labelKey">, t: TFunction<"agents">): string =>
-  field.labelKey ? t(field.labelKey) : field.label ?? "";
+export const fieldLabel = (field: FieldLabelText, t: TFunction<"agents">): string =>
+  field.labelKey ? t(field.labelKey) : field.label;
 
 export const fieldTooltip = (
-  field: Pick<FieldConfig, "tooltip" | "tooltipKey">,
+  field: Pick<FieldConfigBase, "tooltip" | "tooltipKey">,
   t: TFunction<"agents">,
 ): string | undefined => (field.tooltipKey ? t(field.tooltipKey) : field.tooltip);
 
 export const fieldPlaceholder = (
-  field: Pick<FieldConfig, "placeholder" | "placeholderKey">,
+  field: Pick<FieldConfigBase, "placeholder" | "placeholderKey">,
   t: TFunction<"agents">,
 ): string | undefined => (field.placeholderKey ? t(field.placeholderKey) : field.placeholder);
 
 export const fieldHelpText = (
-  field: Pick<FieldConfig, "helpText" | "helpTextKey">,
+  field: Pick<FieldConfigBase, "helpText" | "helpTextKey">,
   t: TFunction<"agents">,
 ): string | undefined => (field.helpTextKey ? t(field.helpTextKey) : field.helpText);
 
@@ -113,6 +116,7 @@ export const AGENT_FORM_CONFIG: {
     fields: [
       {
         name: "skills",
+        labelKey: "info.skills.title",
         type: "list",
         defaultValue: [],
       },
@@ -221,21 +225,20 @@ export const AGENT_FORM_CONFIG: {
   },
 };
 
-export interface SkillFieldConfig {
+export type SkillFieldConfig = {
   name: string;
-  labelKey: ParseKeys<"agents">;
   required?: boolean;
   placeholder?: string;
   placeholderKey?: ParseKeys<"agents">;
   rows?: number;
-}
+} & FieldLabelText;
 
 export const SKILL_FIELD_CONFIG: Record<"id" | "name" | "description" | "tags" | "examples", SkillFieldConfig> = {
   id: {
     name: "id",
     labelKey: "form.skillFields.id",
     required: true,
-    placeholder: "e.g., hello_world",
+    placeholderKey: "form.skillFields.idPlaceholder",
   },
   name: {
     name: "name",

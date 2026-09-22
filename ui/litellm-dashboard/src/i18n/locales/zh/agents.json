@@ -197,6 +197,7 @@
     },
     "skillFields": {
       "id": "技能 ID",
+      "idPlaceholder": "例如 hello_world",
       "name": "技能名称",
       "namePlaceholder": "例如 Returns hello world",
       "descriptionPlaceholder": "此技能的功能",
@@ -245,7 +246,7 @@
       "requireOutbound": "要求此 Agent 发起的调用携带 x-litellm-trace-id",
       "requireOutboundHint": "要求此 Agent 发起的 LLM/MCP 调用包含 x-litellm-trace-id，以便跟踪会话。",
       "budgets": "预算与速率限制",
-      "budgetsHint": "请在 Tracing 中启用“Require x-litellm-trace-id on calls BY this agent”以配置预算和速率限制。",
+      "budgetsHint": "请在追踪中启用“要求此 Agent 发起的调用携带 x-litellm-trace-id”以配置预算和速率限制。",
       "sessionBudgets": "会话预算",
       "maxIterations": "最大迭代次数",
       "maxIterationsPlaceholder": "例如 25",

@@ -70,8 +70,13 @@ describe("AgentCardDiscovery Chinese copy", () => {
     expect(screen.queryByText("Discover from agent URL")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "发现" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Discover" })).not.toBeInTheDocument();
-    expect(screen.getByText(/粘贴上游 Agent 的 Base URL。我们将按顺序尝试/)).toBeInTheDocument();
-    expect(screen.queryByText(/Paste the upstream agent's base URL/)).not.toBeInTheDocument();
+    const pasteUrl = screen.getByText(/粘贴上游 Agent 的 Base URL/);
+    expect(pasteUrl).toHaveTextContent(
+      "粘贴上游 Agent 的 Base URL。我们将按顺序尝试 /.well-known/agent-card.json、/.well-known/agent.json 和 /agent.json。",
+    );
+    expect(pasteUrl).not.toHaveTextContent(
+      "Paste the upstream agent's base URL. We'll try /.well-known/agent-card.json, /.well-known/agent.json, and /agent.json in order.",
+    );
 
     await hoverTitleHint(user, "从 Agent URL 发现");
 
@@ -141,6 +146,7 @@ describe("AgentCardDiscovery Chinese copy", () => {
     expect(screen.queryByText("Failed to discover agent card")).not.toBeInTheDocument();
 
     const dismiss = screen.getByRole("button", { name: "关闭错误" });
+    expect(screen.queryByRole("button", { name: "Dismiss error" })).not.toBeInTheDocument();
     expect(dismiss).toBeInTheDocument();
     await user.click(dismiss);
 
@@ -153,12 +159,16 @@ describe("AgentCardDiscovery Chinese copy", () => {
 
     await discoverCard(user);
 
+    expect(screen.getByText("已加载上游卡片")).toBeInTheDocument();
+    expect(screen.queryByText("Upstream card loaded")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "重新发现" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Re-discover" })).not.toBeInTheDocument();
     expect(screen.getByText("名称（对 API 客户端显示）")).toBeInTheDocument();
     expect(screen.queryByText("Name (shown to API clients)")).not.toBeInTheDocument();
     expect(screen.getByPlaceholderText("Agent 名称")).toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("Agent name")).not.toBeInTheDocument();
     expect(screen.getByPlaceholderText("此 Agent 的功能")).toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("What this agent does")).not.toBeInTheDocument();
     expect(screen.getByText("已选择 2 / 2")).toBeInTheDocument();
     expect(screen.queryByText("2 / 2 selected")).not.toBeInTheDocument();
     expect(screen.getByText("技能")).toBeInTheDocument();

@@ -258,10 +258,16 @@ describe("AddAgentForm Chinese copy", () => {
       expect(await screen.findByLabelText(zh)).toBeInTheDocument();
       expect(screen.queryByLabelText(en)).not.toBeInTheDocument();
     }
-    expect(screen.getByPlaceholderText("例如 Returns hello world")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("此技能的功能")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("输入标签并按 Enter")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("输入示例并按 Enter")).toBeInTheDocument();
+    for (const [zh, en] of [
+      ["例如 hello_world", "e.g., hello_world"],
+      ["例如 Returns hello world", "e.g., Returns hello world"],
+      ["此技能的功能", "What this skill does"],
+      ["输入标签并按 Enter", "Type a tag and press Enter"],
+      ["输入示例并按 Enter", "Type an example and press Enter"],
+    ] as const) {
+      expect(screen.getByPlaceholderText(zh)).toBeInTheDocument();
+      expect(screen.queryByPlaceholderText(en)).not.toBeInTheDocument();
+    }
     expect(screen.getByRole("button", { name: "移除技能" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Remove Skill" })).not.toBeInTheDocument();
 
@@ -464,7 +470,7 @@ describe("AddAgentForm Chinese copy", () => {
       ],
       ["预算与速率限制", "Budgets & Rate Limits"],
       [
-        "请在 Tracing 中启用“Require x-litellm-trace-id on calls BY this agent”以配置预算和速率限制。",
+        "请在追踪中启用“要求此 Agent 发起的调用携带 x-litellm-trace-id”以配置预算和速率限制。",
         'Enable "Require x-litellm-trace-id on calls BY this agent" in Tracing to configure budgets and rate limits.',
       ],
       ["会话预算", "Session Budgets"],
@@ -606,7 +612,7 @@ describe("AddAgentForm Chinese copy", () => {
     await user.click(screen.getByRole("button", { name: "创建 Agent →" }));
 
     expect(await screen.findByText(/密钥/)).toHaveTextContent("密钥 Maple key 已分配给此 Agent。");
-    expect(screen.queryByText(/Key .* has been assigned to this agent\./)).not.toBeInTheDocument();
+    expect(screen.queryByText("Key Maple key has been assigned to this agent.")).not.toBeInTheDocument();
   });
 
   it("renders the Chinese unassigned-key sentence after skipping", async () => {

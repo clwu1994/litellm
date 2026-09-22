@@ -197,6 +197,7 @@
     },
     "skillFields": {
       "id": "Skill ID",
+      "idPlaceholder": "e.g., hello_world",
       "name": "Skill Name",
       "namePlaceholder": "e.g., Returns hello world",
       "descriptionPlaceholder": "What this skill does",
