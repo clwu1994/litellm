@@ -1,0 +1,123 @@
+{
+  "page": {
+    "title": "技能",
+    "description": "注册 Claude Code 技能。已发布的技能会出现在所有用户的 Skill Hub 中，并通过 <code>/claude-code/marketplace.json</code> 提供。",
+    "addSkill": "+ 添加技能"
+  },
+  "table": {
+    "loading": "正在加载技能…",
+    "empty": {
+      "title": "未找到技能",
+      "body": "添加一个技能即可开始。"
+    },
+    "uncategorized": "未分类",
+    "noDescription": "无描述",
+    "noVersion": "不适用",
+    "yes": "是",
+    "no": "否",
+    "columns": {
+      "name": "技能名称",
+      "version": "版本",
+      "description": "描述",
+      "category": "类别",
+      "public": "公开",
+      "createdAt": "创建时间",
+      "actions": "操作"
+    },
+    "rowActions": {
+      "open": "打开技能操作",
+      "copyId": "复制技能 ID",
+      "copied": "已复制技能 ID",
+      "delete": "删除"
+    }
+  },
+  "delete": {
+    "title": "删除技能",
+    "description": "确定要删除技能：<strong>{{name}}</strong>？",
+    "cannotUndo": "此操作无法撤销。",
+    "cancel": "取消",
+    "confirm": "删除",
+    "success": "技能 “{{name}}” 删除成功",
+    "failure": "删除技能失败"
+  },
+  "form": {
+    "title": "添加新技能",
+    "sourceUrl": {
+      "label": "来源 URL",
+      "hint": "粘贴来自 GitHub、GitLab、Bitbucket 或自托管主机的 HTTPS git 仓库 URL（例如 github.com/org/repo 或 github.com/org/repo/tree/main/my-skill），或指向托管在 S3 或任意静态文件服务器上的技能 .zip 归档的 HTTPS 链接。",
+      "placeholder": "https://github.com/org/repo 或 https://bucket.s3.amazonaws.com/my-skill.zip"
+    },
+    "subPath": {
+      "label": "子文件夹路径（可选）",
+      "hint": "技能在仓库中的路径（例如 plugins/my-skill）。如果技能位于仓库根目录，请留空。",
+      "lock": {
+        "gitSubdir": "URL 已指向子文件夹，因此此字段已禁用",
+        "archive": "zip 归档会整体安装，因此此字段已禁用"
+      }
+    },
+    "sha256": {
+      "label": "归档 SHA-256（可选）",
+      "hint": "zip 文件的十六进制摘要。如果校验和不匹配，Claude Code 会拒绝安装该归档。",
+      "placeholder": "64 个十六进制字符"
+    },
+    "detected": "已检测到：{{label}}",
+    "name": {
+      "label": "技能名称",
+      "hint": "kebab-case 格式的唯一标识符（例如 my-skill）"
+    },
+    "domain": {
+      "label": "领域（可选）",
+      "hint": "Skill Hub 中的顶层分组（例如 Productivity）"
+    },
+    "namespace": {
+      "label": "命名空间（可选）",
+      "hint": "领域内的子分组（例如 workflows）"
+    },
+    "description": {
+      "label": "描述（可选）",
+      "hint": "技能的简要说明",
+      "placeholder": "一个可以帮助…的技能"
+    },
+    "category": {
+      "label": "类别（可选）",
+      "hint": "选择一个类别或输入自定义类别",
+      "placeholder": "选择或输入类别",
+      "empty": "没有匹配的类别"
+    },
+    "keywords": {
+      "label": "关键词（可选）",
+      "hint": "用于搜索的逗号分隔关键词列表"
+    },
+    "version": {
+      "label": "版本（可选）",
+      "hint": "语义化版本（例如 1.0.0）"
+    },
+    "authorName": {
+      "label": "作者名称（可选）",
+      "hint": "技能作者或组织的名称",
+      "placeholder": "你的姓名或组织"
+    },
+    "authorEmail": {
+      "label": "作者邮箱（可选）",
+      "hint": "技能作者的联络邮箱"
+    },
+    "cancel": "取消",
+    "submitting": "添加中…",
+    "submit": "添加技能",
+    "validation": {
+      "sourceUrlRequired": "请输入仓库或 zip 归档 URL",
+      "subPathFormat": "子文件夹必须是相对路径，例如 plugins/my-skill（字母、数字、点、连字符、下划线）",
+      "sha256": "SHA-256 必须是 64 个字符的十六进制摘要",
+      "nameRequired": "请输入技能名称",
+      "nameFormat": "名称必须为 kebab-case（仅限小写字母、数字和连字符）",
+      "email": "请输入有效的邮箱"
+    },
+    "toast": {
+      "noAccessToken": "没有可用的访问 Token",
+      "invalidSource": "请输入有效的仓库或 zip 归档 URL",
+      "invalidVersion": "版本必须为语义化版本格式（例如 1.0.0）",
+      "success": "技能注册成功",
+      "failure": "注册技能失败"
+    }
+  }
+}

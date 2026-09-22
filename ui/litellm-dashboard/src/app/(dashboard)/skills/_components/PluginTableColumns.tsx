@@ -1,7 +1,9 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+import type { TFunction } from "i18next";
 import { Copy, MoreHorizontal, Trash2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { DataTableSortHeader } from "@/components/shared/DataTable";
 import { DateCell, IdentityCell, StatusBadge } from "@/components/shared/table_cells";
@@ -31,12 +33,13 @@ const CATEGORY_BADGE_CLASS: Record<ReturnType<typeof getCategoryBadgeColor>, str
 };
 
 function PluginCategoryBadge({ category }: { category?: string }) {
+  const { t } = useTranslation("skills");
   return (
     <Badge
       variant="outline"
       className={cn("whitespace-nowrap font-normal", CATEGORY_BADGE_CLASS[getCategoryBadgeColor(category)])}
     >
-      {category || "Uncategorized"}
+      {category || t("table.uncategorized")}
     </Badge>
   );
 }
@@ -48,10 +51,11 @@ interface PluginRowActionsProps {
 }
 
 function PluginRowActions({ plugin, isAdmin, onDeleteClick }: PluginRowActionsProps) {
+  const { t } = useTranslation("skills");
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        aria-label="Open skill actions"
+        aria-label={t("table.rowActions.open")}
         data-testid={`plugin-actions-${plugin.name}`}
         className={cn(buttonVariants({ variant: "ghost", size: "icon-sm" }), "text-muted-foreground")}
       >
@@ -60,10 +64,10 @@ function PluginRowActions({ plugin, isAdmin, onDeleteClick }: PluginRowActionsPr
       <DropdownMenuContent align="end" className="w-52">
         <DropdownMenuItem
           data-testid="plugin-action-copy"
-          onClick={() => void copyToClipboard(plugin.id, "Skill ID copied")}
+          onClick={() => void copyToClipboard(plugin.id, t("table.rowActions.copied"))}
         >
           <Copy />
-          Copy skill ID
+          {t("table.rowActions.copyId")}
         </DropdownMenuItem>
         {isAdmin && (
           <>
@@ -74,7 +78,7 @@ function PluginRowActions({ plugin, isAdmin, onDeleteClick }: PluginRowActionsPr
               onClick={() => onDeleteClick(plugin.name, plugin.name)}
             >
               <Trash2 />
-              Delete
+              {t("table.rowActions.delete")}
             </DropdownMenuItem>
           </>
         )}
@@ -87,18 +91,20 @@ interface PluginTableColumnsDeps {
   isAdmin: boolean;
   onPluginClick: (pluginId: string) => void;
   onDeleteClick: (pluginName: string, displayName: string) => void;
+  t: TFunction<"skills">;
 }
 
 export const getPluginTableColumns = ({
   isAdmin,
   onPluginClick,
   onDeleteClick,
+  t,
 }: PluginTableColumnsDeps): ColumnDef<Plugin>[] => [
   {
     id: "name",
     accessorKey: "name",
-    meta: { title: "Skill Name" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Skill Name" />,
+    meta: { title: t("table.columns.name") },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("table.columns.name")} />,
     size: 220,
     enableSorting: true,
     cell: ({ row }) => (
@@ -113,24 +119,26 @@ export const getPluginTableColumns = ({
   {
     id: "version",
     accessorKey: "version",
-    meta: { title: "Version" },
-    header: "Version",
+    meta: { title: t("table.columns.version") },
+    header: t("table.columns.version"),
     size: 100,
     enableSorting: false,
-    cell: ({ row }) => <span className="text-sm text-muted-foreground">{row.original.version || "N/A"}</span>,
+    cell: ({ row }) => (
+      <span className="text-sm text-muted-foreground">{row.original.version || t("table.noVersion")}</span>
+    ),
   },
   {
     id: "description",
     accessorKey: "description",
-    meta: { title: "Description" },
-    header: "Description",
+    meta: { title: t("table.columns.description") },
+    header: t("table.columns.description"),
     size: 300,
     enableSorting: false,
     cell: ({ row }) => {
       const description = row.original.description;
       return (
         <span className="block max-w-72 truncate text-sm text-muted-foreground" title={description}>
-          {description || "No description"}
+          {description || t("table.noDescription")}
         </span>
       );
     },
@@ -138,8 +146,8 @@ export const getPluginTableColumns = ({
   {
     id: "category",
     accessorKey: "category",
-    meta: { title: "Category", skeleton: "badge" },
-    header: "Category",
+    meta: { title: t("table.columns.category"), skeleton: "badge" },
+    header: t("table.columns.category"),
     size: 150,
     enableSorting: false,
     cell: ({ row }) => <PluginCategoryBadge category={row.original.category} />,
@@ -147,20 +155,23 @@ export const getPluginTableColumns = ({
   {
     id: "enabled",
     accessorKey: "enabled",
-    meta: { title: "Public", skeleton: "badge" },
-    header: "Public",
+    meta: { title: t("table.columns.public"), skeleton: "badge" },
+    header: t("table.columns.public"),
     size: 100,
     enableSorting: false,
     cell: ({ row }) => (
-      <StatusBadge tone={row.original.enabled ? "success" : "neutral"} label={row.original.enabled ? "Yes" : "No"} />
+      <StatusBadge
+        tone={row.original.enabled ? "success" : "neutral"}
+        label={row.original.enabled ? t("table.yes") : t("table.no")}
+      />
     ),
   },
   {
     id: "created_at",
     accessorKey: "created_at",
     sortingFn: "datetime",
-    meta: { title: "Created At" },
-    header: ({ column }) => <DataTableSortHeader column={column} title="Created At" />,
+    meta: { title: t("table.columns.createdAt") },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("table.columns.createdAt")} />,
     size: 160,
     enableSorting: true,
     cell: ({ row }) => <DateCell value={row.original.created_at} />,
@@ -168,7 +179,7 @@ export const getPluginTableColumns = ({
   {
     id: "actions",
     meta: { className: "text-right", headerClassName: "text-right" },
-    header: () => <span className="sr-only">Actions</span>,
+    header: () => <span className="sr-only">{t("table.columns.actions")}</span>,
     size: 64,
     enableSorting: false,
     enableHiding: false,

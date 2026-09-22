@@ -23,6 +23,7 @@ import enProjects from "./locales/en/projects.json";
 import enPrompts from "./locales/en/prompts.json";
 import enRouterSettings from "./locales/en/routerSettings.json";
 import enSearchTools from "./locales/en/searchTools.json";
+import enSkills from "./locales/en/skills.json";
 import enTagManagement from "./locales/en/tagManagement.json";
 import enTeams from "./locales/en/teams.json";
 import enTransformRequest from "./locales/en/transformRequest.json";
@@ -56,6 +57,7 @@ import zhProjects from "./locales/zh/projects.json";
 import zhPrompts from "./locales/zh/prompts.json";
 import zhRouterSettings from "./locales/zh/routerSettings.json";
 import zhSearchTools from "./locales/zh/searchTools.json";
+import zhSkills from "./locales/zh/skills.json";
 import zhTagManagement from "./locales/zh/tagManagement.json";
 import zhTeams from "./locales/zh/teams.json";
 import zhTransformRequest from "./locales/zh/transformRequest.json";
@@ -94,6 +96,7 @@ export const resources = {
     projects: enProjects,
     routerSettings: enRouterSettings,
     searchTools: enSearchTools,
+    skills: enSkills,
     tagManagement: enTagManagement,
     transformRequest: enTransformRequest,
     uiTheme: enUiTheme,
@@ -129,6 +132,7 @@ export const resources = {
     projects: zhProjects,
     routerSettings: zhRouterSettings,
     searchTools: zhSearchTools,
+    skills: zhSkills,
     tagManagement: zhTagManagement,
     transformRequest: zhTransformRequest,
     uiTheme: zhUiTheme,
