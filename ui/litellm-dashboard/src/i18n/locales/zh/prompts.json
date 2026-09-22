@@ -233,5 +233,27 @@
     "active": "当前",
     "savedToDatabase": "已保存到数据库",
     "configPrompt": "配置提示词"
+  },
+  "conversation": {
+    "emptyWithVariables": "请先填写上方变量，然后输入消息开始测试",
+    "emptyNoVariables": "在下方输入消息以开始测试你的提示词",
+    "clearChat": "清空对话",
+    "roles": {
+      "user": "用户",
+      "assistant": "助手"
+    },
+    "inputPlaceholder": "输入你的消息...（Shift+Enter 换行）",
+    "sendAria": "发送消息",
+    "cancel": "取消",
+    "loadingResponseAria": "正在加载回复",
+    "variablesTitle": "填写模板变量以开始测试",
+    "variablePlaceholder": "输入 {{name}} 的值",
+    "warningTitle": "请填写上方所有模板变量",
+    "warningMissing": "缺少：{{variables}}",
+    "toast": {
+      "variablesRequired": "请填写所有模板变量",
+      "requestCancelled": "请求已取消",
+      "cleared": "对话历史已清空。"
+    }
   }
 }

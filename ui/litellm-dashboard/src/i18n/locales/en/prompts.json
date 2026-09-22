@@ -233,5 +233,27 @@
     "active": "Active",
     "savedToDatabase": "Saved to Database",
     "configPrompt": "Config Prompt"
+  },
+  "conversation": {
+    "emptyWithVariables": "Fill in the variables above, then type a message to start testing",
+    "emptyNoVariables": "Type a message below to start testing your prompt",
+    "clearChat": "Clear Chat",
+    "roles": {
+      "user": "user",
+      "assistant": "assistant"
+    },
+    "inputPlaceholder": "Type your message... (Shift+Enter for new line)",
+    "sendAria": "Send message",
+    "cancel": "Cancel",
+    "loadingResponseAria": "Loading response",
+    "variablesTitle": "Fill in template variables to start testing",
+    "variablePlaceholder": "Enter value for {{name}}",
+    "warningTitle": "Please fill in all template variables above",
+    "warningMissing": "Missing: {{variables}}",
+    "toast": {
+      "variablesRequired": "Please fill in all template variables",
+      "requestCancelled": "Request cancelled",
+      "cleared": "Chat history cleared."
+    }
   }
 }

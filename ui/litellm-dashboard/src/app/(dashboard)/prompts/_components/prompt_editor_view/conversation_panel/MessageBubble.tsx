@@ -1,6 +1,8 @@
 import React from "react";
+import type { ParseKeys, TFunction } from "i18next";
 import { Bot, User } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import { useTranslation } from "react-i18next";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { coy } from "react-syntax-highlighter/dist/esm/styles/prism";
 
@@ -12,7 +14,18 @@ interface MessageBubbleProps {
   message: Message;
 }
 
+const ROLE_KEYS: Record<string, ParseKeys<"prompts"> | undefined> = {
+  user: "conversation.roles.user",
+  assistant: "conversation.roles.assistant",
+};
+
+const resolveRole = (role: string, t: TFunction<"prompts">): string => {
+  const key = ROLE_KEYS[role];
+  return key === undefined ? role : t(key);
+};
+
 const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
+  const { t } = useTranslation("prompts");
   const syntaxTheme = useSyntaxTheme(coy);
   return (
     <div className={`mb-4 flex ${message.role === "user" ? "justify-end" : "justify-start"}`}>
@@ -33,7 +46,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
               <Bot className="size-3 text-muted-foreground" aria-hidden="true" />
             )}
           </div>
-          <strong className="text-sm capitalize">{message.role}</strong>
+          <strong className="text-sm capitalize">{resolveRole(message.role, t)}</strong>
           {message.role === "assistant" && message.model && (
             <span className="text-xs px-2 py-0.5 rounded-sm bg-muted text-muted-foreground font-normal">
               {message.model}
