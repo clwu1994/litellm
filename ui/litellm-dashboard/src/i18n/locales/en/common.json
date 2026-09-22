@@ -2,5 +2,52 @@
   "language": "Language",
   "languageZh": "中文",
   "languageEn": "English",
-  "logout": "Logout"
+  "logout": "Logout",
+  "dataTable": {
+    "loading": "Loading…",
+    "empty": {
+      "title": "No results",
+      "description": "No rows match your search or filters."
+    },
+    "toolbar": {
+      "search": "Search",
+      "clearAll": "Clear all",
+      "filters": "Filters",
+      "refresh": "Refresh",
+      "columns": "Columns",
+      "removeFilter": "Remove {{label}} filter"
+    },
+    "filters": {
+      "title": "Filters",
+      "apply": "Apply Filters",
+      "reset": "Reset"
+    },
+    "pagination": {
+      "rowsPerPage": "Rows per page",
+      "noResults": "No results",
+      "range": "Showing {{start}}-{{end}} of {{rowCount}}",
+      "page": "Page {{page}} of {{pageCount}}",
+      "firstPage": "Go to first page",
+      "previousPage": "Go to previous page",
+      "nextPage": "Go to next page",
+      "lastPage": "Go to last page"
+    },
+    "view": {
+      "label": "View"
+    },
+    "sort": {
+      "optionsFor": "Sort options for {{column}}",
+      "optionsForFields": "Sort options for {{fields}}",
+      "fieldSeparator": " or ",
+      "ascending": "Ascending",
+      "descending": "Descending",
+      "reset": "Reset",
+      "fieldAscending": "{{field}} ascending",
+      "fieldDescending": "{{field}} descending"
+    },
+    "selection": {
+      "selectAllRows": "Select all rows",
+      "selectRow": "Select row"
+    }
+  }
 }

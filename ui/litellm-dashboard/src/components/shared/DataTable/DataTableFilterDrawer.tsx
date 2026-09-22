@@ -2,6 +2,7 @@
 
 import type { ColumnFiltersState, Table } from "@tanstack/react-table";
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -46,13 +47,17 @@ export function DataTableFilterDrawer<TData>({
   table,
   open,
   onOpenChange,
-  title = "Filters",
+  title,
   description,
-  applyLabel = "Apply Filters",
-  resetLabel = "Reset",
+  applyLabel,
+  resetLabel,
   onReset,
   children,
 }: DataTableFilterDrawerProps<TData>) {
+  const { t } = useTranslation("common");
+  const resolvedTitle = title ?? t("dataTable.filters.title");
+  const resolvedApplyLabel = applyLabel ?? t("dataTable.filters.apply");
+  const resolvedResetLabel = resetLabel ?? t("dataTable.filters.reset");
   const [draft, setDraft] = React.useState<Record<string, unknown>>(() => toDraft(table.getState().columnFilters));
   const [wasOpen, setWasOpen] = React.useState(open);
 
@@ -86,7 +91,7 @@ export function DataTableFilterDrawer<TData>({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="right">
         <SheetHeader>
-          <SheetTitle>{title}</SheetTitle>
+          <SheetTitle>{resolvedTitle}</SheetTitle>
           {description !== undefined && <SheetDescription>{description}</SheetDescription>}
         </SheetHeader>
         <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4" data-testid="filter-drawer-body">
@@ -94,10 +99,10 @@ export function DataTableFilterDrawer<TData>({
         </div>
         <SheetFooter className="flex-row">
           <Button variant="outline" className="flex-1" onClick={reset} data-testid="filter-drawer-reset">
-            {resetLabel}
+            {resolvedResetLabel}
           </Button>
           <Button className="flex-1" onClick={apply} data-testid="filter-drawer-apply">
-            {applyLabel}
+            {resolvedApplyLabel}
           </Button>
         </SheetFooter>
       </SheetContent>

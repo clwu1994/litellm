@@ -3,6 +3,7 @@
 import { Menu } from "@base-ui/react/menu";
 import type { Table } from "@tanstack/react-table";
 import { Check, Columns3 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 
@@ -12,7 +13,8 @@ interface DataTableViewOptionsProps<TData> {
   className?: string;
 }
 
-export function DataTableViewOptions<TData>({ table, label = "View", className }: DataTableViewOptionsProps<TData>) {
+export function DataTableViewOptions<TData>({ table, label, className }: DataTableViewOptionsProps<TData>) {
+  const { t } = useTranslation("common");
   const hideableColumns = table.getAllLeafColumns().filter((column) => column.getCanHide());
 
   if (hideableColumns.length === 0) {
@@ -25,7 +27,7 @@ export function DataTableViewOptions<TData>({ table, label = "View", className }
         render={
           <Button variant="outline" size="sm" className={className} data-testid="view-options-trigger">
             <Columns3 />
-            {label}
+            {label ?? t("dataTable.view.label")}
           </Button>
         }
       />
