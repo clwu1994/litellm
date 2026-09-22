@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ChevronRight } from "lucide-react";
 import type { MCPEvent } from "@/components/mcp_tools/types";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -63,6 +64,7 @@ interface MCPEventsPanelsProps {
 }
 
 function MCPEventsPanels({ toolsEvent, mcpCallEvents, defaultOpenKeys }: MCPEventsPanelsProps) {
+  const { t } = useTranslation("playground");
   const [openKeys, setOpenKeys] = useState<Set<string>>(defaultOpenKeys);
 
   const toggleKey = (key: string, open: boolean) => {
@@ -85,7 +87,7 @@ function MCPEventsPanels({ toolsEvent, mcpCallEvents, defaultOpenKeys }: MCPEven
         {toolsEvent && (
           <MCPEventPanel
             panelKey="list-tools"
-            title="List tools"
+            title={t("metrics.listTools")}
             open={openKeys.has("list-tools")}
             onOpenChange={(open) => toggleKey("list-tools", open)}
           >
@@ -108,13 +110,13 @@ function MCPEventsPanels({ toolsEvent, mcpCallEvents, defaultOpenKeys }: MCPEven
             <MCPEventPanel
               key={key}
               panelKey={key}
-              title={callEvent.item?.name || "Tool call"}
+              title={callEvent.item?.name || t("metrics.toolCall")}
               open={openKeys.has(key)}
               onOpenChange={(open) => toggleKey(key, open)}
             >
               <div>
                 <div className="relative z-raised mb-3 bg-card last:mb-0">
-                  <div className="mb-1 text-[13px] font-medium text-muted-foreground">Request</div>
+                  <div className="mb-1 text-[13px] font-medium text-muted-foreground">{t("metrics.request")}</div>
                   <div className="rounded-md border border-border bg-muted p-2 text-xs">
                     {callEvent.item?.arguments && (
                       <pre className="m-0 whitespace-pre-wrap break-words font-mono text-foreground">
@@ -129,13 +131,13 @@ function MCPEventsPanels({ toolsEvent, mcpCallEvents, defaultOpenKeys }: MCPEven
                     <span className="mr-1.5 font-bold text-success" aria-hidden="true">
                       ✓
                     </span>
-                    Approved
+                    {t("metrics.approved")}
                   </div>
                 </div>
 
                 {callEvent.item?.output && (
                   <div className="relative z-raised mb-3 bg-card last:mb-0">
-                    <div className="mb-1 text-[13px] font-medium text-muted-foreground">Response</div>
+                    <div className="mb-1 text-[13px] font-medium text-muted-foreground">{t("metrics.response")}</div>
                     <div className="whitespace-pre-wrap font-mono text-[13px] leading-normal text-foreground">
                       {callEvent.item.output}
                     </div>

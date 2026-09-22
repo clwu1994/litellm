@@ -5,6 +5,7 @@ import type zhApiReference from "./locales/zh/apiReference.json";
 import type zhAuth from "./locales/zh/auth.json";
 import type zhBudgets from "./locales/zh/budgets.json";
 import type zhCaching from "./locales/zh/caching.json";
+import type zhChat from "./locales/zh/chat.json";
 import type zhCommon from "./locales/zh/common.json";
 import type zhCostTracking from "./locales/zh/costTracking.json";
 import type zhGuardrails from "./locales/zh/guardrails.json";
@@ -49,6 +50,7 @@ declare module "i18next" {
       auth: typeof zhAuth;
       budgets: typeof zhBudgets;
       caching: typeof zhCaching;
+      chat: typeof zhChat;
       costTracking: typeof zhCostTracking;
       guardrails: typeof zhGuardrails;
       guardrailsMonitor: typeof zhGuardrailsMonitor;

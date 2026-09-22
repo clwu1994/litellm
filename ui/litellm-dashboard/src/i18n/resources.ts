@@ -5,6 +5,7 @@ import enApiReference from "./locales/en/apiReference.json";
 import enAuth from "./locales/en/auth.json";
 import enBudgets from "./locales/en/budgets.json";
 import enCaching from "./locales/en/caching.json";
+import enChat from "./locales/en/chat.json";
 import enCommon from "./locales/en/common.json";
 import enCostTracking from "./locales/en/costTracking.json";
 import enGuardrails from "./locales/en/guardrails.json";
@@ -42,6 +43,7 @@ import zhApiReference from "./locales/zh/apiReference.json";
 import zhAuth from "./locales/zh/auth.json";
 import zhBudgets from "./locales/zh/budgets.json";
 import zhCaching from "./locales/zh/caching.json";
+import zhChat from "./locales/zh/chat.json";
 import zhCommon from "./locales/zh/common.json";
 import zhCostTracking from "./locales/zh/costTracking.json";
 import zhGuardrails from "./locales/zh/guardrails.json";
@@ -84,6 +86,7 @@ export const resources = {
     auth: enAuth,
     budgets: enBudgets,
     caching: enCaching,
+    chat: enChat,
     costTracking: enCostTracking,
     guardrails: enGuardrails,
     guardrailsMonitor: enGuardrailsMonitor,
@@ -123,6 +126,7 @@ export const resources = {
     auth: zhAuth,
     budgets: zhBudgets,
     caching: zhCaching,
+    chat: zhChat,
     costTracking: zhCostTracking,
     guardrails: zhGuardrails,
     guardrailsMonitor: zhGuardrailsMonitor,
