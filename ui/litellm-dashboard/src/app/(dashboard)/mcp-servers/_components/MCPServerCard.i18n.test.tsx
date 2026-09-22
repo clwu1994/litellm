@@ -127,8 +127,10 @@ describe("MCPServerCard Chinese copy", () => {
 
     await user.hover(screen.getByText("异常"));
 
+    const checkedAt = new Date("2024-01-01T00:00:00Z").toLocaleString();
     expect(await screen.findByText("健康状态：异常")).toBeInTheDocument();
-    expect(screen.getByText(`上次检查：${new Date("2024-01-01T00:00:00Z").toLocaleString()}`)).toBeInTheDocument();
+    expect(screen.getByText(`上次检查：${checkedAt}`)).toBeInTheDocument();
+    expect(screen.queryByText(`Last check: ${checkedAt}`)).not.toBeInTheDocument();
     expect(screen.getByText("错误")).toBeInTheDocument();
     expect(screen.getByText("点击重新检查")).toBeInTheDocument();
     expect(screen.queryByText("Health: unhealthy")).not.toBeInTheDocument();

@@ -245,6 +245,7 @@ describe("MCPServers list Chinese copy", () => {
       ),
     ).not.toBeInTheDocument();
     expect(within(dialog).getByText("名称")).toBeInTheDocument();
+    expect(within(dialog).queryByText("Name")).not.toBeInTheDocument();
     // "ID" and "URL" are glossary-locked, so their Chinese values are identical to the English ones.
     expect(within(dialog).getByText("ID")).toBeInTheDocument();
     expect(within(dialog).getByText("URL")).toBeInTheDocument();
@@ -254,7 +255,11 @@ describe("MCPServers list Chinese copy", () => {
     expect(within(dialog).getByRole("button", { name: "取消" })).toBeInTheDocument();
     expect(within(dialog).queryByRole("button", { name: "Cancel" })).not.toBeInTheDocument();
 
-    await user.click(within(dialog).getByRole("button", { name: "删除" }));
+    const deleteButton = within(dialog).getByRole("button", { name: "删除" });
+    expect(deleteButton).toBeInTheDocument();
+    expect(within(dialog).queryByRole("button", { name: "Delete" })).not.toBeInTheDocument();
+
+    await user.click(deleteButton);
 
     expect(await within(dialog).findByRole("button", { name: "正在删除…" })).toBeInTheDocument();
     expect(within(dialog).queryByRole("button", { name: "Deleting..." })).not.toBeInTheDocument();

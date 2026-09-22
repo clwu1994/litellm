@@ -31,6 +31,7 @@ describe("MCPLogoSelector Chinese copy", () => {
 
     await user.hover(screen.getByLabelText("关于标志"));
 
+    expect(screen.queryByLabelText("About the logo")).not.toBeInTheDocument();
     expect(
       await screen.findByText("选择一个常见标志，或粘贴任意图片的 URL。该标志会显示在管理页面和聊天页面。"),
     ).toBeInTheDocument();
