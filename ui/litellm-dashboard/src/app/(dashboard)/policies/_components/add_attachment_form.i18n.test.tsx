@@ -302,6 +302,19 @@ describe("AddAttachmentForm Chinese copy", () => {
     expect(toast.success).not.toHaveBeenCalledWith("Attachment created successfully");
   });
 
+  it("toasts the Chinese plural create success for several attachments", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<AddAttachmentForm {...defaultProps} />);
+    await screen.findByText("创建策略附件");
+    await selectPolicies(user, "策略", ["policy-alpha", "policy-beta"]);
+
+    await user.click(screen.getByRole("button", { name: "创建附件" }));
+
+    await waitFor(() => expect(toast.success).toHaveBeenCalledWith("已成功创建 2 个附件"));
+    expect(toast.success).not.toHaveBeenCalledWith("2 attachments created successfully");
+    expect(toast.success).not.toHaveBeenCalledWith("附件创建成功");
+  });
+
   it("selects the singular and plural created toasts in English", async () => {
     await i18n.changeLanguage("en");
     const user = userEvent.setup();
