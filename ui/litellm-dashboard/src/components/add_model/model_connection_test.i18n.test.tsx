@@ -62,7 +62,7 @@ describe("ModelConnectionTest Chinese copy", () => {
     renderTest();
 
     expect(screen.getByText(TESTING_FALLBACK)).toBeInTheDocument();
-    expect(screen.getByText(TESTING_FALLBACK).textContent).toBe(`正在测试与 ${FALLBACK_MODEL_NAME} 的连接...`);
+    expect(screen.getByText(TESTING_FALLBACK)).toHaveTextContent(`正在测试与 ${FALLBACK_MODEL_NAME} 的连接...`);
     expect(screen.queryByText("Testing connection to this model...")).not.toBeInTheDocument();
   });
 

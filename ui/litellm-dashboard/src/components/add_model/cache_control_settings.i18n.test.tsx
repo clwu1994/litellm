@@ -30,6 +30,12 @@ describe("CacheControlInjectionPoints Chinese copy", () => {
     const listbox = await screen.findByRole("listbox");
     expect(within(listbox).getByText("无")).toBeInTheDocument();
     expect(within(listbox).queryByText("None")).not.toBeInTheDocument();
+    expect(within(listbox).getByText("用户")).toBeInTheDocument();
+    expect(within(listbox).queryByText("User")).not.toBeInTheDocument();
+    expect(within(listbox).getByText("系统")).toBeInTheDocument();
+    expect(within(listbox).queryByText("System")).not.toBeInTheDocument();
+    expect(within(listbox).getByText("助手")).toBeInTheDocument();
+    expect(within(listbox).queryByText("Assistant")).not.toBeInTheDocument();
   });
 
   it("renders the Chinese description, field labels and add button", () => {
@@ -47,6 +53,8 @@ describe("CacheControlInjectionPoints Chinese copy", () => {
     ).not.toBeInTheDocument();
     expect(screen.getByText("类型")).toBeInTheDocument();
     expect(screen.queryByText("Type")).not.toBeInTheDocument();
+    expect(screen.getByText("消息")).toBeInTheDocument();
+    expect(screen.queryByText("Message")).not.toBeInTheDocument();
     expect(screen.getByText("角色")).toBeInTheDocument();
     expect(screen.getByText("索引")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("可选")).toBeInTheDocument();

@@ -86,7 +86,7 @@ describe("ConditionalPublicModelName Chinese copy", () => {
     const trigger = findTooltipTriggerBeside(screen.getByText("公开模型名称"));
     await user.hover(trigger);
 
-    const line = (text: string) => (_, element: Element | null) =>
+    const line = (text: string) => (_: string, element: Element | null) =>
       element?.tagName === "DIV" && element.textContent === text;
     expect(await screen.findByText(line(TOOLTIP_INTRO))).toBeInTheDocument();
     expect(screen.getByText(line(TOOLTIP_EXAMPLE))).toBeInTheDocument();

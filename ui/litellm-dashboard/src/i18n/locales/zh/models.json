@@ -107,10 +107,14 @@
       "helpAria": "{{label}}帮助",
       "index": "索引",
       "indexHint": "（可选）设置后，litellm 会将该索引处的消息标记为可缓存",
+      "locationMessage": "消息",
       "removePointAria": "移除注入点 {{index}}",
       "role": "角色",
+      "roleAssistant": "助手",
       "roleHint": "LiteLLM 会将此角色的所有消息标记为可缓存",
       "rolePlaceholder": "选择角色",
+      "roleSystem": "系统",
+      "roleUser": "用户",
       "type": "类型"
     },
     "connectionTest": {

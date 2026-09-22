@@ -28,6 +28,9 @@ const SOURCE_TESTS = {
   "src/components/add_model/handle_add_model_submit.tsx": [
     "src/components/add_model/handle_add_model_submit.i18n.test.tsx",
   ],
+  "src/components/add_model/cache_control_settings.tsx": [
+    "src/components/add_model/cache_control_settings.i18n.test.tsx",
+  ],
   "src/utils/ptuValidation.ts": ["src/components/add_model/advanced_settings.i18n.test.tsx"],
 };
 
@@ -85,9 +88,35 @@ const sources = productionSources(join(DASHBOARD, "src")).map((path) => [
   relative(DASHBOARD, path),
   readFileSync(path, "utf8"),
 ]);
+
+const ASSERTION_TOKEN = /expect\s*\(|(?:get|find|query)(?:All)?By[A-Z]\w*|within\s*\(|to[A-Z]\w*\(/;
+const IDENTIFIER = /[A-Za-z_$][\w$]*/g;
+const TEST_START = /^\s*(?:it|test)(?:\.\w+)?\s*\(/;
+
+// A literal counts only when it sits in a test case that performs an assertion, or in a module-level
+// const that such a test references. Comments are dropped first, so commented-out copy cannot be
+// credited. This stays a lexical check: it does not prove the assertion executes.
+const assertedText = (source) => {
+  const lines = source
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .split("\n")
+    .map((line) => line.replace(/(^|[^:])\/\/.*$/, "$1"));
+  const starts = lines.flatMap((line, index) => (TEST_START.test(line) ? [index] : []));
+  const segments = starts.map((start, position) => lines.slice(start, starts[position + 1] ?? lines.length));
+  const asserting = segments.filter((segment) => segment.some((line) => ASSERTION_TOKEN.test(line))).flat();
+  const referenced = new Set(asserting.flatMap((line) => line.match(IDENTIFIER) ?? []));
+  const testRanges = starts.map((start, position) => [start, starts[position + 1] ?? lines.length]);
+  const declarations = lines.filter((line, index) => {
+    if (testRanges.some(([start, end]) => index >= start && index < end)) return false;
+    const declared = /(?:const|let|var)\s+([A-Za-z_$][\w$]*)/.exec(line);
+    return declared !== null && referenced.has(declared[1]);
+  });
+  return [...asserting, ...declarations].join("\n");
+};
+
 const testText = new Map();
 for (const file of Object.values(SOURCE_TESTS).flat()) {
-  if (!testText.has(file)) testText.set(file, readFileSync(join(DASHBOARD, file), "utf8"));
+  if (!testText.has(file)) testText.set(file, assertedText(readFileSync(join(DASHBOARD, file), "utf8")));
 }
 
 const renderersOf = (key) => sources.filter(([, text]) => text.includes(`"${key}"`)).map(([path]) => path);

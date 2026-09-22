@@ -19,12 +19,12 @@ export interface CacheControlInjectionPoint {
 
 export const NEW_CACHE_CONTROL_POINT: CacheControlInjectionPoint = { location: "message" };
 
-const LOCATION_ITEMS = [{ value: "message", label: "Message" }] as const;
+const LOCATION_ITEMS = [{ value: "message", labelKey: "addModel.cacheControl.locationMessage" }] as const;
 
 const ROLE_ITEMS = [
-  { value: "user", label: "User" },
-  { value: "system", label: "System" },
-  { value: "assistant", label: "Assistant" },
+  { value: "user", labelKey: "addModel.cacheControl.roleUser" },
+  { value: "system", labelKey: "addModel.cacheControl.roleSystem" },
+  { value: "assistant", labelKey: "addModel.cacheControl.roleAssistant" },
 ] as const;
 
 const LabelWithHint: React.FC<{ label: string; hint: string }> = ({ label, hint }) => {
@@ -65,6 +65,14 @@ interface CacheControlInjectionPointsProps {
 const CacheControlInjectionPoints: React.FC<CacheControlInjectionPointsProps> = ({ value, onChange }) => {
   const { t } = useTranslation("models");
   const points = value ?? [];
+  const locationItems = React.useMemo(
+    () => LOCATION_ITEMS.map((item) => ({ value: item.value, label: t(item.labelKey) })),
+    [t],
+  );
+  const roleItems = React.useMemo(
+    () => ROLE_ITEMS.map((item) => ({ value: item.value, label: t(item.labelKey) })),
+    [t],
+  );
 
   const replaceAt = (index: number, point: CacheControlInjectionPoint) =>
     onChange?.(points.map((existing, position) => (position === index ? point : existing)));
@@ -77,12 +85,12 @@ const CacheControlInjectionPoints: React.FC<CacheControlInjectionPointsProps> = 
         <div key={index} className="mb-4 flex items-end gap-4">
           <div className="w-[180px] space-y-1">
             <Label>{t("addModel.cacheControl.type")}</Label>
-            <Select items={LOCATION_ITEMS} value={point.location} disabled>
+            <Select items={locationItems} value={point.location} disabled>
               <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {LOCATION_ITEMS.map((item) => (
+                {locationItems.map((item) => (
                   <SelectItem key={item.value} value={item.value}>
                     {item.label}
                   </SelectItem>
@@ -94,7 +102,7 @@ const CacheControlInjectionPoints: React.FC<CacheControlInjectionPointsProps> = 
           <div className="w-[180px] space-y-1">
             <LabelWithHint label={t("addModel.cacheControl.role")} hint={t("addModel.cacheControl.roleHint")} />
             <Select
-              items={ROLE_ITEMS}
+              items={roleItems}
               value={point.role ?? null}
               onValueChange={(selected) =>
                 replaceAt(index, { ...point, role: (selected as CacheControlRole | null) ?? undefined })
@@ -105,7 +113,7 @@ const CacheControlInjectionPoints: React.FC<CacheControlInjectionPointsProps> = 
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value={null}>{t("addModel.none")}</SelectItem>
-                {ROLE_ITEMS.map((item) => (
+                {roleItems.map((item) => (
                   <SelectItem key={item.value} value={item.value}>
                     {item.label}
                   </SelectItem>

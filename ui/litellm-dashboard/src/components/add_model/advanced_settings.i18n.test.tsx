@@ -170,7 +170,7 @@ describe("AdvancedSettings Chinese copy", () => {
     expect(screen.queryByText("Use in pass through routes")).not.toBeInTheDocument();
 
     await user.hover(findTooltipTriggerBeside(screen.getByText("用于 pass through 路由")));
-    const line = (text: string) => (_, element: Element | null) =>
+    const line = (text: string) => (_: string, element: Element | null) =>
       element?.tagName === "DIV" && element.textContent === text;
     expect((await screen.findAllByText(line(PASSTHROUGH_HINT))).length).toBeGreaterThan(0);
     expect(

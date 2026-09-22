@@ -107,10 +107,14 @@
       "helpAria": "{{label}} help",
       "index": "Index",
       "indexHint": "(Optional) If set litellm will mark the message at this index as cacheable",
+      "locationMessage": "Message",
       "removePointAria": "Remove injection point {{index}}",
       "role": "Role",
+      "roleAssistant": "Assistant",
       "roleHint": "LiteLLM will mark all messages of this role as cacheable",
       "rolePlaceholder": "Select a role",
+      "roleSystem": "System",
+      "roleUser": "User",
       "type": "Type"
     },
     "connectionTest": {
