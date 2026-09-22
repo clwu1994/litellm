@@ -231,7 +231,7 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
           setParsedData(userData);
 
           if (userData.length === 0) {
-            setCsvStructureError("No valid data rows found in the CSV file. Please check your file format.");
+            setCsvStructureError(t("bulkUsers.noValidDataRows"));
           } else if (validData.length === 0) {
             setParseError(t("bulkUsers.noValidUsers"));
           } else if (validData.length < userData.length) {
@@ -403,7 +403,7 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
                       ...u,
                       status: "success",
                       key: response.key || response.user_id,
-                      error: "User created but failed to generate invitation link",
+                      error: t("bulkUsers.userCreatedInviteFailed"),
                     }
                   : u,
               ),

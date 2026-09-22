@@ -515,7 +515,7 @@ export default function KeyInfoView({
   const parentOrg = orgId ? organizations?.find((org) => org.organization_id === orgId) : null;
 
   const hasOwnBudget = currentKeyData.max_budget !== null;
-  const budgetDisplay = hasOwnBudget ? `$${formatNumberWithCommas(currentKeyData.max_budget, 2)}` : "Unlimited";
+  const budgetDisplay = hasOwnBudget ? `$${formatNumberWithCommas(currentKeyData.max_budget, 2)}` : t("info.unlimited");
   const inheritedGates = hasOwnBudget ? [] : inheritedBudgetGates(parentTeam, parentOrg);
 
   return (

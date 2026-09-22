@@ -342,6 +342,8 @@
     "budgetTeamCeilingHelp": "预算不能超过团队最大预算：${{limit}}",
     "resetBudgetTooltip": "预算重置的频率。例如设置为 'daily' 将每 24 小时重置一次预算",
     "teamResetBudget": "团队重置预算：{{value}}",
+    "unlimitedValue": "不限",
+    "teamResetBudgetNone": "无",
     "notSet": "未设置",
     "budgetWindowsTooltip": "设置多个独立的预算窗口（例如每小时 $10 且每月 $200）。每个窗口单独跟踪消费并按各自的时间表重置。",
     "perModelBudgetsTooltip": "按模型限制消费，每个模型有自己的重置窗口。对该密钥发出的每个请求都生效；用量显示在该密钥的信息页上。",
@@ -377,6 +379,7 @@
     "allowedVectorStores": "允许的向量存储",
     "vectorStoresTooltip": "选择此密钥可以访问的向量存储。如果未选择任何项，该密钥将可以访问所有可用的向量存储",
     "vectorStoresHelp": "选择此密钥可以访问的向量存储。留空表示可以访问所有向量存储",
+    "selectVectorStores": "选择向量存储（可选）",
     "metadataTooltip": "包含此密钥附加信息的 JSON 对象。用于跟踪或自定义逻辑",
     "metadataPlaceholder": "以 JSON 输入元数据",
     "tagsTooltip": "用于跟踪消费和/或基于标签路由的标签。用于分析和筛选",
@@ -512,6 +515,7 @@
     "invalidBudgetDuration": "预算重置周期格式 \"{{duration}}\" 无效。请使用类似 \"30d\"、\"1mo\"、\"2w\"、\"6h\" 的格式",
     "unknownTeams": "未知团队：{{teams}}",
     "noValidUsers": "CSV 中未找到有效用户。请检查下方错误并修复 CSV 文件。",
+    "noValidDataRows": "CSV 文件中未找到有效数据行。请检查文件格式。",
     "rowsWithErrors": "在 {{total}} 行中发现 {{errorCount}} 行有错误。请先修正后再继续。",
     "parsedUsers": "成功解析 {{count}} 个用户",
     "invalidFileType": "文件类型无效：{{fileName}}。请上传 CSV 文件（.csv 扩展名）。",
@@ -522,6 +526,7 @@
     "csvNoHeaders": "CSV 文件不包含任何列标题。请确保你的 CSV 有表头。",
     "csvMissingColumns": "你的 CSV 缺少以下必填列：{{columns}}。请将这些列添加到 CSV 文件中。",
     "rowFewerColumns": "第 {{row}} 行的列数少于表头行。请确保所有数据格式正确。",
-    "failedToCreateUser": "创建用户失败"
+    "failedToCreateUser": "创建用户失败",
+    "userCreatedInviteFailed": "用户已创建，但生成邀请链接失败"
   }
 }

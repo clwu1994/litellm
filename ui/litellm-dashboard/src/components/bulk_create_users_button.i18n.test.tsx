@@ -183,7 +183,11 @@ describe("BulkCreateUsersButton Chinese copy", () => {
     expect(screen.getByText("无效")).toBeInTheDocument();
     expect(screen.queryByText("Invalid")).not.toBeInTheDocument();
     expect(screen.getByText(/邮箱为必填项/)).toBeInTheDocument();
-    expect(screen.getByText(/角色 "bad_role" 无效。必须是以下之一：/)).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /角色 "bad_role" 无效。必须是以下之一：proxy_admin, proxy_admin_viewer, internal_user, internal_user_viewer/,
+      ),
+    ).toBeInTheDocument();
     expect(screen.getByText(/最大预算 "abc" 必须是数字/)).toBeInTheDocument();
     expect(
       screen.getByText(/预算重置周期格式 "xx" 无效。请使用类似 "30d"、"1mo"、"2w"、"6h" 的格式/),
@@ -387,5 +391,38 @@ describe("BulkCreateUsersButton Chinese copy", () => {
       expect(screen.getAllByText("创建中...").length).toBeGreaterThan(0);
     });
     expect(screen.queryByText("Creating...")).not.toBeInTheDocument();
+  });
+
+  it("renders the no-data-rows message in Chinese and hides the English original", async () => {
+    await open();
+
+    upload(csv("user_email,user_role\n\n"));
+
+    expect(await screen.findByText("CSV 文件中未找到有效数据行。请检查文件格式。")).toBeInTheDocument();
+    expect(
+      screen.queryByText("No valid data rows found in the CSV file. Please check your file format."),
+    ).not.toBeInTheDocument();
+  });
+
+  it("renders the invitation-failure copy in the downloaded results in Chinese and hides the English original", async () => {
+    const createObjectURL = vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:test");
+    mockInvitationCreateCall.mockRejectedValue(new Error("nope"));
+    const user = await open();
+    upload(csv(VALID_CSV));
+
+    await user.click((await screen.findAllByRole("button", { name: "创建 1 个用户" }))[0]);
+    await screen.findByRole("button", { name: "下载用户凭据" });
+    await user.click(screen.getByRole("button", { name: "下载用户凭据" }));
+
+    const blob = createObjectURL.mock.calls[0][0] as Blob;
+    const text = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result));
+      reader.onerror = () => reject(reader.error);
+      reader.readAsText(blob);
+    });
+    expect(text).toContain("用户已创建，但生成邀请链接失败");
+    expect(text).not.toContain("User created but failed to generate invitation link");
+    createObjectURL.mockRestore();
   });
 });

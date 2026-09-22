@@ -275,7 +275,7 @@ describe("CreateKey Chinese copy", () => {
       "预算重置的频率。例如设置为 'daily' 将每 24 小时重置一次预算",
       "How often the budget should reset. For example, setting 'daily' will reset the budget every 24 hours",
     );
-    expectLocalized("团队重置预算：未设置", "Team Reset Budget: None");
+    expectLocalized("团队重置预算：无", "Team Reset Budget: None");
     expectLocalized("预算窗口", "Budget Windows");
     expectLocalized(
       "设置多个独立的预算窗口（例如每小时 $10 且每月 $200）。每个窗口单独跟踪消费并按各自的时间表重置。",
@@ -362,6 +362,8 @@ describe("CreateKey Chinese copy", () => {
       "选择此密钥可以访问的向量存储。留空表示可以访问所有向量存储",
       "Select vector stores this key can access. Leave empty for access to all vector stores",
     );
+    expect(screen.getByPlaceholderText("选择向量存储（可选）")).toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("Select vector stores (optional)")).not.toBeInTheDocument();
     expectLocalized("元数据", "Metadata");
     expectLocalized(
       "包含此密钥附加信息的 JSON 对象。用于跟踪或自定义逻辑",
@@ -585,5 +587,53 @@ describe("CreateKey Chinese copy", () => {
     await chooseSelectOption(user, keyTypeTrigger as HTMLElement, /^管理 只能调用管理路由/);
 
     expectLocalized("该密钥类型的模型字段已禁用", "Models field is disabled for this key type");
+  });
+});
+
+describe("CreateKey English copy", () => {
+  beforeEach(async () => {
+    await i18n.changeLanguage("en");
+    testQueryClient.clear();
+    state.authorized = { accessToken: "test-token", userId: "test-user-id", userRole: "Admin", premiumUser: false };
+    state.can = {};
+    state.uiSettings = {};
+    state.tags = {};
+    state.teams = [];
+    state.organizations = [];
+    state.projects = [];
+    state.accessGroups = [];
+    vi.mocked(userFilterUICall).mockReset().mockResolvedValue([]);
+    vi.mocked(modelAvailableCall)
+      .mockReset()
+      .mockResolvedValue({ data: [{ id: "gpt-4" }] });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (input: RequestInfo | URL) => {
+        const url = String(input);
+        if (url.includes("openapi.json")) {
+          return { ok: true, status: 200, json: async () => OPENAPI_SCHEMA } as unknown as Response;
+        }
+        return { ok: true, status: 200, json: async () => ({}) } as unknown as Response;
+      }),
+    );
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+    vi.unstubAllGlobals();
+  });
+
+  it("keeps the team ceiling and vector store copy byte-identical", async () => {
+    const user = userEvent.setup();
+    renderCreateKey();
+    await user.click(screen.getByRole("button", { name: "+ Create New Key" }));
+    await user.click(screen.getByText("Optional Settings"));
+
+    expect(screen.getByText("Budget cannot exceed team max budget: $unlimited")).toBeInTheDocument();
+    expect(screen.getByText("TPM cannot exceed team TPM limit: unlimited")).toBeInTheDocument();
+    expect(screen.getByText("RPM cannot exceed team RPM limit: unlimited")).toBeInTheDocument();
+    expect(screen.getByText("Team Reset Budget: None")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Select vector stores (optional)")).toBeInTheDocument();
   });
 });

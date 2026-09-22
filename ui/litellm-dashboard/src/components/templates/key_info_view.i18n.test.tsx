@@ -329,8 +329,8 @@ describe("KeyInfoView Chinese copy", () => {
     await user.click(await screen.findByRole("button", { name: "更多密钥操作" }));
     await user.click(await screen.findByRole("menuitem", { name: "封锁密钥" }));
 
-    expect(await screen.findByText("封锁密钥")).toBeInTheDocument();
-    expect(screen.queryByText("Block Key")).not.toBeInTheDocument();
+    expect(await screen.findByRole("dialog", { name: "封锁密钥" })).toBeInTheDocument();
+    expect(screen.queryByRole("dialog", { name: "Block Key" })).not.toBeInTheDocument();
     expect(
       screen.getByText((_content, element) => element?.tagName === "P" && element.textContent === "封锁 asdasdas？"),
     ).toBeInTheDocument();
@@ -490,8 +490,8 @@ describe("KeyInfoView Chinese copy", () => {
     await user.click(await screen.findByRole("button", { name: "更多密钥操作" }));
     await user.click(await screen.findByRole("menuitem", { name: "解封密钥" }));
 
-    expect(await screen.findByText("解封密钥")).toBeInTheDocument();
-    expect(screen.queryByText("Unblock Key")).not.toBeInTheDocument();
+    expect(await screen.findByRole("dialog", { name: "解封密钥" })).toBeInTheDocument();
+    expect(screen.queryByRole("dialog", { name: "Unblock Key" })).not.toBeInTheDocument();
     expect(screen.getByText("使用此密钥的请求将重新被接受。")).toBeInTheDocument();
     expect(screen.queryByText("Requests using this key will be accepted again.")).not.toBeInTheDocument();
 
@@ -540,5 +540,12 @@ describe("KeyInfoView Chinese copy", () => {
     expect(vi.mocked(toast.error)).not.toHaveBeenCalledWith(
       "MCP server or toolset list is unavailable, so MCP permissions cannot be saved yet. Retry.",
     );
+  });
+
+  it("renders the unlimited budget display in Chinese and hides the English original", () => {
+    renderInfo({ max_budget: null });
+
+    expect(screen.getByText("占 不限")).toBeInTheDocument();
+    expect(screen.queryByText("of Unlimited")).not.toBeInTheDocument();
   });
 });

@@ -342,6 +342,8 @@
     "budgetTeamCeilingHelp": "Budget cannot exceed team max budget: ${{limit}}",
     "resetBudgetTooltip": "How often the budget should reset. For example, setting 'daily' will reset the budget every 24 hours",
     "teamResetBudget": "Team Reset Budget: {{value}}",
+    "unlimitedValue": "unlimited",
+    "teamResetBudgetNone": "None",
     "notSet": "Not set",
     "budgetWindowsTooltip": "Set multiple independent budget windows (e.g., hourly $10 AND monthly $200). Each window tracks spend separately and resets on its own schedule.",
     "perModelBudgetsTooltip": "Cap spend on individual models, each with its own reset window. Enforced across every request this key makes; usage is reported on the key's info page.",
@@ -377,6 +379,7 @@
     "allowedVectorStores": "Allowed Vector Stores",
     "vectorStoresTooltip": "Select which vector stores this key can access. If none selected, the key will have access to all available vector stores",
     "vectorStoresHelp": "Select vector stores this key can access. Leave empty for access to all vector stores",
+    "selectVectorStores": "Select vector stores (optional)",
     "metadataTooltip": "JSON object with additional information about this key. Used for tracking or custom logic",
     "metadataPlaceholder": "Enter metadata as JSON",
     "tagsTooltip": "Tags for tracking spend and/or doing tag-based routing. Used for analytics and filtering",
@@ -512,6 +515,7 @@
     "invalidBudgetDuration": "Invalid budget duration format \"{{duration}}\". Use format like \"30d\", \"1mo\", \"2w\", \"6h\"",
     "unknownTeams": "Unknown team(s): {{teams}}",
     "noValidUsers": "No valid users found in the CSV. Please check the errors below and fix your CSV file.",
+    "noValidDataRows": "No valid data rows found in the CSV file. Please check your file format.",
     "rowsWithErrors": "Found {{errorCount}} row(s) with errors out of {{total}} total rows. Please correct them before proceeding.",
     "parsedUsers": "Successfully parsed {{count}} users",
     "invalidFileType": "Invalid file type: {{fileName}}. Please upload a CSV file (.csv extension).",
@@ -522,6 +526,7 @@
     "csvNoHeaders": "The CSV file doesn't contain any column headers. Please make sure your CSV has headers.",
     "csvMissingColumns": "Your CSV is missing these required columns: {{columns}}. Please add these columns to your CSV file.",
     "rowFewerColumns": "Row {{row}} has fewer columns than the header row. Please ensure all data is properly formatted.",
-    "failedToCreateUser": "Failed to create user"
+    "failedToCreateUser": "Failed to create user",
+    "userCreatedInviteFailed": "User created but failed to generate invitation link"
   }
 }

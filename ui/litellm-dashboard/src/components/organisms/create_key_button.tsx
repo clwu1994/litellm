@@ -995,7 +995,7 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
                           limit:
                             team?.max_budget !== null && team?.max_budget !== undefined
                               ? team?.max_budget
-                              : t("info.unlimited"),
+                              : t("createKey.unlimitedValue"),
                         })}
                         rules={ceilingRule(team?.max_budget, (limit) =>
                           t("createKey.budgetTeamCeilingHelp", { limit: formatNumberWithCommas(limit, 4) }),
@@ -1026,7 +1026,7 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
                           value:
                             team?.budget_duration !== null && team?.budget_duration !== undefined
                               ? team?.budget_duration
-                              : t("createKey.notSet"),
+                              : t("createKey.teamResetBudgetNone"),
                         })}
                       >
                         {(control) => (
@@ -1097,7 +1097,7 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
                           limit:
                             team?.tpm_limit !== null && team?.tpm_limit !== undefined
                               ? team?.tpm_limit
-                              : t("info.unlimited"),
+                              : t("createKey.unlimitedValue"),
                         })}
                         rules={ceilingRule(
                           team?.tpm_limit,
@@ -1143,7 +1143,7 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
                           limit:
                             team?.rpm_limit !== null && team?.rpm_limit !== undefined
                               ? team?.rpm_limit
-                              : t("info.unlimited"),
+                              : t("createKey.unlimitedValue"),
                         })}
                         rules={ceilingRule(
                           team?.rpm_limit,
@@ -1444,7 +1444,7 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
                             onChange={control.onChange}
                             value={control.value as string[] | undefined}
                             accessToken={accessToken}
-                            placeholder={t("edit.selectVectorStores")}
+                            placeholder={t("createKey.selectVectorStores")}
                           />
                         )}
                       </MountedFormField>
