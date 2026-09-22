@@ -1,4 +1,5 @@
 import enAccessGroups from "./locales/en/accessGroups.json";
+import enAdminPanel from "./locales/en/adminPanel.json";
 import enAgents from "./locales/en/agents.json";
 import enApiReference from "./locales/en/apiReference.json";
 import enAuth from "./locales/en/auth.json";
@@ -31,6 +32,7 @@ import enUsers from "./locales/en/users.json";
 import enVectorStores from "./locales/en/vectorStores.json";
 import enWorkflows from "./locales/en/workflows.json";
 import zhAccessGroups from "./locales/zh/accessGroups.json";
+import zhAdminPanel from "./locales/zh/adminPanel.json";
 import zhAgents from "./locales/zh/agents.json";
 import zhApiReference from "./locales/zh/apiReference.json";
 import zhAuth from "./locales/zh/auth.json";
@@ -68,6 +70,7 @@ export const resources = {
     common: enCommon,
     nav: enNav,
     accessGroups: enAccessGroups,
+    adminPanel: enAdminPanel,
     agents: enAgents,
     apiReference: enApiReference,
     auth: enAuth,
@@ -102,6 +105,7 @@ export const resources = {
     common: zhCommon,
     nav: zhNav,
     accessGroups: zhAccessGroups,
+    adminPanel: zhAdminPanel,
     agents: zhAgents,
     apiReference: zhApiReference,
     auth: zhAuth,

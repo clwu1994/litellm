@@ -1,0 +1,57 @@
+{
+  "page": {
+    "title": "Admin Access",
+    "description": "Go to 'Internal Users' page to add other admins."
+  },
+  "tabs": {
+    "ssoSettings": "SSO Settings",
+    "securitySettings": "Security Settings",
+    "scim": "SCIM",
+    "uiSettings": "UI Settings",
+    "loggingSettings": "Logging Settings",
+    "hashicorpVault": "Hashicorp Vault",
+    "cyberark": "CyberArk Conjur",
+    "plugins": "Plugins"
+  },
+  "security": {
+    "heading": "✨ Security Settings",
+    "deprecatedTitle": "SSO Configuration Deprecated",
+    "deprecatedDescription": "Editing SSO Settings on this page is deprecated and will be removed in a future version. Please use the SSO Settings tab for SSO configuration.",
+    "editSso": "Edit SSO Settings",
+    "addSso": "Add SSO",
+    "allowedIps": "Allowed IPs",
+    "uiAccessControl": "UI Access Control"
+  },
+  "allowedIps": {
+    "manageTitle": "Manage Allowed IP Addresses",
+    "ipColumn": "IP Address",
+    "actionColumn": "Action",
+    "delete": "Delete",
+    "addTitle": "Add Allowed IP Address",
+    "addButton": "Add IP Address",
+    "placeholder": "Enter IP address",
+    "allAllowed": "All IP Addresses Allowed",
+    "confirmTitle": "Confirm Delete",
+    "confirmBody": "Are you sure you want to delete the IP address: {{ip}}?",
+    "yes": "Yes",
+    "close": "Close",
+    "ipRequired": "Please enter an IP address"
+  },
+  "uiAccessControl": {
+    "title": "UI Access Control Settings"
+  },
+  "sso": {
+    "loginWithoutSsoTitle": "Login without SSO",
+    "loginWithoutSsoDescription": "If you need to login without sso, you can access <loginLink><urlText>{{url}}</urlText> </loginLink>"
+  },
+  "toast": {
+    "premiumFeature": "This feature is only available for premium users. Please upgrade your account.",
+    "premiumUiAccessControl": "Only premium users can configure UI access control",
+    "allowedIpsFetchFailed": "Failed to fetch allowed IPs {{error}}",
+    "ipAdded": "IP address added successfully",
+    "ipAddFailed": "Failed to add IP address {{error}}",
+    "ipDeleted": "IP address deleted successfully",
+    "ipDeleteFailed": "Failed to delete IP address {{error}}",
+    "uiAccessControlUpdated": "UI Access Control settings updated successfully"
+  }
+}

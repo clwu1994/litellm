@@ -1,0 +1,57 @@
+{
+  "page": {
+    "title": "管理员访问",
+    "description": "前往“内部用户”页面添加其他管理员。"
+  },
+  "tabs": {
+    "ssoSettings": "SSO 设置",
+    "securitySettings": "安全设置",
+    "scim": "SCIM",
+    "uiSettings": "UI 设置",
+    "loggingSettings": "日志设置",
+    "hashicorpVault": "Hashicorp Vault",
+    "cyberark": "CyberArk Conjur",
+    "plugins": "插件"
+  },
+  "security": {
+    "heading": "✨ 安全设置",
+    "deprecatedTitle": "SSO 配置已弃用",
+    "deprecatedDescription": "在此页面上编辑 SSO 设置已弃用，并将在未来版本中移除。请使用 SSO 设置标签页配置 SSO。",
+    "editSso": "编辑 SSO 设置",
+    "addSso": "添加 SSO",
+    "allowedIps": "允许的 IP",
+    "uiAccessControl": "UI 访问控制"
+  },
+  "allowedIps": {
+    "manageTitle": "管理允许的 IP 地址",
+    "ipColumn": "IP 地址",
+    "actionColumn": "操作",
+    "delete": "删除",
+    "addTitle": "添加允许的 IP 地址",
+    "addButton": "添加 IP 地址",
+    "placeholder": "输入 IP 地址",
+    "allAllowed": "允许所有 IP 地址",
+    "confirmTitle": "确认删除",
+    "confirmBody": "确定要删除 IP 地址：{{ip}} 吗？",
+    "yes": "是",
+    "close": "关闭",
+    "ipRequired": "请输入 IP 地址"
+  },
+  "uiAccessControl": {
+    "title": "UI 访问控制设置"
+  },
+  "sso": {
+    "loginWithoutSsoTitle": "不使用 SSO 登录",
+    "loginWithoutSsoDescription": "如果你需要在没有 SSO 的情况下登录，可以访问 <loginLink><urlText>{{url}}</urlText> </loginLink>"
+  },
+  "toast": {
+    "premiumFeature": "此功能仅对高级用户可用。请升级你的账户。",
+    "premiumUiAccessControl": "只有高级用户可以配置 UI 访问控制",
+    "allowedIpsFetchFailed": "获取允许的 IP 失败 {{error}}",
+    "ipAdded": "IP 地址添加成功",
+    "ipAddFailed": "添加 IP 地址失败 {{error}}",
+    "ipDeleted": "IP 地址删除成功",
+    "ipDeleteFailed": "删除 IP 地址失败 {{error}}",
+    "uiAccessControlUpdated": "UI 访问控制设置更新成功"
+  }
+}

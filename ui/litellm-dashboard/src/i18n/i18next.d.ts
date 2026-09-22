@@ -1,4 +1,5 @@
 import type zhAccessGroups from "./locales/zh/accessGroups.json";
+import type zhAdminPanel from "./locales/zh/adminPanel.json";
 import type zhAgents from "./locales/zh/agents.json";
 import type zhApiReference from "./locales/zh/apiReference.json";
 import type zhAuth from "./locales/zh/auth.json";
@@ -38,6 +39,7 @@ declare module "i18next" {
       common: typeof zhCommon;
       nav: typeof zhNav;
       accessGroups: typeof zhAccessGroups;
+      adminPanel: typeof zhAdminPanel;
       agents: typeof zhAgents;
       apiReference: typeof zhApiReference;
       auth: typeof zhAuth;
