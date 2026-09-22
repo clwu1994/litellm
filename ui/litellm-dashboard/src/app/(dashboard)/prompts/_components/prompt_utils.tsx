@@ -1,3 +1,5 @@
+import type { TFunction } from "i18next";
+
 import { PromptSpec } from "@/components/networking";
 import { getVersionNumber } from "./prompt_editor_view/utils";
 
@@ -6,6 +8,22 @@ export interface ModelGroupInfo {
   providers: string[];
   [key: string]: any;
 }
+
+/**
+ * Resolve a prompt environment to its translated label, falling back to the raw wire value
+ */
+export const translateEnvironment = (t: TFunction<"prompts">, environment: string | null | undefined): string => {
+  switch (environment) {
+    case "development":
+      return t("environment.development");
+    case "staging":
+      return t("environment.staging");
+    case "production":
+      return t("environment.production");
+    default:
+      return environment ?? "";
+  }
+};
 
 /**
  * Extract template variables from prompt content

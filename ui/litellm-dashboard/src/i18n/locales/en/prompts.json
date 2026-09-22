@@ -1,0 +1,148 @@
+{
+  "environment": {
+    "development": "development",
+    "staging": "staging",
+    "production": "production"
+  },
+  "list": {
+    "addNewPrompt": "Add New Prompt",
+    "uploadPromptFile": "Upload .prompt File",
+    "allEnvironments": "All Environments",
+    "environmentOptions": {
+      "development": "Development",
+      "staging": "Staging",
+      "production": "Production"
+    },
+    "deleteModal": {
+      "title": "Delete Prompt",
+      "message": "Are you sure you want to delete the {{environment}} copy of prompt: {{name}}? This action cannot be undone.",
+      "cancel": "Cancel",
+      "delete": "Delete"
+    },
+    "toast": {
+      "deleted": "Prompt \"{{name}}\" deleted successfully from {{environment}}",
+      "deleteFailed": "Failed to delete prompt"
+    }
+  },
+  "table": {
+    "loading": "Loading prompts…",
+    "emptyTitle": "No prompts yet",
+    "emptyDescription": "Add a prompt to start managing reusable templates.",
+    "openActionsAria": "Open prompt actions",
+    "copyId": "Copy prompt ID",
+    "copyIdToast": "Prompt ID copied",
+    "delete": "Delete",
+    "unknownPrompt": "Unknown Prompt",
+    "columns": {
+      "promptId": "Prompt ID",
+      "model": "Model",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "environment": "Environment",
+      "createdBy": "Created By",
+      "type": "Type",
+      "actions": "Actions"
+    }
+  },
+  "info": {
+    "loading": "Loading...",
+    "notFound": "Prompt not found",
+    "backToPrompts": "Back to Prompts",
+    "title": "Prompt Details",
+    "promptStudio": "Prompt Studio",
+    "deletePrompt": "Delete Prompt",
+    "oldVersionBanner": "Viewing v{{version}} — not the latest version (v{{latestVersion}})",
+    "goToLatest": "Go to latest",
+    "tabs": {
+      "overview": "Overview",
+      "promptTemplate": "Prompt Template",
+      "rawJson": "Raw JSON"
+    },
+    "fields": {
+      "version": "Version",
+      "promptType": "Prompt Type",
+      "createdBy": "Created By",
+      "createdAt": "Created At",
+      "updated": "Updated: {{date}}"
+    },
+    "versionHistory": {
+      "title": "Version History — {{environment}}",
+      "loading": "Loading versions...",
+      "columns": {
+        "version": "Version",
+        "createdBy": "Created By",
+        "date": "Date",
+        "actions": "Actions"
+      },
+      "latest": "latest",
+      "edit": "Edit",
+      "empty": "No versions found in {{environment}}"
+    },
+    "template": {
+      "title": "Prompt Template",
+      "copyContent": "Copy Content",
+      "copied": "Copied!",
+      "templateId": "Template ID",
+      "content": "Content",
+      "metadata": "Template Metadata"
+    },
+    "rawJson": {
+      "title": "Raw API Response",
+      "copyJson": "Copy JSON",
+      "copied": "Copied!"
+    },
+    "deleteModal": {
+      "title": "Delete Prompt",
+      "message": "Are you sure you want to delete prompt: <strong>{{promptId}}</strong> from every environment?",
+      "warning": "This action cannot be undone.",
+      "cancel": "Cancel",
+      "delete": "Delete"
+    },
+    "toast": {
+      "loadFailed": "Failed to load prompt information",
+      "deleted": "Prompt \"{{promptId}}\" deleted successfully",
+      "deleteFailed": "Failed to delete prompt",
+      "versionLoadFailed": "Failed to load version v{{version}}"
+    }
+  },
+  "form": {
+    "title": "Add New Prompt",
+    "promptId": "Prompt ID",
+    "promptIdPlaceholder": "Enter unique prompt ID (e.g., my_prompt_id)",
+    "promptIntegration": "Prompt Integration",
+    "promptFile": "Prompt File",
+    "promptFileAria": "Prompt file",
+    "selectFile": "Select .prompt File",
+    "selectedFile": "Selected: {{fileName}}",
+    "removeFile": "Remove {{fileName}}",
+    "fileDescription": "Upload a .prompt file that follows the Dotprompt specification",
+    "cancel": "Cancel",
+    "createPrompt": "Create Prompt",
+    "validation": {
+      "promptIdRequired": "Please enter a prompt ID",
+      "promptIdFormat": "Prompt ID can only contain letters, numbers, underscores, and hyphens"
+    },
+    "toast": {
+      "uploadPromptFile": "Please upload a .prompt file",
+      "convertFailed": "Failed to convert prompt file to JSON",
+      "accessTokenRequired": "Access token is required",
+      "created": "Prompt created successfully!",
+      "createFailed": "Failed to create prompt"
+    }
+  },
+  "tools": {
+    "title": "Add Tool",
+    "invalidJson": "Invalid JSON format. Please check your syntax.",
+    "jsonAria": "Tool JSON",
+    "jsonPlaceholder": "Paste your tool JSON here...",
+    "cancel": "Cancel",
+    "add": "Add"
+  },
+  "variables": {
+    "detected": "Detected variables:",
+    "editName": "Edit variable name",
+    "namePlaceholder": "Variable name",
+    "save": "Save",
+    "cancel": "Cancel"
+  }
+}

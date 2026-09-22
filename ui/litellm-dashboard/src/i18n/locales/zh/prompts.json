@@ -1,0 +1,148 @@
+{
+  "environment": {
+    "development": "开发",
+    "staging": "预发布",
+    "production": "生产"
+  },
+  "list": {
+    "addNewPrompt": "新增提示词",
+    "uploadPromptFile": "上传 .prompt 文件",
+    "allEnvironments": "所有环境",
+    "environmentOptions": {
+      "development": "开发",
+      "staging": "预发布",
+      "production": "生产"
+    },
+    "deleteModal": {
+      "title": "删除提示词",
+      "message": "确定要删除 {{environment}} 环境的提示词 {{name}} 吗？此操作无法撤销。",
+      "cancel": "取消",
+      "delete": "删除"
+    },
+    "toast": {
+      "deleted": "提示词「{{name}}」已从 {{environment}} 环境删除",
+      "deleteFailed": "删除提示词失败"
+    }
+  },
+  "table": {
+    "loading": "正在加载提示词…",
+    "emptyTitle": "尚无提示词",
+    "emptyDescription": "添加提示词以开始管理可复用的模板。",
+    "openActionsAria": "打开提示词操作",
+    "copyId": "复制提示词 ID",
+    "copyIdToast": "已复制提示词 ID",
+    "delete": "删除",
+    "unknownPrompt": "未知提示词",
+    "columns": {
+      "promptId": "提示词 ID",
+      "model": "模型",
+      "createdAt": "创建时间",
+      "updatedAt": "更新时间",
+      "environment": "环境",
+      "createdBy": "创建者",
+      "type": "类型",
+      "actions": "操作"
+    }
+  },
+  "info": {
+    "loading": "加载中...",
+    "notFound": "未找到提示词",
+    "backToPrompts": "返回提示词",
+    "title": "提示词详情",
+    "promptStudio": "Prompt Studio",
+    "deletePrompt": "删除提示词",
+    "oldVersionBanner": "正在查看 v{{version}}，不是最新版本（v{{latestVersion}}）",
+    "goToLatest": "转到最新版本",
+    "tabs": {
+      "overview": "概览",
+      "promptTemplate": "提示词模板",
+      "rawJson": "原始 JSON"
+    },
+    "fields": {
+      "version": "版本",
+      "promptType": "提示词类型",
+      "createdBy": "创建者",
+      "createdAt": "创建时间",
+      "updated": "更新于：{{date}}"
+    },
+    "versionHistory": {
+      "title": "版本历史：{{environment}}",
+      "loading": "正在加载版本...",
+      "columns": {
+        "version": "版本",
+        "createdBy": "创建者",
+        "date": "日期",
+        "actions": "操作"
+      },
+      "latest": "最新",
+      "edit": "编辑",
+      "empty": "在 {{environment}} 中未找到版本"
+    },
+    "template": {
+      "title": "提示词模板",
+      "copyContent": "复制内容",
+      "copied": "已复制",
+      "templateId": "模板 ID",
+      "content": "内容",
+      "metadata": "模板元数据"
+    },
+    "rawJson": {
+      "title": "原始 API 响应",
+      "copyJson": "复制 JSON",
+      "copied": "已复制"
+    },
+    "deleteModal": {
+      "title": "删除提示词",
+      "message": "确定要从所有环境删除提示词：<strong>{{promptId}}</strong>？",
+      "warning": "此操作无法撤销。",
+      "cancel": "取消",
+      "delete": "删除"
+    },
+    "toast": {
+      "loadFailed": "加载提示词信息失败",
+      "deleted": "提示词「{{promptId}}」删除成功",
+      "deleteFailed": "删除提示词失败",
+      "versionLoadFailed": "加载版本 v{{version}} 失败"
+    }
+  },
+  "form": {
+    "title": "新增提示词",
+    "promptId": "提示词 ID",
+    "promptIdPlaceholder": "输入唯一的提示词 ID（例如 my_prompt_id）",
+    "promptIntegration": "提示词集成",
+    "promptFile": "提示词文件",
+    "promptFileAria": "提示词文件",
+    "selectFile": "选择 .prompt 文件",
+    "selectedFile": "已选择：{{fileName}}",
+    "removeFile": "移除 {{fileName}}",
+    "fileDescription": "上传符合 Dotprompt 规范的 .prompt 文件",
+    "cancel": "取消",
+    "createPrompt": "创建提示词",
+    "validation": {
+      "promptIdRequired": "请输入提示词 ID",
+      "promptIdFormat": "提示词 ID 只能包含字母、数字、下划线和连字符"
+    },
+    "toast": {
+      "uploadPromptFile": "请上传 .prompt 文件",
+      "convertFailed": "将提示词文件转换为 JSON 失败",
+      "accessTokenRequired": "需要访问 Token",
+      "created": "提示词创建成功！",
+      "createFailed": "创建提示词失败"
+    }
+  },
+  "tools": {
+    "title": "添加工具",
+    "invalidJson": "JSON 格式无效，请检查语法。",
+    "jsonAria": "工具 JSON",
+    "jsonPlaceholder": "在此粘贴工具 JSON...",
+    "cancel": "取消",
+    "add": "添加"
+  },
+  "variables": {
+    "detected": "检测到的变量：",
+    "editName": "编辑变量名",
+    "namePlaceholder": "变量名",
+    "save": "保存",
+    "cancel": "取消"
+  }
+}
