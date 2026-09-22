@@ -661,7 +661,8 @@
     "playgroundTitle": "Tool Testing Playground",
     "selectTool": "Select a Tool to Test",
     "selectToolHint": "Choose a tool from the left sidebar to start testing its functionality with custom inputs.",
-    "logoAlt": "{{name}} logo"
+    "logoAlt": "{{name}} logo",
+    "title": "MCP Tools"
   },
   "toolConfig": {
     "customName": "Custom name",
@@ -722,7 +723,8 @@
     "resultAlt": "Tool result",
     "embeddedResource": "Embedded Resource",
     "resourceType": "Resource Type: {{type}}",
-    "viewResource": "View Resource"
+    "viewResource": "View Resource",
+    "close": "Close"
   },
   "toolArgs": {
     "enterJsonObject": "Enter JSON object for {{key}}",
@@ -787,7 +789,9 @@
     "columnTools": "Tools",
     "columnCreated": "Created",
     "moreCount": "+{{count}} more",
-    "actions": "Actions"
+    "actions": "Actions",
+    "columnName": "Name",
+    "delete": "Delete"
   },
   "submissions": {
     "statusActive": "Active",
@@ -795,9 +799,9 @@
     "statusRejected": "Rejected",
     "approveTitle": "Approve MCP Server",
     "rejectTitle": "Reject MCP Server",
-    "approveQuestion": "Are you sure you want to approve \"{{serverName}}\"? This will activate the server. The submitting user will see it in their MCP Servers list once approved.",
-    "rejectQuestionLive": "Are you sure you want to reject \"{{serverName}}\"? This server is currently live. Rejecting it will immediately remove it from the proxy runtime.",
-    "rejectQuestionPending": "Are you sure you want to reject \"{{serverName}}\"? This will mark the submission as rejected.",
+    "approveQuestion": "Are you sure you want to approve <strong>\"{{serverName}}\"</strong>? This will activate the server. The submitting user will see it in their MCP Servers list once approved.",
+    "rejectQuestionLive": "Are you sure you want to reject <strong>\"{{serverName}}\"</strong>? This server is currently live. Rejecting it will immediately remove it from the proxy runtime.",
+    "rejectQuestionPending": "Are you sure you want to reject <strong>\"{{serverName}}\"</strong>? This will mark the submission as rejected.",
     "reasonPlaceholder": "Reason for rejection (optional)",
     "approve": "Approve",
     "reject": "Reject",
@@ -905,7 +909,8 @@
     "noConfig": "No cost configuration set for this server. Tool calls will be charged at $0.00 per tool call.",
     "displayDefault": "Default Cost per Query",
     "displayPerTool": "Tool-Specific Costs",
-    "customPricingCount": "• {{count}} tool(s) with custom pricing"
+    "customPricingCount": "• {{count}} tool(s) with custom pricing",
+    "perToolRow": "${{cost}} per query"
   },
   "byok": {
     "fallbackName": "Service",
@@ -976,7 +981,8 @@
     "testQueryRequired": "Please enter a query and select a model",
     "testNoTools": "Semantic filter is not enabled or no tools were filtered",
     "testCompleted": "Semantic filter test completed successfully",
-    "testFailed": "Failed to test semantic filter"
+    "testFailed": "Failed to test semantic filter",
+    "close": "Close"
   },
   "toolSearch": {
     "loginRequired": "Please log in to configure tool search.",

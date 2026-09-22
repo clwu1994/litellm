@@ -92,7 +92,9 @@ describe("MCPPermissionManagement Chinese copy", () => {
     expect(tooltip).toHaveTextContent(
       "开启后，仅接受来自内部网络的请求。关闭以允许外部客户端（其他集群、ChatGPT 等）。无论此设置如何，始终需要 API Key 认证。",
     );
-    expect(tooltip).not.toHaveTextContent("When on, only requests from within your internal network are accepted.");
+    expect(tooltip).not.toHaveTextContent(
+      "When on, only requests from within your internal network are accepted. Turn off to allow external clients (other clusters, ChatGPT, etc). API key authentication is always required regardless of this setting.",
+    );
   });
 
   it("renders the oauth2 delegation copy and warning in Chinese and hides the English originals", async () => {
@@ -143,7 +145,9 @@ describe("MCPPermissionManagement Chinese copy", () => {
     expect(tooltip).toHaveTextContent(
       "开启后，此服务器被视为 OAuth 透传：网关会代理上游的 /.well-known/oauth-protected-resource 元数据，在未提供 bearer 时发出符合规范的 401 质询，并传播上游的 401/403 响应。仅在 Auth Type 为 None 且 Extra Headers 中包含 'Authorization' 时生效。",
     );
-    expect(tooltip).not.toHaveTextContent("When on, this server is treated as an OAuth pass-through:");
+    expect(tooltip).not.toHaveTextContent(
+      "When on, this server is treated as an OAuth pass-through: the gateway proxies the upstream /.well-known/oauth-protected-resource metadata, emits spec-compliant 401 challenges when no bearer is supplied, and propagates upstream 401/403 responses. Only honored when Auth Type is None and 'Authorization' is in Extra Headers.",
+    );
   });
 
   it("renders the access-group and extra-header fields in Chinese and hides the English originals", async () => {
@@ -174,7 +178,9 @@ describe("MCPPermissionManagement Chinese copy", () => {
     expect(tooltip).toHaveTextContent(
       "将传入请求中的自定义请求头转发到此 MCP 服务器（例如 Authorization、X-Custom-Header、User-Agent）",
     );
-    expect(tooltip).not.toHaveTextContent("Forward custom headers from incoming requests to this MCP server");
+    expect(tooltip).not.toHaveTextContent(
+      "Forward custom headers from incoming requests to this MCP server (e.g., Authorization, X-Custom-Header, User-Agent)",
+    );
   });
 
   it("renders the extra-header placeholder when no headers are configured in Chinese and hides the English original", async () => {

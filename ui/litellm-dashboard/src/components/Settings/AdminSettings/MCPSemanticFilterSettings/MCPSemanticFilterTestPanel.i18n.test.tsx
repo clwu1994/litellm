@@ -58,7 +58,7 @@ describe("MCPSemanticFilterTestPanel Chinese copy", () => {
       screen.queryByPlaceholderText("Enter a test query to see which tools would be selected..."),
     ).not.toBeInTheDocument();
     expect(screen.queryByText("Select Model")).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /Test Filter/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Test Filter" })).not.toBeInTheDocument();
   });
 
   it("renders the disabled and failure alerts in Chinese and hides the English originals", () => {
@@ -97,6 +97,8 @@ describe("MCPSemanticFilterTestPanel Chinese copy", () => {
 
     await user.click(screen.getByText("API 用法"));
 
+    expect(screen.getByText("API 用法", { selector: "p" })).toBeInTheDocument();
+    expect(screen.queryByText("API Usage", { selector: "p" })).not.toBeInTheDocument();
     expect(screen.getByText("使用此 curl 命令以当前配置测试语义筛选。")).toBeInTheDocument();
     expect(screen.getByText("需要检查的响应头：")).toBeInTheDocument();
     expect(screen.getByText("x-litellm-semantic-filter：显示工具总数 → 选中的工具")).toBeInTheDocument();

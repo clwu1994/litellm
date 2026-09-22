@@ -84,9 +84,12 @@ describe("MCPToolsetsTab Chinese copy", () => {
     expect(guide).toHaveTextContent(
       "创建工具集后，通过 API Keys → Edit Key → MCP Servers 将其分配给某个 Key，然后让 MCP 客户端指向该工具集的 URL。客户端只会看到你选择的工具。",
     );
-    expect(guide).not.toHaveTextContent("Create a toolset, assign it to a key via");
+    expect(guide).not.toHaveTextContent(
+      "Create a toolset, assign it to a key via API Keys → Edit Key → MCP Servers, then point your MCP client at the toolset URL. The client only sees the tools you picked.",
+    );
     expect(screen.getByText("Claude Code / Cursor 配置")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "复制" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "copy" })).not.toBeInTheDocument();
     expect(screen.getByText("还没有工具集")).toBeInTheDocument();
     expect(screen.getByText("创建工具集，为 Key 和团队提供一组精选的 MCP 工具。")).toBeInTheDocument();
     expect(screen.queryByText("MCP Toolsets")).not.toBeInTheDocument();
@@ -138,6 +141,7 @@ describe("MCPToolsetsTab Chinese copy", () => {
     expect(screen.queryByText("No tools added yet")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Cancel" })).not.toBeInTheDocument();
 
+    expect(screen.queryByRole("button", { name: "Create Toolset" })).not.toBeInTheDocument();
     await u.click(screen.getByRole("button", { name: "创建工具集" }));
     expect(await screen.findByText("请输入工具集名称")).toBeInTheDocument();
     expect(screen.queryByText("Please enter a toolset name")).not.toBeInTheDocument();

@@ -103,7 +103,7 @@ describe("MCPSemanticFilterSettings Chinese copy", () => {
     expect(screen.queryByText("Embedding Model")).not.toBeInTheDocument();
     expect(screen.queryByText("Top K Results")).not.toBeInTheDocument();
     expect(screen.queryByText("Similarity Threshold")).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /Save Settings/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Save Settings" })).not.toBeInTheDocument();
   });
 
   it("renders the field tooltips in Chinese in the same open state and hides the English originals", async () => {
@@ -185,6 +185,8 @@ describe("MCPSemanticFilterSettings Chinese copy", () => {
     await user.click(screen.getByRole("button", { name: "保存设置" }));
 
     expect(await screen.findByText("设置保存成功")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "关闭" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Close" })).not.toBeInTheDocument();
     expect(screen.queryByText("Settings saved successfully")).not.toBeInTheDocument();
     expect(toast.success).toHaveBeenCalledWith("设置已更新成功。更改将在 10 秒内应用到所有 pod。");
     expect(toast.success).not.toHaveBeenCalledWith(

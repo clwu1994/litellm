@@ -661,7 +661,8 @@
     "playgroundTitle": "工具测试平台",
     "selectTool": "选择一个工具进行测试",
     "selectToolHint": "从左侧栏选择一个工具，即可使用自定义输入开始测试其功能。",
-    "logoAlt": "{{name}} 标志"
+    "logoAlt": "{{name}} 标志",
+    "title": "MCP 工具"
   },
   "toolConfig": {
     "customName": "自定义名称",
@@ -722,7 +723,8 @@
     "resultAlt": "工具结果",
     "embeddedResource": "嵌入式资源",
     "resourceType": "资源类型：{{type}}",
-    "viewResource": "查看资源"
+    "viewResource": "查看资源",
+    "close": "关闭"
   },
   "toolArgs": {
     "enterJsonObject": "输入 {{key}} 的 JSON 对象",
@@ -787,7 +789,9 @@
     "columnTools": "工具",
     "columnCreated": "创建时间",
     "moreCount": "还有 {{count}} 个",
-    "actions": "操作"
+    "actions": "操作",
+    "columnName": "名称",
+    "delete": "删除"
   },
   "submissions": {
     "statusActive": "活动",
@@ -795,9 +799,9 @@
     "statusRejected": "已拒绝",
     "approveTitle": "批准 MCP 服务器",
     "rejectTitle": "拒绝 MCP 服务器",
-    "approveQuestion": "确定要批准“{{serverName}}”吗？这将激活该服务器。批准后，提交用户将在其 MCP 服务器列表中看到它。",
-    "rejectQuestionLive": "确定要拒绝“{{serverName}}”吗？此服务器当前正在运行。拒绝将立即将其从代理运行时中移除。",
-    "rejectQuestionPending": "确定要拒绝“{{serverName}}”吗？这会将提交标记为已拒绝。",
+    "approveQuestion": "确定要批准<strong>“{{serverName}}”</strong>吗？这将激活该服务器。批准后，提交用户将在其 MCP 服务器列表中看到它。",
+    "rejectQuestionLive": "确定要拒绝<strong>“{{serverName}}”</strong>吗？此服务器当前正在运行。拒绝将立即将其从代理运行时中移除。",
+    "rejectQuestionPending": "确定要拒绝<strong>“{{serverName}}”</strong>吗？这会将提交标记为已拒绝。",
     "reasonPlaceholder": "拒绝原因（可选）",
     "approve": "批准",
     "reject": "拒绝",
@@ -905,7 +909,8 @@
     "noConfig": "此服务器未设置成本配置。工具调用将按每次调用 $0.00 收费。",
     "displayDefault": "每次查询的默认成本",
     "displayPerTool": "特定工具的成本",
-    "customPricingCount": "• {{count}} 个工具使用自定义价格"
+    "customPricingCount": "• {{count}} 个工具使用自定义价格",
+    "perToolRow": "每次查询 ${{cost}}"
   },
   "byok": {
     "fallbackName": "服务",
@@ -976,7 +981,8 @@
     "testQueryRequired": "请输入查询并选择模型",
     "testNoTools": "语义筛选未启用，或没有工具被筛除",
     "testCompleted": "语义筛选测试已成功完成",
-    "testFailed": "测试语义筛选失败"
+    "testFailed": "测试语义筛选失败",
+    "close": "关闭"
   },
   "toolSearch": {
     "loginRequired": "请登录以配置工具搜索。",

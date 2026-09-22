@@ -72,7 +72,9 @@ describe("MCPToolConfiguration Chinese copy", () => {
     expect(selectTools).toHaveTextContent(
       "选择用户可以调用的工具：只有勾选的工具才可供用户调用。未勾选的工具将被阻止执行。",
     );
-    expect(selectTools).not.toHaveTextContent("Select which tools users can call:");
+    expect(selectTools).not.toHaveTextContent(
+      "Select which tools users can call: Only checked tools will be available for users to invoke. Unchecked tools will be blocked from execution.",
+    );
     expect(screen.getByText("已为用户访问启用 2 个工具中的 2 个")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("按名称或描述搜索工具...")).toBeInTheDocument();
     expect(screen.queryByText("Tool Configuration")).not.toBeInTheDocument();

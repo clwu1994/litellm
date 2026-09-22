@@ -182,7 +182,7 @@ export function ToolTestPanel({
           onClick={onClose}
           variant="ghost"
           size="icon-sm"
-          aria-label={t("import.close")}
+          aria-label={t("toolTest.close")}
           className="text-muted-foreground hover:text-foreground"
         >
           <X className="size-4" />

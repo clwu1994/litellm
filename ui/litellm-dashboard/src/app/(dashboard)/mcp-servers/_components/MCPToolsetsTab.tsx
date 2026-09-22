@@ -509,7 +509,7 @@ export function MCPToolsetsTab({ accessToken, userRole }: MCPToolsetsTabProps) {
               {t("form.cancel")}
             </Button>
             <Button onClick={handleDelete} variant="destructive" disabled={deleting} aria-busy={deleting}>
-              {t("list.deleteDialog.delete")}
+              {t("toolsets.delete")}
             </Button>
           </DialogFooter>
         </DialogContent>

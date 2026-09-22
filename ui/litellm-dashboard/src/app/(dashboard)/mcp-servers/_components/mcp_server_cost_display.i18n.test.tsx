@@ -38,11 +38,15 @@ describe("MCPServerCostDisplay Chinese copy", () => {
     expect(screen.getByText("特定工具的成本")).toBeInTheDocument();
     expect(screen.getByText("成本摘要：")).toBeInTheDocument();
     expect(screen.getByText("• 默认成本：每次查询 $0.0125")).toBeInTheDocument();
+    expect(screen.getByText("每次查询 $0.5000")).toBeInTheDocument();
+    expect(screen.getByText("每次查询 $0.2500")).toBeInTheDocument();
     expect(screen.getByText("• 2 个工具使用自定义价格")).toBeInTheDocument();
     expect(screen.queryByText("Default Cost per Query")).not.toBeInTheDocument();
     expect(screen.queryByText("Tool-Specific Costs")).not.toBeInTheDocument();
     expect(screen.queryByText("Cost Summary:")).not.toBeInTheDocument();
     expect(screen.queryByText("• Default cost: $0.0125 per query")).not.toBeInTheDocument();
     expect(screen.queryByText("• 2 tool(s) with custom pricing")).not.toBeInTheDocument();
+    expect(screen.queryByText("$0.5000 per query")).not.toBeInTheDocument();
+    expect(screen.queryByText("$0.2500 per query")).not.toBeInTheDocument();
   });
 });

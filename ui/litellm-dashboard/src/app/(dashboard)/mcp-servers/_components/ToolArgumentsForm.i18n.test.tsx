@@ -40,6 +40,7 @@ describe("ToolArgumentsForm Chinese copy", () => {
 
     expect(screen.getByText("输入")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("输入此工具的内容")).toBeInTheDocument();
+    expect(screen.queryByText("Input")).not.toBeInTheDocument();
     expect(screen.queryByPlaceholderText("Enter input for this tool")).not.toBeInTheDocument();
   });
 
@@ -99,6 +100,6 @@ describe("ToolArgumentsForm Chinese copy", () => {
 
     renderForm({ isLoading: true });
     expect(screen.getByRole("button", { name: "调用中..." })).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /Calling Tool/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Calling Tool..." })).not.toBeInTheDocument();
   });
 });

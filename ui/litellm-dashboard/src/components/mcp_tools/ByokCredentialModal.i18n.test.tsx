@@ -60,6 +60,7 @@ describe("ByokCredentialModal Chinese copy", () => {
     expect(screen.getByText("请求的访问权限")).toBeInTheDocument();
     expect(screen.getByText("Read your issues")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "继续认证" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Continue to Authentication" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "取消" })).toBeInTheDocument();
     expect(screen.queryByText("Connect Linear")).not.toBeInTheDocument();
     expect(screen.queryByText("LiteLLM needs access to Linear to complete your request.")).not.toBeInTheDocument();
@@ -106,7 +107,7 @@ describe("ByokCredentialModal Chinese copy", () => {
         "Your key is stored securely and transmitted over HTTPS. It is never shared with third parties.",
       ),
     ).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /Connect & Authorize/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Connect & Authorize" })).not.toBeInTheDocument();
   });
 
   it("renders the empty-key and success toasts in Chinese and hides the English originals", async () => {

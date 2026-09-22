@@ -48,7 +48,7 @@ const MCPServerCostDisplay: React.FC<MCPServerCostDisplayProps> = ({ costConfig 
                   cost !== undefined && (
                     <div key={toolName} className="flex items-center justify-between rounded-lg bg-muted p-3">
                       <p className="text-sm font-medium">{toolName}</p>
-                      <p className="font-mono text-sm">${cost.toFixed(4)} per query</p>
+                      <p className="font-mono text-sm">{t("cost.perToolRow", { cost: cost.toFixed(4) })}</p>
                     </div>
                   ),
               )}

@@ -105,11 +105,13 @@ describe("MCPToolsViewer Chinese copy", () => {
     renderViewer();
 
     expect(await screen.findByPlaceholderText("搜索工具...")).toBeInTheDocument();
+    expect(screen.getByText("MCP 工具")).toBeInTheDocument();
     expect(screen.getByText("可用工具")).toBeInTheDocument();
     expect(screen.getByText("工具测试平台")).toBeInTheDocument();
     expect(screen.getByText("选择一个工具进行测试")).toBeInTheDocument();
     expect(screen.getByText("从左侧栏选择一个工具，即可使用自定义输入开始测试其功能。")).toBeInTheDocument();
     expect(screen.getByAltText("slack 标志")).toBeInTheDocument();
+    expect(screen.queryByText("MCP Tools")).not.toBeInTheDocument();
     expect(screen.queryByText("Available Tools")).not.toBeInTheDocument();
     expect(screen.queryByText("Tool Testing Playground")).not.toBeInTheDocument();
     expect(screen.queryByText("Select a Tool to Test")).not.toBeInTheDocument();

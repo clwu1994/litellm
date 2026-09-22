@@ -1,3 +1,4 @@
+/* eslint-disable testing-library/no-node-access -- The confirmation question splits the quoted server name into a <span>, so the paragraph text is reached from that node */
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -83,6 +84,8 @@ describe("MCPSubmissionsTab Chinese copy", () => {
     expect(screen.getByRole("option", { name: "所有状态" })).toBeInTheDocument();
     expect(screen.queryByText("Total Submitted")).not.toBeInTheDocument();
     expect(screen.queryByText("Pending Review")).not.toBeInTheDocument();
+    expect(screen.queryByText("Active")).not.toBeInTheDocument();
+    expect(screen.queryByText("Rejected")).not.toBeInTheDocument();
     expect(screen.queryByRole("option", { name: "All Status" })).not.toBeInTheDocument();
     expect(screen.queryByPlaceholderText("Search MCP servers...")).not.toBeInTheDocument();
   });
@@ -97,6 +100,15 @@ describe("MCPSubmissionsTab Chinese copy", () => {
     expect(screen.queryByText("Submission Rules")).not.toBeInTheDocument();
     expect(screen.queryByText("(1 required field)")).not.toBeInTheDocument();
     expect(screen.queryByText("Description")).not.toBeInTheDocument();
+  });
+
+  it("renders the plural required-field count in Chinese and hides the English original", async () => {
+    mockLoaded([server()], ["description", "alias"]);
+    renderTab();
+
+    expect(await screen.findByText("（2 个必填字段）")).toBeInTheDocument();
+    expect(screen.queryByText("（1 个必填字段）")).not.toBeInTheDocument();
+    expect(screen.queryByText("(2 required fields)")).not.toBeInTheDocument();
   });
 
   it("renders the expanded rules editor in Chinese and hides the English originals", async () => {
@@ -194,16 +206,16 @@ describe("MCPSubmissionsTab Chinese copy", () => {
     await user.click(await screen.findByRole("button", { name: "批准" }));
 
     expect(screen.getByText("批准 MCP 服务器")).toBeInTheDocument();
-    expect(
-      screen.getByText("确定要批准“github”吗？这将激活该服务器。批准后，提交用户将在其 MCP 服务器列表中看到它。"),
-    ).toBeInTheDocument();
+    const question = screen.getByText("“github”").closest("p");
+    expect(question).toHaveTextContent(
+      "确定要批准“github”吗？这将激活该服务器。批准后，提交用户将在其 MCP 服务器列表中看到它。",
+    );
+    expect(question).not.toHaveTextContent(
+      'Are you sure you want to approve "github"? This will activate the server. The submitting user will see it in their MCP Servers list once approved.',
+    );
     expect(screen.getByRole("button", { name: "取消" })).toBeInTheDocument();
     expect(screen.queryByText("Approve MCP Server")).not.toBeInTheDocument();
-    expect(
-      screen.queryByText(
-        'Are you sure you want to approve "github"? This will activate the server. The submitting user will see it in their MCP Servers list once approved.',
-      ),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Approve" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Cancel" })).not.toBeInTheDocument();
   });
 
@@ -215,12 +227,14 @@ describe("MCPSubmissionsTab Chinese copy", () => {
     await user.click(await screen.findByRole("button", { name: "拒绝" }));
 
     expect(screen.getByText("拒绝 MCP 服务器")).toBeInTheDocument();
-    expect(screen.getByText("确定要拒绝“github”吗？这会将提交标记为已拒绝。")).toBeInTheDocument();
+    const question = screen.getByText("“github”").closest("p");
+    expect(question).toHaveTextContent("确定要拒绝“github”吗？这会将提交标记为已拒绝。");
+    expect(question).not.toHaveTextContent(
+      'Are you sure you want to reject "github"? This will mark the submission as rejected.',
+    );
     expect(screen.getByPlaceholderText("拒绝原因（可选）")).toBeInTheDocument();
     expect(screen.queryByText("Reject MCP Server")).not.toBeInTheDocument();
-    expect(
-      screen.queryByText('Are you sure you want to reject "github"? This will mark the submission as rejected.'),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Reject" })).not.toBeInTheDocument();
     expect(screen.queryByPlaceholderText("Reason for rejection (optional)")).not.toBeInTheDocument();
   });
 
@@ -231,14 +245,13 @@ describe("MCPSubmissionsTab Chinese copy", () => {
 
     await user.click(await screen.findByRole("button", { name: "拒绝" }));
 
-    expect(
-      screen.getByText("确定要拒绝“github”吗？此服务器当前正在运行。拒绝将立即将其从代理运行时中移除。"),
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByText(
-        'Are you sure you want to reject "github"? This server is currently live. Rejecting it will immediately remove it from the proxy runtime.',
-      ),
-    ).not.toBeInTheDocument();
+    const question = screen.getByText("“github”").closest("p");
+    expect(question).toHaveTextContent(
+      "确定要拒绝“github”吗？此服务器当前正在运行。拒绝将立即将其从代理运行时中移除。",
+    );
+    expect(question).not.toHaveTextContent(
+      'Are you sure you want to reject "github"? This server is currently live. Rejecting it will immediately remove it from the proxy runtime.',
+    );
 
     cleanup();
     mockLoaded([server({ approval_status: "rejected" })]);
@@ -342,5 +355,10 @@ describe("MCPSubmissionsTab Chinese copy", () => {
     renderTab();
     expect(await screen.findByText("1 check failed")).toBeInTheDocument();
     expect(screen.getByText("(1 required field)")).toBeInTheDocument();
+
+    cleanup();
+    mockLoaded([server({ description: "" })], ["description", "alias"]);
+    renderTab();
+    expect(await screen.findByText("(2 required fields)")).toBeInTheDocument();
   });
 });

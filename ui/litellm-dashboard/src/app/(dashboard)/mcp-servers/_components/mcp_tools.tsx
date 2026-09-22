@@ -296,7 +296,7 @@ const MCPToolsViewer = ({
         <div className="grid h-auto w-full grid-cols-4 gap-4">
           {/* Left Sidebar with Controls */}
           <div className="col-span-1 flex flex-col bg-muted p-4">
-            <h2 className="mt-2 mb-6 text-xl font-semibold">{t("view.tabs.tools")}</h2>
+            <h2 className="mt-2 mb-6 text-xl font-semibold">{t("tools.title")}</h2>
 
             <div className="flex flex-col flex-1">
               {/* Extra Headers Input Section */}

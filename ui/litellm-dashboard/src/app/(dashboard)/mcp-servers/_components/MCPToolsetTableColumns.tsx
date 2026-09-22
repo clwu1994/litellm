@@ -81,7 +81,7 @@ function ToolsetRowActions({ toolset, isAdmin, onEditClick, onDeleteClick }: Too
               onClick={() => onDeleteClick(toolset.toolset_id)}
             >
               <Trash2 />
-              {t("list.deleteDialog.delete")}
+              {t("toolsets.delete")}
             </DropdownMenuItem>
           </>
         )}
@@ -117,8 +117,8 @@ export const getMCPToolsetTableColumns = ({
   {
     id: "toolset_name",
     accessorKey: "toolset_name",
-    meta: { title: t("list.deleteDialog.name") },
-    header: ({ column }) => <DataTableSortHeader column={column} title={t("list.deleteDialog.name")} />,
+    meta: { title: t("toolsets.columnName") },
+    header: ({ column }) => <DataTableSortHeader column={column} title={t("toolsets.columnName")} />,
     size: 260,
     enableSorting: true,
     sortingFn: "alphanumeric",

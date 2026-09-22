@@ -94,7 +94,12 @@ const SaveSuccessAlert = () => {
       <CircleCheck />
       <AlertTitle>{t("semanticFilter.saved")}</AlertTitle>
       <AlertAction>
-        <Button variant="ghost" size="icon-sm" aria-label={t("import.close")} onClick={() => setDismissed(true)}>
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          aria-label={t("semanticFilter.close")}
+          onClick={() => setDismissed(true)}
+        >
           <X className="size-4" />
         </Button>
       </AlertAction>

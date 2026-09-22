@@ -78,7 +78,9 @@ describe("MCPToolSearchSettings Chinese copy", () => {
     expect(description).toHaveTextContent(
       "控制原生 MCP 客户端用于发现工具的 mcp_tool_search 虚拟工具。设置嵌入模型后，工具会按其名称和描述的含义排序，因此像 “FX” 这样的查询可以找到 “foreign exchange rates” 工具。未设置时则使用关键字匹配。调用方始终只能看到其 Key、团队和服务器权限已允许的工具。",
     );
-    expect(description).not.toHaveTextContent("Controls the mcp_tool_search virtual tool");
+    expect(description).not.toHaveTextContent(
+      "Controls the mcp_tool_search virtual tool that native MCP clients call to discover tools.",
+    );
     expect(screen.getByText("排序")).toBeInTheDocument();
     expect(screen.getByText("核心工具")).toBeInTheDocument();
     expect(screen.getByText("嵌入模型")).toBeInTheDocument();
@@ -93,7 +95,7 @@ describe("MCPToolSearchSettings Chinese copy", () => {
     expect(screen.queryByText("Top K Results")).not.toBeInTheDocument();
     expect(screen.queryByText("Similarity Threshold")).not.toBeInTheDocument();
     expect(screen.queryByText("Always Returned First")).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /Save Settings/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Save Settings" })).not.toBeInTheDocument();
   });
 
   it("renders the field tooltips in Chinese in the same open state and hides the English originals", async () => {

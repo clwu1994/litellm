@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import type { ParseKeys } from "i18next";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import {
   SearchIcon,
   CheckIcon,
@@ -78,10 +78,10 @@ function ConfirmDialog({ action, serverName, isCurrentlyActive, onConfirm, onCan
   const { t } = useTranslation("mcpServers");
   const [reviewNotes, setReviewNotes] = useState("");
   const isApprove = action === "approve";
-  const rejectQuestion = isCurrentlyActive
-    ? t("submissions.rejectQuestionLive", { serverName })
-    : t("submissions.rejectQuestionPending", { serverName });
-  const question = isApprove ? t("submissions.approveQuestion", { serverName }) : rejectQuestion;
+  const rejectQuestionKey: ParseKeys<"mcpServers"> = isCurrentlyActive
+    ? "submissions.rejectQuestionLive"
+    : "submissions.rejectQuestionPending";
+  const questionKey: ParseKeys<"mcpServers"> = isApprove ? "submissions.approveQuestion" : rejectQuestionKey;
   return (
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-overlay">
       <div className="bg-card rounded-xl shadow-xl p-6 max-w-sm w-full mx-4">
@@ -99,7 +99,14 @@ function ConfirmDialog({ action, serverName, isCurrentlyActive, onConfirm, onCan
         <h3 className="text-base font-semibold text-foreground mb-1">
           {isApprove ? t("submissions.approveTitle") : t("submissions.rejectTitle")}
         </h3>
-        <p className="text-sm text-muted-foreground mb-4">{question}</p>
+        <p className="text-sm text-muted-foreground mb-4">
+          <Trans
+            ns="mcpServers"
+            i18nKey={questionKey}
+            values={{ serverName }}
+            components={{ strong: <span className="font-medium text-foreground" /> }}
+          />
+        </p>
         {!isApprove && (
           <textarea
             placeholder={t("submissions.reasonPlaceholder")}
