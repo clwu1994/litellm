@@ -46,6 +46,7 @@
     "manualDelivery": "My client is on a remote or SSH machine"
   },
   "conversations": {
+    "untitled": "New conversation",
     "rename": "Rename",
     "deleteTitle": "Delete this conversation?",
     "deleteDescription": "This action cannot be undone",

@@ -4,6 +4,7 @@ import { AssistantMessageUpdate, ChatMessage, Conversation } from "./types";
 const STORAGE_KEY_PREFIX = "litellm_chat_history_v1";
 const MAX_CONVERSATIONS = 100;
 const TITLE_MAX_LENGTH = 40;
+const UNTITLED_CONVERSATION_TITLE = "";
 
 function generateTitle(firstUserMessage: string): string {
   const trimmed = firstUserMessage.trim();
@@ -110,7 +111,7 @@ export function useChatHistory(
     const now = Date.now();
     const newConversation: Conversation = {
       id,
-      title: "New conversation",
+      title: UNTITLED_CONVERSATION_TITLE,
       model,
       messages: [],
       mcpServerNames: [],
@@ -135,7 +136,7 @@ export function useChatHistory(
         const updatedMessages = [...conv.messages, newMessage];
         let title = conv.title;
         if (
-          title === "New conversation" &&
+          title === UNTITLED_CONVERSATION_TITLE &&
           newMessage.role === "user" &&
           conv.messages.filter((m) => m.role === "user").length === 0
         ) {

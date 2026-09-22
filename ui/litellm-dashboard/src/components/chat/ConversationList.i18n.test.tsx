@@ -51,6 +51,14 @@ const openTooltip = async (
   return screen.findByText(zh);
 };
 
+const rowTriggers = () => {
+  const buttons = screen.getAllByRole("button");
+  return {
+    rename: buttons.filter((button) => button.getAttribute("aria-haspopup") === null),
+    remove: buttons.filter((button) => button.getAttribute("aria-haspopup") === "dialog"),
+  };
+};
+
 describe("ConversationList Chinese copy", () => {
   beforeEach(async () => {
     await i18n.changeLanguage("zh");
@@ -88,11 +96,20 @@ describe("ConversationList Chinese copy", () => {
     expect(screen.queryByText("Start a new chat above", { exact: false })).not.toBeInTheDocument();
   });
 
+  it("renders the Chinese default title for an untitled conversation while hiding the English original", () => {
+    renderList([conversation("u1", "", Date.now())]);
+
+    expect(screen.getByText("新对话")).toBeInTheDocument();
+    expect(screen.queryByText("New conversation")).not.toBeInTheDocument();
+    expect(screen.getByTitle("新对话")).toBeInTheDocument();
+    expect(screen.queryByTitle("New conversation")).not.toBeInTheDocument();
+  });
+
   it("renders the Chinese rename tooltip in the same open state and hides the English original", async () => {
     const user = userEvent.setup({ delay: null });
     renderList();
 
-    const tooltip = await openTooltip(user, screen.getAllByRole("button")[0], "重命名");
+    const tooltip = await openTooltip(user, rowTriggers().rename[0], "重命名");
     expect(tooltip).toBeInTheDocument();
     expect(screen.queryByText("Rename")).not.toBeInTheDocument();
   });
@@ -101,11 +118,11 @@ describe("ConversationList Chinese copy", () => {
     const user = userEvent.setup({ delay: null });
     renderList();
 
-    const tooltip = await openTooltip(user, screen.getAllByRole("button")[1], "删除");
+    const tooltip = await openTooltip(user, rowTriggers().remove[0], "删除");
     expect(tooltip).toBeInTheDocument();
     expect(screen.queryByText("Delete")).not.toBeInTheDocument();
 
-    await user.click(screen.getAllByRole("button")[1]);
+    await user.click(rowTriggers().remove[0]);
 
     const dialog = await screen.findByRole("alertdialog");
     expect(within(dialog).getByText("删除此对话？")).toBeInTheDocument();

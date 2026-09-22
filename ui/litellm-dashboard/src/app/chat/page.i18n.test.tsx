@@ -195,6 +195,17 @@ describe("chat page Chinese copy", () => {
     expect(screen.queryByRole("button", { name: "Scroll to bottom" })).not.toBeInTheDocument();
   });
 
+  it("renders the Chinese plural connected-tool count while hiding the English original", async () => {
+    shellState.selectedMCPServers = ["alpha", "beta"];
+    renderPage();
+    await waitForModel();
+
+    sendMessage("今天我能帮你做什么？");
+
+    expect(await screen.findByText("2 个工具已连接")).toBeInTheDocument();
+    expect(screen.queryByText("2 tools connected")).not.toBeInTheDocument();
+  });
+
   it("resolves the singular and plural connected-tool branches under English", async () => {
     await i18n.changeLanguage("en");
     shellState.selectedMCPServers = ["alpha"];

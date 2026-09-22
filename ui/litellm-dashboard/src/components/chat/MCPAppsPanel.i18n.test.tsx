@@ -35,8 +35,12 @@ describe("MCPAppsPanel Chinese copy", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
     flowStatus.value = "idle";
-    vi.mocked(getMCPOAuthUserCredentialStatus).mockResolvedValue({ has_credential: false, is_expired: false } as never);
-    vi.mocked(listMCPTools).mockResolvedValue({ tools: [] } as never);
+    vi.mocked(getMCPOAuthUserCredentialStatus).mockResolvedValue({
+      server_id: "srv-any",
+      has_credential: false,
+      is_expired: false,
+    });
+    vi.mocked(listMCPTools).mockResolvedValue({ tools: [] });
     await i18n.changeLanguage("zh");
   });
 
@@ -46,12 +50,12 @@ describe("MCPAppsPanel Chinese copy", () => {
   });
 
   it("renders the Chinese list chrome and server fallback description while hiding the English originals", async () => {
-    vi.mocked(fetchMCPServers).mockResolvedValue([server("srv-t1a", "alpha"), server("srv-t1b", "beta")] as never);
-    vi.mocked(listMCPTools).mockResolvedValue({ tools: [{ name: "one" }, { name: "two" }] } as never);
+    vi.mocked(fetchMCPServers).mockResolvedValue([server("srv-t1a", "alpha"), server("srv-t1b", "beta")]);
+    vi.mocked(listMCPTools).mockResolvedValue({ tools: [{ name: "one" }, { name: "two" }] });
     renderPanel("apps-list");
 
-    expect(await screen.findByText("MCP 服务器")).toBeInTheDocument();
-    expect(screen.queryByText("MCP Servers")).not.toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "MCP 服务器" })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "MCP Servers" })).not.toBeInTheDocument();
     expect(screen.getByText("Beta")).toBeInTheDocument();
     expect(screen.getByText("浏览工具，一次授权，即可在对话中使用")).toBeInTheDocument();
     expect(screen.queryByText("Browse tools, authenticate once, use in chat")).not.toBeInTheDocument();
@@ -59,7 +63,7 @@ describe("MCPAppsPanel Chinese copy", () => {
     expect(screen.queryByPlaceholderText("Search servers...")).not.toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "全部" })).toBeInTheDocument();
     expect(screen.queryByRole("tab", { name: "All" })).not.toBeInTheDocument();
-    expect(screen.getAllByText("MCP 服务器").length).toBeGreaterThan(1);
+    expect(screen.getAllByText("MCP 服务器")).toHaveLength(3);
     expect(screen.queryByText("MCP server")).not.toBeInTheDocument();
 
     expect(await screen.findByText("4 个工具可用")).toBeInTheDocument();
@@ -67,7 +71,7 @@ describe("MCPAppsPanel Chinese copy", () => {
   });
 
   it("renders the Chinese loading-tools copy while hiding the English original", async () => {
-    vi.mocked(fetchMCPServers).mockResolvedValue([server("srv-t2", "alpha")] as never);
+    vi.mocked(fetchMCPServers).mockResolvedValue([server("srv-t2", "alpha")]);
     vi.mocked(listMCPTools).mockImplementation(() => new Promise(() => {}));
     renderPanel("apps-loading");
 
@@ -76,7 +80,7 @@ describe("MCPAppsPanel Chinese copy", () => {
   });
 
   it("renders the Chinese connected tab count and detail status while hiding the English originals", async () => {
-    vi.mocked(fetchMCPServers).mockResolvedValue([server("srv-t3", "alpha")] as never);
+    vi.mocked(fetchMCPServers).mockResolvedValue([server("srv-t3", "alpha")]);
     renderPanel("apps-connected", ["alpha"]);
 
     expect(await screen.findByRole("tab", { name: "已连接（1）" })).toBeInTheDocument();
@@ -92,7 +96,7 @@ describe("MCPAppsPanel Chinese copy", () => {
   });
 
   it("renders the Chinese detail chrome while hiding the English originals", async () => {
-    vi.mocked(fetchMCPServers).mockResolvedValue([server("srv-t4", "alpha")] as never);
+    vi.mocked(fetchMCPServers).mockResolvedValue([server("srv-t4", "alpha")]);
     renderPanel("apps-detail");
 
     fireEvent.click(await screen.findByText("alpha"));
@@ -120,7 +124,7 @@ describe("MCPAppsPanel Chinese copy", () => {
 
   it("renders the Chinese no-match and no-connected empty states while hiding the English originals", async () => {
     const user = userEvent.setup({ delay: null });
-    vi.mocked(fetchMCPServers).mockResolvedValue([server("srv-t5", "alpha")] as never);
+    vi.mocked(fetchMCPServers).mockResolvedValue([server("srv-t5", "alpha")]);
     renderPanel("apps-empty");
 
     expect(await screen.findByText("alpha")).toBeInTheDocument();
@@ -137,12 +141,10 @@ describe("MCPAppsPanel Chinese copy", () => {
   });
 
   it("renders the Chinese no-servers and connect-mode empty states while hiding the English originals", async () => {
-    vi.mocked(fetchMCPServers).mockResolvedValue([] as never);
+    vi.mocked(fetchMCPServers).mockResolvedValue([]);
     const { unmount } = renderPanel("apps-none");
 
-    expect(
-      await screen.findByText("尚未配置 MCP 服务器。请在 Tools -> MCP Servers 中添加服务器。"),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("尚未配置 MCP 服务器。请在工具 -> MCP 服务器中添加服务器。")).toBeInTheDocument();
     expect(
       screen.queryByText("No MCP servers configured. Add servers in Tools -> MCP Servers."),
     ).not.toBeInTheDocument();
@@ -166,8 +168,8 @@ describe("MCPAppsPanel Chinese copy", () => {
     vi.mocked(fetchMCPServers).mockResolvedValue([
       server("srv-t7a", "alpha", { auth_type: "oauth2_token_exchange" }),
       server("srv-t7b", "beta", { auth_type: "oauth2", oauth2_flow: "client_credentials" }),
-    ] as never);
-    vi.mocked(listMCPTools).mockResolvedValue({ error: "nope" } as never);
+    ]);
+    vi.mocked(listMCPTools).mockResolvedValue({ error: "nope" });
     const { unmount } = renderPanel("apps-unsupported", [], true);
 
     fireEvent.click(await screen.findByText("alpha"));
@@ -177,7 +179,7 @@ describe("MCPAppsPanel Chinese copy", () => {
 
     vi.mocked(fetchMCPServers).mockResolvedValue([
       server("srv-t7c", "beta", { auth_type: "oauth2", oauth2_flow: "client_credentials" }),
-    ] as never);
+    ]);
     renderPanel("apps-authorized");
 
     fireEvent.click(await screen.findByText("beta"));
@@ -185,7 +187,7 @@ describe("MCPAppsPanel Chinese copy", () => {
     expect(screen.queryByText("Authorized")).not.toBeInTheDocument();
     unmount();
 
-    vi.mocked(fetchMCPServers).mockResolvedValue([server("srv-t7d", "alpha")] as never);
+    vi.mocked(fetchMCPServers).mockResolvedValue([server("srv-t7d", "alpha")]);
     renderPanel("apps-toast");
 
     fireEvent.click(await screen.findByText("alpha"));
@@ -197,16 +199,16 @@ describe("MCPAppsPanel Chinese copy", () => {
 
   it("resolves the singular and plural available-tool branches under English", async () => {
     await i18n.changeLanguage("en");
-    vi.mocked(fetchMCPServers).mockResolvedValue([server("srv-en1", "alpha")] as never);
-    vi.mocked(listMCPTools).mockResolvedValue({ tools: [{ name: "one" }] } as never);
+    vi.mocked(fetchMCPServers).mockResolvedValue([server("srv-en1", "alpha")]);
+    vi.mocked(listMCPTools).mockResolvedValue({ tools: [{ name: "one" }] });
     const { unmount } = renderPanel("apps-en-one");
 
     expect(await screen.findByText("1 tool available")).toBeInTheDocument();
     expect(screen.queryByText("1 tools available")).not.toBeInTheDocument();
     unmount();
 
-    vi.mocked(fetchMCPServers).mockResolvedValue([server("srv-en2", "alpha")] as never);
-    vi.mocked(listMCPTools).mockResolvedValue({ tools: [{ name: "one" }, { name: "two" }] } as never);
+    vi.mocked(fetchMCPServers).mockResolvedValue([server("srv-en2", "alpha")]);
+    vi.mocked(listMCPTools).mockResolvedValue({ tools: [{ name: "one" }, { name: "two" }] });
     renderPanel("apps-en-two");
 
     expect(await screen.findByText("2 tools available")).toBeInTheDocument();
@@ -215,7 +217,7 @@ describe("MCPAppsPanel Chinese copy", () => {
 
   it("renders the Chinese connecting label while hiding the English original", async () => {
     flowStatus.value = "authorizing";
-    vi.mocked(fetchMCPServers).mockResolvedValue([server("srv-t8", "alpha", { auth_type: "oauth2" })] as never);
+    vi.mocked(fetchMCPServers).mockResolvedValue([server("srv-t8", "alpha", { auth_type: "oauth2" })]);
     renderPanel("apps-connecting");
 
     expect(await screen.findByText("连接中…")).toBeInTheDocument();

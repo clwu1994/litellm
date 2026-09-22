@@ -46,6 +46,7 @@
     "manualDelivery": "我的客户端位于远程或 SSH 机器上"
   },
   "conversations": {
+    "untitled": "新对话",
     "rename": "重命名",
     "deleteTitle": "删除此对话？",
     "deleteDescription": "此操作无法撤销",
@@ -157,7 +158,7 @@
     "tabAll": "全部",
     "tabConnectedWithCount": "已连接（{{total}}）",
     "emptyConnectMode": "此连接尚无可用 MCP 服务器。请联系管理员为你的用户或团队授予访问权限。",
-    "emptyNoServers": "尚未配置 MCP 服务器。请在 Tools -> MCP Servers 中添加服务器。",
+    "emptyNoServers": "尚未配置 MCP 服务器。请在工具 -> MCP 服务器中添加服务器。",
     "emptyNoConnected": "尚未连接任何服务器。",
     "emptyNoMatch": "没有服务器与搜索匹配。"
   },

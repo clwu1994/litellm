@@ -133,6 +133,14 @@ describe("LogsPanel Chinese copy", () => {
     expect(screen.queryByRole("button", { name: "Next" })).not.toBeInTheDocument();
   });
 
+  it("renders the Chinese plural request count while hiding the English original", async () => {
+    mockedLogsCall.mockResolvedValue(page([row, row], 2, 1));
+    renderPanel("tok-plural-zh");
+
+    expect(await screen.findByText("2 个请求")).toBeInTheDocument();
+    expect(screen.queryByText("2 requests")).not.toBeInTheDocument();
+  });
+
   it("resolves the singular and plural request-count branches under English", async () => {
     await i18n.changeLanguage("en");
     mockedLogsCall.mockResolvedValue(page([row], 1, 1));

@@ -118,7 +118,8 @@ const ConversationRow: React.FC<ConversationRowProps> = ({ conv, isActive, onSel
     }
   };
 
-  const truncatedTitle = conv.title.length > 40 ? conv.title.slice(0, 40) + "\u2026" : conv.title;
+  const displayTitle = conv.title || t("conversations.untitled");
+  const truncatedTitle = displayTitle.length > 40 ? displayTitle.slice(0, 40) + "\u2026" : displayTitle;
 
   return (
     <div
@@ -143,7 +144,7 @@ const ConversationRow: React.FC<ConversationRowProps> = ({ conv, isActive, onSel
             className={`flex-1 text-[13px] overflow-hidden whitespace-nowrap text-ellipsis ${
               isActive ? "font-medium" : ""
             }`}
-            title={conv.title}
+            title={displayTitle}
           >
             {truncatedTitle}
           </span>
@@ -258,7 +259,8 @@ const SearchModal: React.FC<SearchModalProps> = ({ open, conversations, onSelect
             <div className="text-center py-6 text-muted-foreground text-sm">{t("conversations.noResults")}</div>
           ) : (
             filtered.map((conv) => {
-              const truncated = conv.title.length > 55 ? conv.title.slice(0, 55) + "\u2026" : conv.title;
+              const displayTitle = conv.title || t("conversations.untitled");
+              const truncated = displayTitle.length > 55 ? displayTitle.slice(0, 55) + "\u2026" : displayTitle;
               return (
                 <div
                   key={conv.id}

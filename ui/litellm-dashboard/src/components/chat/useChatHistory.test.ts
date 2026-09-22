@@ -37,4 +37,20 @@ describe("useChatHistory", () => {
     rerender({ userId: "alice" });
     expect(result.current.conversations).toHaveLength(1);
   });
+
+  it("stores a language-neutral sentinel title and retitles from the first user message", () => {
+    const { result } = renderHook(() => useChatHistory(null, "alice"));
+    let conversationId = "";
+    act(() => {
+      conversationId = result.current.createConversation("gpt-4");
+    });
+
+    expect(result.current.conversations[0].title).toBe("");
+
+    act(() => {
+      result.current.appendMessage(conversationId, { role: "user", content: "hello there" });
+    });
+
+    expect(result.current.conversations[0].title).toBe("hello there");
+  });
 });

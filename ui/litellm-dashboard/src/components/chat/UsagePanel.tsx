@@ -125,10 +125,7 @@ const UsagePanel: React.FC<Props> = ({ accessToken, userId }) => {
         {
           id: "successRate",
           label: t("usage.successRate"),
-          value:
-            meta.total_api_requests > 0
-              ? `${((meta.total_successful_requests / meta.total_api_requests) * 100).toFixed(1)}%`
-              : "N/A",
+          value: `${((meta.total_successful_requests / meta.total_api_requests) * 100).toFixed(1)}%`,
           sub:
             meta.total_failed_requests > 0
               ? t("usage.failedRequests", { total: meta.total_failed_requests })
