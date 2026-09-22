@@ -73,9 +73,10 @@ describe("DocumentsTable Chinese copy", () => {
 
     expect(await screen.findByRole("menuitem", { name: "复制文档 ID" })).toBeInTheDocument();
     expect(screen.queryByRole("menuitem", { name: "Copy document ID" })).not.toBeInTheDocument();
+    expect(screen.getByRole("menuitem", { name: "移除" })).toBeInTheDocument();
+    expect(screen.queryByRole("menuitem", { name: "Remove" })).not.toBeInTheDocument();
     await user.click(screen.getByRole("menuitem", { name: "移除" }));
     expect(onRemove).toHaveBeenCalledWith("1");
-    expect(screen.queryByRole("menuitem", { name: "Remove" })).not.toBeInTheDocument();
   });
 
   it("shows the Chinese copy toast after copying a document ID", async () => {

@@ -91,7 +91,7 @@ describe("VectorStoreInfoView Chinese copy", () => {
     expect(await screen.findByText("向量存储 ID：vs-1")).toBeInTheDocument();
     expect(screen.queryByText("Vector Store ID: vs-1")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "返回向量存储" })).toBeInTheDocument();
-    expect(screen.getAllByRole("button", { name: "编辑向量存储" }).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole("button", { name: "编辑向量存储" })).toHaveLength(2);
     expect(screen.queryByRole("button", { name: "Edit Vector Store" })).not.toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "详情" })).toBeInTheDocument();
     expect(screen.queryByRole("tab", { name: "Details" })).not.toBeInTheDocument();

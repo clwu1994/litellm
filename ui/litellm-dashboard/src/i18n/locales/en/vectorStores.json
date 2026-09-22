@@ -113,6 +113,9 @@
     "emptyTitle": "No indexes registered yet",
     "emptyDescription": "Indexes registered on this proxy will appear here.",
     "about": "Vector store indexes registered on this proxy via the <code>/v1/indexes</code> API. See the <docs>vector store index docs</docs> for how this works. Index passthrough is supported for Azure AI Search and Milvus today; support for more providers can be added, so please <issues>file a GitHub issue</issues> if you want your provider supported.",
+    "toast": {
+      "fetchFailed": "Error fetching indexes: {{error}}"
+    },
     "columns": {
       "indexName": "Index Name",
       "vectorStore": "Vector Store",

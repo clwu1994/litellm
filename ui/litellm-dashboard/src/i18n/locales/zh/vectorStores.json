@@ -113,6 +113,9 @@
     "emptyTitle": "尚未注册任何索引",
     "emptyDescription": "在此代理上注册的索引将显示在这里。",
     "about": "向量存储索引通过 <code>/v1/indexes</code> API 在此代理上注册。有关工作原理，请参阅<docs>向量存储索引文档</docs>。目前 Azure AI Search 和 Milvus 支持索引透传；未来可以添加对更多提供方的支持，因此如果你希望支持你的提供方，请<issues>提交 GitHub Issue</issues>。",
+    "toast": {
+      "fetchFailed": "获取索引失败：{{error}}"
+    },
     "columns": {
       "indexName": "索引名称",
       "vectorStore": "向量存储",

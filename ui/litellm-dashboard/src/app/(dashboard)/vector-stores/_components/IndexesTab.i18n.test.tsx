@@ -2,7 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { indexesListCall } from "@/components/networking";
 import i18n from "@/i18n/bootstrapI18n";
-import { cleanup, renderWithProviders, screen } from "@/../tests/test-utils";
+import { toast } from "@/lib/toast";
+import { act, cleanup, renderWithProviders, screen } from "@/../tests/test-utils";
 
 import IndexesTab from "./IndexesTab";
 
@@ -50,5 +51,15 @@ describe("IndexesTab Chinese copy", () => {
       "https://github.com/BerriAI/litellm/issues",
     );
     expect(screen.queryByRole("link", { name: "file a GitHub issue" })).not.toBeInTheDocument();
+  });
+
+  it("shows the Chinese indexes fetch failure toast with the English original absent", async () => {
+    mockIndexesListCall.mockRejectedValue(new Error("boom"));
+    renderWithProviders(<IndexesTab accessToken="sk-test" vectorStores={[]} onViewVectorStore={vi.fn()} />);
+
+    await act(async () => {
+      await vi.waitFor(() => expect(toast.fromError).toHaveBeenCalledWith("获取索引失败：Error: boom"));
+    });
+    expect(toast.fromError).not.toHaveBeenCalledWith("Error fetching indexes: Error: boom");
   });
 });

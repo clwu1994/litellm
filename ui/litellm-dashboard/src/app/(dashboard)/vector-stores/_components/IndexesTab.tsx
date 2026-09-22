@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Trans } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 
 import { toast } from "@/lib/toast";
 import { indexesListCall } from "@/components/networking";
@@ -32,6 +32,7 @@ interface IndexesTabProps {
 const IndexesTab: React.FC<IndexesTabProps> = ({ accessToken, vectorStores, onViewVectorStore }) => {
   const [indexes, setIndexes] = useState<VectorStoreIndex[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { t } = useTranslation("vectorStores");
 
   const vectorStoreIdsByName = useMemo(
     () =>
@@ -56,13 +57,13 @@ const IndexesTab: React.FC<IndexesTabProps> = ({ accessToken, vectorStores, onVi
         setIndexes(response.data || []);
       } catch (error) {
         console.error("Error fetching indexes:", error);
-        toast.fromError("Error fetching indexes: " + error);
+        toast.fromError(t("indexes.toast.fetchFailed", { error: String(error) }));
       } finally {
         setIsLoading(false);
       }
     };
     fetchIndexes();
-  }, [accessToken]);
+  }, [accessToken, t]);
 
   return (
     <div className="w-full">
