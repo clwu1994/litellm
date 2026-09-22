@@ -108,6 +108,118 @@
       "actions": "Actions"
     }
   },
+  "form": {
+    "title": "Add New Vector Store",
+    "create": "Create",
+    "showPassword": "Show Password",
+    "hidePassword": "Hide Password",
+    "noMatchingOptions": "No matching options",
+    "vectorStoreIdHint": "Enter the vector store ID from your api provider",
+    "vectorStoreNameHint": "Custom name you want to give to the vector store, this name will be rendered on the LiteLLM UI",
+    "credentialsHint": "Optionally select API provider credentials for this vector store eg. Bedrock API KEY",
+    "metadataHint": "JSON metadata for the vector store (optional)",
+    "vectorStoreIdPlaceholder": {
+      "default": "Enter vector store ID from your provider",
+      "vertexSearchApi": "my-datastore_1234567890 (data store ID from Vertex AI / \"Agent Search\" console)",
+      "vertexSearchApiWithEngine": "Any identifier you'll use to reference this in LiteLLM",
+      "valkey": "my-search-index (FT index name in Valkey)",
+      "mongodb": "my-vector-index (MongoDB Vector Search index name)"
+    },
+    "validation": {
+      "vectorStoreIdRequired": "Please input the vector store ID from your api provider",
+      "providerFieldRequired": "Please provide {{field}}",
+      "selectProviderField": "Please select the {{field}}",
+      "inputProviderField": "Please input the {{field}}"
+    },
+    "toast": {
+      "created": "Vector store created successfully",
+      "createFailed": "Error creating vector store: {{error}}",
+      "noAccessToken": "No access token available",
+      "createdWithDocuments": "Successfully created vector store with {{documentCount}} document(s). Vector Store ID: {{vectorStoreId}}",
+      "ingestFailed": "Failed to create vector store: {{error}}"
+    },
+    "upload": {
+      "stepTitle": "Step 1: Upload Documents",
+      "stepDescription": "Upload one or more documents (PDF, TXT, DOCX, MD). Maximum file size: 50MB per file.",
+      "dropHint": "Click or drag files to this area to upload",
+      "formatsHint": "Support for single or bulk upload. Supported formats: PDF, TXT, DOCX, MD",
+      "uploadedCount": "Uploaded Documents ({{documentCount}})",
+      "unsupportedType": "{{fileName}} is not a supported file type. Please upload PDF, TXT, DOCX, or MD files.",
+      "tooLarge": "{{fileName}} must be smaller than 50MB!"
+    },
+    "configure": {
+      "stepTitle": "Step 2: Configure Vector Store",
+      "stepDescription": "Choose the provider and optionally provide a name and description for your vector store."
+    },
+    "createPage": {
+      "description": "Upload documents and select a provider to create a new vector store with embedded content."
+    },
+    "nameHint": "Optional: Give your vector store a meaningful name",
+    "namePlaceholder": "e.g., Product Documentation, Customer Support KB",
+    "descriptionHint": "Optional: Describe what this vector store contains",
+    "descriptionPlaceholder": "e.g., Contains all product documentation and user guides",
+    "providerHint": "Select the provider for embedding and vector store operations",
+    "creatingButton": "Creating Vector Store...",
+    "success": {
+      "title": "Vector Store Created Successfully",
+      "vectorStoreIdLabel": "Vector Store ID:",
+      "documentsIngestedLabel": "Documents Ingested:",
+      "close": "Close"
+    },
+    "alerts": {
+      "pgVector": {
+        "title": "PG Vector Setup Required",
+        "intro": "LiteLLM provides a server to connect to PG Vector. To use this provider:",
+        "step1": "Deploy the litellm-pgvector server from:",
+        "step2": "Configure your PostgreSQL database with pgvector extension",
+        "step3": "Start the server and note the API base URL and API key",
+        "step4": "Enter those details in the fields below"
+      },
+      "valkey": {
+        "title": "Valkey Setup Required",
+        "intro": "LiteLLM searches documents you have already stored in Valkey. It does not create the index or upload documents for you. Before creating this vector store, make sure:",
+        "step1": "Your Valkey server has vector search enabled (the valkey-search module, included in the valkey-bundle image and in AWS ElastiCache / MemoryDB for Valkey)",
+        "step2": "You have already created a search index and loaded your documents and their embeddings into it. Enter that index name as the Vector Store ID",
+        "step3": "You know which embedding model created those stored embeddings. That model must be added to this proxy under Models so you can pick it below. Using a different model returns wrong results",
+        "step4": "You know the field names your documents use for their text and their embedding. If they are not \"text\" and \"embedding\", set them below",
+        "outro": "When a query comes in, LiteLLM converts it to an embedding with the model below and returns the closest matching documents from your index."
+      },
+      "vertexSearch": {
+        "title": "Vertex AI Search Setup",
+        "intro": "To use Vertex AI Search (Discovery Engine):",
+        "note": "Note: Google Cloud has renamed this to \"Agent Search\" in its console — the steps below still apply.",
+        "step1": "Enable the Discovery Engine API on your Google Cloud project and create a data store following the guide: <docs>Create a Vertex AI Search data store</docs>",
+        "step2": "Pick a supported location: global, us, or eu",
+        "step3": "For most data store types (Cloud Storage, BigQuery, Media): copy the data store ID and enter it in the Vector Store ID field below.",
+        "step4": "For website, healthcare, and connector-based sources (Drive, Gmail, Slack, Jira, etc.): create a search app on top of the data store, then copy the <strong>Engine ID</strong> and enter it in the Engine ID field. The Vector Store ID is still required as the LiteLLM-side name for this record, but it isn't used in the GCP URL when Engine ID is set."
+      }
+    }
+  },
+  "s3": {
+    "title": "AWS S3 Vectors Setup",
+    "intro": "AWS S3 Vectors allows you to store and query vector embeddings directly in S3:",
+    "bullet1": "Vector buckets and indexes will be automatically created if they don't exist",
+    "bullet2": "Vector dimensions are auto-detected from your selected embedding model",
+    "bullet3": "Ensure your AWS credentials have permissions for S3 Vectors operations",
+    "learnMore": "Learn more: <docs>AWS S3 Vectors Documentation</docs>",
+    "bucketNameLabel": "Vector Bucket Name",
+    "bucketNameHint": "S3 bucket name for vector storage (must be at least 3 characters, lowercase letters, numbers, hyphens, and periods only)",
+    "bucketNamePlaceholder": "my-vector-bucket (min 3 chars)",
+    "indexNameLabel": "Index Name",
+    "indexNameHint": "Name for the vector index (optional, will be auto-generated if not provided). If provided, must be at least 3 characters.",
+    "indexNamePlaceholder": "my-vector-index (optional, min 3 chars)",
+    "regionLabel": "AWS Region",
+    "regionHint": "AWS region where the S3 bucket is located (e.g., us-west-2)",
+    "embeddingModelLabel": "Embedding Model",
+    "embeddingModelHint": "Select the embedding model to use for vector generation",
+    "embeddingModelPlaceholder": "Select an embedding model",
+    "loadingModels": "Loading models...",
+    "noEmbeddingModels": "No embedding models found.",
+    "validation": {
+      "bucketNameMin": "Bucket name must be at least 3 characters",
+      "indexNameMin": "Index name must be at least 3 characters if provided"
+    }
+  },
   "indexes": {
     "loading": "Loading indexes…",
     "emptyTitle": "No indexes registered yet",
