@@ -238,5 +238,30 @@
   },
   "selector": {
     "placeholder": "选择向量存储"
+  },
+  "test": {
+    "selectStore": "选择向量存储",
+    "selectStoreHint": "选择要对其测试搜索查询的向量存储",
+    "selectStorePlaceholder": "选择向量存储",
+    "noMatchingStores": "未找到匹配的向量存储",
+    "noAccessToken": "测试向量存储需要 access token。",
+    "noStores": "没有可用的向量存储。请先创建一个再进行测试。",
+    "emptyState": "在下方的搜索框中输入查询以测试你的向量存储",
+    "clearHistory": "清空历史",
+    "query": "查询",
+    "resultsTitle": "向量存储结果",
+    "resultsCount": "{{resultCount}} 条结果",
+    "resultNumbered": "结果 {{number}}",
+    "scoreLabel": "得分：{{score}}",
+    "contentLabel": "内容（{{contentType}}）",
+    "fileId": "文件 ID：",
+    "filename": "文件名：",
+    "attributes": "属性：",
+    "queryPlaceholder": "输入你的搜索查询...（Shift+Enter 换行）",
+    "search": "搜索",
+    "searchFailed": "搜索失败：{{error}}",
+    "noResults": "未找到结果",
+    "queryRequired": "请输入搜索查询",
+    "historyCleared": "搜索历史已清除"
   }
 }

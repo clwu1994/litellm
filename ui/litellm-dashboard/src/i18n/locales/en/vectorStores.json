@@ -238,5 +238,30 @@
   },
   "selector": {
     "placeholder": "Select vector stores"
+  },
+  "test": {
+    "selectStore": "Select Vector Store",
+    "selectStoreHint": "Choose a vector store to test search queries against",
+    "selectStorePlaceholder": "Select a vector store",
+    "noMatchingStores": "No matching vector stores",
+    "noAccessToken": "Access token is required to test vector stores.",
+    "noStores": "No vector stores available. Create one first to test it.",
+    "emptyState": "Test your vector store by entering a search query below",
+    "clearHistory": "Clear History",
+    "query": "Query",
+    "resultsTitle": "Vector Store Results",
+    "resultsCount": "{{resultCount}} results",
+    "resultNumbered": "Result {{number}}",
+    "scoreLabel": "Score: {{score}}",
+    "contentLabel": "Content ({{contentType}})",
+    "fileId": "File ID:",
+    "filename": "Filename:",
+    "attributes": "Attributes:",
+    "queryPlaceholder": "Enter your search query... (Shift+Enter for new line)",
+    "search": "Search",
+    "searchFailed": "Search failed: {{error}}",
+    "noResults": "No results found",
+    "queryRequired": "Please enter a search query",
+    "historyCleared": "Search history cleared"
   }
 }
