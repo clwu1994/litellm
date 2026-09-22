@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development. Steps use checkbox (`- [ ]`).
 
-**Goal:** Make the Models and Endpoints area Chinese. Roughly 200 literals across 27 files, split into two tasks.
+**Goal:** Make the Models and Endpoints area Chinese. The original estimate (roughly 200 literals across 27 files, two tasks) proved wrong twice: the route also renders several component trees one level out, and `add_model` alone is four times its estimated size. Four tasks, and the increment is not complete until Task 4 lands.
 
 **Architecture:** No new machinery. Follow the worked examples in `docs/superpowers/plans/2026-09-18-litellm-i18n-phase1-playground.md` and `...-guardrails.md`: one namespace `models`, both locales, semantic keys, `t()` at render sites, helpers take a `t`, data modules store keys and resolve at render.
 
@@ -67,7 +67,7 @@ Process note: the controller's first grep missed these because the pattern only 
 
 ### Task 3: The model component trees the route renders
 
-**Files:** `src/components/add_model/*` (~138 literals), `src/components/model_dashboard/*` (~15), `src/components/model_add/*` (~12), `src/components/model_info_view.tsx` and `src/components/ModelInfoEditForm.tsx` (~23)
+**Files:** `src/components/model_dashboard/*` (~15), `src/components/model_add/*` (~12), `src/components/model_info_view.tsx` and `src/components/ModelInfoEditForm.tsx` (~23), `edit_auto_router/*`, `update_model_credentials_modal.tsx`, `reuse_credentials.tsx`. (`src/components/add_model/*` was moved out to Task 4 once its real size became known.)
 
 - [ ] Same shape, extending `models`. **This task exists because these trees render inside the Models page**: until it lands, the add-model form, the credentials panel, the health panel and the model settings modal are English inside an otherwise Chinese page. Sweep all four trees and report any file deliberately skipped with importer evidence.
 
