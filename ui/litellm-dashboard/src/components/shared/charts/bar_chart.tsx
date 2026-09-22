@@ -12,6 +12,7 @@ export type BarChartProps<TDatum extends Record<string, unknown>> = {
   data: readonly TDatum[];
   index: string;
   categories: readonly string[];
+  categoryLabels?: Readonly<Record<string, string>>;
   colors?: readonly ChartColor[];
   colorByDatum?: boolean;
   maxBarSize?: number;
@@ -34,6 +35,7 @@ export function BarChart<TDatum extends Record<string, unknown>>({
   data,
   index,
   categories,
+  categoryLabels,
   colors,
   colorByDatum = false,
   maxBarSize,
@@ -64,7 +66,9 @@ export function BarChart<TDatum extends Record<string, unknown>>({
   }
 
   const fills = categoryFills(colorByDatum ? data.length : categories.length, colors);
-  const config: ChartConfig = Object.fromEntries(categories.map((category) => [category, { label: category }]));
+  const config: ChartConfig = Object.fromEntries(
+    categories.map((category) => [category, { label: categoryLabels?.[category] ?? category }]),
+  );
   const vertical = layout === "vertical";
   const TooltipContent = customTooltip ?? ValueTooltip;
 
@@ -103,7 +107,7 @@ export function BarChart<TDatum extends Record<string, unknown>>({
                 active={active}
                 payload={payload}
                 label={label}
-                {...(customTooltip ? {} : { valueFormatter })}
+                {...(customTooltip ? {} : { valueFormatter, categoryLabels })}
               />
             )}
           />

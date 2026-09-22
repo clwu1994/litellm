@@ -18,6 +18,13 @@
     "cacheHitRatio": "Cache Hit Ratio",
     "cacheHits": "Cache Hits",
     "cachedCompletionTokens": "Cached Completion Tokens",
+    "series": {
+      "apiRequests": "LLM API requests",
+      "cacheHits": "Cache hit",
+      "failedRequests": "Failed requests",
+      "generatedCompletionTokens": "Generated Completion Tokens",
+      "cachedCompletionTokens": "Cached Completion Tokens"
+    },
     "requestsChartTitle": "Cache Hits vs API Requests",
     "requestsChartHint": "Click a red failed-requests segment to see which error codes caused those failures.",
     "tokensChartTitle": "Cached Completion Tokens vs Generated Completion Tokens"

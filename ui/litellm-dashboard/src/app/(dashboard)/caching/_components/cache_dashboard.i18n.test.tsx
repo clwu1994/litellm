@@ -120,6 +120,22 @@ describe("CacheDashboard Chinese copy", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("renders the Chinese chart series labels in the legends and hides the English originals", async () => {
+    renderDashboard();
+
+    expect(await screen.findByText("LLM API 请求")).toBeInTheDocument();
+    expect(screen.getByText("缓存命中请求")).toBeInTheDocument();
+    expect(screen.getByText("失败请求")).toBeInTheDocument();
+    expect(screen.getByText("生成的补全 Token")).toBeInTheDocument();
+    expect(screen.getByText("缓存的补全 Token")).toBeInTheDocument();
+
+    expect(screen.queryByText("LLM API requests")).not.toBeInTheDocument();
+    expect(screen.queryByText("Cache hit")).not.toBeInTheDocument();
+    expect(screen.queryByText("Failed requests")).not.toBeInTheDocument();
+    expect(screen.queryByText("Generated Completion Tokens")).not.toBeInTheDocument();
+    expect(screen.queryByText("Cached Completion Tokens")).not.toBeInTheDocument();
+  });
+
   it("renders the Chinese unknown-bucket explanation only when a group has no recorded endpoint", async () => {
     useCacheActivity.mockReturnValue({
       data: {

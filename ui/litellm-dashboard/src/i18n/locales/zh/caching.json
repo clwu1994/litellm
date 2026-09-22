@@ -18,6 +18,13 @@
     "cacheHitRatio": "缓存命中率",
     "cacheHits": "缓存命中",
     "cachedCompletionTokens": "缓存补全 Token",
+    "series": {
+      "apiRequests": "LLM API 请求",
+      "cacheHits": "缓存命中请求",
+      "failedRequests": "失败请求",
+      "generatedCompletionTokens": "生成的补全 Token",
+      "cachedCompletionTokens": "缓存的补全 Token"
+    },
     "requestsChartTitle": "缓存命中与 API 请求对比",
     "requestsChartHint": "点击红色的失败请求分段，查看哪些错误码导致了这些失败。",
     "tokensChartTitle": "缓存补全 Token 与生成的补全 Token 对比"

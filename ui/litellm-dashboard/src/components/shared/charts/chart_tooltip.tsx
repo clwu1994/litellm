@@ -25,12 +25,28 @@ export const ValueTooltip = ({
   payload,
   label,
   valueFormatter,
-}: ChartTooltipProps & { valueFormatter?: (value: number) => string }) => {
+  categoryLabels,
+}: ChartTooltipProps & {
+  valueFormatter?: (value: number) => string;
+  categoryLabels?: Readonly<Record<string, string>>;
+}) => {
   if (!active || !payload || payload.length === 0) return null;
 
   const formatValue = (value: unknown): string => {
     if (typeof value === "number") return valueFormatter ? valueFormatter(value) : value.toLocaleString();
     return value == null ? "" : String(value);
+  };
+
+  const formatSeries = (item: (typeof payload)[number]): string => {
+    const name = item.name == null ? undefined : String(item.name);
+    const dataKey = item.dataKey == null ? undefined : String(item.dataKey);
+    return (
+      (name === undefined ? undefined : categoryLabels?.[name]) ??
+      (dataKey === undefined ? undefined : categoryLabels?.[dataKey]) ??
+      name ??
+      dataKey ??
+      ""
+    );
   };
 
   return (
@@ -44,7 +60,7 @@ export const ValueTooltip = ({
           >
             <div className="flex items-center gap-1.5">
               <span className="h-2.5 w-2.5 shrink-0 rounded-[2px]" style={{ backgroundColor: item.color }} />
-              <span className="text-muted-foreground">{String(item.name ?? item.dataKey ?? "")}</span>
+              <span className="text-muted-foreground">{formatSeries(item)}</span>
             </div>
             <span className="font-mono font-medium tabular-nums text-foreground">{formatValue(item.value)}</span>
           </div>

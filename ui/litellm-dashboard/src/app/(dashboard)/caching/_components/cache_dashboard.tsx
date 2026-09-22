@@ -159,6 +159,16 @@ const CacheDashboard: React.FC<CachePageProps> = ({ accessToken, token, userRole
     },
   ];
 
+  const requestsChartLabels = {
+    [REQUEST_SERIES.apiRequests]: t("analytics.series.apiRequests"),
+    [REQUEST_SERIES.cacheHits]: t("analytics.series.cacheHits"),
+    [REQUEST_SERIES.failed]: t("analytics.series.failedRequests"),
+  };
+  const tokensChartLabels = {
+    "Generated Completion Tokens": t("analytics.series.generatedCompletionTokens"),
+    "Cached Completion Tokens": t("analytics.series.cachedCompletionTokens"),
+  };
+
   return (
     <Tabs defaultValue="analytics" className="mt-2 mb-8 w-full gap-2 p-8">
       <div className="mt-2 flex w-full items-center justify-between border-b">
@@ -312,6 +322,7 @@ const CacheDashboard: React.FC<CachePageProps> = ({ accessToken, token, userRole
                   index="name"
                   valueFormatter={valueFormatterNumbers}
                   categories={[REQUEST_SERIES.apiRequests, REQUEST_SERIES.cacheHits, REQUEST_SERIES.failed]}
+                  categoryLabels={requestsChartLabels}
                   colors={["sky", "teal", "red"]}
                   yAxisWidth={48}
                   className="mt-2"
@@ -342,6 +353,7 @@ const CacheDashboard: React.FC<CachePageProps> = ({ accessToken, token, userRole
                   index="name"
                   valueFormatter={valueFormatterNumbers}
                   categories={["Generated Completion Tokens", "Cached Completion Tokens"]}
+                  categoryLabels={tokensChartLabels}
                   colors={["sky", "teal"]}
                   yAxisWidth={48}
                 />
