@@ -1,0 +1,170 @@
+{
+  "alert": {
+    "dismiss": "Dismiss {{title}}"
+  },
+  "about": {
+    "title": "About Policies",
+    "description": "Use policies to group guardrails and control which ones run for specific teams, keys, or models.",
+    "whyTitle": "Why use policies?",
+    "whyEnable": "Enable/disable specific guardrails for teams, keys, or models",
+    "whyGroup": "Group guardrails into a single policy",
+    "whyInherit": "Inherit from existing policies and override what you need",
+    "learnMore": "Learn more in the documentation ->"
+  },
+  "tabs": {
+    "templates": "Templates",
+    "policies": "Policies",
+    "attachments": "Attachments",
+    "simulator": "Policy Simulator"
+  },
+  "list": {
+    "addNewPolicy": "+ Add New Policy",
+    "toast": {
+      "fetchFailed": "Failed to fetch policies",
+      "deleted": "Policy \"{{name}}\" deleted successfully",
+      "deleteFailed": "Failed to delete policy",
+      "authRequired": "Authentication required",
+      "loadGuardrailsFailed": "Failed to load guardrails. Please try again.",
+      "createdGuardrail": "Created {{guardrailCount}} guardrail! Complete the policy form to save.",
+      "createdGuardrails": "Created {{guardrailCount}} guardrails! Complete the policy form to save.",
+      "templateReady": "Template ready! Complete the policy form to save.",
+      "createGuardrailsPartial": "Failed to create {{guardrailCount}} guardrail(s): {{names}}. You may need to create them manually.",
+      "configureTemplateFailed": "Failed to configure template. Please try again.",
+      "createGuardrailsFailed": "Failed to create guardrails. Please try again."
+    }
+  },
+  "deleteModal": {
+    "policy": {
+      "title": "Delete Policy",
+      "message": "Are you sure you want to delete policy: {{name}}? This action cannot be undone.",
+      "resourceInformationTitle": "Policy Information",
+      "name": "Name",
+      "id": "ID",
+      "description": "Description",
+      "inheritsFrom": "Inherits From"
+    },
+    "attachment": {
+      "title": "Delete Attachment",
+      "message": "Are you sure you want to delete this attachment? This action cannot be undone.",
+      "resourceInformationTitle": "Attachment Information",
+      "attachmentId": "Attachment ID",
+      "policy": "Policy",
+      "scope": "Scope"
+    }
+  },
+  "table": {
+    "loading": "Loading policies…",
+    "emptyTitle": "No policies found",
+    "emptyDescription": "Create a policy to bundle guardrails and apply them across teams.",
+    "unnamed": "(unnamed)",
+    "versions": "{{versionCount}} versions",
+    "configBadge": "Config",
+    "configHint": "Config policies are defined in the config file and cannot be edited or deleted from the dashboard.",
+    "openActionsAria": "Open policy actions",
+    "editPolicy": "Edit policy",
+    "deletePolicy": "Delete policy",
+    "columns": {
+      "name": "Name",
+      "description": "Description",
+      "inheritsFrom": "Inherits From",
+      "guardrailsAdd": "Guardrails (Add)",
+      "guardrailsRemove": "Guardrails (Remove)",
+      "modelCondition": "Model Condition",
+      "createdAt": "Created At",
+      "actions": "Actions"
+    }
+  },
+  "attachments": {
+    "about": {
+      "title": "About Policy Attachments",
+      "description": "Policy attachments control where your policies apply. Policies don't do anything until you attach them to specific teams, keys, models, tags, or globally.",
+      "scopesTitle": "Attachment Scopes:",
+      "scopeGlobal": "<strong>Global (*)</strong> - Applies to all requests",
+      "scopeTeams": "<strong>Teams</strong> - Applies only to specific teams",
+      "scopeKeys": "<strong>Keys</strong> - Applies only to specific API keys (supports wildcards like dev-*)",
+      "scopeModels": "<strong>Models</strong> - Applies only when specific models are used",
+      "scopeTags": "<strong>Tags</strong> - Matches tags from key/team <code>metadata.tags</code> or tags passed dynamically in the request body (<code>metadata.tags</code>). Use this to enforce policies across groups, e.g. \"all keys tagged <code>healthcare</code> get HIPAA guardrails.\" Supports wildcards (<code>prod-*</code>).",
+      "learnMore": "Learn more about attachments ->",
+      "enterpriseTitle": "Enterprise Feature Notice",
+      "enterpriseDescription": "Parts of policy attachments will be on LiteLLM Enterprise in subsequent releases."
+    },
+    "addNew": "+ Add New Attachment",
+    "scope": {
+      "global": "Global (*)"
+    },
+    "table": {
+      "loading": "Loading attachments…",
+      "emptyTitle": "No attachments found",
+      "emptyDescription": "Attach a policy to teams, keys, models, or tags to control where it applies.",
+      "configHint": "Config attachments are defined in the config file and cannot be deleted from the dashboard.",
+      "openActionsAria": "Open attachment actions",
+      "copyId": "Copy attachment ID",
+      "copyIdToast": "Attachment ID copied",
+      "delete": "Delete attachment",
+      "columns": {
+        "attachmentId": "Attachment ID",
+        "policy": "Policy",
+        "scope": "Scope",
+        "teams": "Teams",
+        "keys": "Keys",
+        "models": "Models",
+        "tags": "Tags",
+        "createdAt": "Created At",
+        "actions": "Actions"
+      }
+    },
+    "toast": {
+      "fetchFailed": "Failed to fetch attachments"
+    }
+  },
+  "templates": {
+    "title": "Policy Templates",
+    "description": "Start with a pre-configured policy template to quickly set up guardrails for your organization.",
+    "aiButton": "Use AI to find templates",
+    "categories": "Categories",
+    "clearAll": "Clear all",
+    "showing": "Showing {{shown}} of {{total}} templates",
+    "noMatch": "No templates match the selected filters.",
+    "clearAllFilters": "Clear all filters",
+    "complexityLabel": "{{level}} Complexity",
+    "complexity": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High"
+    },
+    "inheritsFrom": "Inherits from: ",
+    "includedGuardrails": "Included Guardrails",
+    "useTemplate": "Use Template",
+    "toast": {
+      "fetchFailed": "Failed to fetch policy templates"
+    }
+  },
+  "info": {
+    "notFound": "Policy not found",
+    "goBack": "Go Back",
+    "backToPolicies": "Back to Policies",
+    "editPolicy": "Edit Policy",
+    "policyId": "Policy ID",
+    "description": "Description",
+    "noDescription": "No description",
+    "inheritsFrom": "Inherits From",
+    "none": "None",
+    "createdAt": "Created At",
+    "updatedAt": "Updated At",
+    "pipelineFlow": "Pipeline Flow",
+    "pipelineTitle": "Pipeline ({{mode}} mode, {{stepCount}} steps)",
+    "pipelineTitleSingular": "Pipeline ({{mode}} mode, {{stepCount}} step)",
+    "pipelineMode": {
+      "pre_call": "pre_call",
+      "post_call": "post_call"
+    },
+    "guardrailsConfig": "Guardrails Configuration",
+    "resolvedGuardrails": "Resolved Guardrails",
+    "resolvedGuardrailsHint": "Final guardrails that will be applied (including inheritance):",
+    "guardrailsToAdd": "Guardrails to Add",
+    "guardrailsToRemove": "Guardrails to Remove",
+    "conditions": "Conditions",
+    "modelCondition": "Model Condition",
+    "noModelCondition": "No model condition (applies to all models)"
+  }
+}

@@ -1,0 +1,170 @@
+{
+  "alert": {
+    "dismiss": "关闭{{title}}"
+  },
+  "about": {
+    "title": "关于策略",
+    "description": "使用策略对 Guardrails 进行分组，并控制哪些 Guardrails 针对特定团队、密钥或模型运行。",
+    "whyTitle": "为什么使用策略？",
+    "whyEnable": "为团队、密钥或模型启用/停用特定 Guardrails",
+    "whyGroup": "将 Guardrails 归入单个策略",
+    "whyInherit": "继承现有策略并按需覆盖",
+    "learnMore": "在文档中了解更多 ->"
+  },
+  "tabs": {
+    "templates": "模板",
+    "policies": "策略",
+    "attachments": "附件",
+    "simulator": "策略模拟器"
+  },
+  "list": {
+    "addNewPolicy": "+ 新增策略",
+    "toast": {
+      "fetchFailed": "获取策略失败",
+      "deleted": "策略「{{name}}」删除成功",
+      "deleteFailed": "删除策略失败",
+      "authRequired": "需要身份验证",
+      "loadGuardrailsFailed": "加载 Guardrails 失败，请重试。",
+      "createdGuardrail": "已创建 {{guardrailCount}} 个 Guardrail！完成策略表单即可保存。",
+      "createdGuardrails": "已创建 {{guardrailCount}} 个 Guardrail！完成策略表单即可保存。",
+      "templateReady": "模板已就绪！完成策略表单即可保存。",
+      "createGuardrailsPartial": "创建 {{guardrailCount}} 个 Guardrail 失败：{{names}}。你可能需要手动创建它们。",
+      "configureTemplateFailed": "配置模板失败，请重试。",
+      "createGuardrailsFailed": "创建 Guardrails 失败，请重试。"
+    }
+  },
+  "deleteModal": {
+    "policy": {
+      "title": "删除策略",
+      "message": "确定要删除策略：{{name}}？此操作无法撤销。",
+      "resourceInformationTitle": "策略信息",
+      "name": "名称",
+      "id": "ID",
+      "description": "描述",
+      "inheritsFrom": "继承自"
+    },
+    "attachment": {
+      "title": "删除附件",
+      "message": "确定要删除此附件？此操作无法撤销。",
+      "resourceInformationTitle": "附件信息",
+      "attachmentId": "附件 ID",
+      "policy": "策略",
+      "scope": "范围"
+    }
+  },
+  "table": {
+    "loading": "正在加载策略…",
+    "emptyTitle": "未找到策略",
+    "emptyDescription": "创建策略来打包 Guardrails，并将其应用到各个团队。",
+    "unnamed": "（未命名）",
+    "versions": "{{versionCount}} 个版本",
+    "configBadge": "配置",
+    "configHint": "Config 策略在配置文件中定义，无法在仪表板中编辑或删除。",
+    "openActionsAria": "打开策略操作",
+    "editPolicy": "编辑策略",
+    "deletePolicy": "删除策略",
+    "columns": {
+      "name": "名称",
+      "description": "描述",
+      "inheritsFrom": "继承自",
+      "guardrailsAdd": "Guardrails（添加）",
+      "guardrailsRemove": "Guardrails（移除）",
+      "modelCondition": "模型条件",
+      "createdAt": "创建时间",
+      "actions": "操作"
+    }
+  },
+  "attachments": {
+    "about": {
+      "title": "关于策略附件",
+      "description": "策略附件控制策略的生效范围。只有将策略附加到特定团队、密钥、模型、标签或全局，策略才会生效。",
+      "scopesTitle": "附件范围：",
+      "scopeGlobal": "<strong>全局 (*)</strong> - 应用于所有请求",
+      "scopeTeams": "<strong>团队</strong> - 仅应用于特定团队",
+      "scopeKeys": "<strong>密钥</strong> - 仅应用于特定 API Key（支持 dev-* 之类的通配符）",
+      "scopeModels": "<strong>模型</strong> - 仅在使用特定模型时应用",
+      "scopeTags": "<strong>标签</strong> - 匹配密钥/团队 <code>metadata.tags</code> 中的标签，或请求正文（<code>metadata.tags</code>）中动态传入的标签。用它来跨分组执行策略，例如「所有标记为 <code>healthcare</code> 的密钥都会应用 HIPAA Guardrails」。支持通配符（<code>prod-*</code>）。",
+      "learnMore": "详细了解附件 ->",
+      "enterpriseTitle": "企业版功能说明",
+      "enterpriseDescription": "策略附件的部分功能将在后续版本中作为 LiteLLM Enterprise 提供。"
+    },
+    "addNew": "+ 新增附件",
+    "scope": {
+      "global": "全局 (*)"
+    },
+    "table": {
+      "loading": "正在加载附件…",
+      "emptyTitle": "未找到附件",
+      "emptyDescription": "将策略附加到团队、密钥、模型或标签，以控制其生效范围。",
+      "configHint": "Config 附件在配置文件中定义，无法从仪表板删除。",
+      "openActionsAria": "打开附件操作",
+      "copyId": "复制附件 ID",
+      "copyIdToast": "已复制附件 ID",
+      "delete": "删除附件",
+      "columns": {
+        "attachmentId": "附件 ID",
+        "policy": "策略",
+        "scope": "范围",
+        "teams": "团队",
+        "keys": "密钥",
+        "models": "模型",
+        "tags": "标签",
+        "createdAt": "创建时间",
+        "actions": "操作"
+      }
+    },
+    "toast": {
+      "fetchFailed": "获取附件失败"
+    }
+  },
+  "templates": {
+    "title": "策略模板",
+    "description": "从预配置的策略模板开始，快速为你的组织设置 Guardrails。",
+    "aiButton": "使用 AI 查找模板",
+    "categories": "分类",
+    "clearAll": "清除全部",
+    "showing": "显示 {{total}} 个模板中的 {{shown}} 个",
+    "noMatch": "没有模板符合所选筛选条件。",
+    "clearAllFilters": "清除所有筛选条件",
+    "complexityLabel": "{{level}}复杂度",
+    "complexity": {
+      "low": "低",
+      "medium": "中",
+      "high": "高"
+    },
+    "inheritsFrom": "继承自：",
+    "includedGuardrails": "包含的 Guardrails",
+    "useTemplate": "使用模板",
+    "toast": {
+      "fetchFailed": "获取策略模板失败"
+    }
+  },
+  "info": {
+    "notFound": "未找到策略",
+    "goBack": "返回",
+    "backToPolicies": "返回策略",
+    "editPolicy": "编辑策略",
+    "policyId": "策略 ID",
+    "description": "描述",
+    "noDescription": "无描述",
+    "inheritsFrom": "继承自",
+    "none": "无",
+    "createdAt": "创建时间",
+    "updatedAt": "更新时间",
+    "pipelineFlow": "流水线流程",
+    "pipelineTitle": "流水线（{{mode}} 模式，{{stepCount}} 个步骤）",
+    "pipelineTitleSingular": "流水线（{{mode}} 模式，{{stepCount}} 个步骤）",
+    "pipelineMode": {
+      "pre_call": "调用前",
+      "post_call": "调用后"
+    },
+    "guardrailsConfig": "Guardrails 配置",
+    "resolvedGuardrails": "解析后的 Guardrails",
+    "resolvedGuardrailsHint": "最终将应用的 Guardrails（含继承）：",
+    "guardrailsToAdd": "要添加的 Guardrails",
+    "guardrailsToRemove": "要移除的 Guardrails",
+    "conditions": "条件",
+    "modelCondition": "模型条件",
+    "noModelCondition": "无模型条件（应用于所有模型）"
+  }
+}

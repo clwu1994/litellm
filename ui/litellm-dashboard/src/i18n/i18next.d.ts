@@ -9,6 +9,7 @@ import type zhModels from "./locales/zh/models.json";
 import type zhNav from "./locales/zh/nav.json";
 import type zhOrganizations from "./locales/zh/organizations.json";
 import type zhPlayground from "./locales/zh/playground.json";
+import type zhPolicies from "./locales/zh/policies.json";
 import type zhTeams from "./locales/zh/teams.json";
 import type zhUsage from "./locales/zh/usage.json";
 import type zhUsers from "./locales/zh/users.json";
@@ -30,6 +31,7 @@ declare module "i18next" {
       users: typeof zhUsers;
       organizations: typeof zhOrganizations;
       playground: typeof zhPlayground;
+      policies: typeof zhPolicies;
       usage: typeof zhUsage;
     };
   }
