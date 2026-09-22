@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import i18n from "@/i18n/bootstrapI18n";
+import { findTooltipTriggerBeside } from "../../../tests/i18nTooltip";
 
 vi.mock(
   "@/app/(dashboard)/hooks/autoRouter/useComplexityScorerDefaults",
@@ -23,6 +24,8 @@ import CustomDimensionRows from "./CustomDimensionRows";
 import RouterConfigBuilder from "./RouterConfigBuilder";
 import { handleAddAutoRouterSubmit } from "./handle_add_auto_router_submit";
 import { toast } from "@/lib/toast";
+import { useComplexityScorerDefaults } from "@/app/(dashboard)/hooks/autoRouter/useComplexityScorerDefaults";
+import { LOADED_SCORER_DEFAULTS_QUERY } from "../../../tests/mocks/complexityScorerDefaults";
 import type { ComplexityRouterConfigValue } from "./ComplexityRouterConfig";
 
 const value: ComplexityRouterConfigValue = {
@@ -35,8 +38,19 @@ const expectChinese = (zh: string, en: string) => {
   expect(screen.queryAllByText(en, { exact: false })).toHaveLength(0);
 };
 
+const expectChinesePlaceholder = (zh: string, en: string) => {
+  expect(screen.getAllByPlaceholderText(zh).length).toBeGreaterThan(0);
+  expect(screen.queryAllByPlaceholderText(en)).toHaveLength(0);
+};
+
+const expectChineseLabel = (zh: string, en: string) => {
+  expect(screen.getAllByLabelText(zh).length).toBeGreaterThan(0);
+  expect(screen.queryAllByLabelText(en)).toHaveLength(0);
+};
+
 describe("auto-router setup Chinese copy", () => {
   beforeEach(async () => {
+    vi.mocked(useComplexityScorerDefaults).mockReturnValue(LOADED_SCORER_DEFAULTS_QUERY);
     await i18n.changeLanguage("zh");
   });
 
@@ -151,5 +165,170 @@ describe("auto-router setup Chinese copy", () => {
     );
 
     expect(toast.success).toHaveBeenCalledWith("成功创建自动路由器：my-router");
+  });
+
+  it("renders the advanced scoring chrome in Chinese", () => {
+    renderWithProviders(
+      <HeuristicScoringConfig value={{ ...value, reasoning_override_min_score: 0.2 }} onChange={vi.fn()} />,
+    );
+    fireEvent.click(screen.getByText("高级评分"));
+
+    expectChinese(
+      "下方的每个调节项都是可选的。若不修改，路由器会跟随随附的默认值，因此会采用对它们的任何重新校准，而不会固定在此处显示的数字上。",
+      "Every knob below is optional. Left untouched, the router follows the shipped defaults, so it picks up any recalibration of them rather than staying pinned to the numbers shown here.",
+    );
+    expectChinese("总计 1.00", "total 1.00");
+    expectChinese("恢复默认权重", "Restore default weights");
+    expectChinese("重置为默认值", "Reset to defaults");
+    expectChineseLabel("代码存在 权重", "Code presence weight");
+    expectChinese(
+      "两个或更多推理标记会将请求提升到推理层级，但仅当其加权得分达到此下限时才会生效。",
+      "Two or more reasoning markers promote a request to the reasoning tier, but only once its weighted score reaches this floor.",
+    );
+    expectChinese(
+      "若不修改，它会跟随“简单到中等”的边界，当前为 0.15。",
+      "Left untouched, it tracks the Simple to Medium boundary, currently 0.15.",
+    );
+    expectChinese("将其设为 0 即可仅凭标记进行提升。", "Set it to 0 to promote on the markers alone.");
+    expectChinese(
+      "每个层级的起始加权得分。得分范围为 -1 到 1，简短或对话式提示的得分低于 0，因此负边界是将琐碎流量提升到更高层级的有效方式。",
+      "The weighted score each tier starts at. Scores run from -1 to 1, and short or conversational prompts score below 0, so a negative boundary is a valid way to lift trivial traffic into a higher tier.",
+    );
+    expectChinese(
+      "将 Token 数量维度推向其下限或上限的预估提示长度（以 Token 计）。两者之间的长度得分为中性。",
+      "Estimated prompt length, in tokens, that pushes the token count dimension to its floor or ceiling. Lengths between the two score neutral.",
+    );
+    expectChinese(
+      "更改某个权重会重新平衡其他内置和自定义权重，使其总和为 1.00。保存会存储这些值。未修改的路由器保留其现有权重。",
+      "Changing a weight rebalances the other built-in and custom weights to total 1.00. Save stores those values. Untouched routers keep their existing weights.",
+    );
+  });
+
+  it("renders the singular and plural override-count badge in Chinese", () => {
+    const { unmount } = renderWithProviders(
+      <HeuristicScoringConfig value={{ ...value, reasoning_override_min_score: 0.2 }} onChange={vi.fn()} />,
+    );
+    expectChinese("1 项覆盖", "1 override");
+    unmount();
+
+    renderWithProviders(
+      <HeuristicScoringConfig
+        value={{
+          ...value,
+          reasoning_override_min_score: 0.2,
+          tier_boundaries: { simple_medium: 0.1, medium_complex: 0.3, complex_reasoning: 0.5 },
+        }}
+        onChange={vi.fn()}
+      />,
+    );
+    expectChinese("2 项覆盖", "2 overrides");
+  });
+
+  it("renders the loading copy for the shipped defaults in Chinese", () => {
+    vi.mocked(useComplexityScorerDefaults).mockReturnValue({
+      data: undefined,
+      isPending: true,
+      isError: false,
+      refetch: vi.fn(),
+    } as never);
+    renderWithProviders(<HeuristicScoringConfig value={value} onChange={vi.fn()} />);
+    fireEvent.click(screen.getByText("高级评分"));
+
+    expectChinese("正在加载随附的默认值……", "Loading the shipped defaults...");
+  });
+
+  it("renders the shipped-defaults failure copy and retry in Chinese", () => {
+    vi.mocked(useComplexityScorerDefaults).mockReturnValue({
+      data: undefined,
+      isPending: false,
+      isError: true,
+      refetch: vi.fn(),
+    } as never);
+    renderWithProviders(<HeuristicScoringConfig value={value} onChange={vi.fn()} />);
+    fireEvent.click(screen.getByText("高级评分"));
+
+    expectChinese(
+      "无法加载随附的默认值，因此仅显示此路由器已覆盖的值。保存仍然有效，未修改的调节项会继续跟随默认值。",
+      "Could not load the shipped defaults, so only values this router already overrides are shown. Saving still works, and an untouched knob keeps following the defaults.",
+    );
+    expectChinese("重试", "Retry");
+  });
+
+  it("renders the untouched override-floor copy in Chinese when no defaults are known", () => {
+    vi.mocked(useComplexityScorerDefaults).mockReturnValue({
+      data: undefined,
+      isPending: false,
+      isError: false,
+      refetch: vi.fn(),
+    } as never);
+    renderWithProviders(<HeuristicScoringConfig value={value} onChange={vi.fn()} />);
+    fireEvent.click(screen.getByText("高级评分"));
+
+    expectChinese("若不修改，它会跟随“简单到中等”的边界。", "Left untouched, it tracks the Simple to Medium boundary.");
+  });
+
+  it("renders the custom dimension scoring modes, aria labels and help in Chinese", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(
+      <CustomDimensionRows
+        rows={[{ id: "draft", name: "domain", weight: 0.2, keywords: ["orbitmesh"] }]}
+        disabled={false}
+        onChange={vi.fn()}
+        onWeight={vi.fn()}
+        onAdd={vi.fn()}
+        onRemove={vi.fn()}
+      />,
+    );
+
+    expectChinese("二元", "Binary");
+    expectChineseLabel("移除自定义维度 1", "Remove custom dimension 1");
+    expectChineseLabel("domain 权重", "domain weight");
+    expectChinese(
+      "二元对任何命中都使用完整权重。匹配计数对一个不同匹配项使用一半权重，对两个或更多使用完整权重。",
+      "Binary uses the full weight for any hit. Match count uses half for one distinct matcher and full weight for two or more.",
+    );
+
+    await user.click(screen.getByLabelText("评分方式"));
+    expect(await screen.findByText("匹配计数")).toBeInTheDocument();
+    expect(screen.queryByText("Match count")).not.toBeInTheDocument();
+  });
+
+  it("renders the router builder route chrome, tooltips and hide toggle in Chinese", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<RouterConfigBuilder modelInfo={[]} value={null} onChange={vi.fn()} />);
+
+    await user.hover(findTooltipTriggerBeside(screen.getByText("路由配置")));
+    expect(await screen.findByText("配置路由逻辑，根据用户输入模式自动选择最佳模型")).toBeInTheDocument();
+    expect(
+      screen.queryByText("Configure routing logic to automatically select the best model based on user input patterns"),
+    ).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "添加路由" }));
+
+    expectChinese("路由 1：未命名", "Route 1: Unnamed");
+    expectChineseLabel("删除", "delete");
+    expectChinesePlaceholder("描述何时应使用此路由……", "Describe when this route should be used...");
+    expectChinesePlaceholder("输入话语并按回车……", "Type an utterance and press Enter...");
+    expectChinese(
+      "输入话语并按回车即可添加。你也可以粘贴多行。",
+      "Type an utterance and press Enter to add it. You can also paste multiple lines.",
+    );
+
+    await user.hover(findTooltipTriggerBeside(screen.getByText("得分阈值")));
+    expect(await screen.findByText("路由到此模型的最低相似度得分（0-1）")).toBeInTheDocument();
+    expect(screen.queryByText("Minimum similarity score to route to this model (0-1)")).not.toBeInTheDocument();
+
+    await user.hover(findTooltipTriggerBeside(screen.getByText("示例话语")));
+    expect(await screen.findByText("此路由的训练示例。输入话语并按回车即可添加。")).toBeInTheDocument();
+    expect(
+      screen.queryByText("Training examples for this route. Type an utterance and press Enter to add it."),
+    ).not.toBeInTheDocument();
+
+    const utteranceInput = screen.getByPlaceholderText("输入话语并按回车……");
+    await user.type(utteranceInput, "hello{Enter}");
+    expectChineseLabel("移除 hello", "Remove hello");
+
+    await user.click(screen.getByRole("button", { name: "显示" }));
+    expectChinese("隐藏", "Hide");
   });
 });

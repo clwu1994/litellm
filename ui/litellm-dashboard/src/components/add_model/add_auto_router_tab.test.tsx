@@ -11,6 +11,7 @@ import {
 import userEvent from "@testing-library/user-event";
 import { vi } from "vitest";
 import i18n from "@/i18n/bootstrapI18n";
+import { findTooltipTrigger } from "../../../tests/i18nTooltip";
 import AddAutoRouterTab from "./add_auto_router_tab";
 import { toast } from "@/lib/toast";
 import { handleAddAutoRouterSubmit } from "./handle_add_auto_router_submit";
@@ -1445,5 +1446,153 @@ describe("AddAutoRouterTab Chinese copy", () => {
     expect(await screen.findByText("自定义配置")).toBeInTheDocument();
     expect(screen.queryByText("Custom Configuration")).not.toBeInTheDocument();
     expectChinese("从头定义你的自动路由器", "Define your auto router from scratch");
+  });
+
+  it("renders the Chinese name and team hints inside their open tooltips", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(
+      <AddAutoRouterTab handleOk={vi.fn()} accessToken="token" userRole="Internal User" createScope="team-required" />,
+    );
+
+    await user.hover(findTooltipTrigger(screen.getByText("自动路由器名称")));
+    expect(await screen.findByText("此自动路由器配置的唯一名称")).toBeInTheDocument();
+    expect(screen.queryByText("Unique name for this auto router configuration")).not.toBeInTheDocument();
+
+    await user.hover(findTooltipTrigger(screen.getByText("选择团队")));
+    expect(await screen.findByText("选择此自动路由器所属的团队。只有该团队的密钥才能调用它。")).toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        "Select the team this auto router belongs to. Only keys for this team will be able to call it.",
+      ),
+    ).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese access-group hint inside its open tooltip", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<Harness />);
+
+    await user.hover(findTooltipTrigger(screen.getByText("模型访问组")));
+    expect(await screen.findByText("使用模型访问组控制谁可以访问此自动路由器")).toBeInTheDocument();
+    expect(
+      screen.queryByText("Use model access groups to control who can access this auto router"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese help tooltip", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<Harness />);
+
+    await user.hover(screen.getByRole("link", { name: "需要帮助？" }));
+    expect(await screen.findByText("在我们的 GitHub 上获取帮助")).toBeInTheDocument();
+    expect(screen.queryByText("Get help on our github")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese automatic setup panel and its success toast", async () => {
+    const user = userEvent.setup();
+    mockFetchAvailableModels.mockResolvedValue(ALL_FAMILY_MODELS);
+    mockFetchAllModelDeployments.mockResolvedValue([]);
+    renderWithProviders(<Harness />);
+
+    expect(await screen.findByText("不知道从哪里开始？")).toBeInTheDocument();
+    expect(screen.queryByText("Not sure where to start?")).not.toBeInTheDocument();
+    expectChinese("让我们为每个复杂度层级挑选模型。", "Let us pick models for each complexity tier.");
+    expectChinese("自动配置", "Configure automatically");
+    await user.click(await screen.findByTestId("configure-automatically-button"));
+    await waitFor(() => expect(toast.success).toHaveBeenCalledWith("已创建自动设置", expect.anything()));
+    expect(toast.success).not.toHaveBeenCalledWith("Automatic setup created", expect.anything());
+  });
+
+  it("renders the Chinese template placeholder and deployment-match hint", async () => {
+    const renamedDeploymentsFor = (presetKey: string) =>
+      [...getRequiredModelsInPreset(getPresetByKey(presetKey)!)].map((model, index) => ({
+        model_name: `renamed-${presetKey}-${index}`,
+        litellm_params: { model: `someprovider/${model}` },
+      }));
+    const allRenamed = getAllPresets().flatMap((preset) => renamedDeploymentsFor(preset.key));
+    mockFetchAvailableModels.mockResolvedValue(allRenamed.map((d) => ({ model_group: d.model_name, mode: "chat" })));
+    mockFetchAllModelDeployments.mockResolvedValue(allRenamed);
+
+    renderWithProviders(<Harness />);
+
+    expectChinese("选择模板，或选择“自定义”自行定义", "Choose a template or select Custom to define your own");
+
+    openTemplateDropdown();
+    expect((await screen.findAllByText("与你的部署匹配")).length).toBeGreaterThan(0);
+    expect(screen.queryAllByText("Matches your deployments")).toHaveLength(0);
+  });
+
+  it("renders the Chinese model-load failure and retry", async () => {
+    mockFetchAvailableModels.mockRejectedValue(new Error("network error"));
+    renderWithProviders(<Harness />);
+
+    expect(await screen.findByText("无法加载可用模型。")).toBeInTheDocument();
+    expect(screen.queryByText("Could not load available models.")).not.toBeInTheDocument();
+    expectChinese("重试", "Retry");
+  });
+
+  it("renders the Chinese template catalog loading and unavailable states", () => {
+    vi.mocked(useAutoRouterPresets).mockReturnValue({
+      ...LOADED_PRESETS_QUERY,
+      data: undefined,
+      isPending: true,
+    } as never);
+    const { unmount } = renderWithProviders(<Harness />);
+    expectChinese("正在加载模板……", "Loading templates...");
+    unmount();
+
+    vi.mocked(useAutoRouterPresets).mockReturnValue({
+      ...LOADED_PRESETS_QUERY,
+      data: undefined,
+      isError: true,
+      refetch: vi.fn(),
+    } as never);
+    renderWithProviders(<Harness />);
+    expectChinese(
+      "无法加载模板，因此仅显示“自定义配置”。",
+      "Could not load templates, so only Custom Configuration is shown.",
+    );
+    expectChinese("重试", "Retry");
+    vi.mocked(useAutoRouterPresets).mockReturnValue(LOADED_PRESETS_QUERY);
+  });
+
+  it("reports the Chinese missing-name and missing-model toasts", async () => {
+    const user = userEvent.setup();
+    vi.mocked(getMissingTiersError).mockReturnValue(null);
+    renderWithProviders(<Harness />);
+
+    await user.click(screen.getByRole("button", { name: "添加自动路由器" }));
+    await waitFor(() => expect(toast.fromError).toHaveBeenCalledWith("请输入自动路由器名称"));
+    expect(toast.fromError).not.toHaveBeenCalledWith("Please enter an Auto Router Name");
+
+    await user.click(screen.getByTestId("auto-router-test-connect-btn"));
+    await waitFor(() => expect(toast.fromError).toHaveBeenCalledWith("请至少为一个复杂度层级选择一个模型"));
+    expect(toast.fromError).not.toHaveBeenCalledWith("Please select at least one model for a complexity tier");
+  });
+
+  it("reports the Chinese required-fields toast when a team is missing", async () => {
+    const user = userEvent.setup();
+    vi.mocked(getMissingTiersError).mockReturnValue(null);
+    renderWithProviders(
+      <AddAutoRouterTab handleOk={vi.fn()} accessToken="token" userRole="Internal User" createScope="team-required" />,
+    );
+
+    await user.type(screen.getByPlaceholderText(/smart_router/i), "team-scoped-router");
+    await user.click(screen.getByRole("button", { name: "添加自动路由器" }));
+
+    await waitFor(() => expect(toast.fromError).toHaveBeenCalledWith("请填写所有必填字段"));
+    expect(toast.fromError).not.toHaveBeenCalledWith("Please fill in all required fields");
+  });
+
+  it("renders the Chinese close button in the routing test dialog", async () => {
+    const user = userEvent.setup();
+    vi.mocked(getMissingTiersError).mockReturnValue(null);
+    renderWithProviders(<Harness />);
+
+    await user.click(screen.getByTestId("auto-router-test-routing-btn"));
+
+    const dialog = await screen.findByRole("dialog");
+    const closeButton = within(dialog).getByRole("button", { name: "关闭" });
+    expect(closeButton).toHaveTextContent("关闭");
+    expect(closeButton).not.toHaveTextContent("Close");
   });
 });

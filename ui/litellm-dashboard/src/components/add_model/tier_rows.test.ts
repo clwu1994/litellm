@@ -141,7 +141,7 @@ describe("getCustomTierRowsError", () => {
       { key: "autoRouterConfig.complexity.rowsError.fallback" },
     ],
   ])("reports the row problem the backend would reject", (customTierSet, expected) => {
-    expect(getCustomTierRowsError(customTierSet)).toMatchObject(expected);
+    expect(getCustomTierRowsError(customTierSet)).toEqual(expected);
   });
 
   it("lets a built-in name inherit its definition, which is the one blank the backend allows", () => {
