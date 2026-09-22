@@ -342,7 +342,7 @@ describe("PoliciesPanel Chinese copy", () => {
     renderPanel();
 
     await user.click(await screen.findByRole("button", { name: "使用模板" }));
-    await user.click(await screen.findByRole("button", { name: /create 1 guardrail & use template/i }));
+    await user.click(await screen.findByRole("button", { name: "创建 1 个 Guardrail 并使用模板" }));
 
     await act(async () => {
       await vi.waitFor(() =>
@@ -360,7 +360,7 @@ describe("PoliciesPanel Chinese copy", () => {
     renderPanel();
 
     await user.click(await screen.findByRole("button", { name: "使用模板" }));
-    await user.click(await screen.findByRole("button", { name: /create 2 guardrails & use template/i }));
+    await user.click(await screen.findByRole("button", { name: "创建 2 个 Guardrail 并使用模板" }));
 
     await act(async () => {
       await vi.waitFor(() =>
@@ -379,7 +379,7 @@ describe("PoliciesPanel Chinese copy", () => {
     renderPanel();
 
     await user.click(await screen.findByRole("button", { name: "使用模板" }));
-    await user.click(await screen.findByRole("button", { name: /^use template$/i }));
+    await user.click(await screen.findByRole("button", { name: "使用模板" }));
 
     await act(async () => {
       await vi.waitFor(() => expect(toast.success).toHaveBeenCalledWith("模板已就绪！完成策略表单即可保存。"));
@@ -396,7 +396,7 @@ describe("PoliciesPanel Chinese copy", () => {
     renderPanel();
 
     await user.click(await screen.findByRole("button", { name: "使用模板" }));
-    await user.click(await screen.findByRole("button", { name: /create 2 guardrails & use template/i }));
+    await user.click(await screen.findByRole("button", { name: "创建 2 个 Guardrail 并使用模板" }));
 
     await act(async () => {
       await vi.waitFor(() =>
