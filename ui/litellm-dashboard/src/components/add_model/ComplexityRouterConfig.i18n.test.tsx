@@ -466,4 +466,107 @@ describe("ComplexityRouterConfig Chinese copy", () => {
       screen.queryByText("A tier you defined. The classifier routes requests matching its definition here."),
     ).not.toBeInTheDocument();
   });
+
+  it("renders the edited-tier-set restriction reasons and the classifier intro in Chinese", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(
+      <ComplexityRouterConfig
+        {...baseProps}
+        onEditingTiersChange={vi.fn()}
+        value={{
+          ...baseProps.value,
+          classifier_type: "llm",
+          classifier_llm_config: { model: "gpt-4", timeout_ms: 3000 },
+          custom_tier_set: {
+            tiers: [
+              { id: "a", name: "CASUAL", definition: "small talk", models: ["gpt-3.5-turbo"] },
+              { id: "b", name: "AUDIT", definition: "audits", models: ["gpt-4"] },
+            ],
+            fallback_tier_id: "a",
+          },
+        }}
+      />,
+    );
+
+    expectChinese(
+      "显示名称会重命名内置层级，而你的层级集已将其替换。请直接为每个层级命名",
+      "Display names rename the built-in tiers, which your tier set replaces. Name each tier directly",
+    );
+    expectChinese(
+      "复杂度路由器使用你的分类器模型对每个请求进行分类，并将其路由到对应层级。请配置每个层级由哪些模型处理。",
+      "The complexity router classifies each request with your classifier model and routes it to that tier. Configure which model(s) handle each tier.",
+    );
+
+    openSection("高级：自适应路由");
+    expectChinese(
+      "自适应路由沿内置层级阶梯为模型评分，而你的层级集已将其替换",
+      "Adaptive routing scores models along the built-in tier ladder, which your tier set replaces",
+    );
+
+    openSection("高级：停滞任务升级");
+    expectChinese(
+      "停滞升级会沿内置层级阶梯提升请求，而你的层级集已将其替换",
+      "Stall escalation bumps a request along the built-in tier ladder, which your tier set replaces",
+    );
+
+    openSection("高级：升级关键词");
+    expectChinese(
+      "升级会沿内置层级阶梯提升请求，而你的层级集已将其替换",
+      "Escalation bumps a request along the built-in tier ladder, which your tier set replaces",
+    );
+
+    openSection("高级：分类方法");
+    expectChinese(
+      "会话固定沿内置层级阶梯升级，而你的层级集已将其替换",
+      "Session pinning escalates along the built-in tier ladder, which your tier set replaces",
+    );
+    expectChinese(
+      "回退层级是编辑过的层级集在分类器失败时的路由目标",
+      "Fallback Tier is where an edited tier set routes when the classifier fails",
+    );
+
+    await user.hover(screen.getByText("启发式"));
+    expect(
+      await screen.findByText(
+        "启发式评分器只会产生内置层级，因此编辑过的层级集需要 LLM 分类器。启发式优先和混合同样不适用：它们的本地评分器会自行决定有把握的流量",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        "The heuristic scorer only produces the built-in tiers, so an edited set needs the LLM classifier. Heuristic first and hybrid are out for the same reason: their local scorer decides the traffic it is sure of",
+      ),
+    ).not.toBeInTheDocument();
+  });
+
+  it("renders the heuristic-v2 intro in Chinese", () => {
+    renderWithProviders(
+      <ComplexityRouterConfig {...baseProps} value={{ ...baseProps.value, classifier_type: "heuristic_v2" }} />,
+    );
+
+    expectChinese(
+      "复杂度路由器使用经过校准的本地四层级模型对每个请求进行分类（不调用 API）。请配置每个层级由哪些模型处理。",
+      "The complexity router classifies each request with a calibrated local four-tier model (no API calls). Configure which model(s) handle each tier.",
+    );
+  });
+
+  it("renders the custom-set default-model placeholder in Chinese", () => {
+    renderWithProviders(
+      <ComplexityRouterConfig
+        {...baseProps}
+        value={{
+          ...baseProps.value,
+          classifier_type: "llm",
+          custom_tier_set: {
+            tiers: [
+              { id: "a", name: "CASUAL", definition: "small talk", models: [] },
+              { id: "b", name: "AUDIT", definition: "audits", models: [] },
+            ],
+            fallback_tier_id: "a",
+          },
+        }}
+      />,
+    );
+
+    expectChinesePlaceholder("请为回退层级添加模型", "Add a model to your fallback tier");
+  });
 });

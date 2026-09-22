@@ -442,4 +442,23 @@ describe("auto-router matching Chinese copy", () => {
     expect(await screen.findByText("正在路由……")).toBeInTheDocument();
     expect(screen.queryByText("Routing...")).not.toBeInTheDocument();
   });
+
+  it("renders the stall escalation blocked reasons in Chinese", () => {
+    const { unmount } = renderWithProviders(
+      <StallEscalationConfig value={{ ...value, session_affinity: true }} onChange={vi.fn()} />,
+    );
+    expectChinese(
+      "请将“高级：分类方法”下的“分类频率”设为“每个请求”以使用此功能。每个会话仅评分一次会重放该模型而不是进行分类，因此停滞永远不会到达分类器。",
+      'Set "How often to classify" to every request under Advanced: Classification Method to use this. Scoring once per session replays that model instead of classifying, so a stall never reaches the classifier.',
+    );
+    unmount();
+
+    renderWithProviders(
+      <StallEscalationConfig value={{ ...value, classification_mode: "user_turn" }} onChange={vi.fn()} />,
+    );
+    expectChinese(
+      "请将“高级：分类方法”下的“分类频率”设为“每个请求”以使用此功能。仅对新用户消息评分会跳过停滞出现的工具调用轮次。",
+      'Set "How often to classify" to every request under Advanced: Classification Method to use this. Scoring only new user messages skips the tool-call turns a stall shows up in.',
+    );
+  });
 });

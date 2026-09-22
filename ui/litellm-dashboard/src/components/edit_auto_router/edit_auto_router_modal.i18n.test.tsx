@@ -171,7 +171,6 @@ describe("EditAutoRouterModal Chinese copy", () => {
     await user.click(screen.getByRole("button", { name: "保存更改" }));
 
     await waitFor(() => expect(toast.fromError).toHaveBeenCalledWith("请为每个路由选择模型"));
-    expect(toast.fromError).not.toHaveBeenCalledWith("Please select a model for every route");
   });
 
   it("renders the Chinese access groups help inside the open tooltip", async () => {

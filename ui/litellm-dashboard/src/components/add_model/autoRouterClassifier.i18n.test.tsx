@@ -643,4 +643,150 @@ describe("auto-router classifier Chinese copy", () => {
       unmount();
     }
   });
+
+  it("renders the four scoring explanation variants in Chinese", () => {
+    renderWithProviders(<ClassificationMethodConfig {...methodProps} />);
+    expectChinese(
+      "路由器会按 7 个内置维度为每个请求评分：Token 数量、代码存在、推理标记、技术术语、简单指示、多步骤模式和问题复杂度，再加上你添加的任何自定义维度。加权得分决定层级：",
+      "The router scores each request across 7 built-in dimensions: token count, code presence, reasoning markers, technical terms, simple indicators, multi-step patterns, and question complexity, plus any custom dimensions you add. The weighted score determines the tier:",
+    );
+    cleanup();
+
+    renderWithProviders(
+      <ClassificationMethodConfig {...methodProps} value={{ ...value, classifier_type: "heuristic_v2" }} />,
+    );
+    expectChinese(
+      "路由器使用内置的校准模型估算四个层级的成功概率，然后选择第一个达到其训练阈值的层级。它在本地运行，不调用分类器 API。",
+      "The router estimates success probability for all four tiers with the bundled calibrated model, then selects the first tier that meets its trained threshold. It runs locally with no classifier API call.",
+    );
+    cleanup();
+
+    renderWithProviders(
+      <ClassificationMethodConfig
+        {...methodProps}
+        value={{
+          ...value,
+          classifier_llm_config: { model: "gpt-4o-mini", timeout_ms: 3000, system_prompt: "custom" },
+          classifier_fallback: "heuristic",
+        }}
+      />,
+    );
+    expectChinese(
+      "此路由器使用你自己的提示词进行分类，因此层级取决于其中规定的评分标准。四个层级名称保持固定。下方的评分是启发式评分，现在仅在分类器调用失败时运行：",
+      "This router classifies with your own prompt, so the tier comes from whatever rubric it states. The four tier names stay fixed. The scoring below is the heuristic, which now runs only when the classifier call fails:",
+    );
+    cleanup();
+
+    renderWithProviders(
+      <ClassificationMethodConfig
+        {...methodProps}
+        value={{
+          ...value,
+          classifier_llm_config: { model: "gpt-4o-mini", timeout_ms: 3000, system_prompt: "custom" },
+          classifier_fallback: "default_model",
+        }}
+      />,
+    );
+    expectChinese(
+      "此路由器使用你自己的提示词进行分类，因此层级取决于其中规定的评分标准。四个层级名称保持固定。下方的评分不再运行，因为分类器失败时会改为路由到默认模型：",
+      "This router classifies with your own prompt, so the tier comes from whatever rubric it states. The four tier names stay fixed. The scoring below no longer runs at all, since a failed classifier routes to the default model instead:",
+    );
+  });
+
+  it("renders the opening prompt editor copy variants in Chinese", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(
+      <OpeningPromptEditor
+        classificationPrompt="my custom opening"
+        classificationExamples={undefined}
+        onChange={vi.fn()}
+        tierSource={{ kind: "custom", tierRows: [] }}
+        contextWindowSize={3}
+      />,
+    );
+    expectChinese(
+      "此路由器以你自己的说明和校准示例开头。你的层级定义和注入防护仍会追加在其下方。",
+      "This router opens with your own instructions and calibration examples. Your tier definitions and the injection guard are still appended below them.",
+    );
+    await user.click(screen.getByRole("button", { name: "编辑自定义提示词" }));
+    expectChinese(
+      "你的文本是分类器提示词的开头，因此你自己的校准示例应放在这里。路由器会在下方追加你的层级定义及其注入防护，两者都无法在此编辑或移除。请使用上方的“编辑层级”编辑定义本身。",
+      "Your text is the opening of the classifier prompt, so it is where calibration examples of your own belong. The router appends your tier definitions and its injection guard underneath, and neither can be edited or removed from here. Edit the definitions themselves with Edit tiers above.",
+    );
+    cleanup();
+
+    renderWithProviders(
+      <OpeningPromptEditor
+        classificationPrompt={undefined}
+        classificationExamples={undefined}
+        onChange={vi.fn()}
+        tierSource={{ kind: "custom", tierRows: [] }}
+        contextWindowSize={3}
+      />,
+    );
+    expectChinese(
+      "编写开头说明和你自己的校准示例。你的层级定义和注入防护始终会追加在其下方。",
+      "Write the opening instructions and your own calibration examples. Your tier definitions and the injection guard are always appended below them.",
+    );
+    cleanup();
+
+    renderWithProviders(
+      <OpeningPromptEditor
+        classificationPrompt="my custom opening"
+        classificationExamples={undefined}
+        onChange={vi.fn()}
+        tierSource={{ kind: "builtIn", classificationRubric: "agentic" }}
+        contextWindowSize={3}
+      />,
+    );
+    expectChinese(
+      "此路由器以你自己的说明和校准示例开头，取代基础评分标准中的对应内容。其层级标准和注入防护仍会追加在其下方。",
+      "This router opens with your own instructions and calibration examples in place of the base rubric's. Its tier criteria and the injection guard are still appended below them.",
+    );
+    cleanup();
+
+    renderWithProviders(
+      <OpeningPromptEditor
+        classificationPrompt={undefined}
+        classificationExamples={undefined}
+        onChange={vi.fn()}
+        tierSource={{ kind: "builtIn", classificationRubric: "agentic" }}
+        contextWindowSize={3}
+      />,
+    );
+    await user.click(screen.getByRole("button", { name: "自定义提示词" }));
+    expectChinese(
+      "基础评分标准决定层级标准，并在你编写自己的内容之前提供开头说明和校准示例。你的文本会替换该开头和这些示例。路由器会在下方追加四项层级标准及其注入防护，两者都无法在此编辑或移除。请使用上方的显示名称重命名层级。",
+      "The base rubric decides the tier criteria and, until you write your own, the opening instructions and calibration examples. Your text replaces that opening and those examples. The router appends the four tier criteria and its injection guard underneath, and neither can be edited or removed from here. Rename the tiers with the display names above.",
+    );
+  });
+
+  it("renders the classifier prompt editor override state copy in Chinese", () => {
+    renderWithProviders(
+      <ClassifierPromptEditor
+        systemPrompt="my custom classifier prompt"
+        onChange={vi.fn()}
+        contextWindowSize={3}
+        classificationRubric="agentic"
+      />,
+    );
+    expectChinese(
+      "此路由器使用你自己的评分标准，而不是内置的复杂度评分标准。",
+      "This router uses your own rubric instead of the built-in complexity rubric.",
+    );
+    cleanup();
+
+    renderWithProviders(
+      <ClassifierPromptEditor
+        systemPrompt={undefined}
+        onChange={vi.fn()}
+        contextWindowSize={3}
+        classificationRubric="agentic"
+      />,
+    );
+    expectChinese(
+      "替换内置的复杂度评分标准，改为按其他内容分类，例如数据敏感性。",
+      "Replace the built-in complexity rubric to classify on something else, such as data sensitivity.",
+    );
+  });
 });

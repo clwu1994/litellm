@@ -331,4 +331,31 @@ describe("auto-router setup Chinese copy", () => {
     await user.click(screen.getByRole("button", { name: "显示" }));
     expectChinese("隐藏", "Hide");
   });
+
+  it("renders the heuristic scoring boundary and token warnings in Chinese", () => {
+    const { unmount } = renderWithProviders(
+      <HeuristicScoringConfig
+        value={{ ...value, tier_boundaries: { simple_medium: 0.5, medium_complex: 0.3, complex_reasoning: 0.6 } }}
+        onChange={vi.fn()}
+      />,
+    );
+    fireEvent.click(screen.getByText("高级评分"));
+    expectChinese(
+      "这些边界递减，因此它们之间的每个层级都不可达，其流量会路由到其他地方。",
+      "These boundaries decrease, so every tier between them is unreachable and its traffic routes elsewhere.",
+    );
+    unmount();
+
+    renderWithProviders(
+      <HeuristicScoringConfig
+        value={{ ...value, token_thresholds: { simple: 400, complex: 100 } }}
+        onChange={vi.fn()}
+      />,
+    );
+    fireEvent.click(screen.getByText("高级评分"));
+    expectChinese(
+      "短阈值不低于长阈值，因此没有任何提示长度在长度维度上得分为中性。",
+      "The short threshold is not below the long one, so no prompt length scores neutral on length.",
+    );
+  });
 });

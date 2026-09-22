@@ -1419,6 +1419,7 @@ describe("AddAutoRouterTab Chinese copy", () => {
   });
 
   afterEach(async () => {
+    vi.mocked(useAutoRouterPresets).mockReturnValue(LOADED_PRESETS_QUERY);
     cleanup();
     await i18n.changeLanguage("en");
   });
@@ -1552,7 +1553,6 @@ describe("AddAutoRouterTab Chinese copy", () => {
       "Could not load templates, so only Custom Configuration is shown.",
     );
     expectChinese("重试", "Retry");
-    vi.mocked(useAutoRouterPresets).mockReturnValue(LOADED_PRESETS_QUERY);
   });
 
   it("reports the Chinese missing-name and missing-model toasts", async () => {
@@ -1594,5 +1594,36 @@ describe("AddAutoRouterTab Chinese copy", () => {
     const closeButton = within(dialog).getByRole("button", { name: "关闭" });
     expect(closeButton).toHaveTextContent("关闭");
     expect(closeButton).not.toHaveTextContent("Close");
+  });
+
+  it("renders the Chinese preset availability hints inside the open template dropdown", async () => {
+    let resolveModels: (models: ModelGroup[]) => void = () => {};
+    mockFetchAvailableModels.mockImplementation(
+      () =>
+        new Promise<ModelGroup[]>((resolve) => {
+          resolveModels = resolve;
+        }),
+    );
+    renderWithProviders(<Harness />);
+    openTemplateDropdown();
+    expect((await screen.findAllByText("正在检查模型可用性……")).length).toBeGreaterThan(0);
+    expect(screen.queryAllByText("Checking model availability...")).toHaveLength(0);
+    resolveModels(ALL_FAMILY_MODELS);
+    cleanup();
+
+    testQueryClient.clear();
+    mockFetchAvailableModels.mockRejectedValue(new Error("network error"));
+    renderWithProviders(<Harness />);
+    openTemplateDropdown();
+    expect((await screen.findAllByText("无法验证这些模型是否可用")).length).toBeGreaterThan(0);
+    expect(screen.queryAllByText("Cannot verify these models are available")).toHaveLength(0);
+    cleanup();
+
+    testQueryClient.clear();
+    mockFetchAvailableModels.mockResolvedValue([]);
+    renderWithProviders(<Harness />);
+    openTemplateDropdown();
+    await waitFor(() => expect(optionByLabel("Anthropic Family")!).toHaveTextContent("缺少："));
+    expect(optionByLabel("Anthropic Family")!).not.toHaveTextContent("Missing:");
   });
 });
