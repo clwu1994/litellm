@@ -1,5 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
+import i18n from "@/i18n/bootstrapI18n";
 import { prepareModelAddRequest } from "./handle_add_model_submit";
+
+const t = i18n.getFixedT(null, "models");
 
 vi.mock("../networking", () => ({
   modelCreateCall: vi.fn(),
@@ -22,7 +25,7 @@ describe("prepareModelAddRequest", () => {
       output_cost_per_token: "1000000",
     };
 
-    const deployments = await prepareModelAddRequest({ ...formValues }, "token", null);
+    const deployments = await prepareModelAddRequest({ ...formValues }, "token", null, t);
 
     expect(deployments).toHaveLength(1);
     const [deployment] = deployments!;
@@ -47,7 +50,7 @@ describe("prepareModelAddRequest", () => {
       custom_llm_provider: "Petals",
     };
 
-    const deployments = await prepareModelAddRequest({ ...fallbackValues }, "token", null);
+    const deployments = await prepareModelAddRequest({ ...fallbackValues }, "token", null, t);
 
     expect(deployments).toHaveLength(1);
     const [deployment] = deployments!;
@@ -70,7 +73,7 @@ describe("prepareModelAddRequest", () => {
       }),
     };
 
-    const deployments = await prepareModelAddRequest({ ...formValues }, "token", null);
+    const deployments = await prepareModelAddRequest({ ...formValues }, "token", null, t);
 
     expect(deployments).toHaveLength(1);
     const [deployment] = deployments!;
@@ -94,7 +97,7 @@ describe("prepareModelAddRequest", () => {
       litellm_credential_name: null,
     };
 
-    const deployments = await prepareModelAddRequest({ ...formValues }, "token", null);
+    const deployments = await prepareModelAddRequest({ ...formValues }, "token", null, t);
 
     expect(deployments).toHaveLength(1);
     const [deployment] = deployments!;

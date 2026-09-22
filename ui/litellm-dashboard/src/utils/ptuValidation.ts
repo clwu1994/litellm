@@ -1,5 +1,12 @@
+import type { ParseKeys } from "i18next";
+
 interface ValidatorRule {
   validator: (rule: unknown, value: unknown) => Promise<void>;
+}
+
+interface ValidationKey {
+  readonly key: ParseKeys<"models">;
+  readonly values?: Readonly<Record<string, string | number>>;
 }
 
 interface FormInstance {
@@ -34,7 +41,10 @@ export const ptuCountRules: ValidatorRule[] = [
     validator: (_, value) =>
       isPositiveWholePtuCount(value)
         ? Promise.resolve()
-        : Promise.reject(new Error(`PTU Count must be a whole number between 1 and ${MAX_PTU_COUNT.toLocaleString()}`)),
+        : Promise.reject({
+            key: "addModel.ptu.countRange",
+            values: { max: MAX_PTU_COUNT.toLocaleString() },
+          } satisfies ValidationKey),
   },
 ];
 
@@ -52,9 +62,10 @@ export const ptuRateRules: ValidatorRule[] = [
     validator: (_, value) =>
       isNonNegativePtuRate(value)
         ? Promise.resolve()
-        : Promise.reject(
-            new Error(`Cost per PTU / Hour must be between 0 and ${MAX_COST_PER_PTU_PER_HOUR.toLocaleString()}`),
-          ),
+        : Promise.reject({
+            key: "addModel.ptu.rateRange",
+            values: { max: MAX_COST_PER_PTU_PER_HOUR.toLocaleString() },
+          } satisfies ValidationKey),
   },
 ];
 
@@ -69,7 +80,7 @@ export const ptuPairRule =
     validator: (_, value) =>
       isFilledPtuValue(value) === isFilledPtuValue(getFieldValue(siblingField))
         ? Promise.resolve()
-        : Promise.reject(new Error("PTU Count and Cost per PTU / Hour must be set together")),
+        : Promise.reject({ key: "addModel.ptu.pairRequired" } satisfies ValidationKey),
   });
 
 /**
@@ -87,7 +98,7 @@ export const ptuNoUsageCostRule =
       const echoed = thisField !== undefined && isFieldTouched !== undefined && !isFieldTouched(thisField);
       return echoed || !isFilledPtuValue(getFieldValue(countField)) || !isFilledPtuValue(value) || Number(value) === 0
         ? Promise.resolve()
-        : Promise.reject(new Error("A PTU deployment bills by reserved capacity, so this cost must be 0 or blank"));
+        : Promise.reject({ key: "addModel.ptu.noUsageCost" } satisfies ValidationKey);
     },
   });
 
@@ -102,7 +113,7 @@ export const ptuStartRequiredRule =
     validator: (_, value) =>
       isFilledPtuValue(value) || !isFilledPtuValue(getFieldValue(countField))
         ? Promise.resolve()
-        : Promise.reject(new Error("PTU Effective From is required when PTU Count is set")),
+        : Promise.reject({ key: "addModel.ptu.startRequired" } satisfies ValidationKey),
   });
 
 /** Milliseconds for a picker value, which arrives as a Dayjs (or a Date/ISO string in tests). */
@@ -136,6 +147,6 @@ export const ptuWindowOrderRule =
       const end = thisBound === "start" ? sibling : value;
       return ptuWindowIsOrdered(start, end)
         ? Promise.resolve()
-        : Promise.reject(new Error("PTU Effective To must be after PTU Effective From"));
+        : Promise.reject({ key: "addModel.ptu.windowOrder" } satisfies ValidationKey);
     },
   });

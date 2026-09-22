@@ -1,3 +1,4 @@
+import type { ParseKeys, TFunction } from "i18next";
 import type { Validate } from "react-hook-form";
 
 import type { MountedFormValues } from "./MountedFormField";
@@ -24,9 +25,29 @@ export const requiredRule =
   (value) =>
     isBlank(value) || isEmptyList(value) ? message : true;
 
-const toMessage = (error: unknown): string => (error instanceof Error ? error.message : String(error));
+export interface ValidationMessage {
+  readonly key: ParseKeys<"models">;
+  readonly values?: Readonly<Record<string, string | number>>;
+}
 
-export const validatorRules = (...rules: readonly ValidatorRuleSource[]): Record<string, MountedValidate> =>
+export type ValidatorTranslate = TFunction<"models">;
+
+const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === "object" && value !== null;
+
+const isValidationMessage = (error: unknown): error is ValidationMessage =>
+  isRecord(error) && typeof error.key === "string";
+
+const toMessage = (error: unknown, translate?: ValidatorTranslate): string => {
+  if (translate !== undefined && isValidationMessage(error)) {
+    return translate(error.key, error.values);
+  }
+  return error instanceof Error ? error.message : String(error);
+};
+
+const buildValidatorRules = (
+  translate: ValidatorTranslate | undefined,
+  rules: readonly ValidatorRuleSource[],
+): Record<string, MountedValidate> =>
   Object.fromEntries(
     rules.map((rule, index) => [
       `rule_${index}`,
@@ -37,8 +58,16 @@ export const validatorRules = (...rules: readonly ValidatorRuleSource[]): Record
           await validator(null, value);
           return true;
         } catch (error) {
-          return toMessage(error);
+          return toMessage(error, translate);
         }
       },
     ]),
   );
+
+export const validatorRules = (...rules: readonly ValidatorRuleSource[]): Record<string, MountedValidate> =>
+  buildValidatorRules(undefined, rules);
+
+export const translatedValidatorRules = (
+  translate: ValidatorTranslate,
+  ...rules: readonly ValidatorRuleSource[]
+): Record<string, MountedValidate> => buildValidatorRules(translate, rules);

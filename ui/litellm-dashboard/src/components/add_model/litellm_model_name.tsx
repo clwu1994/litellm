@@ -1,6 +1,7 @@
 import React from "react";
 import { MultiSelect } from "@/components/shared/MultiSelect";
 import { useFormContext, useWatch } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
 import { requiredRule } from "../common_components/formRules";
 import { labelWithHint } from "@/components/shared/form/LabelWithHint";
@@ -18,6 +19,7 @@ const LiteLLMModelNameField: React.FC<LiteLLMModelNameFieldProps> = ({
   providerModels,
   getPlaceholder,
 }) => {
+  const { t } = useTranslation("models");
   const form = useFormContext<MountedFormValues>();
   const modelValue = useWatch({ control: form.control, name: "model" });
   const selectedModels = Array.isArray(modelValue) ? modelValue : [modelValue];
@@ -104,12 +106,14 @@ const LiteLLMModelNameField: React.FC<LiteLLMModelNameFieldProps> = ({
     <>
       <MountedFormField
         name="model"
-        label={labelWithHint("LiteLLM Model Name(s)", "The model name LiteLLM will send to the LLM API")}
+        label={labelWithHint(t("addModel.modelName.label"), t("addModel.modelName.hint"))}
         required
         rules={{
           validate: {
             required: requiredRule(
-              `Please enter ${selectedProvider === Providers.Azure ? "a deployment name" : "at least one model"}.`,
+              selectedProvider === Providers.Azure
+                ? t("addModel.modelName.requiredDeployment")
+                : t("addModel.modelName.requiredAtLeastOne"),
             ),
           },
         }}
@@ -123,7 +127,11 @@ const LiteLLMModelNameField: React.FC<LiteLLMModelNameFieldProps> = ({
               id={control.id}
               value={(control.value as string | undefined) ?? ""}
               onBlur={control.onBlur}
-              placeholder={selectedProvider === null ? "Select a provider first" : getPlaceholder(selectedProvider)}
+              placeholder={
+                selectedProvider === null
+                  ? t("addModel.modelName.selectProviderFirst")
+                  : getPlaceholder(selectedProvider)
+              }
               onChange={(event) => {
                 control.onChange(event);
                 if (selectedProvider === Providers.Azure) {
@@ -134,8 +142,8 @@ const LiteLLMModelNameField: React.FC<LiteLLMModelNameFieldProps> = ({
           ) : providerModels.length > 0 ? (
             <MultiSelect
               id={control.id}
-              placeholder="Select models"
-              emptyText="No models found"
+              placeholder={t("addModel.modelName.selectModels")}
+              emptyText={t("addModel.modelName.noModelsFound")}
               value={(control.value as string[] | undefined) ?? []}
               onValueChange={(value: string[]) => {
                 control.onChange(value);
@@ -143,11 +151,11 @@ const LiteLLMModelNameField: React.FC<LiteLLMModelNameFieldProps> = ({
               }}
               options={[
                 {
-                  label: "Custom Model Name (Enter below)",
+                  label: t("addModel.modelName.customOption"),
                   value: "custom",
                 },
                 {
-                  label: `All ${selectedProvider ?? "provider"} Models (Wildcard)`,
+                  label: t("addModel.modelName.allModelsWildcard", { provider: selectedProvider ?? "provider" }),
                   value: "all-wildcard",
                 },
                 ...providerModels.map((model) => ({
@@ -163,7 +171,11 @@ const LiteLLMModelNameField: React.FC<LiteLLMModelNameFieldProps> = ({
               value={(control.value as string | undefined) ?? ""}
               onChange={control.onChange}
               onBlur={control.onBlur}
-              placeholder={selectedProvider === null ? "Select a provider first" : getPlaceholder(selectedProvider)}
+              placeholder={
+                selectedProvider === null
+                  ? t("addModel.modelName.selectProviderFirst")
+                  : getPlaceholder(selectedProvider)
+              }
             />
           )
         }
@@ -173,7 +185,7 @@ const LiteLLMModelNameField: React.FC<LiteLLMModelNameFieldProps> = ({
         <MountedFormField
           name="custom_model_name"
           required
-          rules={{ validate: { required: requiredRule("Please enter a custom model name.") } }}
+          rules={{ validate: { required: requiredRule(t("addModel.modelName.customRequired")) } }}
           className="mt-2"
         >
           {(control) => (
@@ -182,7 +194,9 @@ const LiteLLMModelNameField: React.FC<LiteLLMModelNameFieldProps> = ({
               value={(control.value as string | undefined) ?? ""}
               onBlur={control.onBlur}
               placeholder={
-                selectedProvider === Providers.Azure ? "Enter Azure deployment name" : "Enter custom model name"
+                selectedProvider === Providers.Azure
+                  ? t("addModel.modelName.azureDeploymentPlaceholder")
+                  : t("addModel.modelName.customPlaceholder")
               }
               onChange={(event) => {
                 control.onChange(event);
@@ -195,8 +209,8 @@ const LiteLLMModelNameField: React.FC<LiteLLMModelNameFieldProps> = ({
       <div className="grid grid-cols-24">
         <p className="col-start-11 col-span-14 text-sm mb-3 mt-1">
           {selectedProvider === Providers.Azure
-            ? "Your deployment name will be saved as the public model name, and LiteLLM will use 'azure/deployment-name' internally"
-            : "The model name LiteLLM will send to the LLM API"}
+            ? t("addModel.modelName.azureDeploymentNote")
+            : t("addModel.modelName.hint")}
         </p>
       </div>
     </>

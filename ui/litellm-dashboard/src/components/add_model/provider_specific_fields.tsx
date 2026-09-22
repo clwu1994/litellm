@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Upload as UploadIcon } from "lucide-react";
 import React from "react";
+import { Trans, useTranslation } from "react-i18next";
 import { useFormContext } from "react-hook-form";
 import { requiredRule } from "../common_components/formRules";
 import {
@@ -118,6 +119,7 @@ export const createCredentialFromModel = (provider: string, modelData: any): Cre
 };
 
 const ProviderSpecificFields: React.FC<ProviderSpecificFieldsProps> = ({ selectedProvider }) => {
+  const { t } = useTranslation("models");
   const selectedProviderEnum = Providers[selectedProvider as keyof typeof Providers] as Providers;
   const form = useFormContext<MountedFormValues>();
   const credentialsFileRef = React.useRef<HTMLInputElement>(null);
@@ -253,7 +255,7 @@ const ProviderSpecificFields: React.FC<ProviderSpecificFieldsProps> = ({ selecte
         <>
           <Button type="button" variant="outline" className="w-fit" onClick={() => credentialsFileRef.current?.click()}>
             <UploadIcon />
-            Click to Upload
+            {t("addModel.providerFields.clickToUpload")}
           </Button>
           <input
             ref={credentialsFileRef}
@@ -316,7 +318,7 @@ const ProviderSpecificFields: React.FC<ProviderSpecificFieldsProps> = ({ selecte
 
   return (
     <>
-      {isLoading && allFields.length === 0 && <p className="text-sm mb-2">Loading provider fields...</p>}
+      {isLoading && allFields.length === 0 && <p className="text-sm mb-2">{t("addModel.providerFields.loading")}</p>}
       {loadError && allFields.length === 0 && (
         <p className="text-sm mb-2 text-destructive">
           {loadError instanceof Error ? loadError.message : "Failed to load provider credential fields"}
@@ -328,7 +330,7 @@ const ProviderSpecificFields: React.FC<ProviderSpecificFieldsProps> = ({ selecte
             label={field.tooltip ? labelWithHint(field.label, field.tooltip) : field.label}
             name={field.key}
             required={field.required}
-            rules={field.required ? { validate: { required: requiredRule("Required") } } : undefined}
+            rules={field.required ? { validate: { required: requiredRule(t("addModel.form.required")) } } : undefined}
             className={field.key === "vertex_credentials" ? "mb-0" : "mb-4"}
           >
             {(control) => renderFieldControl(field, control)}
@@ -336,22 +338,27 @@ const ProviderSpecificFields: React.FC<ProviderSpecificFieldsProps> = ({ selecte
 
           {/* Special case for Vertex Credentials help text */}
           {field.key === "vertex_credentials" && (
-            <p className="text-sm mb-3 mt-1">Give a gcp service account(.json file)</p>
+            <p className="text-sm mb-3 mt-1">{t("addModel.providerFields.vertexHelp")}</p>
           )}
 
           {/* Special case for Azure Base Model help text */}
           {field.key === "base_model" && (
             <div className="grid grid-cols-24">
               <p className="col-start-11 col-span-10 text-sm mb-2">
-                The actual model your azure deployment uses. Used for accurate cost tracking. Select name from{" "}
-                <a
-                  href="https://github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary underline-offset-4 hover:underline"
-                >
-                  here
-                </a>
+                <Trans
+                  ns="models"
+                  i18nKey="addModel.providerFields.azureBaseModelHelp"
+                  components={{
+                    here: (
+                      <a
+                        href="https://github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary underline-offset-4 hover:underline"
+                      />
+                    ),
+                  }}
+                />
               </p>
             </div>
           )}

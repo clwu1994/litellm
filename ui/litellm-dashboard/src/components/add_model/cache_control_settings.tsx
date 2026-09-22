@@ -9,11 +9,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 
 import NumericalInput from "../shared/numerical_input";
 
-export const CACHE_CONTROL_LABEL = "Cache Control Injection Points";
-
-export const CACHE_CONTROL_TOOLTIP =
-  "Tell litellm where to inject cache control checkpoints. You can specify either by role (to apply to all messages of that role) or by specific message index.";
-
 export type CacheControlRole = "user" | "system" | "assistant";
 
 export interface CacheControlInjectionPoint {

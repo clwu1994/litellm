@@ -1,9 +1,16 @@
+import type { TFunction } from "i18next";
+
 import { toast } from "@/lib/toast";
 import { Model, modelCreateCall } from "../networking";
 import { provider_map } from "../provider_info_helpers";
 import { ptuPickerToUtcIso } from "../../utils/ptuDatetime";
 
-export const prepareModelAddRequest = async (formValues: Record<string, any>, accessToken: string, form: any) => {
+export const prepareModelAddRequest = async (
+  formValues: Record<string, any>,
+  accessToken: string,
+  form: any,
+  t: TFunction<"models">,
+) => {
   try {
     // Get model mappings and safely remove from formValues
     const modelMappings = formValues["model_mappings"] || [];
@@ -128,8 +135,8 @@ export const prepareModelAddRequest = async (formValues: Record<string, any>, ac
             try {
               litellmExtraParams = JSON.parse(value);
             } catch (error) {
-              toast.fromError("Failed to parse LiteLLM Extra Params: " + error);
-              throw new Error("Failed to parse litellm_extra_params: " + error);
+              toast.fromError(t("addModel.submit.parseExtraParamsFailed", { error: String(error) }));
+              throw new Error(t("addModel.submit.parseExtraParamsError", { error: String(error) }));
             }
             if ("litellm_credential_name" in litellmExtraParams && formValues.litellm_credential_name) {
               delete litellmExtraParams.litellm_credential_name;
@@ -144,8 +151,8 @@ export const prepareModelAddRequest = async (formValues: Record<string, any>, ac
             try {
               modelInfoParams = JSON.parse(value);
             } catch (error) {
-              toast.fromError("Failed to parse LiteLLM Extra Params: " + error);
-              throw new Error("Failed to parse litellm_extra_params: " + error);
+              toast.fromError(t("addModel.submit.parseExtraParamsFailed", { error: String(error) }));
+              throw new Error(t("addModel.submit.parseExtraParamsError", { error: String(error) }));
             }
             for (const [key, value] of Object.entries(modelInfoParams)) {
               modelInfoObj[key] = value;
@@ -196,13 +203,23 @@ export const prepareModelAddRequest = async (formValues: Record<string, any>, ac
 
     return deployments;
   } catch (error) {
-    toast.fromError("Failed to create model: " + error);
+    toast.fromError(t("addModel.submit.createFailed", { error: String(error) }));
   }
 };
 
-export const handleAddModelSubmit = async (values: any, accessToken: string, form: any, callback?: () => void) => {
+export interface AddModelSubmitOptions {
+  readonly t: TFunction<"models">;
+  readonly onSuccess?: () => void;
+}
+
+export const handleAddModelSubmit = async (
+  values: any,
+  accessToken: string,
+  form: any,
+  { t, onSuccess }: AddModelSubmitOptions,
+) => {
   try {
-    const deployments = await prepareModelAddRequest(values, accessToken, form);
+    const deployments = await prepareModelAddRequest(values, accessToken, form, t);
 
     if (!deployments || deployments.length === 0) {
       return; // Exit if preparation failed or no deployments
@@ -221,9 +238,9 @@ export const handleAddModelSubmit = async (values: any, accessToken: string, for
       await modelCreateCall(accessToken, new_model);
     }
 
-    callback && callback();
+    onSuccess?.();
     form.resetFields();
   } catch (error) {
-    toast.fromError("Failed to add model: " + error);
+    toast.fromError(t("addModel.submit.addFailed", { error: String(error) }));
   }
 };

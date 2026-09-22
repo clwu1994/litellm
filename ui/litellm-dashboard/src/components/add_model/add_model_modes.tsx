@@ -1,25 +1,14 @@
-// Define the available test modes
 export const TEST_MODES = [
-  { value: "chat", label: "Chat - /chat/completions" },
-  { value: "completion", label: "Completion - /completions" },
-  { value: "embedding", label: "Embedding - /embeddings" },
-  { value: "audio_speech", label: "Audio Speech - /audio/speech" },
-  { value: "audio_transcription", label: "Audio Transcription - /audio/transcriptions" },
-  { value: "image_generation", label: "Image Generation - /images/generations" },
-  { value: "image_edit", label: "Image Edit - /images/edits" },
-  { value: "video_generation", label: "Video Generation - /videos" },
-  { value: "rerank", label: "Rerank - /rerank" },
-  { value: "realtime", label: "Realtime - /realtime" },
-  { value: "batch", label: "Batch - /batch" },
-  { value: "ocr", label: "OCR - /ocr" },
-];
-
-// Define the available auto router routing strategies
-export const AUTO_ROUTER_MODES = [
-  { value: "simple-shuffle", label: "Simple Shuffle - Random selection from available models" },
-  { value: "least-busy", label: "Least Busy - Route to model with lowest current load" },
-  { value: "latency-based", label: "Latency Based - Route to model with best response time" },
-  { value: "cost-based", label: "Cost Based - Route to most cost-effective model" },
-  { value: "usage-based", label: "Usage Based - Route based on historical usage patterns" },
-  { value: "custom", label: "Custom - Use custom routing logic defined in config" },
-];
+  { value: "chat", labelKey: "addModel.testModes.chat" },
+  { value: "completion", labelKey: "addModel.testModes.completion" },
+  { value: "embedding", labelKey: "addModel.testModes.embedding" },
+  { value: "audio_speech", labelKey: "addModel.testModes.audioSpeech" },
+  { value: "audio_transcription", labelKey: "addModel.testModes.audioTranscription" },
+  { value: "image_generation", labelKey: "addModel.testModes.imageGeneration" },
+  { value: "image_edit", labelKey: "addModel.testModes.imageEdit" },
+  { value: "video_generation", labelKey: "addModel.testModes.videoGeneration" },
+  { value: "rerank", labelKey: "addModel.testModes.rerank" },
+  { value: "realtime", labelKey: "addModel.testModes.realtime" },
+  { value: "batch", labelKey: "addModel.testModes.batch" },
+  { value: "ocr", labelKey: "addModel.testModes.ocr" },
+] as const;
