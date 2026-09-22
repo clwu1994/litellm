@@ -29,6 +29,13 @@
     "completed": "Completed",
     "failed": "Failed"
   },
+  "statusValue": {
+    "pending": "pending",
+    "running": "running",
+    "paused": "paused",
+    "completed": "completed",
+    "failed": "failed"
+  },
   "truncate": {
     "less": "less",
     "more": "more"

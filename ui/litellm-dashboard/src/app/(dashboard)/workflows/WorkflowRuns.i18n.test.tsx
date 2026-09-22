@@ -56,6 +56,7 @@ const buildRuns = (): FakeRun[] => {
     run("run-bbbbbbbb-2222", "running", new Date(now - 5 * 60_000).toISOString(), { title: "Second run" }),
     run("run-cccccccc-3333", "paused", new Date(now - 3 * 3_600_000).toISOString(), { title: "Third run" }),
     run("run-dddddddd-4444", "failed", new Date(now - 2 * 86_400_000).toISOString(), { title: "Fourth run" }),
+    run("run-eeeeeeee-5555", "pending", new Date(now - 45_000).toISOString(), { title: "Fifth run" }),
   ];
 };
 
@@ -179,14 +180,53 @@ describe("WorkflowRuns Chinese copy", () => {
     await screen.findByText("First run");
 
     expect(screen.getByText("30 秒前")).toBeInTheDocument();
+    expect(screen.getByText("45 秒前")).toBeInTheDocument();
     expect(screen.getByText("5 分钟前")).toBeInTheDocument();
     expect(screen.getByText("3 小时前")).toBeInTheDocument();
     expect(screen.getByText("2 天前")).toBeInTheDocument();
 
     expect(screen.queryByText("30s ago")).not.toBeInTheDocument();
+    expect(screen.queryByText("45s ago")).not.toBeInTheDocument();
     expect(screen.queryByText("5m ago")).not.toBeInTheDocument();
     expect(screen.queryByText("3h ago")).not.toBeInTheDocument();
     expect(screen.queryByText("2d ago")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese run status values and keeps metadata.state as data", async () => {
+    renderTable();
+    await screen.findByText("First run");
+
+    expect(screen.getByText("运行中")).toBeInTheDocument();
+    expect(screen.getByText("已暂停")).toBeInTheDocument();
+    expect(screen.getByText("失败")).toBeInTheDocument();
+    expect(screen.getByText("待处理")).toBeInTheDocument();
+
+    expect(screen.getByText("done")).toBeInTheDocument();
+    expect(screen.queryByText("已完成")).not.toBeInTheDocument();
+
+    expect(screen.queryByText("running")).not.toBeInTheDocument();
+    expect(screen.queryByText("paused")).not.toBeInTheDocument();
+    expect(screen.queryByText("failed")).not.toBeInTheDocument();
+    expect(screen.queryByText("pending")).not.toBeInTheDocument();
+    expect(screen.queryByText("completed")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese column titles in the view options menu and hides the English originals", async () => {
+    const user = userEvent.setup();
+    renderTable();
+    await screen.findByText("First run");
+
+    await user.click(screen.getByTestId("view-options-trigger"));
+
+    expect(await screen.findByTestId("view-option-run")).toHaveTextContent("运行");
+    expect(screen.getByTestId("view-option-workflow_type")).toHaveTextContent("类型");
+    expect(screen.getByTestId("view-option-status")).toHaveTextContent("状态");
+    expect(screen.getByTestId("view-option-created_at")).toHaveTextContent("创建时间");
+
+    expect(screen.getByTestId("view-option-run")).not.toHaveTextContent("Run");
+    expect(screen.getByTestId("view-option-workflow_type")).not.toHaveTextContent("Type");
+    expect(screen.getByTestId("view-option-status")).not.toHaveTextContent("Status");
+    expect(screen.getByTestId("view-option-created_at")).not.toHaveTextContent("Created");
   });
 
   it("renders the Chinese loading message while the runs are loading", async () => {
@@ -210,8 +250,8 @@ describe("WorkflowRuns Chinese copy", () => {
   it("renders the Chinese filter drawer chrome and hides the English originals", async () => {
     const { drawer } = await openFilterDrawer();
 
-    expect(within(drawer).getByText("筛选")).toBeInTheDocument();
-    expect(within(drawer).queryByText("Filters")).not.toBeInTheDocument();
+    expect(within(drawer).getByRole("heading", { name: "筛选" })).toBeInTheDocument();
+    expect(within(drawer).queryByRole("heading", { name: "Filters" })).not.toBeInTheDocument();
 
     expect(within(drawer).getByText("缩小工作流运行范围")).toBeInTheDocument();
     expect(within(drawer).queryByText("Narrow down workflow runs")).not.toBeInTheDocument();
@@ -276,6 +316,13 @@ describe("WorkflowRuns Chinese copy", () => {
     expect(within(drawer).queryByText("Messages")).not.toBeInTheDocument();
   });
 
+  it("renders the Chinese status value in the metadata card and hides the English original", async () => {
+    const { drawer } = await openDetail({ events: [], messages: [] });
+
+    expect(within(drawer).getByText("已完成")).toBeInTheDocument();
+    expect(within(drawer).queryByText("completed")).not.toBeInTheDocument();
+  });
+
   it("renders the Chinese singular event count and hides the English original", async () => {
     const { drawer } = await openDetail({ events: [detailEvent(1, "step.started")] });
 
@@ -332,9 +379,34 @@ describe("WorkflowRuns English copy", () => {
     expect(screen.getByRole("columnheader", { name: "Created" })).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Search runs…")).toBeInTheDocument();
     expect(screen.getByText("30s ago")).toBeInTheDocument();
+    expect(screen.getByText("45s ago")).toBeInTheDocument();
     expect(screen.getByText("5m ago")).toBeInTheDocument();
     expect(screen.getByText("3h ago")).toBeInTheDocument();
     expect(screen.getByText("2d ago")).toBeInTheDocument();
+  });
+
+  it("keeps the raw English status values and the metadata state byte-identical", async () => {
+    renderTable();
+    await screen.findByText("First run");
+
+    expect(screen.getByText("running")).toBeInTheDocument();
+    expect(screen.getByText("paused")).toBeInTheDocument();
+    expect(screen.getByText("failed")).toBeInTheDocument();
+    expect(screen.getByText("pending")).toBeInTheDocument();
+    expect(screen.getByText("done")).toBeInTheDocument();
+  });
+
+  it("keeps the original English column titles in the view options menu byte-identical", async () => {
+    const user = userEvent.setup();
+    renderTable();
+    await screen.findByText("First run");
+
+    await user.click(screen.getByTestId("view-options-trigger"));
+
+    expect(await screen.findByTestId("view-option-run")).toHaveTextContent("Run");
+    expect(screen.getByTestId("view-option-workflow_type")).toHaveTextContent("Type");
+    expect(screen.getByTestId("view-option-status")).toHaveTextContent("Status");
+    expect(screen.getByTestId("view-option-created_at")).toHaveTextContent("Created");
   });
 
   it("keeps the original English loading and empty copy byte-identical", async () => {
@@ -354,7 +426,7 @@ describe("WorkflowRuns English copy", () => {
   it("keeps the original English filter drawer copy byte-identical", async () => {
     const { user, drawer } = await openFilterDrawer();
 
-    expect(within(drawer).getByText("Filters")).toBeInTheDocument();
+    expect(within(drawer).getByRole("heading", { name: "Filters" })).toBeInTheDocument();
     expect(within(drawer).getByText("Narrow down workflow runs")).toBeInTheDocument();
     expect(within(drawer).getByText("Status")).toBeInTheDocument();
     expect(within(drawer).getByText("Type")).toBeInTheDocument();
@@ -380,6 +452,7 @@ describe("WorkflowRuns English copy", () => {
     expect(within(drawer).getByRole("button", { name: "close" })).toBeInTheDocument();
     expect(within(drawer).getByRole("button", { name: "Refresh" })).toBeInTheDocument();
     expect(within(drawer).getByText("Timeline")).toBeInTheDocument();
+    expect(within(drawer).getByText("completed")).toBeInTheDocument();
     expect(within(drawer).getByText("2 events")).toBeInTheDocument();
     expect(within(drawer).getByText("Messages")).toBeInTheDocument();
   });

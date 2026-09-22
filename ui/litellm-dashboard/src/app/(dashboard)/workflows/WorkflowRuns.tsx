@@ -73,6 +73,26 @@ const STATUS_DOT: Record<RunStatus, string> = {
 
 const RUN_STATUS_OPTIONS: RunStatus[] = ["pending", "running", "paused", "completed", "failed"];
 
+type StatusValueKey =
+  | "statusValue.pending"
+  | "statusValue.running"
+  | "statusValue.paused"
+  | "statusValue.completed"
+  | "statusValue.failed";
+
+const STATUS_VALUE_KEYS: Partial<Record<RunStatus, StatusValueKey>> = {
+  pending: "statusValue.pending",
+  running: "statusValue.running",
+  paused: "statusValue.paused",
+  completed: "statusValue.completed",
+  failed: "statusValue.failed",
+};
+
+function statusValueLabel(status: RunStatus, t: TFunction<"workflows">): string {
+  const key = STATUS_VALUE_KEYS[status];
+  return key === undefined ? status : t(key);
+}
+
 const EVENT_COLOR: Record<string, { bar: string; text: string }> = {
   "step.started": { bar: "border-success/30 bg-success/10", text: "text-success" },
   "step.failed": { bar: "border-destructive/30 bg-destructive/10", text: "text-destructive" },
@@ -173,7 +193,7 @@ const MetadataCard: React.FC<{ run: WorkflowRun }> = ({ run }) => {
       {/* key fields grid */}
       <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-x-6 gap-y-2 px-5 py-3 font-mono text-xs">
         <FieldPair label="status">
-          <span className="capitalize text-foreground">{run.status}</span>
+          <span className="capitalize text-foreground">{statusValueLabel(run.status, t)}</span>
         </FieldPair>
         <FieldPair label="created">
           <span className="text-foreground">{timeAgo(run.created_at, t)}</span>
@@ -503,7 +523,9 @@ const WorkflowRuns: React.FC<WorkflowRunsProps> = ({ accessToken }) => {
           return (
             <div className="flex items-center gap-1.5">
               <StatusDot status={run.status} className="size-[7px]" />
-              <span className="text-xs capitalize text-muted-foreground">{run.metadata?.state ?? run.status}</span>
+              <span className="text-xs capitalize text-muted-foreground">
+                {run.metadata?.state ?? statusValueLabel(run.status, t)}
+              </span>
             </div>
           );
         },
