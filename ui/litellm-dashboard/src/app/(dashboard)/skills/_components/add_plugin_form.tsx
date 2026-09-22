@@ -181,7 +181,7 @@ const AddPluginForm: React.FC<AddPluginFormProps> = ({ visible, onClose, accessT
     }
 
     if (!validatePluginName(values.name)) {
-      toast.error(t("form.toast.invalidName"));
+      toast.error("Skill name must be kebab-case (lowercase letters, numbers, and hyphens only)");
       return;
     }
 
@@ -191,7 +191,7 @@ const AddPluginForm: React.FC<AddPluginFormProps> = ({ visible, onClose, accessT
     }
 
     if (values.authorEmail && !isValidEmail(values.authorEmail)) {
-      toast.error(t("form.toast.invalidEmail"));
+      toast.error("Invalid email format");
       return;
     }
 

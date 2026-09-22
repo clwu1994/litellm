@@ -129,11 +129,14 @@ const submit = (name = "添加技能") => fireEvent.click(screen.getByRole("butt
 describe("AddPluginForm Chinese copy", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    mockRegister.mockResolvedValue({ status: "success" });
     await i18n.changeLanguage("zh");
   });
 
   afterEach(async () => {
     cleanup();
+    vi.restoreAllMocks();
     await i18n.changeLanguage("en");
   });
 
@@ -183,8 +186,12 @@ describe("AddPluginForm Chinese copy", () => {
       screen.queryByText("A zip archive is installed as a whole, so this field is disabled"),
     ).not.toBeInTheDocument();
 
-    expect(screen.getByText(/^已检测到：Zip archive/)).toBeInTheDocument();
-    expect(screen.queryByText(/^Detected: Zip archive/)).not.toBeInTheDocument();
+    expect(
+      screen.getByText("已检测到：Zip archive — skills-bucket.s3.us-east-1.amazonaws.com/plugins/s3-skill-1.0.0.zip"),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("Detected: Zip archive — skills-bucket.s3.us-east-1.amazonaws.com/plugins/s3-skill-1.0.0.zip"),
+    ).not.toBeInTheDocument();
   });
 
   it("renders the Chinese subfolder lock reason for a tree URL and hides the English original", async () => {
@@ -346,11 +353,14 @@ describe("AddPluginForm Chinese copy", () => {
 describe("AddPluginForm English copy", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    mockRegister.mockResolvedValue({ status: "success" });
     await i18n.changeLanguage("en");
   });
 
   afterEach(async () => {
     cleanup();
+    vi.restoreAllMocks();
     await i18n.changeLanguage("en");
   });
 
@@ -396,7 +406,9 @@ describe("AddPluginForm English copy", () => {
     expect(tooltip).toHaveTextContent(SHA256_HINT.en);
     expect(screen.getByPlaceholderText("64 hex characters")).toBeInTheDocument();
     expect(screen.getByText("A zip archive is installed as a whole, so this field is disabled")).toBeInTheDocument();
-    expect(screen.getByText(/^Detected: Zip archive/)).toBeInTheDocument();
+    expect(
+      screen.getByText("Detected: Zip archive — skills-bucket.s3.us-east-1.amazonaws.com/plugins/s3-skill-1.0.0.zip"),
+    ).toBeInTheDocument();
   });
 
   it("keeps the original English validation errors byte-identical", async () => {
