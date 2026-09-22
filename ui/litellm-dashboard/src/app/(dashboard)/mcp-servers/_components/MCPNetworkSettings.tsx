@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Save, Plus, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -27,6 +28,7 @@ function ipToSlash24(ip: string): string {
 }
 
 const MCPNetworkSettings: React.FC<MCPNetworkSettingsProps> = ({ accessToken }) => {
+  const { t } = useTranslation("mcpServers");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [privateRanges, setPrivateRanges] = useState<string[]>([]);
@@ -111,22 +113,19 @@ const MCPNetworkSettings: React.FC<MCPNetworkSettingsProps> = ({ accessToken }) 
     <div className="space-y-6 p-4">
       <DeprecationBanner featureName="MCP Network Settings and the internal-network-only flag" />
       <div>
-        <p className="text-lg font-semibold">Private IP Ranges</p>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Define which IP ranges are part of your private network. Callers from these IPs can see all MCP servers.
-          Callers from any other IP can only see servers marked &quot;Available on Public Internet&quot;.
-        </p>
+        <p className="text-lg font-semibold">{t("network.privateRanges")}</p>
+        <p className="mt-1 text-sm text-muted-foreground">{t("network.privateRangesDescription")}</p>
       </div>
 
       <Card className="p-6">
         {currentIp && (
           <div className="mb-4 rounded-lg bg-muted p-3">
             <p className="text-sm">
-              Your current IP: <span className="font-mono font-medium">{currentIp}</span>
+              {t("network.currentIp")} <span className="font-mono font-medium">{currentIp}</span>
             </p>
             {suggestedRange && !privateRanges.includes(suggestedRange) && (
               <div className="mt-1 flex items-center gap-2">
-                <p className="text-sm">Suggested range: </p>
+                <p className="text-sm">{t("network.suggestedRange")} </p>
                 <Button
                   variant="outline"
                   size="sm"
@@ -142,7 +141,7 @@ const MCPNetworkSettings: React.FC<MCPNetworkSettingsProps> = ({ accessToken }) 
         )}
 
         <div className="mb-2 flex items-center">
-          <p className="text-sm font-medium">Your Private Network Ranges</p>
+          <p className="text-sm font-medium">{t("network.yourRanges")}</p>
         </div>
         {privateRanges.length > 0 && (
           <div className="mb-2 flex flex-wrap gap-1.5">
@@ -151,7 +150,7 @@ const MCPNetworkSettings: React.FC<MCPNetworkSettingsProps> = ({ accessToken }) 
                 {range}
                 <button
                   type="button"
-                  aria-label={`Remove ${range}`}
+                  aria-label={t("network.removeRange", { range })}
                   onClick={() => setPrivateRanges(privateRanges.filter((r) => r !== range))}
                   className="ml-1 cursor-pointer"
                 >
@@ -163,7 +162,7 @@ const MCPNetworkSettings: React.FC<MCPNetworkSettingsProps> = ({ accessToken }) 
         )}
         <Input
           value={rangeDraft}
-          placeholder="Leave empty to use defaults: 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8"
+          placeholder={t("network.rangePlaceholder")}
           onChange={(e) => setRangeDraft(e.target.value)}
           onBlur={commitDraft}
           onKeyDown={(e) => {
@@ -173,15 +172,13 @@ const MCPNetworkSettings: React.FC<MCPNetworkSettingsProps> = ({ accessToken }) 
             }
           }}
         />
-        <p className="mt-2 text-xs text-muted-foreground">
-          Enter CIDR ranges (e.g., 10.0.0.0/8). When empty, standard private IP ranges are used.
-        </p>
+        <p className="mt-2 text-xs text-muted-foreground">{t("network.rangeHint")}</p>
       </Card>
 
       <div className="flex justify-end">
         <Button onClick={handleSave} disabled={saving}>
           <Save />
-          Save
+          {t("network.save")}
         </Button>
       </div>
     </div>

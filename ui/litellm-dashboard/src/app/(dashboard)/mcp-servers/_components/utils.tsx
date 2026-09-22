@@ -1,3 +1,5 @@
+import type { TFunction } from "i18next";
+
 import { MCPEnvVar, MCPEnvVarScope } from "@/components/mcp_tools/types";
 
 export const extractMCPToken = (url: string): { token: string | null; baseUrl: string } => {
@@ -39,18 +41,16 @@ export const getMaskedAndFullUrl = (url: string): { maskedUrl: string; hasToken:
 };
 
 // Validation utilities for MCP server forms
-export const validateMCPServerUrl = (value: string) => {
+export const validateMCPServerUrl = (value: string, t: TFunction<"mcpServers">) => {
   if (!value) return Promise.resolve();
   // More flexible URL validation that allows Kubernetes service names and various URL formats
   const urlPattern = /^https?:\/\/[^\s/$.?#].[^\s]*$/i;
-  return urlPattern.test(value)
-    ? Promise.resolve()
-    : Promise.reject("Please enter a valid URL (e.g., http://service-name.domain:1234/path or https://example.com)");
+  return urlPattern.test(value) ? Promise.resolve() : Promise.reject(t("form.validation.url"));
 };
 
-export const validateMCPServerName = (value: string) => {
+export const validateMCPServerName = (value: string, t: TFunction<"mcpServers">) => {
   return value && (value.includes("-") || value.includes(" "))
-    ? Promise.reject("Cannot contain '-' (hyphen) or spaces. Please use '_' (underscore) instead.")
+    ? Promise.reject(t("form.validation.serverName"))
     : Promise.resolve();
 };
 

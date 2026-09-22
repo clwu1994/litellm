@@ -1,3 +1,5 @@
+import type { TFunction } from "i18next";
+
 import {
   ADMIN_CONFIG_CREDENTIAL_KEYS,
   AUTH_TYPE,
@@ -112,20 +114,23 @@ const assertNever = (value: never): never => {
   throw new Error(`unhandled edit payload result: ${JSON.stringify(value)}`);
 };
 
-export const editPayloadErrorMessage = (result: Exclude<BuildEditPayloadResult, { kind: "ok" }>): string => {
+export const editPayloadErrorMessage = (
+  result: Exclude<BuildEditPayloadResult, { kind: "ok" }>,
+  t: TFunction<"mcpServers">,
+): string => {
   switch (result.kind) {
     case "invalid_tool_display_name":
-      return `Tool display name "${result.displayName}" is invalid. Only letters, digits, underscores, and hyphens are allowed (no spaces).`;
+      return t("form.payloadErrors.invalidToolDisplayName", { displayName: result.displayName });
     case "stdio_config_missing_command":
-      return "Stdio configuration must include a command";
+      return t("form.payloadErrors.stdioMissingCommand");
     case "invalid_stdio_json":
-      return "Invalid JSON in stdio configuration";
+      return t("form.payloadErrors.invalidStdioJson");
     case "invalid_stdio_env_json":
-      return "Invalid JSON in stdio env configuration";
+      return t("form.payloadErrors.invalidStdioEnvJson");
     case "stdio_command_required":
-      return "Stdio transport requires a command";
+      return t("form.payloadErrors.stdioCommandRequired");
     case "invalid_token_validation_json":
-      return "Invalid JSON in Token Validation Rules";
+      return t("form.payloadErrors.invalidTokenValidationJson");
     default:
       return assertNever(result);
   }

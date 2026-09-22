@@ -187,5 +187,252 @@
       "singular": "已导入 {{count}} 个 MCP 服务器",
       "plural": "已导入 {{count}} 个 MCP 服务器"
     }
+  },
+  "form": {
+    "title": {
+      "add": "添加新 MCP 服务器",
+      "submit": "提交 MCP 服务器以供审核"
+    },
+    "submissionNotice": "你的提交将发送给管理员审核。审核通过后，该服务器将出现在你的 MCP 服务器列表中。请求必须使用团队范围的 API Key。",
+    "serverName": {
+      "label": "MCP 服务器名称",
+      "tooltip": "最佳实践：使用能表明服务器用途的描述性名称（例如 'GitHub_MCP'、'Email_Service'）。不能包含空格或连字符；请改用下划线。名称必须符合 SEP-986，无效的名称将被拒绝（https://modelcontextprotocol.io/specification/2025-11-25/server/tools#tool-names）。",
+      "placeholder": "例如 GitHub_MCP、Zapier_MCP 等"
+    },
+    "aliasTooltip": "此服务器的简短唯一标识符。未提供时默认使用服务器名称。不能包含空格或连字符；请改用下划线。",
+    "descriptionPlaceholder": "简要描述此服务器的用途",
+    "sourceUrl": {
+      "label": "GitHub / 源 URL",
+      "placeholder": "https://github.com/org/mcp-server"
+    },
+    "transport": {
+      "label": "传输类型",
+      "required": "请选择传输类型",
+      "requiredEdit": "传输类型为必填项",
+      "placeholder": "选择传输方式"
+    },
+    "transportOptions": {
+      "http": "可流式 HTTP（推荐）",
+      "sse": "Server-Sent Events (SSE)",
+      "stdio": "标准输入/输出（stdio）",
+      "openapi": "OpenAPI Spec"
+    },
+    "serverUrl": {
+      "label": "MCP 服务器 URL",
+      "required": "请输入服务器 URL",
+      "placeholder": "https://your-mcp-server.com"
+    },
+    "openapiSpecUrl": {
+      "label": "OpenAPI Spec URL",
+      "tooltip": "OpenAPI 规范（JSON 或 YAML）的 URL。MCP 工具将根据规范中定义的 API Endpoint 自动生成。",
+      "required": "请输入 OpenAPI Spec URL",
+      "placeholder": "https://petstore3.swagger.io/api/v3/openapi.json"
+    },
+    "maxConcurrent": {
+      "label": "最大并发请求数（可选）",
+      "tooltip": "LiteLLM 将同时针对此服务器运行的工具调用最大数量。额外的调用会等待空闲槽位。留空表示不限制。",
+      "placeholder": "例如 10"
+    },
+    "auth": {
+      "settingsHeading": "认证设置",
+      "required": "请选择认证类型",
+      "requiredEdit": "认证为必填项",
+      "placeholder": "选择认证类型"
+    },
+    "authOptions": {
+      "none": "无",
+      "api_key": "API Key",
+      "bearer_token": "Bearer Token",
+      "token": "Token",
+      "basic": "Basic Auth",
+      "oauth2": "OAuth",
+      "oauth2_token_exchange": "OAuth Token Exchange（OBO）",
+      "oauth2_id_jag": "ID-JAG（Okta Cross App Access）",
+      "aws_sigv4": "AWS SigV4（Bedrock AgentCore MCP）",
+      "true_passthrough": "True Passthrough（无 LiteLLM 认证）",
+      "oauth_delegate": "OAuth Delegate（客户端提供的上游 Token）"
+    },
+    "authValue": {
+      "label": "认证值",
+      "tooltip": "针对所选认证类型，随每个请求发送的 Token、密码或请求头的值。",
+      "whitespaceCreate": "认证值不能为空白",
+      "whitespaceEdit": "认证值不能为空",
+      "placeholderCreate": "输入 Token 或密钥",
+      "placeholderEdit": "输入 Token 或密钥（留空以保留现有值）"
+    },
+    "stdio": {
+      "heading": "配置用于启动 MCP 服务器进程的 stdio 传输方式。你可以填写下面的字段，或粘贴 JSON 配置。",
+      "command": "命令",
+      "commandRequired": "请输入 stdio 传输的命令",
+      "commandPlaceholder": "例如 npx",
+      "args": "参数",
+      "argsPlaceholder": "添加参数（按 Enter 或逗号）",
+      "envJson": "环境变量（JSON 对象）",
+      "envJsonInvalid": "请输入有效的 JSON",
+      "envJsonNotObject": "环境变量必须是 JSON 对象",
+      "configLabel": "Stdio 配置（JSON）",
+      "configTooltip": "以 JSON 格式粘贴你的 stdio MCP 服务器配置。你可以使用来自 config.yaml 的完整 mcpServers 结构，或仅使用内部的服务器配置。",
+      "configRequired": "请输入 stdio 配置",
+      "configInvalidJson": "请输入有效的 JSON"
+    },
+    "aws": {
+      "heading": "适用于托管在 AWS Bedrock AgentCore 上的 MCP 服务器。",
+      "docsLink": "查看文档 →",
+      "keepExistingPlaceholder": "留空以保留现有值",
+      "region": {
+        "label": "AWS 区域",
+        "tooltip": "用于 SigV4 签名的 AWS 区域（例如 us-east-1）",
+        "placeholder": "us-east-1（留空以保留现有值）"
+      },
+      "serviceName": {
+        "label": "AWS 服务名称",
+        "tooltip": "用于 SigV4 签名的 AWS 服务名称。默认为 'bedrock-agentcore'。",
+        "placeholder": "bedrock-agentcore（留空以保留现有值）"
+      },
+      "accessKeyId": {
+        "label": "AWS Access Key ID",
+        "tooltip": "可选。如果未提供，则回退到 boto3 凭证链（IAM 角色、环境变量等）。"
+      },
+      "secretAccessKey": {
+        "label": "AWS Secret Access Key",
+        "tooltip": "可选。如果提供了 AWS Access Key ID，则为必填。"
+      },
+      "sessionToken": {
+        "label": "AWS Session Token",
+        "tooltip": "可选。仅在需要临时 STS 凭证时需要。"
+      },
+      "roleArn": {
+        "label": "AWS Role ARN",
+        "tooltip": "可选。签名前通过 STS 代入的 IAM 角色 ARN。如果设置，LiteLLM 会调用 sts:AssumeRole 获取临时凭证。"
+      },
+      "sessionName": {
+        "label": "AWS Session Name",
+        "tooltip": "可选。AssumeRole 调用的会话名称，会显示在 CloudTrail 日志中。省略时自动生成。"
+      }
+    },
+    "oauthFlowMissing": {
+      "title": "此服务器未设置 OAuth 流程",
+      "description": "选择 Machine-to-Machine（M2M）或 Interactive（PKCE），让 LiteLLM 按你的预期进行认证，然后保存。在设置之前，LiteLLM 会回退到交互式按用户认证，并以保守方式处理 machine-to-machine 凭证形态。"
+    },
+    "tags": {
+      "emptyText": "输入以添加"
+    },
+    "tabs": {
+      "serverConfiguration": "服务器配置"
+    },
+    "cancel": "取消",
+    "creating": "正在创建…",
+    "addServer": "添加 MCP 服务器",
+    "saveChanges": "保存更改",
+    "payloadErrors": {
+      "invalidToolDisplayName": "工具显示名称“{{displayName}}”无效。只允许字母、数字、下划线和连字符（不能有空格）。",
+      "invalidStdioJson": "stdio 配置中的 JSON 无效",
+      "invalidTokenValidationJson": "Token Validation Rules 中的 JSON 无效",
+      "stdioMissingCommand": "Stdio 配置必须包含命令",
+      "invalidStdioEnvJson": "stdio 环境变量配置中的 JSON 无效",
+      "stdioCommandRequired": "Stdio 传输需要命令"
+    },
+    "validation": {
+      "url": "请输入有效的 URL（例如 http://service-name.domain:1234/path 或 https://example.com）",
+      "serverName": "不能包含 '-'（连字符）或空格。请改用 '_'（下划线）。"
+    },
+    "toast": {
+      "tokenHeldPreview": "Token 已保留在此浏览器会话中。现在可以预览和配置工具；该 Token 不会保存到 LiteLLM。",
+      "tokenHeldLoad": "Token 已保留在此浏览器会话中。现在可以加载和配置工具；该 Token 不会保存到 LiteLLM。",
+      "oauthAuthorizedCreate": "OAuth 授权成功！请点击“创建 MCP 服务器”以保存配置。",
+      "oauthAuthorizedEdit": "OAuth 授权成功！请点击“更新 MCP 服务器”以保存凭证。",
+      "created": "MCP 服务器创建成功",
+      "submitted": "MCP 服务器已提交供管理员审核",
+      "submittedDescription": "管理员批准后，该服务器将出现在你的 MCP 服务器列表中。",
+      "createError": "创建 MCP 服务器时出错：{{reason}}",
+      "submitError": "提交 MCP 服务器时出错：{{reason}}",
+      "updated": "MCP 服务器更新成功",
+      "updateError": "更新 MCP 服务器失败",
+      "updateErrorWithMessage": "更新 MCP 服务器失败：{{message}}",
+      "tokenPersistFailed": "MCP 服务器已更新，但保存 OAuth Token 失败",
+      "tokenPersistFailedWithMessage": "MCP 服务器已更新，但保存 OAuth Token 失败：{{message}}"
+    },
+    "loadTools": {
+      "failed": "加载工具失败",
+      "incompleteFallback": "请填写 URL、认证和请求头设置以加载工具。",
+      "authorizeUpstream": "请在认证部分使用上游进行浏览器端授权，以加载和配置此服务器的工具。",
+      "authenticateToolsTab": "请在工具标签页中对此服务器进行认证，以加载和配置其工具。"
+    }
+  },
+  "connect": {
+    "heading": "连接到你的 MCP 客户端",
+    "subheading": "通过 LiteLLM MCP，直接从任何 MCP 客户端使用工具。让你的 AI 助手通过简单、安全的连接执行实际任务。",
+    "tabs": {
+      "openai": "OpenAI API",
+      "litellm": "LiteLLM Proxy",
+      "cursor": "Cursor",
+      "http": "可流式 HTTP"
+    },
+    "limitTools": "通过传递 <code>x-mcp-servers</code> 请求头，将工具限制到特定的 MCP 服务器或 MCP 组",
+    "twoOptions": {
+      "title": "两种选项",
+      "option1Label": "选项 1：",
+      "option1Text": "获取特定服务器：",
+      "option2Label": "选项 2：",
+      "option2Text": "获取一组 MCP：",
+      "mix": "你也可以混用两者："
+    },
+    "common": {
+      "environmentVariable": "环境变量",
+      "serverUrl": "服务器 URL",
+      "mcpServerInformation": "MCP 服务器信息",
+      "mcpServerInformationDescription": "你的 LiteLLM MCP 服务器的连接详情",
+      "implementationExample": "实现示例"
+    },
+    "litellm": {
+      "title": "LiteLLM Proxy API 集成",
+      "description": "连接到 LiteLLM Proxy Responses API，与多个模型提供商实现无缝工具集成",
+      "virtualKeySetup": "Virtual Key 设置",
+      "virtualKeySetupDescription": "配置你的 LiteLLM Proxy Virtual Key 以进行认证",
+      "getVirtualKey": "从你的 LiteLLM Proxy 管理页面获取 Virtual Key，或联系管理员",
+      "curlDescription": "使用 LiteLLM Proxy Responses API 的完整 cURL 示例"
+    },
+    "openai": {
+      "title": "OpenAI Responses API 集成",
+      "description": "将 OpenAI Responses API 连接到你的 LiteLLM MCP 服务器，实现无缝工具集成",
+      "apiKeySetup": "API Key 设置",
+      "apiKeySetupDescription": "配置你的 OpenAI API key 以进行认证",
+      "getKeyPrefix": "从",
+      "platformLink": "OpenAI 平台获取你的 API key",
+      "curlDescription": "使用 Responses API 的完整 cURL 示例"
+    },
+    "cursor": {
+      "title": "Cursor IDE 集成",
+      "description": "通过 LiteLLM MCP 直接从 Cursor IDE 使用工具。让你的 AI 助手无需离开编码环境即可执行实际任务。",
+      "setupInstructions": "设置说明",
+      "step1Title": "打开 Cursor 设置",
+      "shortcut": "使用快捷键 <code>⇧+⌘+J</code>（Mac）或 <code>Ctrl+Shift+J</code>（Windows/Linux）",
+      "step2Title": "导航到 MCP 工具",
+      "step2Text": "转到“MCP 工具”标签页，然后点击“新建 MCP 服务器”",
+      "step3Title": "添加配置",
+      "save": "复制下面的 JSON 配置并粘贴到 Cursor 中，然后使用 <code>Cmd+S</code> 或 <code>Ctrl+S</code>",
+      "configuration": "配置",
+      "configurationDescription": "Cursor MCP 配置"
+    },
+    "http": {
+      "title": "可流式 HTTP 传输",
+      "description": "使用 HTTP 传输连接到 LiteLLM MCP。兼容任何支持 HTTP 流式传输的 MCP 客户端。",
+      "universalTitle": "通用 MCP 连接",
+      "universalDescription": "在支持 HTTP 传输的任何 MCP 客户端中使用此 URL",
+      "clientTransports": "每个 MCP 客户端支持不同的传输方式。请参阅你的客户端文档以确定合适的传输方法。",
+      "headersConfiguration": "请求头配置",
+      "learnMore": "进一步了解 MCP 传输"
+    }
+  },
+  "network": {
+    "privateRanges": "私有 IP 范围",
+    "privateRangesDescription": "定义哪些 IP 范围属于你的私有网络。来自这些 IP 的调用方可以看到所有 MCP 服务器。来自其他任何 IP 的调用方只能看到标记为“可在公共互联网访问”的服务器。",
+    "currentIp": "你当前的 IP：",
+    "suggestedRange": "建议范围：",
+    "yourRanges": "你的私有网络范围",
+    "removeRange": "移除 {{range}}",
+    "rangePlaceholder": "留空以使用默认值：10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8",
+    "rangeHint": "输入 CIDR 范围（例如 10.0.0.0/8）。为空时，将使用标准私有 IP 范围。",
+    "save": "保存"
   }
 }

@@ -187,5 +187,252 @@
       "singular": "Imported {{count}} MCP server",
       "plural": "Imported {{count}} MCP servers"
     }
+  },
+  "form": {
+    "title": {
+      "add": "Add New MCP Server",
+      "submit": "Submit MCP Server for Review"
+    },
+    "submissionNotice": "Your submission will be sent for admin review. Once approved, the server will appear in your MCP Servers list. The request must be made with a team-scoped API key.",
+    "serverName": {
+      "label": "MCP Server Name",
+      "tooltip": "Best practice: Use a descriptive name that indicates the server's purpose (e.g., 'GitHub_MCP', 'Email_Service'). Cannot contain spaces or hyphens; use underscores instead. Names must comply with SEP-986 and will be rejected if invalid (https://modelcontextprotocol.io/specification/2025-11-25/server/tools#tool-names).",
+      "placeholder": "e.g., GitHub_MCP, Zapier_MCP, etc."
+    },
+    "aliasTooltip": "A short, unique identifier for this server. Defaults to the server name if not provided. Cannot contain spaces or hyphens; use underscores instead.",
+    "descriptionPlaceholder": "Brief description of what this server does",
+    "sourceUrl": {
+      "label": "GitHub / Source URL",
+      "placeholder": "https://github.com/org/mcp-server"
+    },
+    "transport": {
+      "label": "Transport Type",
+      "required": "Please select a transport type",
+      "requiredEdit": "Transport Type is required",
+      "placeholder": "Select transport"
+    },
+    "transportOptions": {
+      "http": "Streamable HTTP (Recommended)",
+      "sse": "Server-Sent Events (SSE)",
+      "stdio": "Standard Input/Output (stdio)",
+      "openapi": "OpenAPI Spec"
+    },
+    "serverUrl": {
+      "label": "MCP Server URL",
+      "required": "Please enter a server URL",
+      "placeholder": "https://your-mcp-server.com"
+    },
+    "openapiSpecUrl": {
+      "label": "OpenAPI Spec URL",
+      "tooltip": "URL to an OpenAPI specification (JSON or YAML). MCP tools will be automatically generated from the API endpoints defined in the spec.",
+      "required": "Please enter an OpenAPI spec URL",
+      "placeholder": "https://petstore3.swagger.io/api/v3/openapi.json"
+    },
+    "maxConcurrent": {
+      "label": "Max Concurrent Requests (optional)",
+      "tooltip": "Maximum number of tool calls LiteLLM will run against this server at the same time. Additional calls wait for a free slot. Leave blank for no limit.",
+      "placeholder": "e.g. 10"
+    },
+    "auth": {
+      "settingsHeading": "Authentication settings",
+      "required": "Please select an auth type",
+      "requiredEdit": "Authentication is required",
+      "placeholder": "Select auth type"
+    },
+    "authOptions": {
+      "none": "None",
+      "api_key": "API Key",
+      "bearer_token": "Bearer Token",
+      "token": "Token",
+      "basic": "Basic Auth",
+      "oauth2": "OAuth",
+      "oauth2_token_exchange": "OAuth Token Exchange (OBO)",
+      "oauth2_id_jag": "ID-JAG (Okta Cross App Access)",
+      "aws_sigv4": "AWS SigV4 (Bedrock AgentCore MCPs)",
+      "true_passthrough": "True Passthrough (no LiteLLM auth)",
+      "oauth_delegate": "OAuth Delegate (client-supplied upstream token)"
+    },
+    "authValue": {
+      "label": "Authentication Value",
+      "tooltip": "Token, password, or header value to send with each request for the selected auth type.",
+      "whitespaceCreate": "Authentication value cannot be empty whitespace",
+      "whitespaceEdit": "Authentication value cannot be empty",
+      "placeholderCreate": "Enter token or secret",
+      "placeholderEdit": "Enter token or secret (leave blank to keep existing)"
+    },
+    "stdio": {
+      "heading": "Configure the stdio transport used to launch the MCP server process. You can either fill in the fields below or paste a JSON configuration.",
+      "command": "Command",
+      "commandRequired": "Please enter a command for stdio transport",
+      "commandPlaceholder": "e.g., npx",
+      "args": "Args",
+      "argsPlaceholder": "Add args (press enter or comma)",
+      "envJson": "Environment (JSON object)",
+      "envJsonInvalid": "Please enter valid JSON",
+      "envJsonNotObject": "Env must be a JSON object",
+      "configLabel": "Stdio Configuration (JSON)",
+      "configTooltip": "Paste your stdio MCP server configuration in JSON format. You can use the full mcpServers structure from config.yaml or just the inner server configuration.",
+      "configRequired": "Please enter stdio configuration",
+      "configInvalidJson": "Please enter valid JSON"
+    },
+    "aws": {
+      "heading": "For MCP servers hosted on AWS Bedrock AgentCore.",
+      "docsLink": "View docs →",
+      "keepExistingPlaceholder": "Leave blank to keep existing",
+      "region": {
+        "label": "AWS Region",
+        "tooltip": "AWS region for SigV4 signing (e.g., us-east-1)",
+        "placeholder": "us-east-1 (leave blank to keep existing)"
+      },
+      "serviceName": {
+        "label": "AWS Service Name",
+        "tooltip": "AWS service name for SigV4 signing. Defaults to 'bedrock-agentcore'.",
+        "placeholder": "bedrock-agentcore (leave blank to keep existing)"
+      },
+      "accessKeyId": {
+        "label": "AWS Access Key ID",
+        "tooltip": "Optional. If not provided, falls back to the boto3 credential chain (IAM role, env vars, etc.)."
+      },
+      "secretAccessKey": {
+        "label": "AWS Secret Access Key",
+        "tooltip": "Optional. Required if AWS Access Key ID is provided."
+      },
+      "sessionToken": {
+        "label": "AWS Session Token",
+        "tooltip": "Optional. Only needed for temporary STS credentials."
+      },
+      "roleArn": {
+        "label": "AWS Role ARN",
+        "tooltip": "Optional. IAM role ARN to assume via STS before signing. If set, LiteLLM calls sts:AssumeRole to get temporary credentials."
+      },
+      "sessionName": {
+        "label": "AWS Session Name",
+        "tooltip": "Optional. Session name for the AssumeRole call — appears in CloudTrail logs. Auto-generated if omitted."
+      }
+    },
+    "oauthFlowMissing": {
+      "title": "This server has no OAuth flow set",
+      "description": "Choose Machine-to-Machine (M2M) or Interactive (PKCE) so LiteLLM authenticates it the way you intend, then save. Until it is set, LiteLLM falls back to interactive per-user auth and treats a machine-to-machine credential shape conservatively."
+    },
+    "tags": {
+      "emptyText": "Type to add"
+    },
+    "tabs": {
+      "serverConfiguration": "Server Configuration"
+    },
+    "cancel": "Cancel",
+    "creating": "Creating...",
+    "addServer": "Add MCP Server",
+    "saveChanges": "Save Changes",
+    "payloadErrors": {
+      "invalidToolDisplayName": "Tool display name \"{{displayName}}\" is invalid. Only letters, digits, underscores, and hyphens are allowed (no spaces).",
+      "invalidStdioJson": "Invalid JSON in stdio configuration",
+      "invalidTokenValidationJson": "Invalid JSON in Token Validation Rules",
+      "stdioMissingCommand": "Stdio configuration must include a command",
+      "invalidStdioEnvJson": "Invalid JSON in stdio env configuration",
+      "stdioCommandRequired": "Stdio transport requires a command"
+    },
+    "validation": {
+      "url": "Please enter a valid URL (e.g., http://service-name.domain:1234/path or https://example.com)",
+      "serverName": "Cannot contain '-' (hyphen) or spaces. Please use '_' (underscore) instead."
+    },
+    "toast": {
+      "tokenHeldPreview": "Token held for this browser session. Tools can now be previewed and configured; the token is not saved to LiteLLM.",
+      "tokenHeldLoad": "Token held for this browser session. Tools can now be loaded and configured; the token is not saved to LiteLLM.",
+      "oauthAuthorizedCreate": "OAuth authorization successful! Please click 'Create MCP Server' to save the configuration.",
+      "oauthAuthorizedEdit": "OAuth authorization successful! Please click 'Update MCP Server' to save the credentials.",
+      "created": "MCP Server created successfully",
+      "submitted": "MCP Server submitted for admin review",
+      "submittedDescription": "Once an admin approves it, the server will appear in your MCP Servers list.",
+      "createError": "Error creating MCP Server: {{reason}}",
+      "submitError": "Error submitting MCP Server: {{reason}}",
+      "updated": "MCP Server updated successfully",
+      "updateError": "Failed to update MCP Server",
+      "updateErrorWithMessage": "Failed to update MCP Server: {{message}}",
+      "tokenPersistFailed": "MCP Server updated, but failed to persist OAuth token",
+      "tokenPersistFailedWithMessage": "MCP Server updated, but failed to persist OAuth token: {{message}}"
+    },
+    "loadTools": {
+      "failed": "Failed to load tools",
+      "incompleteFallback": "Complete the URL, authentication, and header settings to load tools.",
+      "authorizeUpstream": "Authorize with the upstream (browser-only, in the Authentication section) to load and configure this server's tools.",
+      "authenticateToolsTab": "Authenticate with this server in the Tools tab to load and configure its tools."
+    }
+  },
+  "connect": {
+    "heading": "Connect to your MCP client",
+    "subheading": "Use tools directly from any MCP client with LiteLLM MCP. Enable your AI assistant to perform real-world tasks through a simple, secure connection.",
+    "tabs": {
+      "openai": "OpenAI API",
+      "litellm": "LiteLLM Proxy",
+      "cursor": "Cursor",
+      "http": "Streamable HTTP"
+    },
+    "limitTools": "Limit tools to specific MCP servers or MCP groups by passing the <code>x-mcp-servers</code> header",
+    "twoOptions": {
+      "title": "Two Options",
+      "option1Label": "Option 1:",
+      "option1Text": "Get a specific server:",
+      "option2Label": "Option 2:",
+      "option2Text": "Get a group of MCPs:",
+      "mix": "You can also mix both:"
+    },
+    "common": {
+      "environmentVariable": "Environment Variable",
+      "serverUrl": "Server URL",
+      "mcpServerInformation": "MCP Server Information",
+      "mcpServerInformationDescription": "Connection details for your LiteLLM MCP server",
+      "implementationExample": "Implementation Example"
+    },
+    "litellm": {
+      "title": "LiteLLM Proxy API Integration",
+      "description": "Connect to LiteLLM Proxy Responses API for seamless tool integration with multiple model providers",
+      "virtualKeySetup": "Virtual Key Setup",
+      "virtualKeySetupDescription": "Configure your LiteLLM Proxy Virtual Key for authentication",
+      "getVirtualKey": "Get your Virtual Key from your LiteLLM Proxy dashboard or contact your administrator",
+      "curlDescription": "Complete cURL example for using the LiteLLM Proxy Responses API"
+    },
+    "openai": {
+      "title": "OpenAI Responses API Integration",
+      "description": "Connect OpenAI Responses API to your LiteLLM MCP server for seamless tool integration",
+      "apiKeySetup": "API Key Setup",
+      "apiKeySetupDescription": "Configure your OpenAI API key for authentication",
+      "getKeyPrefix": "Get your API key from the",
+      "platformLink": "OpenAI platform",
+      "curlDescription": "Complete cURL example for using the Responses API"
+    },
+    "cursor": {
+      "title": "Cursor IDE Integration",
+      "description": "Use tools directly from Cursor IDE with LiteLLM MCP. Enable your AI assistant to perform real-world tasks without leaving your coding environment.",
+      "setupInstructions": "Setup Instructions",
+      "step1Title": "Open Cursor Settings",
+      "shortcut": "Use the keyboard shortcut <code>⇧+⌘+J</code> (Mac) or <code>Ctrl+Shift+J</code> (Windows/Linux)",
+      "step2Title": "Navigate to MCP Tools",
+      "step2Text": "Go to the \"MCP Tools\" tab and click \"New MCP Server\"",
+      "step3Title": "Add Configuration",
+      "save": "Copy the JSON configuration below and paste it into Cursor, then save with <code>Cmd+S</code> or <code>Ctrl+S</code>",
+      "configuration": "Configuration",
+      "configurationDescription": "Cursor MCP configuration"
+    },
+    "http": {
+      "title": "Streamable HTTP Transport",
+      "description": "Connect to LiteLLM MCP using HTTP transport. Compatible with any MCP client that supports HTTP streaming.",
+      "universalTitle": "Universal MCP Connection",
+      "universalDescription": "Use this URL with any MCP client that supports HTTP transport",
+      "clientTransports": "Each MCP client supports different transports. Refer to your client documentation to determine the appropriate transport method.",
+      "headersConfiguration": "Headers Configuration",
+      "learnMore": "Learn more about MCP transports"
+    }
+  },
+  "network": {
+    "privateRanges": "Private IP Ranges",
+    "privateRangesDescription": "Define which IP ranges are part of your private network. Callers from these IPs can see all MCP servers. Callers from any other IP can only see servers marked \"Available on Public Internet\".",
+    "currentIp": "Your current IP:",
+    "suggestedRange": "Suggested range:",
+    "yourRanges": "Your Private Network Ranges",
+    "removeRange": "Remove {{range}}",
+    "rangePlaceholder": "Leave empty to use defaults: 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8",
+    "rangeHint": "Enter CIDR ranges (e.g., 10.0.0.0/8). When empty, standard private IP ranges are used.",
+    "save": "Save"
   }
 }

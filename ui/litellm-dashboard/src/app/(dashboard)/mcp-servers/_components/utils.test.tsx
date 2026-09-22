@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import i18n from "@/i18n/bootstrapI18n";
 import {
   extractMCPToken,
   maskUrl,
@@ -7,6 +8,8 @@ import {
   validateMCPServerName,
   normalizeToolOverrideMap,
 } from "./utils";
+
+const t = i18n.getFixedT("en", "mcpServers");
 
 describe("extractMCPToken", () => {
   it("should extract token after /mcp/", () => {
@@ -49,29 +52,29 @@ describe("getMaskedAndFullUrl", () => {
 
 describe("validateMCPServerUrl", () => {
   it("should resolve for a valid HTTP URL", async () => {
-    await expect(validateMCPServerUrl("https://example.com/path")).resolves.toBeUndefined();
+    await expect(validateMCPServerUrl("https://example.com/path", t)).resolves.toBeUndefined();
   });
 
   it("should resolve for an empty string", async () => {
-    await expect(validateMCPServerUrl("")).resolves.toBeUndefined();
+    await expect(validateMCPServerUrl("", t)).resolves.toBeUndefined();
   });
 
   it("should reject for an invalid URL", async () => {
-    await expect(validateMCPServerUrl("not-a-url")).rejects.toBeDefined();
+    await expect(validateMCPServerUrl("not-a-url", t)).rejects.toBeDefined();
   });
 });
 
 describe("validateMCPServerName", () => {
   it("should resolve for a valid underscore name", async () => {
-    await expect(validateMCPServerName("my_server")).resolves.toBeUndefined();
+    await expect(validateMCPServerName("my_server", t)).resolves.toBeUndefined();
   });
 
   it("should reject names containing hyphens", async () => {
-    await expect(validateMCPServerName("my-server")).rejects.toBeDefined();
+    await expect(validateMCPServerName("my-server", t)).rejects.toBeDefined();
   });
 
   it("should reject names containing spaces", async () => {
-    await expect(validateMCPServerName("my server")).rejects.toBeDefined();
+    await expect(validateMCPServerName("my server", t)).rejects.toBeDefined();
   });
 });
 
