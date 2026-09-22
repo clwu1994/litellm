@@ -1,0 +1,60 @@
+{
+  "page": {
+    "title": "Workflow Runs",
+    "description": "Durable state tracking for agents and automated workflows"
+  },
+  "table": {
+    "loading": "Loading workflow runs…",
+    "empty": "No workflow runs yet",
+    "searchPlaceholder": "Search runs…",
+    "columns": {
+      "run": "Run",
+      "type": "Type",
+      "status": "Status",
+      "created": "Created"
+    }
+  },
+  "filters": {
+    "title": "Filters",
+    "description": "Narrow down workflow runs",
+    "status": "Status",
+    "type": "Type",
+    "allStatuses": "All statuses",
+    "typePlaceholder": "Filter by type…"
+  },
+  "status": {
+    "pending": "Pending",
+    "running": "Running",
+    "paused": "Paused",
+    "completed": "Completed",
+    "failed": "Failed"
+  },
+  "truncate": {
+    "less": "less",
+    "more": "more"
+  },
+  "time": {
+    "secondsAgo": "{{value}}s ago",
+    "minutesAgo": "{{value}}m ago",
+    "hoursAgo": "{{value}}h ago",
+    "daysAgo": "{{value}}d ago"
+  },
+  "timeline": {
+    "empty": "No events recorded",
+    "eventCountOne": "{{value}} event",
+    "eventCountOther": "{{value}} events"
+  },
+  "sections": {
+    "timeline": "Timeline",
+    "messages": "Messages"
+  },
+  "messages": {
+    "empty": "No messages"
+  },
+  "drawer": {
+    "title": "Workflow run details",
+    "description": "Metadata, timeline and messages for the selected workflow run",
+    "close": "close",
+    "refresh": "Refresh"
+  }
+}

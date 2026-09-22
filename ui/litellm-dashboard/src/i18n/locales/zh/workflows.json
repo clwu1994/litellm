@@ -1,0 +1,60 @@
+{
+  "page": {
+    "title": "工作流运行",
+    "description": "为 Agent 和自动化工作流提供持久的状态跟踪"
+  },
+  "table": {
+    "loading": "正在加载工作流运行…",
+    "empty": "还没有工作流运行",
+    "searchPlaceholder": "搜索运行…",
+    "columns": {
+      "run": "运行",
+      "type": "类型",
+      "status": "状态",
+      "created": "创建时间"
+    }
+  },
+  "filters": {
+    "title": "筛选",
+    "description": "缩小工作流运行范围",
+    "status": "状态",
+    "type": "类型",
+    "allStatuses": "所有状态",
+    "typePlaceholder": "按类型筛选…"
+  },
+  "status": {
+    "pending": "待处理",
+    "running": "运行中",
+    "paused": "已暂停",
+    "completed": "已完成",
+    "failed": "失败"
+  },
+  "truncate": {
+    "less": "收起",
+    "more": "更多"
+  },
+  "time": {
+    "secondsAgo": "{{value}} 秒前",
+    "minutesAgo": "{{value}} 分钟前",
+    "hoursAgo": "{{value}} 小时前",
+    "daysAgo": "{{value}} 天前"
+  },
+  "timeline": {
+    "empty": "暂无事件记录",
+    "eventCountOne": "{{value}} 个事件",
+    "eventCountOther": "{{value}} 个事件"
+  },
+  "sections": {
+    "timeline": "时间线",
+    "messages": "消息"
+  },
+  "messages": {
+    "empty": "暂无消息"
+  },
+  "drawer": {
+    "title": "工作流运行详情",
+    "description": "所选工作流运行的元数据、时间线和消息",
+    "close": "关闭",
+    "refresh": "刷新"
+  }
+}

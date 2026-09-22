@@ -29,6 +29,7 @@ import type zhUiTheme from "./locales/zh/uiTheme.json";
 import type zhUsage from "./locales/zh/usage.json";
 import type zhUsers from "./locales/zh/users.json";
 import type zhVectorStores from "./locales/zh/vectorStores.json";
+import type zhWorkflows from "./locales/zh/workflows.json";
 
 declare module "i18next" {
   interface CustomTypeOptions {
@@ -65,6 +66,7 @@ declare module "i18next" {
       uiTheme: typeof zhUiTheme;
       usage: typeof zhUsage;
       vectorStores: typeof zhVectorStores;
+      workflows: typeof zhWorkflows;
     };
   }
 }

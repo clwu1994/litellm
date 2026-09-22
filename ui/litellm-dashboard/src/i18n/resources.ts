@@ -29,6 +29,7 @@ import enUiTheme from "./locales/en/uiTheme.json";
 import enUsage from "./locales/en/usage.json";
 import enUsers from "./locales/en/users.json";
 import enVectorStores from "./locales/en/vectorStores.json";
+import enWorkflows from "./locales/en/workflows.json";
 import zhAccessGroups from "./locales/zh/accessGroups.json";
 import zhAgents from "./locales/zh/agents.json";
 import zhApiReference from "./locales/zh/apiReference.json";
@@ -60,6 +61,7 @@ import zhUiTheme from "./locales/zh/uiTheme.json";
 import zhUsage from "./locales/zh/usage.json";
 import zhUsers from "./locales/zh/users.json";
 import zhVectorStores from "./locales/zh/vectorStores.json";
+import zhWorkflows from "./locales/zh/workflows.json";
 
 export const resources = {
   en: {
@@ -94,6 +96,7 @@ export const resources = {
     uiTheme: enUiTheme,
     usage: enUsage,
     vectorStores: enVectorStores,
+    workflows: enWorkflows,
   },
   zh: {
     common: zhCommon,
@@ -127,5 +130,6 @@ export const resources = {
     uiTheme: zhUiTheme,
     usage: zhUsage,
     vectorStores: zhVectorStores,
+    workflows: zhWorkflows,
   },
 };
