@@ -166,7 +166,7 @@ describe("AllModelsTab Chinese copy", () => {
     render(<AllModelsTab {...defaultProps} />);
 
     await user.click(await screen.findByTestId("model-delete-model-1"));
-    await user.click(screen.getByRole("button", { name: /^delete$/i }));
+    await user.click(screen.getByRole("button", { name: "删除" }));
 
     await waitFor(() => {
       expect(toast.success).toHaveBeenCalledWith("模型删除成功");

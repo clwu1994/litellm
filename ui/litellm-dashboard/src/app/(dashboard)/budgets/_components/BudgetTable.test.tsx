@@ -1,4 +1,4 @@
-import { cleanup, screen } from "@testing-library/react";
+import { cleanup, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders, testQueryClient } from "@/../tests/test-utils";
@@ -329,7 +329,7 @@ describe("BudgetTable", () => {
     expect(screen.getAllByText("无")).toHaveLength(2);
     expect(screen.getByText("不限")).toBeInTheDocument();
     expect(screen.getByText("未设置")).toBeInTheDocument();
-    expect(screen.getByText("weekly")).toBeInTheDocument();
+    expect(screen.getByText("每周")).toBeInTheDocument();
     expect(screen.queryByText("n/a")).not.toBeInTheDocument();
     expect(screen.queryByText("Unlimited")).not.toBeInTheDocument();
     expect(screen.queryByText("Not set")).not.toBeInTheDocument();
@@ -366,9 +366,9 @@ describe("BudgetTable", () => {
 
     await openFilters(user);
 
-    expect(screen.getByText("筛选")).toBeInTheDocument();
+    expect(within(screen.getByRole("dialog")).getByText("筛选")).toBeInTheDocument();
     expect(screen.getByText("进一步筛选预算")).toBeInTheDocument();
-    expect(screen.getByText("重置")).toBeInTheDocument();
+    expect(screen.getByTestId("filter-drawer-reset")).toHaveTextContent("重置");
     expect(screen.getByText("最大预算（USD）")).toBeInTheDocument();
     expect(screen.getByText("创建时间")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("最小")).toBeInTheDocument();

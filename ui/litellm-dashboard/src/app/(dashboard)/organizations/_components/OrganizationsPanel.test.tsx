@@ -160,7 +160,7 @@ describe("OrganizationsPanel", () => {
     renderPanel({ accessToken: "token-zh" });
 
     act(() => capturedTableProps?.onDeleteClick("org-zh"));
-    await user.click(await screen.findByRole("button", { name: "Delete" }));
+    await user.click(await screen.findByRole("button", { name: "删除" }));
 
     await waitFor(() => expect(toast.success).toHaveBeenCalledWith("组织删除成功"));
     expect(toast.success).not.toHaveBeenCalledWith("Organization deleted successfully");

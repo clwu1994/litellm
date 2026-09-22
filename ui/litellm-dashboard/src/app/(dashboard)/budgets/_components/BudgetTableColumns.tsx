@@ -3,6 +3,7 @@
 import { ColumnDef, FilterFn } from "@tanstack/react-table";
 import type { TFunction } from "i18next";
 import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { DataTableSortHeader } from "@/components/shared/DataTable";
 import { DateCell, IdCell, MoneyCell } from "@/components/shared/table_cells";
@@ -35,10 +36,12 @@ function RateLimitCell({ value, t }: { value: number | null | undefined; t: TFun
 }
 
 function BudgetDurationCell({ value, t }: { value: string | null | undefined; t: TFunction<"budgets"> }) {
+  const { t: tCommon } = useTranslation("common");
+
   if (!value) {
     return <span className="text-muted-foreground">{t("table.value.notSet")}</span>;
   }
-  return <span className="whitespace-nowrap">{getBudgetDurationLabel(value)}</span>;
+  return <span className="whitespace-nowrap">{getBudgetDurationLabel(value, tCommon)}</span>;
 }
 
 interface BudgetRowActionsProps {

@@ -306,7 +306,7 @@ describe("GuardrailsPanel Chinese copy", () => {
     fireEvent.click(await screen.findByTestId("delete-button"));
 
     const modal = within(await screen.findByRole("dialog"));
-    fireEvent.click(modal.getByRole("button", { name: "Delete" }));
+    fireEvent.click(modal.getByRole("button", { name: "删除" }));
 
     await waitFor(() => expect(toast.success).toHaveBeenCalledWith("Guardrail「Test Guardrail」删除成功"));
     expect(toast.success).not.toHaveBeenCalledWith('Guardrail "Test Guardrail" deleted successfully');
@@ -319,7 +319,7 @@ describe("GuardrailsPanel Chinese copy", () => {
     fireEvent.click(await screen.findByTestId("delete-button"));
 
     const modal = within(await screen.findByRole("dialog"));
-    fireEvent.click(modal.getByRole("button", { name: "Delete" }));
+    fireEvent.click(modal.getByRole("button", { name: "删除" }));
 
     await waitFor(() => expect(toast.fromError).toHaveBeenCalledWith("删除 Guardrail 失败"));
     expect(toast.fromError).not.toHaveBeenCalledWith("Failed to delete guardrail");

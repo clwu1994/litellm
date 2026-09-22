@@ -256,7 +256,7 @@ describe("AutoRoutersPanel Chinese copy", () => {
     await screen.findByText("llm-router");
     await user.click(screen.getByTestId("auto-router-actions-llm"));
     await user.click(await screen.findByTestId("auto-router-action-delete"));
-    await user.click(await screen.findByRole("button", { name: /^delete$/i }));
+    await user.click(await screen.findByRole("button", { name: "删除" }));
 
     await waitFor(() => expect(toast.success).toHaveBeenCalledWith("已删除自动路由：llm-router"));
     expect(toast.success).not.toHaveBeenCalledWith("Deleted auto router: llm-router");
@@ -270,7 +270,7 @@ describe("AutoRoutersPanel Chinese copy", () => {
     await screen.findByText("llm-router");
     await user.click(screen.getByTestId("auto-router-actions-llm"));
     await user.click(await screen.findByTestId("auto-router-action-delete"));
-    await user.click(await screen.findByRole("button", { name: /^delete$/i }));
+    await user.click(await screen.findByRole("button", { name: "删除" }));
 
     await waitFor(() => expect(toast.fromError).toHaveBeenCalledWith("删除自动路由失败：Error: boom"));
     expect(toast.fromError).not.toHaveBeenCalledWith("Failed to delete auto router: Error: boom");

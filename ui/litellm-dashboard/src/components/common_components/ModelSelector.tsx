@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Bot } from "lucide-react";
 import { useDebouncedCallback } from "@tanstack/react-pacer/debouncer";
+import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
 import { SearchSelect } from "@/components/shared/SearchSelect";
 import { fetchAvailableModels, ModelGroup } from "@/components/llm_calls/fetch_models";
@@ -22,14 +23,17 @@ interface ModelSelectorProps {
 const ModelSelector: React.FC<ModelSelectorProps> = ({
   accessToken,
   value,
-  placeholder = "Select a Model",
+  placeholder,
   onChange,
   disabled = false,
   style,
   className,
   showLabel = true,
-  labelText = "Select Model",
+  labelText,
 }) => {
+  const { t } = useTranslation("common");
+  const resolvedPlaceholder = placeholder ?? t("select.modelPlaceholder");
+  const resolvedLabelText = labelText ?? t("select.modelLabel");
   const [selectedModel, setSelectedModel] = useState<string | null>(value ?? null);
   const [showCustomModelInput, setShowCustomModelInput] = useState<boolean>(false);
   const [modelInfo, setModelInfo] = useState<ModelGroup[]>([]);
@@ -81,7 +85,7 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({
     <div>
       {showLabel && (
         <p className="font-medium block mb-2 text-foreground flex items-center">
-          <Bot className="mr-2 size-3.5" /> {labelText}
+          <Bot className="mr-2 size-3.5" /> {resolvedLabelText}
         </p>
       )}
       <div style={{ width: "100%", ...style }} className={`rounded-md ${className || ""}`}>
@@ -91,10 +95,10 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({
               value: model_group,
               label: model_group,
             })),
-            { value: "custom", label: "Enter custom model" },
+            { value: "custom", label: t("select.enterCustomModel") },
           ]}
           value={selectedModel}
-          placeholder={placeholder}
+          placeholder={resolvedPlaceholder}
           onValueChange={onModelChange}
           disabled={disabled}
         />
@@ -102,7 +106,7 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({
       {showCustomModelInput && (
         <Input
           className="mt-2"
-          placeholder="Enter custom model name"
+          placeholder={t("select.enterCustomModelName")}
           onChange={(e) => debouncedSelect(e.target.value)}
           disabled={disabled}
         />

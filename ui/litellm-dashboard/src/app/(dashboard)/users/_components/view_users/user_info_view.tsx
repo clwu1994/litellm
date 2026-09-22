@@ -87,6 +87,7 @@ export default function UserInfoView({
   startInEditMode = false,
 }: UserInfoViewProps) {
   const { t } = useTranslation("users");
+  const { t: tCommon } = useTranslation("common");
   const tRef = React.useRef(t);
   React.useEffect(() => {
     tRef.current = t;
@@ -676,7 +677,7 @@ export default function UserInfoView({
 
                 <div>
                   <p className="font-medium">{t("info.field.budgetReset")}</p>
-                  <p>{getBudgetDurationLabel(userData.budget_duration ?? null)}</p>
+                  <p>{getBudgetDurationLabel(userData.budget_duration ?? null, tCommon)}</p>
                 </div>
 
                 <div>

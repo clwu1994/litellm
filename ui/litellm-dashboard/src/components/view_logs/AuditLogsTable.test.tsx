@@ -299,7 +299,7 @@ describe("AuditLogsTable", () => {
       await user.click(screen.getByTestId("datatable-filters-trigger"));
       const drawer = within(await screen.findByTestId("filter-drawer-body"));
 
-      expect(screen.getByText("筛选")).toBeInTheDocument();
+      expect(screen.getByRole("heading", { name: "筛选" })).toBeInTheDocument();
       expect(screen.getByText("进一步筛选审计日志")).toBeInTheDocument();
       expect(screen.queryByText("Narrow down audit log entries")).not.toBeInTheDocument();
 

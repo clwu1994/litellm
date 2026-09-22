@@ -309,7 +309,7 @@ describe("ModelInfoView Chinese copy", () => {
     expect(await screen.findByText("确定要删除此模型吗？")).toBeInTheDocument();
     expect(screen.queryByText("Are you sure you want to delete this model?")).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: "Delete" }));
+    await user.click(screen.getByRole("button", { name: "删除" }));
 
     await waitFor(() => expect(console.error).toHaveBeenCalledWith("删除模型时出错：", expect.anything()));
     expect(toast.fromError).toHaveBeenCalledWith("删除模型失败");

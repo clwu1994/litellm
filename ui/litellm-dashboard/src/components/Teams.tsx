@@ -210,6 +210,7 @@ const getAdminOrganizations = (
 // @deprecated
 const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, premiumUser = false }) => {
   const { t } = useTranslation("teams");
+  const { t: tCommon } = useTranslation("common");
   const { data: organizationsData } = useOrganizations();
   const organizations = organizationsData ?? null;
   const { data: teamMetadataSchemaFields = [], isLoading: isTeamMetadataSchemaLoading } = useTeamMetadataSchema();
@@ -286,7 +287,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, premiumUser
   const defaultBudgetDuration: string | undefined = defaultTeamSettings?.values?.budget_duration ?? undefined;
   const budgetDurationPlaceholder = defaultBudgetDuration
     ? t("create.budgetDurationPlaceholder", {
-        label: getBudgetDurationLabel(defaultBudgetDuration),
+        label: getBudgetDurationLabel(defaultBudgetDuration, tCommon),
         value: defaultBudgetDuration,
       })
     : t("info.value.notAvailable");

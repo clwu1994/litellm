@@ -154,7 +154,7 @@ describe("CredentialsPanel Chinese copy", () => {
 
     await openRowAction(user, "credential-action-delete");
     await user.type(await screen.findByPlaceholderText("openai-key"), "openai-key");
-    await user.click(screen.getByRole("button", { name: "Delete" }));
+    await user.click(screen.getByRole("button", { name: "删除" }));
 
     await waitFor(() => expect(toast.success).toHaveBeenCalledWith("凭证删除成功"));
     expect(toast.success).not.toHaveBeenCalledWith("Credential deleted successfully");
@@ -165,7 +165,7 @@ describe("CredentialsPanel Chinese copy", () => {
 
     await openRowAction(user, "credential-action-delete");
     await user.type(await screen.findByPlaceholderText("openai-key"), "openai-key");
-    await user.click(screen.getByRole("button", { name: "Delete" }));
+    await user.click(screen.getByRole("button", { name: "删除" }));
 
     await waitFor(() => expect(toast.error).toHaveBeenCalledWith("删除凭证失败"));
     expect(toast.error).not.toHaveBeenCalledWith("Failed to delete credential");

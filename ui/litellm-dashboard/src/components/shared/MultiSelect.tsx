@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Combobox,
   ComboboxChip,
@@ -56,15 +57,18 @@ export function MultiSelect({
   options,
   value = [],
   onValueChange,
-  placeholder = "Select options",
-  emptyText = "No options found",
+  placeholder,
+  emptyText,
   disabled = false,
   loading = false,
   allowCustomValues = false,
   className,
 }: MultiSelectProps) {
+  const { t } = useTranslation("common");
   const anchor = useComboboxAnchor();
   const [query, setQuery] = useState("");
+  const resolvedPlaceholder = placeholder ?? t("select.placeholder");
+  const resolvedEmptyText = emptyText ?? t("select.empty");
   const safeOptions = options.filter(
     (option): option is MultiSelectOption =>
       option != null && typeof option.value === "string" && option.value.length > 0,
@@ -82,7 +86,7 @@ export function MultiSelect({
   const customOptionExists = safeOptions.some((option) => option.value.toLowerCase() === customOption.toLowerCase());
   const items =
     allowCustomValues && customOption && !customOptionExists
-      ? [...safeOptions, { label: `Create "${customOption}"`, value: customOption }]
+      ? [...safeOptions, { label: t("select.createOption", { value: customOption }), value: customOption }]
       : safeOptions;
 
   const canClear = (selected: MultiSelectOption[]) => selected.length > 0 && !disabled && !loading;
@@ -119,17 +123,19 @@ export function MultiSelect({
               ))}
               <ComboboxChipsInput
                 id={id}
-                placeholder={loading ? "Loading..." : placeholder}
+                placeholder={loading ? t("select.loadingPlaceholder") : resolvedPlaceholder}
                 className="min-w-24"
-                aria-label={placeholder || undefined}
+                aria-label={resolvedPlaceholder || undefined}
               />
-              {canClear(selected) && <ComboboxClear className="ml-auto self-center" aria-label="Clear all" />}
+              {canClear(selected) && (
+                <ComboboxClear className="ml-auto self-center" aria-label={t("select.clearAll")} />
+              )}
             </>
           )}
         </ComboboxValue>
       </ComboboxChips>
       <ComboboxContent anchor={anchor}>
-        <ComboboxEmpty>{emptyText}</ComboboxEmpty>
+        <ComboboxEmpty>{resolvedEmptyText}</ComboboxEmpty>
         <ComboboxList>
           {(option: MultiSelectOption) => (
             <ComboboxItem key={option.value} value={option} disabled={option.disabled}>

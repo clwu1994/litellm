@@ -49,5 +49,67 @@
       "selectAllRows": "Select all rows",
       "selectRow": "Select row"
     }
+  },
+  "filters": {
+    "toggle": "Filters",
+    "reset": "Reset Filters"
+  },
+  "select": {
+    "searchPlaceholder": "Search…",
+    "selectPlaceholder": "Select…",
+    "placeholder": "Select options",
+    "noResults": "No results",
+    "empty": "No options found",
+    "loading": "Loading…",
+    "loadingPlaceholder": "Loading...",
+    "clearAll": "Clear all",
+    "createOption": "Create \"{{value}}\"",
+    "allProxyModels": "All Proxy Models",
+    "noDefaultModels": "No Default Models",
+    "specialOptions": "Special Options",
+    "wildcardOptions": "Wildcard Options",
+    "allProviderModels": "All {{provider}} models",
+    "models": "Models",
+    "moreChips": "+{{remaining}} more",
+    "selectModels": "Select Models",
+    "noModels": "No models found",
+    "modelPlaceholder": "Select a Model",
+    "modelLabel": "Select Model",
+    "enterCustomModel": "Enter custom model",
+    "enterCustomModelName": "Enter custom model name",
+    "searchTeamsByAlias": "Search teams by alias...",
+    "noTeams": "No teams found",
+    "loadingTeams": "Loading teams...",
+    "loadingTeamsEllipsis": "Loading teams…",
+    "clearAllTeams": "Clear all teams",
+    "searchOrSelectTeam": "Search or select a team",
+    "searchOrSelectProject": "Search or select a project",
+    "loadingProjects": "Loading projects…",
+    "noProjects": "No projects found",
+    "allOrganizations": "All Organizations",
+    "loadingOrganizations": "Loading organizations…",
+    "noOrganizations": "No organizations found",
+    "selectAccessGroups": "Select access groups",
+    "accessGroupLabel": "Access Group",
+    "accessGroupsError": "Failed to load access groups",
+    "noAccessGroups": "No access groups found",
+    "selectPassThroughRoutes": "Select pass through routes",
+    "noPassThroughRoutes": "No pass through routes found"
+  },
+  "deleteModal": {
+    "confirmPrompt": "Type <confirm>{{confirmation}}</confirm> to confirm deletion:",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "deleting": "Deleting..."
+  },
+  "budgetDuration": {
+    "neverResets": "Never resets",
+    "hourly": "hourly",
+    "daily": "daily",
+    "weekly": "weekly",
+    "monthly": "monthly",
+    "notSet": "Not set",
+    "placeholder": "n/a",
+    "raw": "{{value}}"
   }
 }

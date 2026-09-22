@@ -313,7 +313,7 @@ describe("Budget Panel", () => {
     expect(screen.queryByText("Delete Budget?")).not.toBeInTheDocument();
     expect(screen.queryByText("Budget Information")).not.toBeInTheDocument();
 
-    await user.click(within(dialog).getByRole("button", { name: /^delete$/i }));
+    await user.click(within(dialog).getByRole("button", { name: "删除" }));
 
     await waitFor(() => expect(toast.success).toHaveBeenCalledWith("预算删除成功"));
     expect(toast.success).not.toHaveBeenCalledWith("Budget deleted.");
@@ -329,7 +329,7 @@ describe("Budget Panel", () => {
     await user.click(screen.getByTestId("budget-actions-ecc1869c-6231-4380-a56d-1a0be457477d"));
     await user.click(await screen.findByTestId("budget-action-delete"));
     const dialog = await screen.findByRole("dialog");
-    await user.click(within(dialog).getByRole("button", { name: /^delete$/i }));
+    await user.click(within(dialog).getByRole("button", { name: "删除" }));
 
     await waitFor(() => expect(toast.fromError).toHaveBeenCalledWith("删除预算失败"));
     expect(toast.fromError).not.toHaveBeenCalledWith("Failed to delete budget");

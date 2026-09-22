@@ -917,7 +917,7 @@ describe("RequestLogsPanel", () => {
 
       await user.click(screen.getByTestId("datatable-filters-trigger"));
 
-      expect(await screen.findByText("筛选")).toBeInTheDocument();
+      expect(await screen.findByRole("heading", { name: "筛选" })).toBeInTheDocument();
       expect(screen.getByText("进一步筛选请求日志")).toBeInTheDocument();
       expect(screen.queryByText("Narrow down request logs")).not.toBeInTheDocument();
     });

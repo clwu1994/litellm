@@ -19,16 +19,17 @@ import {
 } from "@/components/ui/combobox";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useTranslation } from "react-i18next";
 import { Organization, Team } from "../networking";
 import { splitWildcardModels } from "./modelUtils";
 
 const MODEL_SELECT_ALL_PROXY_MODELS_SPECIAL_VALUE = {
-  label: "All Proxy Models",
+  labelKey: "select.allProxyModels",
   value: "all-proxy-models",
 } as const;
 
 const MODEL_SELECT_NO_DEFAULT_MODELS_SPECIAL_VALUE = {
-  label: "No Default Models",
+  labelKey: "select.noDefaultModels",
   value: "no-default-models",
 } as const;
 
@@ -63,6 +64,7 @@ type ModelOption = {
 };
 
 type ModelOptionGroup = {
+  id: string;
   label: string;
   items: ModelOption[];
 };
@@ -123,6 +125,7 @@ const filterModels = (
 
 export const ModelSelect = (props: ModelSelectProps) => {
   const anchor = useComboboxAnchor();
+  const { t } = useTranslation("common");
   const { id, teamID, organizationID, options, context, dataTestId, value = [], onChange, style } = props;
   const { showAllProxyModelsOverride, includeSpecialOptions } = options || {};
   const { data: allProxyModels, isLoading: isLoadingAllProxyModels } = useAllProxyModels();
@@ -170,12 +173,13 @@ export const ModelSelect = (props: ModelSelectProps) => {
     ...(includeSpecialOptions
       ? [
           {
-            label: "Special Options",
+            id: "special",
+            label: t("select.specialOptions"),
             items: [
               ...(shouldShowAllProxyModels
                 ? [
                     {
-                      label: MODEL_SELECT_ALL_PROXY_MODELS_SPECIAL_VALUE.label,
+                      label: t(MODEL_SELECT_ALL_PROXY_MODELS_SPECIAL_VALUE.labelKey),
                       value: MODEL_SELECT_ALL_PROXY_MODELS_SPECIAL_VALUE.value,
                       disabled:
                         value.length > 0 &&
@@ -186,7 +190,7 @@ export const ModelSelect = (props: ModelSelectProps) => {
                   ]
                 : []),
               {
-                label: MODEL_SELECT_NO_DEFAULT_MODELS_SPECIAL_VALUE.label,
+                label: t(MODEL_SELECT_NO_DEFAULT_MODELS_SPECIAL_VALUE.labelKey),
                 value: MODEL_SELECT_NO_DEFAULT_MODELS_SPECIAL_VALUE.value,
                 disabled:
                   value.length > 0 &&
@@ -199,13 +203,14 @@ export const ModelSelect = (props: ModelSelectProps) => {
     ...(wildcard.length > 0
       ? [
           {
-            label: "Wildcard Options",
+            id: "wildcard",
+            label: t("select.wildcardOptions"),
             items: wildcard.map((model) => {
               const provider = model.replace("/*", "");
               const capitalizedProvider = provider.charAt(0).toUpperCase() + provider.slice(1);
 
               return {
-                label: `All ${capitalizedProvider} models`,
+                label: t("select.allProviderModels", { provider: capitalizedProvider }),
                 value: model,
                 disabled: hasSpecialOptionSelected,
               };
@@ -214,7 +219,8 @@ export const ModelSelect = (props: ModelSelectProps) => {
         ]
       : []),
     {
-      label: "Models",
+      id: "models",
+      label: t("select.models"),
       items: regular.map((model) => ({
         label: model,
         value: model,
@@ -248,22 +254,27 @@ export const ModelSelect = (props: ModelSelectProps) => {
                 ))}
                 {overflowOptions.length > 0 && (
                   <Tooltip>
-                    <TooltipTrigger
-                      render={<span className="px-1 text-xs text-muted-foreground" />}
-                    >{`+${overflowOptions.length} more`}</TooltipTrigger>
+                    <TooltipTrigger render={<span className="px-1 text-xs text-muted-foreground" />}>
+                      {t("select.moreChips", { remaining: overflowOptions.length })}
+                    </TooltipTrigger>
                     <TooltipContent>{overflowOptions.map((option) => option.value).join(", ")}</TooltipContent>
                   </Tooltip>
                 )}
               </>
             )}
           </ComboboxValue>
-          <ComboboxChipsInput id={id} placeholder="Select Models" aria-label="Select Models" className="min-w-24" />
+          <ComboboxChipsInput
+            id={id}
+            placeholder={t("select.selectModels")}
+            aria-label={t("select.selectModels")}
+            className="min-w-24"
+          />
         </ComboboxChips>
         <ComboboxContent anchor={anchor}>
-          <ComboboxEmpty>No models found</ComboboxEmpty>
+          <ComboboxEmpty>{t("select.noModels")}</ComboboxEmpty>
           <ComboboxList>
             {(group: ModelOptionGroup) => (
-              <ComboboxGroup key={group.label} items={group.items}>
+              <ComboboxGroup key={group.id} items={group.items}>
                 <ComboboxLabel>{group.label}</ComboboxLabel>
                 <ComboboxCollection>
                   {(option: ModelOption) => (

@@ -1,5 +1,6 @@
 import { Edit, Save } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { useOrganizations } from "@/app/(dashboard)/hooks/organizations/useOrganizations";
 import { Badge } from "@/components/ui/badge";
@@ -111,6 +112,7 @@ const DEFAULT_VALUES: SettingsValues = {
 };
 
 const TeamSSOSettings: React.FC<TeamSSOSettingsProps> = ({ accessToken }) => {
+  const { t: tCommon } = useTranslation("common");
   const anchor = useComboboxAnchor();
   const [loading, setLoading] = useState<boolean>(true);
   const [values, setValues] = useState<SettingsValues>(DEFAULT_VALUES);
@@ -261,7 +263,11 @@ const TeamSSOSettings: React.FC<TeamSSOSettingsProps> = ({ accessToken }) => {
               description="How frequently the team's budget resets."
               isEditing={isEditing}
               viewContent={
-                values.budget_duration ? <span>{getBudgetDurationLabel(values.budget_duration)}</span> : <NotSet />
+                values.budget_duration ? (
+                  <span>{getBudgetDurationLabel(values.budget_duration, tCommon)}</span>
+                ) : (
+                  <NotSet />
+                )
               }
               editContent={
                 <BudgetDurationDropdown

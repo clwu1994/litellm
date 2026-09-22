@@ -113,7 +113,7 @@ describe("AllModelsTable Chinese copy", () => {
 
     expect(screen.queryByRole("columnheader", { name: "来源" })).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: /columns/i }));
+    await user.click(screen.getByRole("button", { name: "列" }));
     await user.click(await screen.findByRole("menuitemcheckbox", { name: "来源" }));
 
     expect(await screen.findByRole("columnheader", { name: "来源" })).toBeInTheDocument();
@@ -126,7 +126,7 @@ describe("AllModelsTable Chinese copy", () => {
     const user = userEvent.setup();
     renderTable({ data: [makeModel({ model_info: { db_model: false } as ModelData["model_info"] })] });
 
-    await user.click(screen.getByRole("button", { name: /columns/i }));
+    await user.click(screen.getByRole("button", { name: "列" }));
     await user.click(await screen.findByRole("menuitemcheckbox", { name: "来源" }));
 
     expect(await screen.findByText("配置模型")).toBeInTheDocument();

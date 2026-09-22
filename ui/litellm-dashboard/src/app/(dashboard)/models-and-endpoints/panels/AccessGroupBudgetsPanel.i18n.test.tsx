@@ -350,7 +350,7 @@ describe("AccessGroupBudgetsPanel Chinese copy", () => {
     expect(within(dialog).getByText("最大预算", { selector: "dt" })).toBeInTheDocument();
     expect(within(dialog).queryByText("Max Budget")).not.toBeInTheDocument();
 
-    await user.click(within(dialog).getByRole("button", { name: /^delete$/i }));
+    await user.click(within(dialog).getByRole("button", { name: "删除" }));
 
     await waitFor(() => expect(toast.success).toHaveBeenCalledWith("已为“premium”清除预算"));
     expect(toast.success).not.toHaveBeenCalledWith('Budget cleared for "premium"');
