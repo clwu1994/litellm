@@ -52,8 +52,8 @@ The increment covers `src/app/(dashboard)/mcp-servers/**` and the component tree
 
 ### Task 2: The create and edit forms
 
-**Files:** `_components/CreateMCPServer.tsx` (~18), `mcp_server_edit.tsx` (~31), `mcp_connect.tsx` (~43), `StdioConfiguration.tsx`, `MCPNetworkSettings.tsx` (~7), `MCPStandardsSettings.tsx` (~14), `McpFormTestHarness.tsx`, `mcpFormStore.ts`, `mcpFieldRules.ts`, plus the remaining form files
-- [ ] Same shape, extending `mcpServers` under `mcpServers.form.*`, `mcpServers.network.*`, `mcpServers.standards.*`. `mcpFieldRules.ts` and `mcpFormStore.ts` are logic modules: return keys or take a `t`.
+**Files:** `_components/CreateMCPServer.tsx` (~18), `mcp_server_edit.tsx` (~31), `mcp_connect.tsx` (~43), `StdioConfiguration.tsx`, `MCPNetworkSettings.tsx` (~7), `McpFormTestHarness.tsx`, `mcpFormStore.ts`, `mcpFieldRules.ts`, plus the remaining form files. **`MCPStandardsSettings.tsx` moved to Task 4:** its `FIELD_GROUPS` labels/descriptions render only through `MCPSubmissionsTab.tsx`, so converting them to keys before Task 4 would render raw keys in the Submitted MCPs tab; the `standards.*` group belongs with its consumer.
+- [ ] Same shape, extending `mcpServers` under `mcpServers.form.*`, `mcpServers.network.*`. `mcpFieldRules.ts` and `mcpFormStore.ts` are logic modules: return keys or take a `t`.
 
 ### Task 3: The auth and credential field sections
 
