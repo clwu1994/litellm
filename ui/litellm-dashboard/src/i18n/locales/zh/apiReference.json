@@ -1,0 +1,16 @@
+{
+  "header": {
+    "title": "OpenAI 兼容代理：API 参考",
+    "blurb": "LiteLLM 与 OpenAI 兼容。这意味着你的 API Key 可与 OpenAI SDK 配合使用。只需替换 base_url，使其指向你的 litellm 代理。示例如下"
+  },
+  "tabs": {
+    "openai": "OpenAI Python SDK",
+    "llamaindex": "LlamaIndex",
+    "langchain": "Langchain Py"
+  },
+  "docLink": {
+    "label": "API 参考文档",
+    "title": "在新标签页中打开文档",
+    "newTab": "（在新标签页中打开）"
+  }
+}

@@ -1,5 +1,6 @@
 import enAccessGroups from "./locales/en/accessGroups.json";
 import enAgents from "./locales/en/agents.json";
+import enApiReference from "./locales/en/apiReference.json";
 import enAuth from "./locales/en/auth.json";
 import enBudgets from "./locales/en/budgets.json";
 import enCaching from "./locales/en/caching.json";
@@ -28,6 +29,7 @@ import enUsers from "./locales/en/users.json";
 import enVectorStores from "./locales/en/vectorStores.json";
 import zhAccessGroups from "./locales/zh/accessGroups.json";
 import zhAgents from "./locales/zh/agents.json";
+import zhApiReference from "./locales/zh/apiReference.json";
 import zhAuth from "./locales/zh/auth.json";
 import zhBudgets from "./locales/zh/budgets.json";
 import zhCaching from "./locales/zh/caching.json";
@@ -61,6 +63,7 @@ export const resources = {
     nav: enNav,
     accessGroups: enAccessGroups,
     agents: enAgents,
+    apiReference: enApiReference,
     auth: enAuth,
     budgets: enBudgets,
     caching: enCaching,
@@ -91,6 +94,7 @@ export const resources = {
     nav: zhNav,
     accessGroups: zhAccessGroups,
     agents: zhAgents,
+    apiReference: zhApiReference,
     auth: zhAuth,
     budgets: zhBudgets,
     caching: zhCaching,
