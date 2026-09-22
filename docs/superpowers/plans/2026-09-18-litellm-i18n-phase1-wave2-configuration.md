@@ -71,6 +71,14 @@ Each task owns exactly one route directory and its own namespace. Tasks are inde
 **Files:** `src/app/(dashboard)/tag-management/_components/tag_info.tsx` (~26), `tagTableColumns.tsx` (~9), `index.tsx` (~7), `components/CreateTagModal.tsx` (~7), `TagTable.tsx` (~2)
 - [ ] Same shape with namespace `tagManagement`. This route renders `budget_duration_dropdown` from the shared-components increment; if its labels are still English, report it as a shared gap rather than translating it here.
 
+### Task 7: The Guardrails Monitor component tree (`guardrailsMonitor`)
+
+**Why this task exists:** Task 3's review found that `src/components/GuardrailsMonitor/{CalcPopover,UnpricedNote,usageUnits}` have no importer outside the guardrails-monitor route (grep-verified), so they are route-specific, not shared, and they still render English chrome on the Chinese page. Only `LogViewer` and `MetricCard` are genuinely shared and stay with the component-trees increment.
+
+**Files:** `src/components/GuardrailsMonitor/CalcPopover.tsx` (`How is this calculated?`, `MathTable`'s `Total`), `UnpricedNote.tsx`, `usageUnits.ts`, plus every remaining route-specific file in `src/components/GuardrailsMonitor/**`. Do not touch `LogViewer.tsx` or `MetricCard.tsx`.
+
+- [ ] Same shape with namespace `guardrailsMonitor`; reuse its existing keys where the copy is byte-identical. Sweep the directory afterwards and report `LogViewer`/`MetricCard` as the shared remainder with their external importer evidence (`src/components/ToolDetail.tsx`, `src/components/ToolPoliciesPanel.tsx`).
+
 ---
 
 ## Later increments
