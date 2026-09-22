@@ -1,4 +1,8 @@
+import type { TFunction } from "i18next";
+
 import { PromptType, Message, Tool } from "./types";
+
+export const DEFAULT_PROMPT_NAME = "New prompt";
 
 export const extractVariables = (prompt: PromptType): string[] => {
   const variableSet = new Set<string>();
@@ -117,7 +121,7 @@ const parseToolsFromFrontmatter = (lines: string[]): Tool[] => {
     try {
       const toolObj = JSON.parse(rawJson);
       tools.push({
-        name: toolObj?.function?.name || "Unnamed Tool",
+        name: toolObj?.function?.name || "",
         description: toolObj?.function?.description || "",
         json: JSON.stringify(toolObj, null, 2),
       });
@@ -211,7 +215,7 @@ const parseDotpromptBody = (body: string): ParsedBody => {
   return { developerMessage, messages };
 };
 
-export const parseExistingPrompt = (apiResponse: any): PromptType => {
+export const parseExistingPrompt = (apiResponse: any, t: TFunction<"prompts">): PromptType => {
   // Extract dotprompt_content from litellm_params
   const dotpromptContent = apiResponse?.prompt_spec?.litellm_params?.dotprompt_content || "";
 
@@ -232,7 +236,7 @@ export const parseExistingPrompt = (apiResponse: any): PromptType => {
   const parsedBody = parseDotpromptBody(content);
 
   // Strip version suffix from prompt name for display
-  const promptId = apiResponse?.prompt_spec?.prompt_id || "Unnamed Prompt";
+  const promptId = apiResponse?.prompt_spec?.prompt_id || t("editor.unnamedPrompt");
   const baseName = stripVersionFromPromptId(promptId) || promptId;
 
   return {
@@ -242,9 +246,7 @@ export const parseExistingPrompt = (apiResponse: any): PromptType => {
     tools: parsedFrontmatter.tools,
     developerMessage: parsedBody.developerMessage,
     messages:
-      parsedBody.messages.length > 0
-        ? parsedBody.messages
-        : [{ role: "user", content: "Enter task specifics. Use {{template_variables}} for dynamic inputs" }],
+      parsedBody.messages.length > 0 ? parsedBody.messages : [{ role: "user", content: t("editor.defaultMessage") }],
     environment:
       apiResponse?.prompt_spec?.environment || apiResponse?.prompt_spec?.prompt_info?.environment || "development",
   };

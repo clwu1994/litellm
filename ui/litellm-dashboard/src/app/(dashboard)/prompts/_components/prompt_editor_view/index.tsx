@@ -1,9 +1,10 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import ToolModal from "../tool_modal";
 import { toast } from "@/lib/toast";
 import { createPromptCall, updatePromptCall, getPromptInfo } from "@/components/networking";
 import { PromptType, PromptEditorViewProps, Tool } from "./types";
-import { convertToDotPrompt, parseExistingPrompt } from "./utils";
+import { convertToDotPrompt, parseExistingPrompt, DEFAULT_PROMPT_NAME } from "./utils";
 import PromptEditorHeader from "./PromptEditorHeader";
 import ModelConfigCard from "./ModelConfigCard";
 import ToolsCard from "./ToolsCard";
@@ -15,17 +16,19 @@ import DotpromptViewTab from "./DotpromptViewTab";
 import VersionHistorySidePanel from "./VersionHistorySidePanel";
 
 const PromptEditorView: React.FC<PromptEditorViewProps> = ({ onClose, onSuccess, accessToken, initialPromptData }) => {
+  const { t } = useTranslation("prompts");
+
   const getInitialPrompt = (): PromptType => {
     if (initialPromptData) {
       try {
-        return parseExistingPrompt(initialPromptData);
+        return parseExistingPrompt(initialPromptData, t);
       } catch (error) {
         console.error("Error parsing existing prompt:", error);
-        toast.fromError("Failed to parse prompt data");
+        toast.fromError(t("editor.toast.parseFailed"));
       }
     }
     return {
-      name: "New prompt",
+      name: DEFAULT_PROMPT_NAME,
       model: "gpt-4o",
       config: {
         temperature: 1,
@@ -36,7 +39,7 @@ const PromptEditorView: React.FC<PromptEditorViewProps> = ({ onClose, onSuccess,
       messages: [
         {
           role: "user",
-          content: "Enter task specifics. Use {{template_variables}} for dynamic inputs",
+          content: t("editor.defaultMessage"),
         },
       ],
       environment: "development",
@@ -120,7 +123,7 @@ const PromptEditorView: React.FC<PromptEditorViewProps> = ({ onClose, onSuccess,
     try {
       const parsed = JSON.parse(json);
       const tool: Tool = {
-        name: parsed.function?.name || "Unnamed Tool",
+        name: parsed.function?.name || "",
         description: parsed.function?.description || "",
         json: json,
       };
@@ -142,7 +145,7 @@ const PromptEditorView: React.FC<PromptEditorViewProps> = ({ onClose, onSuccess,
       setShowToolModal(false);
       setEditingToolIndex(null);
     } catch (error) {
-      toast.fromError("Invalid JSON format");
+      toast.fromError(t("editor.toast.invalidJson"));
     }
   };
 
@@ -164,19 +167,19 @@ const PromptEditorView: React.FC<PromptEditorViewProps> = ({ onClose, onSuccess,
 
   const handleLoadVersion = (versionData: any) => {
     try {
-      const loadedPrompt = parseExistingPrompt({ prompt_spec: versionData });
+      const loadedPrompt = parseExistingPrompt({ prompt_spec: versionData }, t);
       setPrompt(loadedPrompt);
       // Store the version number or construct versioned ID for tracking
       const versionNum = versionData.version || 1;
       setActiveVersionId(`${versionData.prompt_id}.v${versionNum}`);
     } catch (error) {
       console.error("Error loading version:", error);
-      toast.fromError("Failed to load prompt version");
+      toast.fromError(t("editor.toast.loadVersionFailed"));
     }
   };
 
   const handleSaveClick = () => {
-    if (!prompt.name || prompt.name.trim() === "" || prompt.name === "New prompt") {
+    if (!prompt.name || prompt.name.trim() === "" || prompt.name === DEFAULT_PROMPT_NAME) {
       setShowNameModal(true);
     } else {
       handleSave();
@@ -185,12 +188,12 @@ const PromptEditorView: React.FC<PromptEditorViewProps> = ({ onClose, onSuccess,
 
   const handleSave = async () => {
     if (!accessToken) {
-      toast.fromError("Access token is required");
+      toast.fromError(t("form.toast.accessTokenRequired"));
       return;
     }
 
     if (!prompt.name || prompt.name.trim() === "") {
-      toast.fromError("Please enter a valid prompt name");
+      toast.fromError(t("editor.toast.promptNameRequired"));
       return;
     }
 
@@ -214,16 +217,16 @@ const PromptEditorView: React.FC<PromptEditorViewProps> = ({ onClose, onSuccess,
 
       if (editMode && initialPromptData?.prompt_spec?.prompt_id) {
         await updatePromptCall(accessToken, initialPromptData.prompt_spec.prompt_id, promptData);
-        toast.success("Prompt updated successfully!");
+        toast.success(t("editor.toast.updated"));
       } else {
         await createPromptCall(accessToken, promptData);
-        toast.success("Prompt created successfully!");
+        toast.success(t("form.toast.created"));
       }
       onSuccess();
       onClose();
     } catch (error) {
       console.error("Error saving prompt:", error);
-      toast.fromError(editMode ? "Failed to update prompt" : "Failed to save prompt");
+      toast.fromError(editMode ? t("editor.toast.updateFailed") : t("editor.toast.saveFailed"));
     } finally {
       setIsSaving(false);
       setShowNameModal(false);
@@ -278,7 +281,7 @@ const PromptEditorView: React.FC<PromptEditorViewProps> = ({ onClose, onSuccess,
               try {
                 const response = await getPromptInfo(accessToken, initialPromptData.prompt_spec.prompt_id, env);
                 if (response?.prompt_spec) {
-                  const loadedPrompt = parseExistingPrompt(response);
+                  const loadedPrompt = parseExistingPrompt(response, t);
                   setPrompt({ ...loadedPrompt, environment: env });
                   const versionNum = response.prompt_spec.version || 1;
                   setActiveVersionId(`${response.prompt_spec.prompt_id}.v${versionNum}`);
@@ -320,7 +323,7 @@ const PromptEditorView: React.FC<PromptEditorViewProps> = ({ onClose, onSuccess,
                   }`}
                   onClick={() => setViewMode("pretty")}
                 >
-                  PRETTY
+                  {t("editor.viewMode.pretty")}
                 </button>
                 <button
                   className={`px-3 py-1 text-xs font-medium rounded-full transition-colors ${
@@ -328,7 +331,7 @@ const PromptEditorView: React.FC<PromptEditorViewProps> = ({ onClose, onSuccess,
                   }`}
                   onClick={() => setViewMode("dotprompt")}
                 >
-                  DOTPROMPT
+                  {t("editor.viewMode.dotprompt")}
                 </button>
               </div>
             </div>

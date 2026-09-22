@@ -1,16 +1,11 @@
 import React, { useState } from "react";
 import { PlusIcon, TrashIcon, GripVerticalIcon } from "lucide-react";
+import { Trans, useTranslation } from "react-i18next";
 import VariableTextArea from "../variable_textarea";
 import { Message } from "./types";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Select as ShadcnSelect, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-
-const ROLE_ITEMS = [
-  { value: "user", label: "User" },
-  { value: "assistant", label: "Assistant" },
-  { value: "system", label: "System" },
-] as const;
 
 interface PromptMessagesCardProps {
   messages: Message[];
@@ -27,6 +22,12 @@ const PromptMessagesCard: React.FC<PromptMessagesCardProps> = ({
   onRemoveMessage,
   onMoveMessage,
 }) => {
+  const { t } = useTranslation("prompts");
+  const roleItems = [
+    { value: "user", label: t("editor.messages.roles.user") },
+    { value: "assistant", label: t("editor.messages.roles.assistant") },
+    { value: "system", label: t("editor.messages.roles.system") },
+  ];
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
@@ -56,9 +57,13 @@ const PromptMessagesCard: React.FC<PromptMessagesCardProps> = ({
   return (
     <Card className="p-3">
       <div className="mb-2">
-        <p className="text-sm font-medium">Prompt messages</p>
+        <p className="text-sm font-medium">{t("editor.messages.title")}</p>
         <p className="text-muted-foreground text-xs mt-1">
-          Use <code className="bg-muted px-1 rounded-sm text-xs">{"{{variable}}"}</code> syntax for template variables
+          <Trans
+            ns="prompts"
+            i18nKey="editor.messages.hint"
+            components={{ code: <code className="bg-muted px-1 rounded-sm text-xs" /> }}
+          />
         </p>
       </div>
       <div className="space-y-2">
@@ -76,19 +81,19 @@ const PromptMessagesCard: React.FC<PromptMessagesCardProps> = ({
           >
             <div className="bg-muted px-2 py-1.5 border-b border-border flex items-center justify-between">
               <ShadcnSelect
-                items={ROLE_ITEMS}
+                items={roleItems}
                 value={message.role}
                 onValueChange={(value) => onUpdateMessage(index, "role", String(value))}
               >
                 <SelectTrigger
                   size="sm"
                   className="w-[110px] border-0 shadow-none"
-                  aria-label={`Message ${index + 1} role`}
+                  aria-label={t("editor.messages.roleAria", { index: index + 1 })}
                 >
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {ROLE_ITEMS.map((item) => (
+                  {roleItems.map((item) => (
                     <SelectItem key={item.value} value={item.value}>
                       {item.label}
                     </SelectItem>
@@ -100,7 +105,7 @@ const PromptMessagesCard: React.FC<PromptMessagesCardProps> = ({
                   <Button
                     variant="ghost"
                     size="icon-sm"
-                    aria-label={`Remove message ${index + 1}`}
+                    aria-label={t("editor.messages.removeAria", { index: index + 1 })}
                     onClick={() => onRemoveMessage(index)}
                   >
                     <TrashIcon size={14} />
@@ -116,7 +121,7 @@ const PromptMessagesCard: React.FC<PromptMessagesCardProps> = ({
                 value={message.content}
                 onChange={(value) => onUpdateMessage(index, "content", value)}
                 rows={3}
-                placeholder="Enter prompt content..."
+                placeholder={t("editor.messages.contentPlaceholder")}
               />
             </div>
           </div>
@@ -124,7 +129,7 @@ const PromptMessagesCard: React.FC<PromptMessagesCardProps> = ({
       </div>
       <Button variant="ghost" size="sm" onClick={onAddMessage} className="mt-2">
         <PlusIcon size={14} className="mr-1" />
-        Add message
+        {t("editor.messages.add")}
       </Button>
     </Card>
   );

@@ -144,5 +144,95 @@
     "namePlaceholder": "Variable name",
     "save": "Save",
     "cancel": "Cancel"
+  },
+  "editor": {
+    "back": "Back",
+    "promptNameAria": "Prompt name",
+    "defaultPromptName": "New prompt",
+    "environmentAria": "Environment",
+    "draft": "Draft",
+    "unsavedChanges": "Unsaved changes",
+    "history": "History",
+    "save": "Save",
+    "update": "Update",
+    "unnamedTool": "Unnamed Tool",
+    "unnamedPrompt": "Unnamed Prompt",
+    "defaultMessage": "Enter task specifics. Use {{template_variables}} for dynamic inputs",
+    "viewMode": {
+      "pretty": "PRETTY",
+      "dotprompt": "DOTPROMPT"
+    },
+    "messages": {
+      "title": "Prompt messages",
+      "hint": "Use <code>{{variable}}</code> syntax for template variables",
+      "roleAria": "Message {{index}} role",
+      "removeAria": "Remove message {{index}}",
+      "contentPlaceholder": "Enter prompt content...",
+      "add": "Add message",
+      "roles": {
+        "user": "User",
+        "assistant": "Assistant",
+        "system": "System"
+      }
+    },
+    "developer": {
+      "title": "Developer message",
+      "hint": "Optional system instructions for the model",
+      "placeholder": "e.g., You are a helpful assistant..."
+    },
+    "model": {
+      "parameters": "Parameters",
+      "title": "Model Parameters",
+      "temperature": "Temperature",
+      "maxTokens": "Max Tokens"
+    },
+    "tools": {
+      "title": "Tools",
+      "empty": "No tools added",
+      "edit": "Edit",
+      "removeAria": "Remove {{name}}"
+    },
+    "code": {
+      "getCode": "Get Code",
+      "title": "Generated Code",
+      "language": "Language",
+      "copy": "Copy to Clipboard",
+      "copiedToast": "Copied to clipboard!",
+      "typeAria": "Generated code type",
+      "tabBasic": "Basic",
+      "tabMessages": "With Messages",
+      "tabVersion": "With Version"
+    },
+    "dotprompt": {
+      "title": "Generated .prompt file",
+      "description": "This is the dotprompt format that will be saved to the database"
+    },
+    "toast": {
+      "parseFailed": "Failed to parse prompt data",
+      "invalidJson": "Invalid JSON format",
+      "loadVersionFailed": "Failed to load prompt version",
+      "promptNameRequired": "Please enter a valid prompt name",
+      "updated": "Prompt updated successfully!",
+      "updateFailed": "Failed to update prompt",
+      "saveFailed": "Failed to save prompt"
+    }
+  },
+  "publish": {
+    "title": "Publish Prompt",
+    "description": "Published prompts are versioned and can be used in API calls.",
+    "name": "Name",
+    "namePlaceholder": "Enter prompt name",
+    "hint": "Published prompts can be used in API calls and are versioned for easy tracking.",
+    "publish": "Publish"
+  },
+  "versions": {
+    "close": "Close",
+    "title": "Version History",
+    "loadingAria": "Loading version history",
+    "empty": "No version history available.",
+    "latest": "Latest",
+    "active": "Active",
+    "savedToDatabase": "Saved to Database",
+    "configPrompt": "Config Prompt"
   }
 }

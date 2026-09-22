@@ -144,5 +144,95 @@
     "namePlaceholder": "变量名",
     "save": "保存",
     "cancel": "取消"
+  },
+  "editor": {
+    "back": "返回",
+    "promptNameAria": "提示词名称",
+    "defaultPromptName": "新提示词",
+    "environmentAria": "环境",
+    "draft": "草稿",
+    "unsavedChanges": "未保存的更改",
+    "history": "历史记录",
+    "save": "保存",
+    "update": "更新",
+    "unnamedTool": "未命名工具",
+    "unnamedPrompt": "未命名提示词",
+    "defaultMessage": "在此填写任务细节。使用 {{template_variables}} 作为动态输入",
+    "viewMode": {
+      "pretty": "美化",
+      "dotprompt": "DOTPROMPT"
+    },
+    "messages": {
+      "title": "提示词消息",
+      "hint": "使用 <code>{{variable}}</code> 语法表示模板变量",
+      "roleAria": "第 {{index}} 条消息的角色",
+      "removeAria": "移除第 {{index}} 条消息",
+      "contentPlaceholder": "输入提示词内容...",
+      "add": "添加消息",
+      "roles": {
+        "user": "用户",
+        "assistant": "助手",
+        "system": "系统"
+      }
+    },
+    "developer": {
+      "title": "开发者消息",
+      "hint": "为模型提供的可选系统指令",
+      "placeholder": "例如：你是一个乐于助人的助手..."
+    },
+    "model": {
+      "parameters": "参数",
+      "title": "模型参数",
+      "temperature": "温度",
+      "maxTokens": "最大 Token 数"
+    },
+    "tools": {
+      "title": "工具",
+      "empty": "尚未添加工具",
+      "edit": "编辑",
+      "removeAria": "移除 {{name}}"
+    },
+    "code": {
+      "getCode": "获取代码",
+      "title": "生成的代码",
+      "language": "语言",
+      "copy": "复制到剪贴板",
+      "copiedToast": "已复制到剪贴板！",
+      "typeAria": "生成的代码类型",
+      "tabBasic": "基础",
+      "tabMessages": "带消息",
+      "tabVersion": "带版本"
+    },
+    "dotprompt": {
+      "title": "生成的 .prompt 文件",
+      "description": "这是将保存到数据库的 dotprompt 格式"
+    },
+    "toast": {
+      "parseFailed": "解析提示词数据失败",
+      "invalidJson": "JSON 格式无效",
+      "loadVersionFailed": "加载提示词版本失败",
+      "promptNameRequired": "请输入有效的提示词名称",
+      "updated": "提示词更新成功！",
+      "updateFailed": "更新提示词失败",
+      "saveFailed": "保存提示词失败"
+    }
+  },
+  "publish": {
+    "title": "发布提示词",
+    "description": "发布的提示词会进行版本管理，并可在 API 调用中使用。",
+    "name": "名称",
+    "namePlaceholder": "输入提示词名称",
+    "hint": "发布的提示词可在 API 调用中使用，并进行版本管理以便追踪。",
+    "publish": "发布"
+  },
+  "versions": {
+    "close": "关闭",
+    "title": "版本历史",
+    "loadingAria": "正在加载版本历史",
+    "empty": "暂无版本历史。",
+    "latest": "最新",
+    "active": "当前",
+    "savedToDatabase": "已保存到数据库",
+    "configPrompt": "配置提示词"
   }
 }

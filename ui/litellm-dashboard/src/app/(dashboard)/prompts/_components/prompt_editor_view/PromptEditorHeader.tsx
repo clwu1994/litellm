@@ -1,16 +1,12 @@
 import React from "react";
 import { ArrowLeftIcon, SaveIcon, ClockIcon, LoaderCircleIcon } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import PromptCodeSnippets from "./PromptCodeSnippets";
+import { DEFAULT_PROMPT_NAME } from "./utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-
-const ENVIRONMENT_ITEMS = [
-  { value: "development", label: "Development" },
-  { value: "staging", label: "Staging" },
-  { value: "production", label: "Production" },
-] as const;
 
 interface PromptEditorHeaderProps {
   promptName: string;
@@ -48,39 +44,47 @@ const PromptEditorHeader: React.FC<PromptEditorHeaderProps> = ({
   environment,
   onEnvironmentChange,
 }) => {
+  const { t } = useTranslation("prompts");
+  const environmentItems = [
+    { value: "development", label: t("list.environmentOptions.development") },
+    { value: "staging", label: t("list.environmentOptions.staging") },
+    { value: "production", label: t("list.environmentOptions.production") },
+  ];
+  const displayName = promptName === DEFAULT_PROMPT_NAME ? t("editor.defaultPromptName") : promptName;
+
   return (
     <div className="bg-background border-b border-border px-6 py-3 flex items-center justify-between">
       <div className="flex items-center space-x-3">
         <Button variant="ghost" onClick={onBack} size="sm">
           <ArrowLeftIcon />
-          Back
+          {t("editor.back")}
         </Button>
         <Input
-          aria-label="Prompt name"
-          value={promptName}
+          aria-label={t("editor.promptNameAria")}
+          value={displayName}
           onChange={(e) => onNameChange(e.target.value)}
           className="text-base font-medium border-none shadow-none"
           style={{ width: "200px" }}
         />
         {version && <Badge>{version}</Badge>}
         <Select
-          items={ENVIRONMENT_ITEMS}
+          items={environmentItems}
           value={environment}
           onValueChange={(value) => onEnvironmentChange(String(value))}
         >
-          <SelectTrigger size="sm" className="w-[140px]" aria-label="Environment">
+          <SelectTrigger size="sm" className="w-[140px]" aria-label={t("editor.environmentAria")}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {ENVIRONMENT_ITEMS.map((item) => (
+            {environmentItems.map((item) => (
               <SelectItem key={item.value} value={item.value}>
                 {item.label}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
-        <Badge variant="secondary">Draft</Badge>
-        <span className="text-xs text-muted-foreground">Unsaved changes</span>
+        <Badge variant="secondary">{t("editor.draft")}</Badge>
+        <span className="text-xs text-muted-foreground">{t("editor.unsavedChanges")}</span>
       </div>
       <div className="flex items-center space-x-2">
         <PromptCodeSnippets
@@ -95,12 +99,12 @@ const PromptEditorHeader: React.FC<PromptEditorHeaderProps> = ({
         {editMode && onShowHistory && (
           <Button variant="outline" onClick={onShowHistory}>
             <ClockIcon />
-            History
+            {t("editor.history")}
           </Button>
         )}
         <Button onClick={onSave} disabled={isSaving}>
           {isSaving ? <LoaderCircleIcon className="animate-spin" /> : <SaveIcon />}
-          {editMode ? "Update" : "Save"}
+          {editMode ? t("editor.update") : t("editor.save")}
         </Button>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { CodeIcon, CopyIcon } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { coy } from "react-syntax-highlighter/dist/esm/styles/prism";
 
@@ -38,6 +39,7 @@ const PromptCodeSnippets: React.FC<PromptCodeSnippetsProps> = ({
   environment,
   proxySettings,
 }) => {
+  const { t } = useTranslation("prompts");
   const syntaxTheme = useSyntaxTheme(coy);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState<"curl" | "python" | "javascript">("curl");
@@ -252,18 +254,18 @@ main();`;
     <>
       <Button variant="outline" onClick={showModal}>
         <CodeIcon />
-        Get Code
+        {t("editor.code.getCode")}
       </Button>
 
       <Dialog open={isModalVisible} onOpenChange={(open) => !open && handleCancel()}>
         <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-3xl">
           <DialogHeader>
-            <DialogTitle>Generated Code</DialogTitle>
+            <DialogTitle>{t("editor.code.title")}</DialogTitle>
           </DialogHeader>
           <div className="flex justify-between items-center mb-4">
             <div>
               <label htmlFor="prompt-code-language" className="font-medium block mb-1 text-foreground">
-                Language
+                {t("editor.code.language")}
               </label>
               <Select
                 items={LANGUAGE_ITEMS}
@@ -286,19 +288,19 @@ main();`;
               variant="outline"
               onClick={() => {
                 navigator.clipboard.writeText(generatedCode);
-                toast.success("Copied to clipboard!");
+                toast.success(t("editor.code.copiedToast"));
               }}
             >
               <CopyIcon />
-              Copy to Clipboard
+              {t("editor.code.copy")}
             </Button>
           </div>
 
           <Tabs value={selectedTab} onValueChange={(value) => setSelectedTab(String(value))}>
-            <TabsList aria-label="Generated code type">
-              <TabsTrigger value="basic">Basic</TabsTrigger>
-              <TabsTrigger value="messages">With Messages</TabsTrigger>
-              <TabsTrigger value="version">With Version</TabsTrigger>
+            <TabsList aria-label={t("editor.code.typeAria")}>
+              <TabsTrigger value="basic">{t("editor.code.tabBasic")}</TabsTrigger>
+              <TabsTrigger value="messages">{t("editor.code.tabMessages")}</TabsTrigger>
+              <TabsTrigger value="version">{t("editor.code.tabVersion")}</TabsTrigger>
             </TabsList>
           </Tabs>
 
