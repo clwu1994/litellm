@@ -1,0 +1,87 @@
+{
+  "page": {
+    "title": "记忆",
+    "description": "查看你的 Agent 在 <code>/v1/memory</code> 下存储的内容。范围限定为对你的用户 / 团队可见的记忆（管理员可见全部）。",
+    "newMemory": "新建记忆"
+  },
+  "table": {
+    "loading": "正在加载记忆…",
+    "searchPlaceholder": "按键前缀或 Memory ID 搜索…",
+    "columns": {
+      "id": "ID",
+      "name": "名称",
+      "preview": "预览",
+      "userId": "用户 ID",
+      "teamId": "团队 ID",
+      "updated": "更新时间",
+      "actions": "操作"
+    },
+    "rowActions": {
+      "open": "打开记忆操作菜单",
+      "view": "查看",
+      "edit": "编辑",
+      "delete": "删除"
+    },
+    "empty": {
+      "title": "尚未存储任何记忆",
+      "body": "你的 Agent 存储在 /v1/memory 下的记忆将显示在这里。",
+      "filteredTitle": "没有匹配的记忆",
+      "filteredBody": "没有记忆与你的搜索匹配。"
+    }
+  },
+  "form": {
+    "title": {
+      "create": "创建记忆",
+      "edit": "编辑 {{memoryKey}}"
+    },
+    "key": {
+      "label": "键",
+      "hint": "全局唯一，两个记忆不能共享同一个键。如果需要按用户隔离，请为自己的键加上命名空间（例如 user:123:notes）。",
+      "placeholder": "例如 user_role"
+    },
+    "value": {
+      "label": "值",
+      "hint": "注入到 LLM 上下文中的 Markdown/文本。纯字符串即可。",
+      "placeholder": "希望 Agent 记住的内容…"
+    },
+    "metadata": {
+      "label": "元数据",
+      "optional": "（可选 JSON）",
+      "hint": "可选的结构化元数据，如提供必须是有效的 JSON。"
+    },
+    "validation": {
+      "keyRequired": "键为必填项",
+      "valueRequired": "值为必填项"
+    },
+    "cancel": "取消",
+    "create": "创建",
+    "save": "保存"
+  },
+  "drawer": {
+    "memoryId": "记忆 ID",
+    "userId": "用户 ID",
+    "teamId": "团队 ID",
+    "value": "值",
+    "metadata": "元数据",
+    "created": "创建于 {{timestamp}}",
+    "updated": "更新于 {{timestamp}}",
+    "by": "，操作者 {{name}}"
+  },
+  "deleteModal": {
+    "title": "删除记忆",
+    "message": "此操作无法撤销。",
+    "resourceTitle": "记忆",
+    "key": "键",
+    "memoryId": "记忆 ID",
+    "userId": "用户 ID",
+    "teamId": "团队 ID"
+  },
+  "toast": {
+    "created": "已创建 {{memoryKey}}",
+    "updated": "已更新 {{memoryKey}}",
+    "deleted": "已删除 {{memoryKey}}",
+    "saveFailed": "保存失败：{{message}}",
+    "deleteFailed": "删除失败：{{message}}",
+    "invalidMetadata": "元数据必须是有效的 JSON（或留空）。"
+  }
+}

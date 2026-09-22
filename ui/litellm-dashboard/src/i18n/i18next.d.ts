@@ -11,6 +11,7 @@ import type zhGuardrailsMonitor from "./locales/zh/guardrailsMonitor.json";
 import type zhKeys from "./locales/zh/keys.json";
 import type zhLogs from "./locales/zh/logs.json";
 import type zhMcpServers from "./locales/zh/mcpServers.json";
+import type zhMemory from "./locales/zh/memory.json";
 import type zhModels from "./locales/zh/models.json";
 import type zhNav from "./locales/zh/nav.json";
 import type zhOldUsage from "./locales/zh/oldUsage.json";
@@ -47,6 +48,7 @@ declare module "i18next" {
       keys: typeof zhKeys;
       logs: typeof zhLogs;
       mcpServers: typeof zhMcpServers;
+      memory: typeof zhMemory;
       models: typeof zhModels;
       oldUsage: typeof zhOldUsage;
       teams: typeof zhTeams;

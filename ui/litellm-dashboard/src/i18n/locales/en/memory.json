@@ -1,0 +1,87 @@
+{
+  "page": {
+    "title": "Memory",
+    "description": "Inspect what your agents have stored under <code>/v1/memory</code>. Scoped to memories visible to your user / team (admins see all).",
+    "newMemory": "New memory"
+  },
+  "table": {
+    "loading": "Loading memories…",
+    "searchPlaceholder": "Search by key prefix or memory ID…",
+    "columns": {
+      "id": "ID",
+      "name": "Name",
+      "preview": "Preview",
+      "userId": "User ID",
+      "teamId": "Team ID",
+      "updated": "Updated",
+      "actions": "Actions"
+    },
+    "rowActions": {
+      "open": "Open memory actions",
+      "view": "View",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "empty": {
+      "title": "No memories stored yet",
+      "body": "Memories your agents store under /v1/memory will appear here.",
+      "filteredTitle": "No matching memories",
+      "filteredBody": "No memories match your search."
+    }
+  },
+  "form": {
+    "title": {
+      "create": "Create memory",
+      "edit": "Edit {{memoryKey}}"
+    },
+    "key": {
+      "label": "Key",
+      "hint": "Globally unique — two memories cannot share a key. Namespace your own keys if you need per-user isolation (e.g. user:123:notes).",
+      "placeholder": "e.g. user_role"
+    },
+    "value": {
+      "label": "Value",
+      "hint": "Markdown/text injected into LLM context. Plain strings are fine.",
+      "placeholder": "What the agent should remember…"
+    },
+    "metadata": {
+      "label": "Metadata",
+      "optional": "(optional JSON)",
+      "hint": "Optional structured metadata — must be valid JSON if provided."
+    },
+    "validation": {
+      "keyRequired": "Key is required",
+      "valueRequired": "Value is required"
+    },
+    "cancel": "Cancel",
+    "create": "Create",
+    "save": "Save"
+  },
+  "drawer": {
+    "memoryId": "Memory ID",
+    "userId": "User ID",
+    "teamId": "Team ID",
+    "value": "Value",
+    "metadata": "Metadata",
+    "created": "Created {{timestamp}}",
+    "updated": "Updated {{timestamp}}",
+    "by": " by {{name}}"
+  },
+  "deleteModal": {
+    "title": "Delete memory",
+    "message": "This action cannot be undone.",
+    "resourceTitle": "Memory",
+    "key": "Key",
+    "memoryId": "Memory ID",
+    "userId": "User ID",
+    "teamId": "Team ID"
+  },
+  "toast": {
+    "created": "Created {{memoryKey}}",
+    "updated": "Updated {{memoryKey}}",
+    "deleted": "Deleted {{memoryKey}}",
+    "saveFailed": "Save failed: {{message}}",
+    "deleteFailed": "Delete failed: {{message}}",
+    "invalidMetadata": "Metadata must be valid JSON (or leave empty)."
+  }
+}

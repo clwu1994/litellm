@@ -11,6 +11,7 @@ import enGuardrailsMonitor from "./locales/en/guardrailsMonitor.json";
 import enKeys from "./locales/en/keys.json";
 import enLogs from "./locales/en/logs.json";
 import enMcpServers from "./locales/en/mcpServers.json";
+import enMemory from "./locales/en/memory.json";
 import enModels from "./locales/en/models.json";
 import enNav from "./locales/en/nav.json";
 import enOldUsage from "./locales/en/oldUsage.json";
@@ -41,6 +42,7 @@ import zhGuardrailsMonitor from "./locales/zh/guardrailsMonitor.json";
 import zhKeys from "./locales/zh/keys.json";
 import zhLogs from "./locales/zh/logs.json";
 import zhMcpServers from "./locales/zh/mcpServers.json";
+import zhMemory from "./locales/zh/memory.json";
 import zhModels from "./locales/zh/models.json";
 import zhNav from "./locales/zh/nav.json";
 import zhOldUsage from "./locales/zh/oldUsage.json";
@@ -75,6 +77,7 @@ export const resources = {
     keys: enKeys,
     logs: enLogs,
     mcpServers: enMcpServers,
+    memory: enMemory,
     models: enModels,
     oldUsage: enOldUsage,
     teams: enTeams,
@@ -107,6 +110,7 @@ export const resources = {
     keys: zhKeys,
     logs: zhLogs,
     mcpServers: zhMcpServers,
+    memory: zhMemory,
     models: zhModels,
     oldUsage: zhOldUsage,
     teams: zhTeams,
