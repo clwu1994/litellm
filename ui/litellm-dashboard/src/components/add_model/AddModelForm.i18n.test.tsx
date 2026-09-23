@@ -299,7 +299,10 @@ describe("AddModelForm Chinese copy", () => {
     expect(await screen.findByText("连接测试结果")).toBeInTheDocument();
     expect(screen.queryByText("Connection Test Results")).not.toBeInTheDocument();
     const dialog = await screen.findByRole("dialog");
-    expect(within(dialog).getByRole("button", { name: "关闭" })).toBeInTheDocument();
+    // eslint-disable-next-line testing-library/no-node-access -- the footer has no role, so data-slot pins the dialog-owned close instead of the shared sr-only close
+    const footer = dialog.querySelector('[data-slot="dialog-footer"]');
+    expect(footer).not.toBeNull();
+    expect(within(footer as HTMLElement).getByRole("button", { name: "关闭" })).toBeInTheDocument();
   });
 
   it("renders every Chinese test-mode option inside the open listbox", async () => {

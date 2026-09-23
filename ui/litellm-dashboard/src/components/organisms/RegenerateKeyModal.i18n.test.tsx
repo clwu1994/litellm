@@ -1,4 +1,4 @@
-import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -143,7 +143,11 @@ describe("RegenerateKeyModal Chinese copy", () => {
     expect(screen.getByText("未设置别名")).toBeInTheDocument();
     expect(screen.queryByText("No alias set")).not.toBeInTheDocument();
     expect(screen.getByText("Virtual Key")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "关闭" })).toBeInTheDocument();
+    const dialog = screen.getByRole("dialog");
+    // eslint-disable-next-line testing-library/no-node-access -- the footer has no role, so data-slot pins the dialog-owned close instead of the shared sr-only close
+    const footer = dialog.querySelector('[data-slot="dialog-footer"]');
+    expect(footer).not.toBeNull();
+    expect(within(footer as HTMLElement).getByRole("button", { name: "关闭" })).toBeInTheDocument();
     expect(
       screen.queryAllByRole("button", { name: "Close" }).every((b) => b.getAttribute("data-slot") === "dialog-close"),
     ).toBe(true);

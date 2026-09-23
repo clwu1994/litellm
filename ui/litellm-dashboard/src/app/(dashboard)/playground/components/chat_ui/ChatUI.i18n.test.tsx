@@ -519,7 +519,11 @@ describe("ChatUI Chinese copy", () => {
         exact: false,
       }),
     ).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "关闭" })).toBeInTheDocument();
+    const toolsetsDialog = screen.getByRole("dialog");
+    // eslint-disable-next-line testing-library/no-node-access -- the footer has no role, so data-slot pins the dialog-owned close instead of the shared sr-only close
+    const toolsetsFooter = toolsetsDialog.querySelector('[data-slot="dialog-footer"]');
+    expect(toolsetsFooter).not.toBeNull();
+    expect(within(toolsetsFooter as HTMLElement).getByRole("button", { name: "关闭" })).toBeInTheDocument();
   });
 
   it("renders the Chinese clear-chat toast", async () => {

@@ -48,6 +48,13 @@ const renderHealthCheck = async (allModelsOnProxy: string[]) => {
   });
 };
 
+const dialogFooter = (dialog: HTMLElement): HTMLElement => {
+  // eslint-disable-next-line testing-library/no-node-access -- the footer has no role, so data-slot pins the dialog-owned close instead of the shared sr-only close
+  const footer = dialog.querySelector('[data-slot="dialog-footer"]');
+  if (footer === null) throw new Error("dialog footer not found");
+  return footer as HTMLElement;
+};
+
 describe("HealthCheckComponent Chinese copy", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
@@ -125,7 +132,7 @@ describe("HealthCheckComponent Chinese copy", () => {
     expect(screen.queryByText("Details returned by the model health check.")).not.toBeInTheDocument();
 
     const dialog = await screen.findByRole("dialog");
-    expect(within(dialog).getByRole("button", { name: "关闭" })).toBeInTheDocument();
+    expect(within(dialogFooter(dialog)).getByRole("button", { name: "关闭" })).toBeInTheDocument();
   });
 
   it("renders the Chinese success dialog inside the open state", async () => {
@@ -148,6 +155,6 @@ describe("HealthCheckComponent Chinese copy", () => {
     const dialog = await screen.findByRole("dialog");
     expect(within(dialog).getByText("状态：")).toBeInTheDocument();
     expect(within(dialog).queryByText("Status:")).not.toBeInTheDocument();
-    expect(within(dialog).getByRole("button", { name: "关闭" })).toBeInTheDocument();
+    expect(within(dialogFooter(dialog)).getByRole("button", { name: "关闭" })).toBeInTheDocument();
   });
 });

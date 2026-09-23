@@ -1591,7 +1591,10 @@ describe("AddAutoRouterTab Chinese copy", () => {
     await user.click(screen.getByTestId("auto-router-test-routing-btn"));
 
     const dialog = await screen.findByRole("dialog");
-    const closeButton = within(dialog).getByRole("button", { name: "关闭" });
+    // eslint-disable-next-line testing-library/no-node-access -- the footer has no role, so data-slot pins the dialog-owned close instead of the shared sr-only close
+    const footer = dialog.querySelector('[data-slot="dialog-footer"]');
+    expect(footer).not.toBeNull();
+    const closeButton = within(footer as HTMLElement).getByRole("button", { name: "关闭" });
     expect(closeButton).toHaveTextContent("关闭");
     expect(closeButton).not.toHaveTextContent("Close");
   });

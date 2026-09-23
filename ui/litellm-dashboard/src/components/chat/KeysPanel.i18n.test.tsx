@@ -202,7 +202,10 @@ describe("KeysPanel Chinese copy", () => {
     expect(screen.queryByText("Save this key now; you will not see it again")).not.toBeInTheDocument();
     expect(screen.getByText("新密钥")).toBeInTheDocument();
     expect(screen.queryByText("New Key")).not.toBeInTheDocument();
-    const closeButton = within(dialog).getByRole("button", { name: "关闭" });
+    // eslint-disable-next-line testing-library/no-node-access -- the footer has no role, so data-slot pins the dialog-owned close instead of the shared sr-only close
+    const footer = dialog.querySelector('[data-slot="dialog-footer"]');
+    expect(footer).not.toBeNull();
+    const closeButton = within(footer as HTMLElement).getByRole("button", { name: "关闭" });
     expect(closeButton).toHaveTextContent("关闭");
     expect(closeButton).not.toHaveTextContent("Close");
     expect(screen.getByRole("button", { name: "复制密钥" })).toBeInTheDocument();
