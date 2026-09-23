@@ -240,7 +240,8 @@ describe("Settings views Chinese copy", () => {
     expect(screen.getByText("（可选）自定义邮件中显示的 Logo，传入你的 Logo URL")).toBeInTheDocument();
     expect(screen.getByText("（可选）自定义邮件中显示的支持邮箱地址。默认为 support@berri.ai")).toBeInTheDocument();
     expect(screen.queryByText(/Customize the support email address/)).not.toBeInTheDocument();
-    expect(screen.getAllByText("Required *")).toHaveLength(6);
+    expect(screen.getAllByText("必填 *")).toHaveLength(6);
+    expect(screen.queryByText("Required *")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "显示凭据" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Show credential" })).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "显示凭据" }));
