@@ -52,7 +52,6 @@ export const pageDescriptions: Record<string, string> = {
 export interface PageMetadata {
   page: string;
   label: string;
-  group: string;
   groupKey: PageGroupKey;
   parentKey?: PageParentKey;
   description: string;

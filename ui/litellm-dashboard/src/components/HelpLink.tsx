@@ -175,7 +175,7 @@ export const DocsMenu: React.FC<DocsMenuProps> = ({ items, children, className =
         aria-expanded={isOpen}
         aria-haspopup="true"
       >
-        <span>{children ?? t("helpLink.docs")}</span>
+        <span>{children === undefined ? t("helpLink.docs") : children}</span>
         <ChevronDown className={`h-3 w-3 transition-transform ${isOpen ? "rotate-180" : ""}`} aria-hidden="true" />
       </button>
 

@@ -106,6 +106,16 @@ describe("LLMJudgeFields Chinese copy", () => {
     expect(screen.queryByText(/After each LLM response/)).not.toBeInTheDocument();
   });
 
+  it("renders the seeded on-failure value and never the placeholder", () => {
+    render(<Harness />);
+
+    // GuardrailField seeds on_failure with "block" before first paint, so the select
+    // always shows the block label and the SelectValue placeholder is dead copy.
+    expect(screen.getByRole("combobox", { name: "失败时" })).toHaveTextContent("阻止（返回 422）");
+    expect(screen.queryByText("选择操作")).not.toBeInTheDocument();
+    expect(screen.queryByText("Select an action")).not.toBeInTheDocument();
+  });
+
   it("renders the Chinese judge-model empty state and validation and the weight total states", async () => {
     const user = userEvent.setup({ delay: null });
     render(<Harness />);

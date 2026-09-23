@@ -48,7 +48,6 @@ export const getAvailablePages = (t: TFunction<"nav">): PageMetadata[] => {
         pages.push({
           page: item.page,
           label: label,
-          group: t(group.groupKey),
           groupKey: group.groupKey,
           description: pageDescriptions[item.page] || "No description available",
         });
@@ -56,7 +55,6 @@ export const getAvailablePages = (t: TFunction<"nav">): PageMetadata[] => {
 
       // Add children items (also skip those internal users cannot access)
       if (item.children) {
-        const parentLabel = t(item.label);
         item.children.forEach((child) => {
           // Include if internal users can access
           if (isPageAccessibleToInternalUsers(child.roles)) {
@@ -64,7 +62,6 @@ export const getAvailablePages = (t: TFunction<"nav">): PageMetadata[] => {
             pages.push({
               page: child.page,
               label: childLabel,
-              group: `${t(group.groupKey)} > ${parentLabel}`,
               groupKey: group.groupKey,
               parentKey: item.label,
               description: pageDescriptions[child.page] || "No description available",

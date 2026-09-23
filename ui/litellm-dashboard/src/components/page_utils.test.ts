@@ -38,11 +38,11 @@ describe("Page Utils - LeftNav Sync", () => {
     availablePages.forEach((page) => {
       expect(page).toHaveProperty("page");
       expect(page).toHaveProperty("label");
-      expect(page).toHaveProperty("group");
+      expect(page).toHaveProperty("groupKey");
       expect(page).toHaveProperty("description");
       expect(typeof page.page).toBe("string");
       expect(typeof page.label).toBe("string");
-      expect(typeof page.group).toBe("string");
+      expect(typeof page.groupKey).toBe("string");
       expect(typeof page.description).toBe("string");
     });
   });
@@ -169,24 +169,20 @@ describe("Page Utils - LeftNav Sync", () => {
     ).toHaveLength(0);
   });
 
-  it("should have proper group hierarchy for nested pages", () => {
+  it("should carry a neutral group key and parent key for nested pages", () => {
     const availablePages = getAvailablePages(t);
 
     // Find pages that should be nested (children of Tools, Experimental, Settings)
-    const nestedPages = availablePages.filter((page) => page.group.includes(" > "));
+    const nestedPages = availablePages.filter((page) => page.parentKey !== undefined);
 
-    // Each nested page should have parent > child format
+    // Each nested page should point at a valid nav section key and a valid parent item key.
     nestedPages.forEach((page) => {
-      const parts = page.group.split(" > ");
-      expect(parts.length, `Nested page "${page.page}" should have exactly 2 parts in group hierarchy`).toBe(2);
-
-      // Parent should be one of the group labels
-      const parentGroup = parts[0];
-      const groupLabels = menuGroups.map((g) => i18n.t(g.groupKey, { ns: "nav" }));
+      const groupKeys = menuGroups.map((g) => g.groupKey);
       expect(
-        groupLabels,
-        `Parent group "${parentGroup}" for page "${page.page}" should be a valid group label`,
-      ).toContain(parentGroup);
+        groupKeys,
+        `Group key "${page.groupKey}" for page "${page.page}" should be a valid nav section key`,
+      ).toContain(page.groupKey);
+      expect(page.parentKey, `Nested page "${page.page}" should carry a parent item key`).toMatch(/^items\./);
     });
   });
 
@@ -198,33 +194,36 @@ describe("Page Utils - LeftNav Sync", () => {
     expect(pageKeys.length, "All page keys should be unique (no duplicates)").toBe(uniquePageKeys.size);
   });
 
-  it("should match the structure expected by PageVisibilitySettings component", () => {
+  it("should match the language-neutral grouping PageVisibilitySettings performs", () => {
     const availablePages = getAvailablePages(t);
 
-    // Group pages by their group (same logic as in PageVisibilitySettings)
+    // Same grouping key as PageVisibilitySettings: section key plus optional parent key.
     const grouped: Record<string, typeof availablePages> = {};
     availablePages.forEach((page) => {
-      if (!grouped[page.group]) {
-        grouped[page.group] = [];
+      const key = page.parentKey ? `${page.groupKey} > ${page.parentKey}` : page.groupKey;
+      if (!grouped[key]) {
+        grouped[key] = [];
       }
-      grouped[page.group].push(page);
+      grouped[key].push(page);
     });
 
     // Should have multiple groups
     expect(Object.keys(grouped).length).toBeGreaterThan(1);
 
-    // Each group should have at least one page
-    Object.entries(grouped).forEach(([groupName, pages]) => {
-      expect(pages.length, `Group "${groupName}" should have at least one page`).toBeGreaterThan(0);
+    // Each group should have at least one page and a language-neutral key
+    Object.entries(grouped).forEach(([groupKey, pages]) => {
+      expect(pages.length, `Group "${groupKey}" should have at least one page`).toBeGreaterThan(0);
+      expect(groupKey, `Group key "${groupKey}" should be language-neutral`).toMatch(/^section\./);
     });
   });
 
-  it("localizes page labels and group headings from the nav catalog", () => {
+  it("localizes page labels while keeping the group key language-neutral", () => {
     const zhPages = getAvailablePages(i18n.getFixedT("zh", "nav"));
     const usage = zhPages.find((page) => page.page === "new_usage");
 
     expect(usage?.label).toBe("用量");
-    expect(usage?.group).toBe("可观测性");
-    expect(zhPages.some((page) => page.group === "AI GATEWAY")).toBe(false);
+    expect(usage?.groupKey).toBe("section.observability");
+    expect(i18n.t("section.observability", { ns: "nav", lng: "zh" })).toBe("可观测性");
+    expect(zhPages.every((page) => page.groupKey.startsWith("section."))).toBe(true);
   });
 });

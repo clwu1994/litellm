@@ -11,7 +11,7 @@ vi.mock("@/app/(dashboard)/hooks/useDisableShowNewBadge", () => ({
 
 import { useDisableShowNewBadge } from "@/app/(dashboard)/hooks/useDisableShowNewBadge";
 
-describe("BetaBadge Chinese copy", () => {
+describe("BetaBadge localized copy", () => {
   beforeEach(async () => {
     vi.mocked(useDisableShowNewBadge).mockReturnValue(false);
     await i18n.changeLanguage("zh");
@@ -22,10 +22,9 @@ describe("BetaBadge Chinese copy", () => {
     await i18n.changeLanguage("en");
   });
 
-  it("renders the Chinese badge and hides the English original", () => {
+  it("renders the Beta badge under zh, matching the chat integrations value", () => {
     renderWithProviders(<BetaBadge />);
 
-    expect(screen.getByText("测试版")).toBeInTheDocument();
-    expect(screen.queryByText("Beta")).not.toBeInTheDocument();
+    expect(screen.getByText("Beta")).toBeInTheDocument();
   });
 });

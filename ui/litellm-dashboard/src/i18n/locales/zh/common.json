@@ -489,7 +489,7 @@
     "connectionTimeout": "连接超时",
     "networkConnectionFailed": "网络连接失败"
   },
-  "beta": "测试版",
+  "beta": "Beta",
   "copyCode": "复制代码",
   "dismissBanner": "关闭横幅",
   "breadcrumb": "面包屑导航",

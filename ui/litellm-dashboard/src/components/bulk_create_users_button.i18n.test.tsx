@@ -424,14 +424,14 @@ describe("BulkCreateUsersButton Chinese copy", () => {
     await open();
 
     upload(csv("user_email,user_role\nnotanemail,\n"));
-    expect(await screen.findByText(/邮箱格式无效（必须包含 @ 和域名）/)).toBeInTheDocument();
+    expect(await screen.findByText("邮箱格式无效（必须包含 @ 和域名）, 角色为必填项")).toBeInTheDocument();
 
     await act(async () => {
       await i18n.changeLanguage("en");
     });
 
-    expect(screen.getByText(/Invalid email format \(must contain @ and domain\)/)).toBeInTheDocument();
-    expect(screen.queryByText(/邮箱格式无效/)).not.toBeInTheDocument();
+    expect(screen.getByText("Invalid email format (must contain @ and domain), Role is required")).toBeInTheDocument();
+    expect(screen.queryByText("邮箱格式无效（必须包含 @ 和域名）, 角色为必填项")).not.toBeInTheDocument();
   });
 
   it("renders the invitation-failure copy in the downloaded results in Chinese and hides the English original", async () => {

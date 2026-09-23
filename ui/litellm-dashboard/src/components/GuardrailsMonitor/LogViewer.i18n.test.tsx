@@ -52,12 +52,12 @@ describe("LogViewer Chinese copy", () => {
   });
 
   it("renders the Chinese named title, count, sample and filter labels and hides the English originals", () => {
-    renderWithProviders(<LogViewer guardrailName="g-one" logs={[blockedLog, passedLog]} />);
+    renderWithProviders(<LogViewer guardrailName="g-one" logs={[blockedLog, passedLog]} totalLogs={5} />);
 
     expect(screen.getByText("日志 — g-one")).toBeInTheDocument();
     expect(screen.queryByText("Logs — g-one")).not.toBeInTheDocument();
-    expect(screen.getByText("显示 2 条中的 2 条")).toBeInTheDocument();
-    expect(screen.queryByText("Showing 2 of 2 entries")).not.toBeInTheDocument();
+    expect(screen.getByText("显示 5 条中的 2 条")).toBeInTheDocument();
+    expect(screen.queryByText("Showing 2 of 5 entries")).not.toBeInTheDocument();
     expect(screen.getByText("样本：")).toBeInTheDocument();
     expect(screen.queryByText("Sample:")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "全部" })).toBeInTheDocument();
