@@ -125,6 +125,20 @@ describe("CostTrackingSettings Chinese copy", () => {
     expect(screen.getByText("拒绝成本映射中没有定价的模型请求，而不是将其记录为 $0 支出")).toBeInTheDocument();
     expect(screen.getByText("定价计算器")).toBeInTheDocument();
     expect(screen.getByText("根据预期的 Token 用量和请求量估算 LLM 成本")).toBeInTheDocument();
+    expect(
+      screen.queryByText("Apply percentage-based discounts to reduce costs for specific providers"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Add fees or margins to LLM costs for internal billing and cost recovery"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        "Reject requests for models that have no pricing in the cost map instead of logging them as $0 spend",
+      ),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Estimate LLM costs based on expected token usage and request volume"),
+    ).not.toBeInTheDocument();
     expect(screen.queryByText("Provider Discounts")).not.toBeInTheDocument();
     expect(screen.queryByText("Fee/Price Margin")).not.toBeInTheDocument();
     expect(screen.queryByText("Block Unpriced Models")).not.toBeInTheDocument();
@@ -216,6 +230,7 @@ describe("CostTrackingSettings Chinese copy", () => {
     await expand(user, "费用/价格加价");
     await user.click(await screen.findByRole("button", { name: "+ 添加提供商加价" }));
 
+    expect(screen.queryByRole("button", { name: "+ Add Provider Margin" })).not.toBeInTheDocument();
     expect(await screen.findByRole("dialog", { name: "添加提供商加价" })).toBeInTheDocument();
     expect(
       screen.getByText("选择提供商（或选择「全局」应用于所有提供商）并配置加价。可以使用基于百分比或固定金额。"),

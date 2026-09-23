@@ -132,9 +132,9 @@ describe("MultiCostResults Chinese copy", () => {
     renderWithProviders(<MultiCostResults multiResult={errored} timePeriod="month" />);
 
     expect(screen.getByText("成本估算")).toBeInTheDocument();
-    expect(screen.getByText(/未知模型/)).toBeInTheDocument();
+    expect(screen.getByText("未知模型:")).toBeInTheDocument();
     expect(screen.queryByText("Cost Estimates")).not.toBeInTheDocument();
-    expect(screen.queryByText(/Unknown model/)).not.toBeInTheDocument();
+    expect(screen.queryByText("Unknown model:")).not.toBeInTheDocument();
   });
 
   it("renders the Chinese summary card with the daily period and margin copy", () => {
@@ -185,6 +185,7 @@ describe("MultiCostResults Chinese copy", () => {
     expect(screen.getByRole("button", { name: "隐藏 gpt-4 的成本明细" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Hide cost breakdown for gpt-4" })).not.toBeInTheDocument();
     expect(screen.getByRole("columnheader", { name: "每日" })).toBeInTheDocument();
+    expect(screen.queryByRole("columnheader", { name: "Daily" })).not.toBeInTheDocument();
     expect(screen.getByText("每请求合计")).toBeInTheDocument();
     expect(screen.getByText("输入成本")).toBeInTheDocument();
     expect(screen.getByText("输出成本")).toBeInTheDocument();
