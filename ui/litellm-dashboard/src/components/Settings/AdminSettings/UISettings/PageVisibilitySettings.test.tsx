@@ -12,21 +12,21 @@ vi.mock("@/components/page_utils", () => ({
     {
       page: "usage",
       label: t("items.usage"),
-      description: "View usage stats",
+      descriptionKey: "descriptions.usage",
       group: "OBSERVABILITY",
       groupKey: "section.observability",
     },
     {
       page: "models",
       label: t("items.modelsAndEndpoints"),
-      description: "Manage models",
+      descriptionKey: "descriptions.models",
       group: "OBSERVABILITY",
       groupKey: "section.observability",
     },
     {
       page: "keys",
       label: t("items.keys"),
-      description: "Manage API keys",
+      descriptionKey: "descriptions.apiKeys",
       group: "ACCESS CONTROL",
       groupKey: "section.accessControl",
     },
@@ -129,5 +129,24 @@ describe("PageVisibilitySettings", () => {
     expect(screen.getByRole("group", { name: "可观测性" })).toBeInTheDocument();
     expect(screen.getByRole("checkbox", { name: /用量/ })).toBeInTheDocument();
     expect(screen.queryByRole("group", { name: "OBSERVABILITY" })).not.toBeInTheDocument();
+  });
+
+  it("renders the page descriptions in Chinese and hides the English originals", async () => {
+    await i18n.changeLanguage("zh");
+    const user = userEvent.setup();
+    renderWithProviders(
+      <PageVisibilitySettings enabledPagesInternalUsers={null} isUpdating={false} onUpdate={vi.fn()} />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "配置页面可见性" }));
+
+    for (const [zh, en] of [
+      ["查看旧版用量仪表盘", "View legacy usage dashboard"],
+      ["配置和管理 LLM 模型与 Endpoints", "Configure and manage LLM models and endpoints"],
+      ["管理用于 API 访问和身份验证的 Virtual Key", "Manage virtual keys for API access and authentication"],
+    ] as const) {
+      expect(screen.getAllByText(zh).length).toBeGreaterThan(0);
+      expect(screen.queryAllByText(en)).toHaveLength(0);
+    }
   });
 });

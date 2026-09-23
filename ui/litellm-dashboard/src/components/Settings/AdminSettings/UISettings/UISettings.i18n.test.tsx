@@ -25,19 +25,19 @@ vi.mock("@/components/page_utils", () => ({
     {
       page: "usage",
       label: t("items.usage"),
-      description: "View usage stats",
+      descriptionKey: "descriptions.usage",
       groupKey: "section.observability",
     },
     {
       page: "models",
       label: t("items.modelsAndEndpoints"),
-      description: "Manage models",
+      descriptionKey: "descriptions.models",
       groupKey: "section.observability",
     },
     {
       page: "keys",
       label: t("items.keys"),
-      description: "Manage API keys",
+      descriptionKey: "descriptions.apiKeys",
       groupKey: "section.accessControl",
     },
   ],
@@ -285,6 +285,12 @@ describe("PageVisibilitySettings Chinese copy", () => {
 
     expectLocalized("保存页面可见性设置", "Save Page Visibility Settings");
     expectLocalized("重置为默认（所有页面）", "Reset to Default (All Pages)");
+    expectLocalized("查看旧版用量仪表盘", "View legacy usage dashboard");
+    expectLocalized("配置和管理 LLM 模型与 Endpoints", "Configure and manage LLM models and endpoints");
+    expectLocalized(
+      "管理用于 API 访问和身份验证的 Virtual Key",
+      "Manage virtual keys for API access and authentication",
+    );
   });
 });
 

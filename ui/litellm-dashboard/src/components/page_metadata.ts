@@ -7,46 +7,47 @@ import type zhNav from "@/i18n/locales/zh/nav.json";
 
 export type PageGroupKey = `section.${keyof typeof zhNav.section}`;
 export type PageParentKey = `items.${keyof typeof zhNav.items}`;
+export type PageDescriptionKey = `descriptions.${keyof typeof zhNav.descriptions}`;
 
-// Page descriptions for UI Settings configuration
-export const pageDescriptions: Record<string, string> = {
-  "api-keys": "Manage virtual keys for API access and authentication",
-  "llm-playground": "Interactive playground for testing LLM requests",
-  models: "Configure and manage LLM models and endpoints",
-  agents: "Create and manage AI agents",
-  agentic: "Manage agentic resources: agents, workflow runs, and memory",
-  workflows: "Track and inspect durable workflow run history",
-  "mcp-servers": "Configure Model Context Protocol servers",
-  memory: "Inspect and manage agent memory entries stored under /v1/memory",
-  guardrails: "Set up content moderation and safety guardrails",
-  policies: "Define access control and usage policies",
-  "search-tools": "Configure RAG search and retrieval tools",
-  "tool-policies": "Configure tool use policies and permissions",
-  "vector-stores": "Manage vector databases for embeddings",
-  new_usage: "View usage analytics and metrics",
-  "cost-optimization": "Track and configure cost-saving features: prompt compression, caching, and auto routing",
-  logs: "Access request and response logs",
-  "guardrails-monitor": "Monitor guardrail performance and view logs",
-  users: "Manage internal user accounts and permissions",
-  teams: "Create and manage teams for access control",
-  organizations: "Manage organizations and their members",
-  projects: "Manage projects within teams",
-  "access-groups": "Manage access groups for role-based permissions",
-  budgets: "Set and monitor spending budgets",
-  api_ref: "Browse API documentation and endpoints",
-  "model-hub-table": "Explore available AI models and providers",
-  "learning-resources": "Access tutorials and documentation",
-  caching: "Configure response caching and coordination Redis settings",
-  "transform-request": "Set up request transformation rules",
-  "cost-tracking": "Track and analyze API costs",
-  "ui-theme": "Customize dashboard appearance",
-  "tag-management": "Organize resources with tags",
-  prompts: "Manage and version prompt templates",
-  skills: "Browse and manage Claude Code skills",
-  usage: "View legacy usage dashboard",
-  "router-settings": "Configure routing and load balancing settings",
-  "logging-and-alerts": "Set up logging and alert configurations",
-  "admin-panel": "Access admin panel and settings",
+// Page description keys for UI Settings configuration, resolved from the nav catalog at render
+export const pageDescriptions: Record<string, PageDescriptionKey> = {
+  "api-keys": "descriptions.apiKeys",
+  "llm-playground": "descriptions.llmPlayground",
+  models: "descriptions.models",
+  agents: "descriptions.agents",
+  agentic: "descriptions.agentic",
+  workflows: "descriptions.workflows",
+  "mcp-servers": "descriptions.mcpServers",
+  memory: "descriptions.memory",
+  guardrails: "descriptions.guardrails",
+  policies: "descriptions.policies",
+  "search-tools": "descriptions.searchTools",
+  "tool-policies": "descriptions.toolPolicies",
+  "vector-stores": "descriptions.vectorStores",
+  new_usage: "descriptions.newUsage",
+  "cost-optimization": "descriptions.costOptimization",
+  logs: "descriptions.logs",
+  "guardrails-monitor": "descriptions.guardrailsMonitor",
+  users: "descriptions.users",
+  teams: "descriptions.teams",
+  organizations: "descriptions.organizations",
+  projects: "descriptions.projects",
+  "access-groups": "descriptions.accessGroups",
+  budgets: "descriptions.budgets",
+  api_ref: "descriptions.apiRef",
+  "model-hub-table": "descriptions.modelHubTable",
+  "learning-resources": "descriptions.learningResources",
+  caching: "descriptions.caching",
+  "transform-request": "descriptions.transformRequest",
+  "cost-tracking": "descriptions.costTracking",
+  "ui-theme": "descriptions.uiTheme",
+  "tag-management": "descriptions.tagManagement",
+  prompts: "descriptions.prompts",
+  skills: "descriptions.skills",
+  usage: "descriptions.usage",
+  "router-settings": "descriptions.routerSettings",
+  "logging-and-alerts": "descriptions.loggingAndAlerts",
+  "admin-panel": "descriptions.adminPanel",
 };
 
 export interface PageMetadata {
@@ -54,5 +55,5 @@ export interface PageMetadata {
   label: string;
   groupKey: PageGroupKey;
   parentKey?: PageParentKey;
-  description: string;
+  descriptionKey: PageDescriptionKey;
 }

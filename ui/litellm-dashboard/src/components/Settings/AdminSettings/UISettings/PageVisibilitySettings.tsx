@@ -104,7 +104,7 @@ export default function PageVisibilitySettings({
                         />
                         <span className="space-y-0.5">
                           <span className="block text-sm text-foreground">{page.label}</span>
-                          <span className="block text-xs text-muted-foreground">{page.description}</span>
+                          <span className="block text-xs text-muted-foreground">{tNav(page.descriptionKey)}</span>
                         </span>
                       </label>
                     );

@@ -39,11 +39,11 @@ describe("Page Utils - LeftNav Sync", () => {
       expect(page).toHaveProperty("page");
       expect(page).toHaveProperty("label");
       expect(page).toHaveProperty("groupKey");
-      expect(page).toHaveProperty("description");
+      expect(page).toHaveProperty("descriptionKey");
       expect(typeof page.page).toBe("string");
       expect(typeof page.label).toBe("string");
       expect(typeof page.groupKey).toBe("string");
-      expect(typeof page.description).toBe("string");
+      expect(typeof page.descriptionKey).toBe("string");
     });
   });
 
@@ -91,15 +91,29 @@ describe("Page Utils - LeftNav Sync", () => {
     });
   });
 
-  it("should have descriptions for all pages", () => {
+  it("should carry a catalog description key for all pages", () => {
     const availablePages = getAvailablePages(t);
 
     availablePages.forEach((page) => {
-      expect(page.description, `Page "${page.page}" should have a description`).toBeTruthy();
+      expect(page.descriptionKey, `Page "${page.page}" should have a description key`).toMatch(/^descriptions\./);
 
-      expect(page.description, `Page "${page.page}" should not have placeholder description`).not.toBe(
-        "No description available",
+      expect(page.descriptionKey, `Page "${page.page}" should not use the fallback description`).not.toBe(
+        "descriptions.fallback",
       );
+    });
+  });
+
+  it("resolves every page description key from the nav catalog in both locales", () => {
+    const descriptionKeys = new Set(Object.values(pageDescriptions));
+    expect(descriptionKeys.size).toBeGreaterThan(0);
+
+    descriptionKeys.forEach((descriptionKey) => {
+      const en = i18n.t(descriptionKey, { ns: "nav", lng: "en" });
+      const zh = i18n.t(descriptionKey, { ns: "nav", lng: "zh" });
+
+      expect(en, `${descriptionKey} should resolve in English`).not.toBe(descriptionKey);
+      expect(zh, `${descriptionKey} should resolve in Chinese`).not.toBe(descriptionKey);
+      expect(zh, `${descriptionKey} should be translated`).not.toBe(en);
     });
   });
 

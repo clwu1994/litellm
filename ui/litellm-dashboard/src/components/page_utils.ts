@@ -49,7 +49,7 @@ export const getAvailablePages = (t: TFunction<"nav">): PageMetadata[] => {
           page: item.page,
           label: label,
           groupKey: group.groupKey,
-          description: pageDescriptions[item.page] || "No description available",
+          descriptionKey: pageDescriptions[item.page] ?? "descriptions.fallback",
         });
       }
 
@@ -64,7 +64,7 @@ export const getAvailablePages = (t: TFunction<"nav">): PageMetadata[] => {
               label: childLabel,
               groupKey: group.groupKey,
               parentKey: item.label,
-              description: pageDescriptions[child.page] || "No description available",
+              descriptionKey: pageDescriptions[child.page] ?? "descriptions.fallback",
             });
           }
         });
