@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import type { TFunction } from "i18next";
+import { useTranslation } from "react-i18next";
 import { Check, SquarePen, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,14 +20,15 @@ interface ProviderMarginRow {
   margin: number | { percentage?: number; fixed_amount?: number };
 }
 
-const marginRowDisplayName = (provider: string): string =>
-  provider === "global" ? "Global" : getProviderLogoAndName(provider).displayName;
+const marginRowDisplayName = (provider: string, t: TFunction<"costTracking">): string =>
+  provider === "global" ? t("forms.globalLabel") : getProviderLogoAndName(provider).displayName;
 
 const ProviderMarginTable: React.FC<ProviderMarginTableProps> = ({
   marginConfig,
   onMarginChange,
   onRemoveProvider,
 }) => {
+  const { t } = useTranslation("costTracking");
   const [editingProvider, setEditingProvider] = useState<string | null>(null);
   const [editPercentage, setEditPercentage] = useState<string>("");
   const [editFixedAmount, setEditFixedAmount] = useState<string>("");
@@ -103,12 +106,12 @@ const ProviderMarginTable: React.FC<ProviderMarginTableProps> = ({
       data={data}
       columns={[
         {
-          header: "Provider",
+          header: t("common.provider"),
           cell: (row) => {
             if (row.provider === "global") {
               return (
                 <div className="flex items-center space-x-2">
-                  <span className="font-medium">Global (All Providers)</span>
+                  <span className="font-medium">{t("forms.globalOption")}</span>
                 </div>
               );
             }
@@ -122,9 +125,9 @@ const ProviderMarginTable: React.FC<ProviderMarginTableProps> = ({
           },
         },
         {
-          header: "Margin",
+          header: t("tables.marginHeader"),
           cell: (row) => {
-            const displayName = marginRowDisplayName(row.provider);
+            const displayName = marginRowDisplayName(row.provider, t);
             return (
               <div className="flex items-center gap-2">
                 {editingProvider === row.provider ? (
@@ -150,7 +153,7 @@ const ProviderMarginTable: React.FC<ProviderMarginTableProps> = ({
                     <Button
                       variant="ghost"
                       size="icon-sm"
-                      aria-label={`Save margin for ${displayName}`}
+                      aria-label={t("tables.saveMargin", { provider: displayName })}
                       onClick={() => handleSaveEdit(row.provider)}
                       className="cursor-pointer text-success hover:text-success/80"
                     >
@@ -159,7 +162,7 @@ const ProviderMarginTable: React.FC<ProviderMarginTableProps> = ({
                     <Button
                       variant="ghost"
                       size="icon-sm"
-                      aria-label={`Cancel editing margin for ${displayName}`}
+                      aria-label={t("tables.cancelEditMargin", { provider: displayName })}
                       onClick={handleCancelEdit}
                       className="cursor-pointer text-muted-foreground hover:text-foreground"
                     >
@@ -172,7 +175,7 @@ const ProviderMarginTable: React.FC<ProviderMarginTableProps> = ({
                     <Button
                       variant="ghost"
                       size="icon-sm"
-                      aria-label={`Edit margin for ${displayName}`}
+                      aria-label={t("tables.editMargin", { provider: displayName })}
                       onClick={() => handleStartEdit(row.provider, row.margin)}
                       className="cursor-pointer text-info hover:text-info/80"
                     >
@@ -186,14 +189,14 @@ const ProviderMarginTable: React.FC<ProviderMarginTableProps> = ({
           width: "350px",
         },
         {
-          header: "Actions",
+          header: t("common.actions"),
           cell: (row) => {
-            const displayName = marginRowDisplayName(row.provider);
+            const displayName = marginRowDisplayName(row.provider, t);
             return (
               <Button
                 variant="ghost"
                 size="icon-sm"
-                aria-label={`Remove margin for ${displayName}`}
+                aria-label={t("tables.removeMargin", { provider: displayName })}
                 onClick={() => onRemoveProvider(row.provider, displayName)}
                 className="cursor-pointer hover:text-destructive"
               >
@@ -205,7 +208,7 @@ const ProviderMarginTable: React.FC<ProviderMarginTableProps> = ({
         },
       ]}
       getRowKey={(row) => row.provider}
-      emptyMessage="No provider margins configured"
+      emptyMessage={t("settings.noMarginsTitle")}
     />
   );
 };

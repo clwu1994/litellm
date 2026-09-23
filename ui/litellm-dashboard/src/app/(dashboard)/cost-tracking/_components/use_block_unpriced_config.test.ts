@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import i18n from "@/i18n/bootstrapI18n";
 import { renderHook, act } from "@testing-library/react";
 import { useBlockUnpricedConfig } from "./use_block_unpriced_config";
 import { apiClient } from "@/components/networking";
@@ -13,6 +14,8 @@ vi.mock("@/components/networking", () => ({
 
 const ENDPOINT = "/config/block_requests_for_models_without_pricing";
 
+const t = i18n.getFixedT("en", "costTracking");
+
 describe("useBlockUnpricedConfig", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -22,7 +25,7 @@ describe("useBlockUnpricedConfig", () => {
     it("reflects the enabled flag returned by the proxy", async () => {
       vi.mocked(apiClient.get).mockResolvedValueOnce({ enabled: true });
 
-      const { result } = renderHook(() => useBlockUnpricedConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() => useBlockUnpricedConfig({ accessToken: "test-token", t }));
 
       await act(async () => {
         await result.current.fetchBlockUnpriced();
@@ -36,7 +39,7 @@ describe("useBlockUnpricedConfig", () => {
       const error = new Error("Network error");
       vi.mocked(apiClient.get).mockRejectedValueOnce(error);
 
-      const { result } = renderHook(() => useBlockUnpricedConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() => useBlockUnpricedConfig({ accessToken: "test-token", t }));
 
       await act(async () => {
         await result.current.fetchBlockUnpriced();
@@ -47,7 +50,7 @@ describe("useBlockUnpricedConfig", () => {
     });
 
     it("does nothing without an access token", async () => {
-      const { result } = renderHook(() => useBlockUnpricedConfig({ accessToken: null }));
+      const { result } = renderHook(() => useBlockUnpricedConfig({ accessToken: null, t }));
 
       await act(async () => {
         await result.current.fetchBlockUnpriced();
@@ -61,7 +64,7 @@ describe("useBlockUnpricedConfig", () => {
     it("persists the new value and confirms it with a toast", async () => {
       vi.mocked(apiClient.patch).mockResolvedValueOnce({ enabled: true });
 
-      const { result } = renderHook(() => useBlockUnpricedConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() => useBlockUnpricedConfig({ accessToken: "test-token", t }));
 
       await act(async () => {
         await result.current.setBlockUnpriced(true);
@@ -79,7 +82,7 @@ describe("useBlockUnpricedConfig", () => {
     it("confirms turning the block back off", async () => {
       vi.mocked(apiClient.patch).mockResolvedValueOnce({ enabled: false });
 
-      const { result } = renderHook(() => useBlockUnpricedConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() => useBlockUnpricedConfig({ accessToken: "test-token", t }));
 
       await act(async () => {
         await result.current.setBlockUnpriced(false);
@@ -93,7 +96,7 @@ describe("useBlockUnpricedConfig", () => {
       const error = new Error("Set `'STORE_MODEL_IN_DB='True'` in your env to enable this feature.");
       vi.mocked(apiClient.patch).mockRejectedValueOnce(error);
 
-      const { result } = renderHook(() => useBlockUnpricedConfig({ accessToken: "test-token" }));
+      const { result } = renderHook(() => useBlockUnpricedConfig({ accessToken: "test-token", t }));
 
       await act(async () => {
         await result.current.setBlockUnpriced(true);

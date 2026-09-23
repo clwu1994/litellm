@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import i18n from "@/i18n/bootstrapI18n";
 import { renderHook, act } from "@testing-library/react";
 import { useMultiCostEstimate } from "./use_multi_cost_estimate";
 import type { ModelEntry } from "./types";
@@ -45,6 +46,8 @@ function makeApiResponse(overrides: Partial<CostEstimateResponse> = {}): CostEst
   };
 }
 
+const t = i18n.getFixedT("en", "costTracking");
+
 describe("useMultiCostEstimate", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -58,7 +61,7 @@ describe("useMultiCostEstimate", () => {
   describe("debouncedFetchForEntry", () => {
     it("should not fetch when access token is null", async () => {
       const fetchSpy = vi.spyOn(global, "fetch");
-      const { result } = renderHook(() => useMultiCostEstimate(null));
+      const { result } = renderHook(() => useMultiCostEstimate(null, t));
 
       await act(async () => {
         result.current.debouncedFetchForEntry(makeEntry());
@@ -70,7 +73,7 @@ describe("useMultiCostEstimate", () => {
 
     it("should not fetch when the model field is empty", async () => {
       const fetchSpy = vi.spyOn(global, "fetch");
-      const { result } = renderHook(() => useMultiCostEstimate("token123"));
+      const { result } = renderHook(() => useMultiCostEstimate("token123", t));
 
       await act(async () => {
         result.current.debouncedFetchForEntry(makeEntry({ model: "" }));
@@ -86,7 +89,7 @@ describe("useMultiCostEstimate", () => {
         json: async () => makeApiResponse(),
       } as Response);
 
-      const { result } = renderHook(() => useMultiCostEstimate("token123"));
+      const { result } = renderHook(() => useMultiCostEstimate("token123", t));
 
       act(() => {
         result.current.debouncedFetchForEntry(makeEntry());
@@ -107,7 +110,7 @@ describe("useMultiCostEstimate", () => {
         json: async () => makeApiResponse(),
       } as Response);
 
-      const { result } = renderHook(() => useMultiCostEstimate("token123"));
+      const { result } = renderHook(() => useMultiCostEstimate("token123", t));
 
       await act(async () => {
         result.current.debouncedFetchForEntry(makeEntry());
@@ -127,7 +130,7 @@ describe("useMultiCostEstimate", () => {
         json: async () => makeApiResponse(),
       } as Response);
 
-      const { result } = renderHook(() => useMultiCostEstimate("token123"));
+      const { result } = renderHook(() => useMultiCostEstimate("token123", t));
       const entry = makeEntry();
 
       await act(async () => {
@@ -148,7 +151,7 @@ describe("useMultiCostEstimate", () => {
         json: async () => ({ detail: { error: "Model not found" } }),
       } as Response);
 
-      const { result } = renderHook(() => useMultiCostEstimate("token123"));
+      const { result } = renderHook(() => useMultiCostEstimate("token123", t));
       const entry = makeEntry();
 
       await act(async () => {
@@ -167,7 +170,7 @@ describe("useMultiCostEstimate", () => {
         json: async () => ({ detail: "Bad request" }),
       } as Response);
 
-      const { result } = renderHook(() => useMultiCostEstimate("token123"));
+      const { result } = renderHook(() => useMultiCostEstimate("token123", t));
       const entry = makeEntry();
 
       await act(async () => {
@@ -182,7 +185,7 @@ describe("useMultiCostEstimate", () => {
     it("should set 'Network error' when fetch throws", async () => {
       vi.spyOn(global, "fetch").mockRejectedValue(new Error("connection refused"));
 
-      const { result } = renderHook(() => useMultiCostEstimate("token123"));
+      const { result } = renderHook(() => useMultiCostEstimate("token123", t));
       const entry = makeEntry();
 
       await act(async () => {
@@ -203,7 +206,7 @@ describe("useMultiCostEstimate", () => {
         json: async () => makeApiResponse(),
       } as Response);
 
-      const { result } = renderHook(() => useMultiCostEstimate("token123"));
+      const { result } = renderHook(() => useMultiCostEstimate("token123", t));
       const entry = makeEntry();
 
       await act(async () => {
@@ -229,7 +232,7 @@ describe("useMultiCostEstimate", () => {
         json: async () => makeApiResponse(),
       } as Response);
 
-      const { result } = renderHook(() => useMultiCostEstimate("token123"));
+      const { result } = renderHook(() => useMultiCostEstimate("token123", t));
       const entry = makeEntry();
 
       act(() => {
@@ -247,7 +250,7 @@ describe("useMultiCostEstimate", () => {
 
   describe("getMultiModelResult", () => {
     it("should return zero totals when no entries have results", () => {
-      const { result } = renderHook(() => useMultiCostEstimate("token123"));
+      const { result } = renderHook(() => useMultiCostEstimate("token123", t));
       const multiResult = result.current.getMultiModelResult([makeEntry()]);
 
       expect(multiResult.totals.cost_per_request).toBe(0);
@@ -257,7 +260,7 @@ describe("useMultiCostEstimate", () => {
     });
 
     it("should return an empty entries array for an empty input list", () => {
-      const { result } = renderHook(() => useMultiCostEstimate("token123"));
+      const { result } = renderHook(() => useMultiCostEstimate("token123", t));
       const multiResult = result.current.getMultiModelResult([]);
 
       expect(multiResult.entries).toHaveLength(0);
@@ -283,7 +286,7 @@ describe("useMultiCostEstimate", () => {
           }) as Response,
       );
 
-      const { result } = renderHook(() => useMultiCostEstimate("token123"));
+      const { result } = renderHook(() => useMultiCostEstimate("token123", t));
 
       await act(async () => {
         result.current.debouncedFetchForEntry(entry1);
@@ -319,7 +322,7 @@ describe("useMultiCostEstimate", () => {
           }) as Response,
       );
 
-      const { result } = renderHook(() => useMultiCostEstimate("token123"));
+      const { result } = renderHook(() => useMultiCostEstimate("token123", t));
 
       await act(async () => {
         result.current.debouncedFetchForEntry(entry1);
@@ -338,7 +341,7 @@ describe("useMultiCostEstimate", () => {
         json: async () => ({ detail: "Not found" }),
       } as Response);
 
-      const { result } = renderHook(() => useMultiCostEstimate("token123"));
+      const { result } = renderHook(() => useMultiCostEstimate("token123", t));
       const entry = makeEntry();
 
       await act(async () => {

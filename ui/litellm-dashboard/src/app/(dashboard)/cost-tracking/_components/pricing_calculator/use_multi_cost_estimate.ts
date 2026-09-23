@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from "react";
+import type { TFunction } from "i18next";
 import { getProxyBaseUrl, getGlobalLitellmHeaderName } from "@/components/networking";
 import { CostEstimateRequest, CostEstimateResponse } from "../types";
 import { ModelEntry, MultiModelResult } from "./types";
@@ -12,7 +13,7 @@ interface EntryResult {
   error: string | null;
 }
 
-export function useMultiCostEstimate(accessToken: string | null) {
+export function useMultiCostEstimate(accessToken: string | null, t: TFunction<"costTracking">) {
   const [entryResults, setEntryResults] = useState<Map<string, EntryResult>>(new Map());
   const debounceRefs = useRef<Map<string, NodeJS.Timeout>>(new Map());
 
@@ -79,7 +80,7 @@ export function useMultiCostEstimate(accessToken: string | null) {
           });
         } else {
           const errorData = await response.json();
-          const errorMessage = errorData.detail?.error || errorData.detail || "Failed to estimate cost";
+          const errorMessage = errorData.detail?.error || errorData.detail || t("toast.estimateFailed");
           setEntryResults((prev) => {
             const next = new Map(prev);
             next.set(entry.id, {
@@ -99,13 +100,13 @@ export function useMultiCostEstimate(accessToken: string | null) {
             entry,
             result: null,
             loading: false,
-            error: "Network error",
+            error: t("toast.networkError"),
           });
           return next;
         });
       }
     },
-    [accessToken],
+    [accessToken, t],
   );
 
   const debouncedFetchForEntry = useCallback(
