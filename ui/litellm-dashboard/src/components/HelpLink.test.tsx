@@ -147,6 +147,36 @@ describe("DocsMenu", () => {
   });
 });
 
+describe("HelpLink Chinese copy", () => {
+  beforeEach(async () => {
+    await i18n.changeLanguage("zh");
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  it("renders the Chinese link title, screen-reader label and help aria-label", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<HelpLink href="https://docs.example.com" />);
+
+    expect(screen.getByTitle("在新标签页中打开文档")).toBeInTheDocument();
+    expect(screen.queryByTitle("Open documentation in a new tab")).not.toBeInTheDocument();
+    expect(screen.getByText("（在新标签页中打开）")).toBeInTheDocument();
+    expect(screen.queryByText("(opens in a new tab)")).not.toBeInTheDocument();
+
+    renderWithProviders(<HelpIcon content="Help text" learnMoreHref="https://docs.example.com" />);
+
+    const buttons = screen.getAllByRole("button", { name: "帮助信息" });
+    expect(buttons.length).toBeGreaterThanOrEqual(1);
+    expect(screen.queryByRole("button", { name: "Help information" })).not.toBeInTheDocument();
+
+    await user.hover(buttons[buttons.length - 1]);
+    expect(screen.getByText("Help text")).toBeInTheDocument();
+  });
+});
+
 describe("DocsMenu Chinese copy", () => {
   const items = [{ label: "自定义定价", href: "https://docs.example.com/pricing" }];
 

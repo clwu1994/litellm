@@ -36,7 +36,7 @@ vi.mock("./CloudZeroCostTracking/CloudZeroCostTracking", () => ({
   default: () => <div>cloudzero stub</div>,
 }));
 
-import { getCallbackConfigsCall, getCallbacksCall, setCallbacksCall } from "./networking";
+import { deleteCallback, getCallbackConfigsCall, getCallbacksCall, setCallbacksCall } from "./networking";
 
 beforeAll(() => {
   if (typeof window !== "undefined" && !window.ResizeObserver) {
@@ -343,5 +343,39 @@ describe("Settings page Chinese copy", () => {
 
     expect(await screen.findByText("请选择一个回调")).toBeInTheDocument();
     expect(screen.queryByText("Please select a callback")).not.toBeInTheDocument();
+  });
+
+  it("reports a callback-config load failure in Chinese and hides the English original", async () => {
+    vi.mocked(getCallbackConfigsCall).mockRejectedValue(new Error("boom"));
+    renderSettings();
+
+    await waitFor(() => expect(toast.fromError).toHaveBeenCalledWith("加载回调配置失败：boom"));
+    expect(toast.fromError).not.toHaveBeenCalledWith("Failed to load callback configs: boom");
+  });
+
+  it("reports a deleted callback in Chinese and hides the English original", async () => {
+    vi.mocked(getCallbacksCall).mockResolvedValue({
+      callbacks: [{ name: "langfuse", variables: { LANGFUSE_PUBLIC_KEY: "k" }, mode: "success" }],
+      available_callbacks: {
+        langfuse: {
+          litellm_callback_name: "langfuse",
+          litellm_callback_params: ["LANGFUSE_PUBLIC_KEY"],
+          ui_callback_name: "Langfuse",
+        },
+      },
+      alerts: [],
+    });
+    vi.mocked(deleteCallback).mockResolvedValue({});
+    const user = userEvent.setup();
+    renderSettings();
+
+    await screen.findByText("Langfuse");
+    await user.click(screen.getByTestId("callback-actions-langfuse-success"));
+    await user.click(await screen.findByTestId("callback-action-delete"));
+    await screen.findByText("删除回调");
+    await user.click(screen.getByRole("button", { name: "删除" }));
+
+    await waitFor(() => expect(toast.success).toHaveBeenCalledWith("回调 langfuse 删除成功"));
+    expect(toast.success).not.toHaveBeenCalledWith("Callback langfuse deleted successfully");
   });
 });

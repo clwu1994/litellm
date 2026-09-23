@@ -515,7 +515,10 @@
       "loadingModels": "Loading models...",
       "loadingAgents": "Loading agents...",
       "noModels": "No models available",
-      "noAgents": "No agents available"
+      "noAgents": "No agents available",
+      "addCustomModel": "+ Add custom model",
+      "noModelsFound": "No models found",
+      "customModelNamePlaceholder": "Custom Model Name (Enter to add)"
     },
     "input": {
       "modelPlaceholder": "Send a prompt to compare models",

@@ -590,5 +590,9 @@
       "addOverrideFailed": "Failed to add override: {{error}}",
       "removeOverrideFailed": "Failed to remove override: {{error}}"
     }
+  },
+  "selector": {
+    "premiumPlaceholder": "Setting policies is a premium feature.",
+    "placeholder": "Select policies (production or published versions)"
   }
 }

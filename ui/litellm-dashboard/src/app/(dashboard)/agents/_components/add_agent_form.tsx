@@ -1035,7 +1035,7 @@ const AddAgentForm: React.FC<AddAgentFormProps> = ({ visible, onClose, accessTok
         <DialogHeader>
           <div className="flex items-center space-x-3 border-b border-border pb-4">
             {selectedLogo && currentStep < 1 && (
-              <Logo src={selectedLogo} label="Agent" className="h-6 w-6 object-contain" />
+              <Logo src={selectedLogo} label={t("selector.agent")} className="h-6 w-6 object-contain" />
             )}
             <DialogTitle className="text-xl font-semibold text-foreground">{t("list.addNewAgent")}</DialogTitle>
           </div>

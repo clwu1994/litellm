@@ -302,9 +302,9 @@ const Settings: React.FC<SettingsPageProps> = ({ accessToken, userRole, userID, 
         setCallbackConfigs(data || []);
       })
       .catch((error) => {
-        toast.fromError("Failed to load callback configs: " + parseErrorMessage(error));
+        toast.fromError(t("settingsPage.callbackConfigsLoadFailed", { error: parseErrorMessage(error) }));
       });
-  }, [accessToken]);
+  }, [accessToken, t]);
 
   useEffect(() => {
     if (showEditCallback && selectedEditCallback) {
@@ -507,7 +507,7 @@ const Settings: React.FC<SettingsPageProps> = ({ accessToken, userRole, userID, 
     try {
       setIsDeletingCallback(true);
       await deleteCallback(accessToken, callbackToDelete.name);
-      toast.success(`Callback ${callbackToDelete.name} deleted successfully`);
+      toast.success(t("settingsPage.callbackDeleted", { name: callbackToDelete.name }));
 
       // Refresh the callbacks list
       if (userID && userRole) {

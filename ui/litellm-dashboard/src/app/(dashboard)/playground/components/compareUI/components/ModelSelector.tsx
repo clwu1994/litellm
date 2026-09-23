@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { SearchSelect } from "@/components/shared/SearchSelect";
 import { Input } from "@/components/ui/input";
 interface ModelSelectorProps {
@@ -9,6 +10,7 @@ interface ModelSelectorProps {
   disabled?: boolean;
 }
 export function ModelSelector({ value, onChange, models, loading, disabled }: ModelSelectorProps) {
+  const { t } = useTranslation("playground");
   const [isAddingCustom, setIsAddingCustom] = useState(false);
   const [customValue, setCustomValue] = useState("");
 
@@ -54,20 +56,20 @@ export function ModelSelector({ value, onChange, models, loading, disabled }: Mo
       <SearchSelect
         options={[
           ...displayOptions.map((model) => ({ label: model, value: model })),
-          { label: "+ Add custom model", value: "__custom__" },
+          { label: t("compare.selector.addCustomModel"), value: "__custom__" },
         ]}
         value={selectValue ?? ""}
         onValueChange={handleSelectChange}
         disabled={disabled}
-        placeholder={loading ? "Loading models..." : "Select a model"}
-        emptyText="No models found"
+        placeholder={loading ? t("compare.selector.loadingModels") : t("compare.selector.modelPlaceholder")}
+        emptyText={t("compare.selector.noModelsFound")}
         allowClear={false}
         className="rounded-md"
       />
       {isAddingCustom && (
         <Input
           className="mt-2"
-          placeholder="Custom Model Name (Enter to add)"
+          placeholder={t("compare.selector.customModelNamePlaceholder")}
           value={customValue}
           onChange={(e) => setCustomValue(e.target.value)}
           onKeyDown={(event) => {

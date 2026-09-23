@@ -590,5 +590,9 @@
       "addOverrideFailed": "添加覆盖失败：{{error}}",
       "removeOverrideFailed": "移除覆盖失败：{{error}}"
     }
+  },
+  "selector": {
+    "premiumPlaceholder": "设置策略是高级功能。",
+    "placeholder": "选择策略（生产版本或已发布版本）"
   }
 }

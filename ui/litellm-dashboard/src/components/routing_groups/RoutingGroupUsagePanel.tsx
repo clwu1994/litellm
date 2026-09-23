@@ -57,9 +57,14 @@ const response = await client.chat.completions.create({
 console.log(response);`;
 
 const SNIPPET_TABS = [
-  { value: "curl", label: "cURL", language: "bash", build: buildCurlSnippet },
-  { value: "python", label: "Python (OpenAI SDK)", language: "python", build: buildPythonSnippet },
-  { value: "javascript", label: "JavaScript (OpenAI SDK)", language: "javascript", build: buildJsSnippet },
+  { value: "curl", labelKey: "routingGroups.usage.snippetCurl", language: "bash", build: buildCurlSnippet },
+  { value: "python", labelKey: "routingGroups.usage.snippetPython", language: "python", build: buildPythonSnippet },
+  {
+    value: "javascript",
+    labelKey: "routingGroups.usage.snippetJavascript",
+    language: "javascript",
+    build: buildJsSnippet,
+  },
 ] as const;
 
 export function RoutingGroupUsagePanel({ group, baseUrl }: RoutingGroupUsagePanelProps) {
@@ -82,7 +87,7 @@ export function RoutingGroupUsagePanel({ group, baseUrl }: RoutingGroupUsagePane
         <TabsList variant="line" className="h-auto w-full justify-start rounded-none border-b p-0">
           {SNIPPET_TABS.map((tab) => (
             <TabsTrigger key={tab.value} value={tab.value} className="flex-none rounded-none px-4 py-2">
-              {tab.label}
+              {t(tab.labelKey)}
             </TabsTrigger>
           ))}
         </TabsList>

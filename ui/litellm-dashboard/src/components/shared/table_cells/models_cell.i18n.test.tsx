@@ -36,8 +36,29 @@ describe("ModelsCell Chinese copy", () => {
 
     await user.hover(screen.getByText("无模型访问权限"));
 
-    expect(await screen.findByText("范围限定为 Management 路由；此密钥无法调用任何模型")).toBeInTheDocument();
+    expect(await screen.findByText("范围限定为 管理 路由；此密钥无法调用任何模型")).toBeInTheDocument();
     expect(screen.queryByText("Scoped to Management routes; this key cannot call any models")).not.toBeInTheDocument();
+    expect(screen.queryByText("范围限定为 Management 路由；此密钥无法调用任何模型")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese read-only scope label and hides the English original", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<ModelsCell models={[]} allowedRoutes={["info_routes"]} />);
+
+    await user.hover(screen.getByText("无模型访问权限"));
+
+    expect(await screen.findByText("范围限定为 只读 路由；此密钥无法调用任何模型")).toBeInTheDocument();
+    expect(screen.queryByText("Scoped to Read-only routes; this key cannot call any models")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese SCIM scope label and hides the English original", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<ModelsCell models={[]} allowedRoutes={["/scim/*"]} />);
+
+    await user.hover(screen.getByText("无模型访问权限"));
+
+    expect(await screen.findByText("范围限定为 SCIM 路由；此密钥无法调用任何模型")).toBeInTheDocument();
+    expect(screen.queryByText("Scoped to SCIM routes; this key cannot call any models")).not.toBeInTheDocument();
   });
 
   it("renders the Chinese overflow badge and hides the English original", () => {

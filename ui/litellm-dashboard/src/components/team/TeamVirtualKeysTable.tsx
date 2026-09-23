@@ -47,6 +47,7 @@ const DEFAULT_SORTING: SortingState = [{ id: "created_at", desc: true }];
 
 export function TeamVirtualKeysTable({ teamId, teamAlias, organization }: TeamVirtualKeysTableProps) {
   const { t } = useTranslation("teams");
+  const { t: tCommon } = useTranslation("common");
   const [selectedKey, setSelectedKey] = useState<KeyResponse | null>(null);
   const [sorting, setSorting] = useState<SortingState>(DEFAULT_SORTING);
   const [tablePagination, setTablePagination] = useState<PaginationState>({
@@ -349,7 +350,7 @@ export function TeamVirtualKeysTable({ teamId, teamAlias, organization }: TeamVi
           const models = info.getValue() as string[];
           const scope = deriveKeyModelScope(info.row.original.allowed_routes, info.row.original.key_type);
           const emptyModelsBadge = !scope.hasModelAccess ? (
-            <SimpleTooltip content={t("virtualKeys.table.scopedTooltip", { scope: scope.label })}>
+            <SimpleTooltip content={t("virtualKeys.table.scopedTooltip", { scope: tCommon(scope.labelKey) })}>
               <Badge variant="secondary" className="mb-1">
                 {t("virtualKeys.table.noModelAccess")}
               </Badge>
@@ -463,7 +464,7 @@ export function TeamVirtualKeysTable({ teamId, teamAlias, organization }: TeamVi
         },
       },
     ],
-    [expandedAccordions, t],
+    [expandedAccordions, t, tCommon],
   );
 
   const handleSortingChange = useCallback((updaterOrValue: React.SetStateAction<SortingState>) => {

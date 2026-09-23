@@ -202,6 +202,12 @@
       "after": "修改后",
       "notAvailable": "无",
       "noDifferingFields": "未检测到有差异的字段"
+    },
+    "actions": {
+      "created": "已创建",
+      "updated": "已更新",
+      "deleted": "已删除",
+      "rotated": "已轮换"
     }
   },
   "empty": {

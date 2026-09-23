@@ -200,7 +200,10 @@
       "typeAria": "生成的代码类型",
       "tabBasic": "基础",
       "tabMessages": "带消息",
-      "tabVersion": "带版本"
+      "tabVersion": "带版本",
+      "languageCurl": "cURL",
+      "languagePython": "Python（OpenAI SDK）",
+      "languageJavascript": "JavaScript（OpenAI SDK）"
     },
     "dotprompt": {
       "title": "生成的 .prompt 文件",

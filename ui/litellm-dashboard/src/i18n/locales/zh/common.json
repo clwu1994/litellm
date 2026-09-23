@@ -275,7 +275,12 @@
   },
   "modelsCell": {
     "noModelAccess": "无模型访问权限",
-    "scopedToRoutes": "范围限定为 {{scope}} 路由；此密钥无法调用任何模型"
+    "scopedToRoutes": "范围限定为 {{scope}} 路由；此密钥无法调用任何模型",
+    "scope": {
+      "management": "管理",
+      "readOnly": "只读",
+      "scim": "SCIM"
+    }
   },
   "userPopoverCell": {
     "userAlias": "用户别名",
@@ -494,10 +499,16 @@
   "dismissBanner": "关闭横幅",
   "breadcrumb": "面包屑导航",
   "helpLink": {
-    "docs": "文档"
+    "docs": "文档",
+    "openInNewTabTitle": "在新标签页中打开文档",
+    "opensInNewTab": "（在新标签页中打开）",
+    "helpInformation": "帮助信息"
   },
   "plugin": {
     "title": "插件",
     "configure": "在设置中配置插件 URL"
+  },
+  "logo": {
+    "alt": "{{name}} 徽标"
   }
 }

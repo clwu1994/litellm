@@ -60,6 +60,13 @@ const AUDIT_FILTER_LABELS = [
   { zh: "数据表", en: "Table" },
 ];
 
+const AUDIT_ACTION_NAMES = [
+  { zh: "已创建", en: "Created" },
+  { zh: "已更新", en: "Updated" },
+  { zh: "已删除", en: "Deleted" },
+  { zh: "已轮换", en: "Rotated" },
+];
+
 const AUDIT_FILTER_PLACEHOLDERS = [
   { zh: "输入对象 ID…", en: "Enter object ID…" },
   { zh: "输入用户 ID…", en: "Enter user ID…" },
@@ -340,7 +347,7 @@ describe("AuditLogsTable", () => {
       }
     });
 
-    it("keeps the audit action names in English in the filter options", async () => {
+    it("renders the Chinese audit action names in the filter options and hides the English ones", async () => {
       const user = userEvent.setup();
       renderTable();
 
@@ -348,12 +355,13 @@ describe("AuditLogsTable", () => {
       const [action] = await screen.findAllByRole("combobox");
       await user.click(action);
 
-      for (const name of ["Created", "Updated", "Deleted", "Rotated"]) {
-        expect(await screen.findByRole("option", { name })).toBeInTheDocument();
+      for (const { zh, en } of AUDIT_ACTION_NAMES) {
+        expect(await screen.findByRole("option", { name: zh })).toBeInTheDocument();
+        expect(screen.queryByRole("option", { name: en })).not.toBeInTheDocument();
       }
     });
 
-    it("renders the Chinese filter chip labels while the action and table values stay English", () => {
+    it("renders the Chinese filter chip labels and action value while the table value stays Chinese", () => {
       renderTable({
         columnFilters: [
           { id: "action", value: "created" },
@@ -363,7 +371,8 @@ describe("AuditLogsTable", () => {
 
       const actionChip = screen.getByTestId("filter-chip-action");
       expect(actionChip).toHaveTextContent("操作:");
-      expect(actionChip).toHaveTextContent("Created");
+      expect(actionChip).toHaveTextContent("已创建");
+      expect(actionChip).not.toHaveTextContent("Created");
 
       const tableChip = screen.getByTestId("filter-chip-table_name");
       expect(tableChip).toHaveTextContent("数据表:");

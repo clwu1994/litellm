@@ -328,9 +328,9 @@ const AddAutoRouterTab: React.FC<AddAutoRouterTabProps> = ({
   const templateItems = React.useMemo(
     () => [
       ...sortedPresetOptions.map(({ preset }) => ({ value: preset.key, label: preset.label })),
-      { value: "custom", label: "Custom Configuration" },
+      { value: "custom", label: t("autoRouterConfig.setup.addTab.customLabel") },
     ],
-    [sortedPresetOptions],
+    [sortedPresetOptions, t],
   );
 
   const applyPrefill = (prefill: PresetPrefill) => {

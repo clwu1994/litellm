@@ -515,7 +515,10 @@
       "loadingModels": "正在加载模型...",
       "loadingAgents": "正在加载Agent...",
       "noModels": "没有可用的模型",
-      "noAgents": "没有可用的Agent"
+      "noAgents": "没有可用的Agent",
+      "addCustomModel": "+ 添加自定义模型",
+      "noModelsFound": "未找到模型",
+      "customModelNamePlaceholder": "自定义模型名称（按 Enter 添加）"
     },
     "input": {
       "modelPlaceholder": "发送提示词以对比模型",

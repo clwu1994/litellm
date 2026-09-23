@@ -19,8 +19,11 @@ import {
   handleError,
   keyCreateForAgentCall,
   keyInfoCall,
+  keyInfoV1Call,
+  modelCreateCall,
   patchAgentCall,
   resetEmailEventSettings,
+  teamUpdateCall,
   testCustomCodeGuardrail,
   testPoliciesAndGuardrails,
   updateConfigFieldSetting,
@@ -322,5 +325,32 @@ describe("networking Chinese error copy", () => {
       "测试自定义代码 Guardrail 失败",
       "Failed to test custom code guardrail",
     );
+  });
+
+  it("translates the model-created toast", async () => {
+    stubFetch(successResponse({ model_id: "m-1" }));
+
+    await modelCreateCall("sk-test", { model_name: "gpt-4o" } as unknown as Parameters<typeof modelCreateCall>[1]);
+
+    expect(toast.success).toHaveBeenCalledWith("模型 gpt-4o 创建成功");
+    expect(toast.success).not.toHaveBeenCalledWith("Model gpt-4o created successfully");
+  });
+
+  it("translates the key info fetch failure", async () => {
+    stubFetch(failureResponse("boom"));
+
+    await keyInfoV1Call("sk-test", "key-1");
+
+    expect(toast.fromError).toHaveBeenCalledWith("获取密钥信息失败 - boom");
+    expect(toast.fromError).not.toHaveBeenCalledWith("Failed to fetch key info - boom");
+  });
+
+  it("translates the team settings update failure", async () => {
+    stubFetch(failureResponse("boom"));
+
+    await expect(teamUpdateCall("sk-test", {})).rejects.toThrow("boom");
+
+    expect(toast.fromError).toHaveBeenCalledWith("更新团队设置失败：boom");
+    expect(toast.fromError).not.toHaveBeenCalledWith("Failed to update team settings: boom");
   });
 });

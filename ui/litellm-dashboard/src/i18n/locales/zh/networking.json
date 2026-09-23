@@ -3,7 +3,8 @@
     "sessionExpired": "UI 会话已过期，正在退出登录。",
     "configFieldUpdated": "值更新成功！",
     "configFieldReset": "字段已在代理上重置",
-    "passThroughUpdated": "透传 Endpoint 更新成功"
+    "passThroughUpdated": "透传 Endpoint 更新成功",
+    "modelCreated": "模型 {{model}} 创建成功"
   },
   "errors": {
     "providerConfigLoadFailed": "加载提供商配置失败",
@@ -26,7 +27,9 @@
     "policyTestFailed": "测试策略和 Guardrails 失败",
     "guardrailApplyFailed": "应用 Guardrail 失败",
     "customCodeGuardrailTestFailed": "测试自定义代码 Guardrail 失败",
-    "blockedWordsValidationFailed": "校验屏蔽词文件失败"
+    "blockedWordsValidationFailed": "校验屏蔽词文件失败",
+    "keyInfoFetchFailed": "获取密钥信息失败 - {{error}}",
+    "teamSettingsUpdateFailed": "更新团队设置失败：{{error}}"
   },
   "banners": {
     "envCredential": {

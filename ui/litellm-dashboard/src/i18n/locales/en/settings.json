@@ -517,7 +517,9 @@
     "tabEmailAlerts": "Email Alerts",
     "tabMsTeamsAlerts": "MS Teams Alerts",
     "testAlerts": "Test Alerts",
-    "alertTestTriggered": "Alert test triggered. Test request to slack made - check logs/alerts on slack to verify"
+    "alertTestTriggered": "Alert test triggered. Test request to slack made - check logs/alerts on slack to verify",
+    "callbackConfigsLoadFailed": "Failed to load callback configs: {{error}}",
+    "callbackDeleted": "Callback {{name}} deleted successfully"
   },
   "msTeams": {
     "title": "Microsoft Teams Alerting Settings",

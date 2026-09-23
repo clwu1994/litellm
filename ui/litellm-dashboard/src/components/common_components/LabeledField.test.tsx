@@ -1,5 +1,6 @@
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { cleanup, render, screen } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import i18n from "@/i18n/bootstrapI18n";
 import LabeledField from "./LabeledField";
 
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
@@ -81,5 +82,23 @@ describe("LabeledField", () => {
     );
     expect(screen.getByText("Default Proxy Admin")).toBeInTheDocument();
     expect(screen.queryByRole("link")).not.toBeInTheDocument();
+  });
+});
+
+describe("LabeledField Chinese copy", () => {
+  beforeEach(async () => {
+    await i18n.changeLanguage("zh");
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  it("renders the Chinese copy-button label and hides the English original", () => {
+    render(<LabeledField label="User ID" value="user-123" copyable />);
+
+    expect(screen.getByRole("button", { name: "复制User ID" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Copy User ID" })).not.toBeInTheDocument();
   });
 });

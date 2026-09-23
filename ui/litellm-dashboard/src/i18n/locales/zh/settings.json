@@ -517,7 +517,9 @@
     "tabEmailAlerts": "邮件告警",
     "tabMsTeamsAlerts": "MS Teams 告警",
     "testAlerts": "测试告警",
-    "alertTestTriggered": "告警测试已触发。已向 Slack 发送测试请求，请检查 Slack 上的日志/告警以验证"
+    "alertTestTriggered": "告警测试已触发。已向 Slack 发送测试请求，请检查 Slack 上的日志/告警以验证",
+    "callbackConfigsLoadFailed": "加载回调配置失败：{{error}}",
+    "callbackDeleted": "回调 {{name}} 删除成功"
   },
   "msTeams": {
     "title": "Microsoft Teams 告警设置",

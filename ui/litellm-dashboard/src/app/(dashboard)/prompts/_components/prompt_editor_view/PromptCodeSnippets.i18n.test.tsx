@@ -66,7 +66,7 @@ describe("PromptCodeSnippets Chinese copy", () => {
     }
   });
 
-  it("keeps the programming-language labels in English while translating the surrounding chrome", async () => {
+  it("renders the Chinese programming-language labels and hides the English originals", async () => {
     const user = userEvent.setup({ pointerEventsCheck: PointerEventsCheckLevel.Never });
     await openDialog(user);
 
@@ -74,8 +74,10 @@ describe("PromptCodeSnippets Chinese copy", () => {
     expect(trigger).toHaveTextContent("cURL");
 
     await user.click(trigger);
-    expect(await screen.findByRole("option", { name: "Python (OpenAI SDK)" })).toBeInTheDocument();
-    expect(screen.getByRole("option", { name: "JavaScript (OpenAI SDK)" })).toBeInTheDocument();
+    expect(await screen.findByRole("option", { name: "Python（OpenAI SDK）" })).toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: "Python (OpenAI SDK)" })).not.toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "JavaScript（OpenAI SDK）" })).toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: "JavaScript (OpenAI SDK)" })).not.toBeInTheDocument();
   });
 
   it("shows the Chinese copied toast and hides the English original", async () => {

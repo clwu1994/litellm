@@ -275,7 +275,12 @@
   },
   "modelsCell": {
     "noModelAccess": "No model access",
-    "scopedToRoutes": "Scoped to {{scope}} routes; this key cannot call any models"
+    "scopedToRoutes": "Scoped to {{scope}} routes; this key cannot call any models",
+    "scope": {
+      "management": "Management",
+      "readOnly": "Read-only",
+      "scim": "SCIM"
+    }
   },
   "userPopoverCell": {
     "userAlias": "User Alias",
@@ -494,10 +499,16 @@
   "dismissBanner": "Dismiss banner",
   "breadcrumb": "breadcrumb",
   "helpLink": {
-    "docs": "Docs"
+    "docs": "Docs",
+    "openInNewTabTitle": "Open documentation in a new tab",
+    "opensInNewTab": "(opens in a new tab)",
+    "helpInformation": "Help information"
   },
   "plugin": {
     "title": "Plugin",
     "configure": "Configure the plugin URL in settings"
+  },
+  "logo": {
+    "alt": "{{name}} logo"
   }
 }

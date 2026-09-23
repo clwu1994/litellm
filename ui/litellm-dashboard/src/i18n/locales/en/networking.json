@@ -3,7 +3,8 @@
     "sessionExpired": "UI Session Expired. Logging out.",
     "configFieldUpdated": "Successfully updated value!",
     "configFieldReset": "Field reset on proxy",
-    "passThroughUpdated": "Pass through endpoint updated successfully"
+    "passThroughUpdated": "Pass through endpoint updated successfully",
+    "modelCreated": "Model {{model}} created successfully"
   },
   "errors": {
     "providerConfigLoadFailed": "Failed to load provider configuration",
@@ -26,7 +27,9 @@
     "policyTestFailed": "Failed to test policies and guardrails",
     "guardrailApplyFailed": "Failed to apply guardrail",
     "customCodeGuardrailTestFailed": "Failed to test custom code guardrail",
-    "blockedWordsValidationFailed": "Failed to validate blocked words file"
+    "blockedWordsValidationFailed": "Failed to validate blocked words file",
+    "keyInfoFetchFailed": "Failed to fetch key info - {{error}}",
+    "teamSettingsUpdateFailed": "Failed to update team settings: {{error}}"
   },
   "banners": {
     "envCredential": {

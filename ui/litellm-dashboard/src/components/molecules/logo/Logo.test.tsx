@@ -1,8 +1,9 @@
 import React from "react";
-import { describe, expect, it, vi } from "vitest";
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { Logo } from "./Logo";
 import { Providers, providerLogoMap } from "@/components/provider_info_helpers";
+import i18n from "@/i18n/bootstrapI18n";
 
 vi.mock("@/lib/serverRootPath", () => ({ serverRootPath: "/litellm" }));
 
@@ -108,5 +109,23 @@ describe("Logo", () => {
     expect(screen.queryByRole("img")).not.toBeInTheDocument();
     expect(screen.getByText("A")).toBeInTheDocument();
     warnSpy.mockRestore();
+  });
+});
+
+describe("Logo Chinese copy", () => {
+  beforeEach(async () => {
+    await i18n.changeLanguage("zh");
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  it("renders the Chinese alt text and hides the English original", () => {
+    render(<Logo provider="openai" />);
+
+    expect(screen.getByRole("img", { name: "openai 徽标" })).toBeInTheDocument();
+    expect(screen.queryByRole("img", { name: "openai logo" })).not.toBeInTheDocument();
   });
 });

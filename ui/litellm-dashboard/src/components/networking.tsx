@@ -664,7 +664,7 @@ export const modelCreateCall = async (accessToken: string, formValues: Model) =>
     toast.dismiss();
 
     // Sequential success messages
-    toast.success(`Model ${formValues.model_name} created successfully`);
+    toast.success(i18n.t("networking:toast.modelCreated", { model: formValues.model_name }));
 
     return data;
   } catch (error) {
@@ -2528,7 +2528,7 @@ export const keyInfoV1Call = async (accessToken: string, key: string) => {
     if (!response.ok) {
       const errorData = await response.text();
       handleError(errorData);
-      toast.fromError("Failed to fetch key info - " + errorData);
+      toast.fromError(i18n.t("networking:errors.keyInfoFetchFailed", { error: errorData }));
     }
 
     const data = await response.json();
@@ -2893,7 +2893,9 @@ export const teamUpdateCall = async (
       const errorData = await response.text();
       handleError(errorData);
       console.error("Error response from the server:", errorData);
-      toast.fromError("Failed to update team settings: " + unwrapProxyErrorMessage(errorData));
+      toast.fromError(
+        i18n.t("networking:errors.teamSettingsUpdateFailed", { error: unwrapProxyErrorMessage(errorData) }),
+      );
       throw new Error(errorData);
     }
     const data = (await response.json()) as { data: Team; team_id: string };

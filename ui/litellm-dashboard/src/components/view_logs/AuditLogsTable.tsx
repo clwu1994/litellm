@@ -35,10 +35,10 @@ interface AuditLogsTableProps {
 const ALL_VALUE = "all";
 
 const ACTION_OPTIONS = [
-  { label: "Created", value: "created" },
-  { label: "Updated", value: "updated" },
-  { label: "Deleted", value: "deleted" },
-  { label: "Rotated", value: "rotated" },
+  { labelKey: "audit.actions.created", value: "created" },
+  { labelKey: "audit.actions.updated", value: "updated" },
+  { labelKey: "audit.actions.deleted", value: "deleted" },
+  { labelKey: "audit.actions.rotated", value: "rotated" },
 ] as const;
 
 const TABLE_OPTIONS = [
@@ -61,7 +61,8 @@ const FILTER_LABEL_KEYS = {
 const formatFilterValue = (t: TFunction<"logs">, columnId: string, value: unknown): string => {
   const raw = String(value);
   if (columnId === "action") {
-    return ACTION_OPTIONS.find((option) => option.value === raw)?.label ?? raw;
+    const action = ACTION_OPTIONS.find((option) => option.value === raw);
+    return action ? t(action.labelKey) : raw;
   }
   if (columnId === "table_name") {
     return getAuditTableNameDisplay(raw, t);
@@ -108,7 +109,7 @@ export function AuditLogsTable({
   const actionFilterItems = useMemo(
     () => [
       { value: ALL_VALUE, label: t("audit.filters.allActions") },
-      ...ACTION_OPTIONS.map((option) => ({ value: option.value, label: option.label })),
+      ...ACTION_OPTIONS.map((option) => ({ value: option.value, label: t(option.labelKey) })),
     ],
     [t],
   );
@@ -211,7 +212,7 @@ export function AuditLogsTable({
                       <SelectItem value={ALL_VALUE}>{t("audit.filters.allActions")}</SelectItem>
                       {ACTION_OPTIONS.map((option) => (
                         <SelectItem key={option.value} value={option.value}>
-                          {option.label}
+                          {t(option.labelKey)}
                         </SelectItem>
                       ))}
                     </SelectContent>

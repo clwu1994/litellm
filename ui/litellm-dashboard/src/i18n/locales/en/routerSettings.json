@@ -59,7 +59,10 @@
     },
     "usage": {
       "howItWorks": "How routing works for this group",
-      "description": "Callers request any model in the group by name; LiteLLM picks a deployment behind the scenes using the <strong>{{strategy}}</strong> strategy."
+      "description": "Callers request any model in the group by name; LiteLLM picks a deployment behind the scenes using the <strong>{{strategy}}</strong> strategy.",
+      "snippetCurl": "cURL",
+      "snippetPython": "Python (OpenAI SDK)",
+      "snippetJavascript": "JavaScript (OpenAI SDK)"
     },
     "strategies": {
       "simpleShuffle": "Simple Shuffle",

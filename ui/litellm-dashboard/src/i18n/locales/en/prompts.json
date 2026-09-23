@@ -200,7 +200,10 @@
       "typeAria": "Generated code type",
       "tabBasic": "Basic",
       "tabMessages": "With Messages",
-      "tabVersion": "With Version"
+      "tabVersion": "With Version",
+      "languageCurl": "cURL",
+      "languagePython": "Python (OpenAI SDK)",
+      "languageJavascript": "JavaScript (OpenAI SDK)"
     },
     "dotprompt": {
       "title": "Generated .prompt file",

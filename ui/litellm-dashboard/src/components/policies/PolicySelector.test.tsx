@@ -1,6 +1,7 @@
-import { screen, waitFor } from "@testing-library/react";
+import { cleanup, screen, waitFor } from "@testing-library/react";
 import { renderWithProviders } from "../../../tests/test-utils";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import i18n from "@/i18n/bootstrapI18n";
 import * as networking from "../networking";
 import PolicySelector, { getPolicyOptionEntries, policyVersionRef, POLICY_VERSION_ID_PREFIX } from "./PolicySelector";
 import { Policy } from "./types";
@@ -133,5 +134,36 @@ describe("PolicySelector", () => {
     expect(networking.getPoliciesList).not.toHaveBeenCalled();
     expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
     expect(container).toBeEmptyDOMElement();
+  });
+});
+
+describe("PolicySelector Chinese copy", () => {
+  const mockOnChange = vi.fn();
+
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    can.mockReturnValue(true);
+    await i18n.changeLanguage("zh");
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  it("renders the Chinese placeholder and hides the English original", async () => {
+    vi.mocked(networking.getPoliciesList).mockResolvedValue({ policies: [] });
+    renderWithProviders(<PolicySelector accessToken="tok" onChange={mockOnChange} />);
+
+    expect(await screen.findByPlaceholderText("选择策略（生产版本或已发布版本）")).toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("Select policies (production or published versions)")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese premium placeholder when disabled and hides the English original", async () => {
+    vi.mocked(networking.getPoliciesList).mockResolvedValue({ policies: [] });
+    renderWithProviders(<PolicySelector accessToken="tok" onChange={mockOnChange} disabled />);
+
+    expect(await screen.findByPlaceholderText("设置策略是高级功能。")).toBeInTheDocument();
+    expect(screen.queryByPlaceholderText("Setting policies is a premium feature.")).not.toBeInTheDocument();
   });
 });

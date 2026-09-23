@@ -11,9 +11,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const LANGUAGE_ITEMS = [
-  { value: "curl", label: "cURL" },
-  { value: "python", label: "Python (OpenAI SDK)" },
-  { value: "javascript", label: "JavaScript (OpenAI SDK)" },
+  { value: "curl", labelKey: "editor.code.languageCurl" },
+  { value: "python", labelKey: "editor.code.languagePython" },
+  { value: "javascript", labelKey: "editor.code.languageJavascript" },
 ] as const;
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -268,7 +268,7 @@ main();`;
                 {t("editor.code.language")}
               </label>
               <Select
-                items={LANGUAGE_ITEMS}
+                items={LANGUAGE_ITEMS.map((item) => ({ value: item.value, label: t(item.labelKey) }))}
                 value={selectedLanguage}
                 onValueChange={(value) => setSelectedLanguage(value as "curl" | "python" | "javascript")}
               >
@@ -278,7 +278,7 @@ main();`;
                 <SelectContent>
                   {LANGUAGE_ITEMS.map((item) => (
                     <SelectItem key={item.value} value={item.value}>
-                      {item.label}
+                      {t(item.labelKey)}
                     </SelectItem>
                   ))}
                 </SelectContent>

@@ -59,7 +59,10 @@
     },
     "usage": {
       "howItWorks": "此分组的路由方式",
-      "description": "调用方按名称请求分组中的任意模型；LiteLLM 会在后台使用<strong>{{strategy}}</strong>策略选择一个部署。"
+      "description": "调用方按名称请求分组中的任意模型；LiteLLM 会在后台使用<strong>{{strategy}}</strong>策略选择一个部署。",
+      "snippetCurl": "cURL",
+      "snippetPython": "Python（OpenAI SDK）",
+      "snippetJavascript": "JavaScript（OpenAI SDK）"
     },
     "strategies": {
       "simpleShuffle": "简单随机",
