@@ -516,5 +516,14 @@
     "tabMsTeamsAlerts": "MS Teams 告警",
     "testAlerts": "测试告警",
     "alertTestTriggered": "告警测试已触发。已向 Slack 发送测试请求，请检查 Slack 上的日志/告警以验证"
+  },
+  "msTeams": {
+    "title": "Microsoft Teams 告警设置",
+    "description": "通过入站 webhook 将 LiteLLM 告警发送到 Microsoft Teams 频道。可从 <docs>Microsoft Docs：入站 webhook</docs> 创建。",
+    "webhookUrlHelp": "用于 Teams 频道的入站 webhook URL（Workflows 或 incoming webhook connector）",
+    "required": " 必填 * ",
+    "testAlerts": "测试 MS Teams 告警",
+    "settingsUpdated": "MS Teams 设置更新成功",
+    "testTriggered": "MS Teams 测试告警已触发。请检查你的 Teams 频道。"
   }
 }

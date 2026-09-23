@@ -118,6 +118,7 @@ const CreateMCPServer: React.FC<CreateMCPServerProps> = ({
   const form = useForm<MountedFormValues>({ mode: "onChange", defaultValues: CREATE_DEFAULTS });
   const registry = useMountRegistry();
   const { t } = useTranslation("mcpServers");
+  const { t: tAuth } = useTranslation("auth");
   const transportItemsTranslated = React.useMemo(() => transportItems(t), [t]);
   const authTypeItemsTranslated = React.useMemo(() => authTypeItems(t), [t]);
   const [isLoading, setIsLoading] = useState(false);
@@ -199,6 +200,7 @@ const CreateMCPServer: React.FC<CreateMCPServerProps> = ({
     reset: resetOAuthFlow,
   } = useMcpOAuthFlow({
     accessToken,
+    t: tAuth,
     // Merge the ref-held DCR client so a re-authorize reuses the registered client instead of
     // re-registering; the form store itself never holds the DCR client (see onTokenReceived).
     getCredentials: () => ({

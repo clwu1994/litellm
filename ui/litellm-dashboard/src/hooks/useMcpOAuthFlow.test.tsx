@@ -1,6 +1,7 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as networking from "@/components/networking";
+import i18n from "@/i18n/bootstrapI18n";
 import { setSecureItem } from "@/utils/secureStorage";
 import { useMcpOAuthFlow } from "./useMcpOAuthFlow";
 
@@ -47,6 +48,7 @@ function renderFlow(onTokenReceived = vi.fn()) {
     ({ onTokenReceived: cb }: { onTokenReceived: (t: any) => void }) =>
       useMcpOAuthFlow({
         accessToken: "admin-token",
+        t: i18n.getFixedT(null, "auth"),
         getCredentials: () => ({}),
         getTemporaryPayload: () => ({ url: "https://server-1.example.com/mcp", transport: "http" }),
         onTokenReceived: cb,
@@ -175,6 +177,7 @@ describe("useMcpOAuthFlow reset", () => {
     const { result } = renderHook(() =>
       useMcpOAuthFlow({
         accessToken: "admin-token",
+        t: i18n.getFixedT(null, "auth"),
         getCredentials: () => ({ client_id: "existing-client" }),
         getTemporaryPayload: () => ({
           url: "https://server-1.example.com/mcp",
@@ -204,6 +207,7 @@ describe("useMcpOAuthFlow reset", () => {
     const { result } = renderHook(() =>
       useMcpOAuthFlow({
         accessToken: "admin-token",
+        t: i18n.getFixedT(null, "auth"),
         getCredentials: () => ({}),
         getTemporaryPayload: () => ({
           url: "https://server-2.example.com/mcp",

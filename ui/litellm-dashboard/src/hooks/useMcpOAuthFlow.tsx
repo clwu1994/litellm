@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { TFunction } from "i18next";
 import { toast } from "@/lib/toast";
 import {
   buildMcpOAuthAuthorizeUrl,
@@ -18,6 +19,7 @@ export type McpOAuthStatus = "idle" | "authorizing" | "exchanging" | "success" |
 
 interface UseMcpOAuthFlowOptions {
   accessToken: string | null;
+  t: TFunction<"auth">;
   getCredentials: () =>
     | {
         client_id?: string;
@@ -48,6 +50,7 @@ interface UseMcpOAuthFlowResult {
 
 export const useMcpOAuthFlow = ({
   accessToken,
+  t,
   getCredentials,
   getTemporaryPayload,
   onTokenReceived,
@@ -125,14 +128,14 @@ export const useMcpOAuthFlow = ({
     const credentials = getCredentials() || {};
 
     if (!accessToken) {
-      setError("Missing admin token");
-      toast.error("Access token missing. Please re-authenticate and try again.");
+      setError(t("oauth.missingAdminToken"));
+      toast.error(t("oauth.accessTokenMissing"));
       return;
     }
 
     const temporaryPayload = getTemporaryPayload();
     if (!temporaryPayload || !temporaryPayload.url || !temporaryPayload.transport) {
-      const message = "Please complete server URL and transport before starting OAuth.";
+      const message = t("oauth.completeServerUrl");
       setError(message);
       toast.error(message);
       return;
@@ -144,7 +147,7 @@ export const useMcpOAuthFlow = ({
       const cachedServer = await cacheTemporaryMcpServer(accessToken, temporaryPayload);
       const serverId = cachedServer?.server_id?.trim();
       if (!serverId) {
-        throw new Error("Temporary MCP server identifier missing. Please retry.");
+        throw new Error(t("oauth.tempServerIdMissing"));
       }
 
       let registeredClient: { clientId?: string; clientSecret?: string } = {};
@@ -197,7 +200,7 @@ export const useMcpOAuthFlow = ({
       };
 
       if (typeof window === "undefined") {
-        throw new Error("OAuth redirect is only supported in the browser.");
+        throw new Error(t("oauth.browserOnlyRedirect"));
       }
 
       if (onBeforeRedirect) {
@@ -212,7 +215,7 @@ export const useMcpOAuthFlow = ({
         setStorageItem(FLOW_STATE_KEY, JSON.stringify(flowState));
         setStorageItem(RETURN_URL_KEY, window.location.href);
       } catch (storageErr) {
-        throw new Error("Unable to access browser storage for OAuth. Please enable storage and retry.");
+        throw new Error(t("oauth.storageUnavailable"));
       }
 
       window.location.href = authorizeUrl;
@@ -223,7 +226,7 @@ export const useMcpOAuthFlow = ({
       setError(message);
       toast.error(message);
     }
-  }, [accessToken, getCredentials, getTemporaryPayload, onBeforeRedirect]);
+  }, [accessToken, getCredentials, getTemporaryPayload, onBeforeRedirect, t]);
 
   const resumeOAuthFlow = useCallback(async () => {
     if (typeof window === "undefined") {
@@ -261,9 +264,9 @@ export const useMcpOAuthFlow = ({
     } catch (err) {
       clearStoredFlow();
       processingRef.current = false;
-      setError("Failed to resume OAuth flow. Please retry.");
+      setError(t("oauth.resumeFailed"));
       setStatus("error");
-      toast.error("Failed to resume OAuth flow. Please retry.");
+      toast.error(t("oauth.resumeFailed"));
       return;
     }
 
@@ -296,19 +299,16 @@ export const useMcpOAuthFlow = ({
 
     try {
       if (!flowState || !flowState.state || !flowState.codeVerifier || !flowState.serverId) {
-        throw new Error(
-          "OAuth session state was lost. This can happen if you have strict browser privacy settings. " +
-            "Please try again and ensure cookies/storage is enabled.",
-        );
+        throw new Error(t("oauth.sessionStateLostStrict"));
       }
       if (!payload.state || payload.state !== flowState.state) {
-        throw new Error("OAuth state mismatch. Please retry.");
+        throw new Error(t("oauth.stateMismatch"));
       }
       if (payload.error) {
         throw new Error(payload.error_description || payload.error);
       }
       if (!payload.code) {
-        throw new Error("Authorization code missing in callback.");
+        throw new Error(t("oauth.codeMissing"));
       }
 
       setStatus("exchanging");
@@ -330,7 +330,7 @@ export const useMcpOAuthFlow = ({
       setTokenResponse(token);
       setStatus("success");
       setError(null);
-      toast.success("OAuth token retrieved successfully");
+      toast.success(t("oauth.tokenRetrieved"));
     } catch (err) {
       if (resetVersion !== resetVersionRef.current) {
         return;
@@ -348,7 +348,7 @@ export const useMcpOAuthFlow = ({
         }, 1000);
       }
     }
-  }, [onTokenReceived]);
+  }, [onTokenReceived, t]);
 
   useEffect(() => {
     resumeOAuthFlow();

@@ -41,6 +41,7 @@ const MCPToolsViewer = ({
   extraHeaders,
 }: MCPToolsViewerProps) => {
   const { t } = useTranslation("mcpServers");
+  const { t: tAuth } = useTranslation("auth");
   const [selectedTool, setSelectedTool] = useState<MCPTool | null>(null);
   const [toolResult, setToolResult] = useState<MCPContent[] | null>(null);
   const [toolError, setToolError] = useState<Error | null>(null);
@@ -81,6 +82,7 @@ const MCPToolsViewer = ({
     error: oauthError,
   } = useToolsOAuthFlow({
     accessToken: accessToken ?? "",
+    t: tAuth,
     serverId,
     serverAlias,
     userId: userID,
@@ -207,6 +209,7 @@ const MCPToolsViewer = ({
     error: dbOAuthError,
   } = useUserMcpOAuthFlow({
     accessToken: accessToken ?? "",
+    t: tAuth,
     serverId,
     serverAlias,
     onSuccess: onAuthorizationCodeAuthSuccess,

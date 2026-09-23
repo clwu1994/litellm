@@ -102,6 +102,7 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
   availableAccessGroups,
 }) => {
   const { t } = useTranslation("mcpServers");
+  const { t: tAuth } = useTranslation("auth");
   const transportItemsTranslated = React.useMemo(() => transportItems(t), [t]);
   const authTypeItemsTranslated = React.useMemo(() => authTypeItems(t), [t]);
   const initialStaticHeaders = React.useMemo(() => {
@@ -256,6 +257,7 @@ const MCPServerEdit: React.FC<MCPServerEditProps> = ({
     reset: resetOAuthFlow,
   } = useMcpOAuthFlow({
     accessToken,
+    t: tAuth,
     getCredentials: () => allFieldsValue(form).credentials,
     getTemporaryPayload: () => {
       const values = allFieldsValue(form);

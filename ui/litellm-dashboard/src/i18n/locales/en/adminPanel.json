@@ -53,5 +53,43 @@
     "ipDeleted": "IP address deleted successfully",
     "ipDeleteFailed": "Failed to delete IP address {{error}}",
     "uiAccessControlUpdated": "UI Access Control settings updated successfully"
+  },
+  "scim": {
+    "title": "SCIM Configuration",
+    "description": "System for Cross-domain Identity Management (SCIM) allows you to automatically provision and manage users and groups in LiteLLM.",
+    "tenantUrlTitle": "SCIM Tenant URL",
+    "tenantUrlDescription": "Use this URL in your identity provider SCIM integration settings.",
+    "urlCopied": "URL copied to clipboard",
+    "copy": "Copy",
+    "authenticationTokenTitle": "Authentication Token",
+    "usingScimTitle": "Using SCIM",
+    "usingScimDescription": "You need a SCIM token to authenticate with the SCIM API. Create one below and use it in your SCIM provider configuration.",
+    "tokenName": "Token Name",
+    "tokenPlaceholder": "SCIM Access Token",
+    "createToken": "Create SCIM Token",
+    "yourTokenTitle": "Your SCIM Token",
+    "yourTokenDescription": "Make sure to copy this token now. You will not be able to see it again.",
+    "tokenCopied": "Token copied to clipboard",
+    "createAnotherToken": "Create Another Token",
+    "tokenCreated": "SCIM token created successfully",
+    "nameRequired": "Please enter a name for your token",
+    "loginRequired": "You need to be logged in to create a SCIM token",
+    "createFailed": "Failed to create SCIM token: {{error}}"
+  },
+  "uiAccessControlForm": {
+    "description": "Configure who can access the UI interface and how group information is extracted from JWT tokens.",
+    "accessModeLabel": "UI Access Mode",
+    "accessModeHint": "Controls who can access the UI interface",
+    "accessModePlaceholder": "Select access mode",
+    "allAuthenticatedUsers": "All Authenticated Users",
+    "restrictedSsoGroup": "Restricted SSO Group",
+    "restrictedGroupPlaceholder": "ui-access-group",
+    "jwtFieldLabel": "SSO Group JWT Field",
+    "jwtFieldHint": "JWT field name that contains team/group information. Use dot notation to access nested fields.",
+    "jwtFieldPlaceholder": "groups",
+    "submit": "Update UI Access Control",
+    "groupRequired": "Please enter the restricted SSO group",
+    "noAccessToken": "No access token available",
+    "saveFailed": "Failed to save UI access settings"
   }
 }

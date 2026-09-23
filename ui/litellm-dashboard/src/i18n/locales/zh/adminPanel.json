@@ -53,5 +53,43 @@
     "ipDeleted": "IP 地址删除成功",
     "ipDeleteFailed": "删除 IP 地址失败 {{error}}",
     "uiAccessControlUpdated": "UI 访问控制设置更新成功"
+  },
+  "scim": {
+    "title": "SCIM 配置",
+    "description": "跨域身份管理系统（SCIM）可让你在 LiteLLM 中自动配置和管理用户与群组。",
+    "tenantUrlTitle": "SCIM 租户 URL",
+    "tenantUrlDescription": "在你的身份提供商 SCIM 集成设置中使用此 URL。",
+    "urlCopied": "URL 已复制到剪贴板",
+    "copy": "复制",
+    "authenticationTokenTitle": "认证 Token",
+    "usingScimTitle": "使用 SCIM",
+    "usingScimDescription": "你需要一个 SCIM Token 才能通过 SCIM API 进行认证。请在下方创建一个，并在你的 SCIM 提供商配置中使用它。",
+    "tokenName": "Token 名称",
+    "tokenPlaceholder": "SCIM 访问 Token",
+    "createToken": "创建 SCIM Token",
+    "yourTokenTitle": "你的 SCIM Token",
+    "yourTokenDescription": "请务必现在复制此 Token。之后你将无法再次查看它。",
+    "tokenCopied": "Token 已复制到剪贴板",
+    "createAnotherToken": "再创建一个 Token",
+    "tokenCreated": "SCIM Token 创建成功",
+    "nameRequired": "请输入 Token 名称",
+    "loginRequired": "你需要登录后才能创建 SCIM Token",
+    "createFailed": "创建 SCIM Token 失败：{{error}}"
+  },
+  "uiAccessControlForm": {
+    "description": "配置谁可以访问 UI 界面，以及如何从 JWT Token 中提取群组信息。",
+    "accessModeLabel": "UI 访问模式",
+    "accessModeHint": "控制谁可以访问 UI 界面",
+    "accessModePlaceholder": "选择访问模式",
+    "allAuthenticatedUsers": "所有已认证用户",
+    "restrictedSsoGroup": "受限 SSO 群组",
+    "restrictedGroupPlaceholder": "ui-access-group",
+    "jwtFieldLabel": "SSO 群组 JWT 字段",
+    "jwtFieldHint": "包含团队/群组信息的 JWT 字段名。使用点号访问嵌套字段。",
+    "jwtFieldPlaceholder": "groups",
+    "submit": "更新 UI 访问控制",
+    "groupRequired": "请输入受限 SSO 群组",
+    "noAccessToken": "没有可用的访问 Token",
+    "saveFailed": "保存 UI 访问设置失败"
   }
 }

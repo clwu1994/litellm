@@ -87,6 +87,9 @@ export const getAutoRouterAssembledPromptCall = async (
  * Helper file for calls being made to proxy
  */
 import { toast } from "@/lib/toast";
+// networking.tsx is a data-access module: its thrown messages reach the user as toast text from
+// catch handlers that have no `t`, so the key is resolved from the i18n instance at throw time.
+import i18n from "@/i18n/bootstrapI18n";
 import { clearTokenCookies, getCookie, storeLoginToken } from "@/utils/cookieUtils";
 import { decodeToken } from "@/utils/jwtUtils";
 import { TagNewRequest, TagUpdateRequest, TagListResponse, TagInfoResponse } from "./tag_management/types";
@@ -378,7 +381,7 @@ export const handleError = async (errorData: string | any) => {
     // Convert errorData to string if it isn't already
     const errorString = typeof errorData === "string" ? errorData : JSON.stringify(errorData);
     if (errorString.includes("Authentication Error - Expired Key")) {
-      toast.info("UI Session Expired. Logging out.");
+      toast.info(i18n.t("networking:toast.sessionExpired"));
       lastErrorTime = currentTime;
       clearTokenCookies();
       const browserLocation = getWindowLocation();
@@ -403,7 +406,7 @@ export const getProviderCreateMetadata = async (): Promise<ProviderCreateInfo[]>
   if (!response.ok) {
     const errorText = await response.text();
     console.error("Failed to fetch provider create metadata:", response.status, errorText);
-    throw new Error("Failed to load provider configuration");
+    throw new Error(i18n.t("networking:errors.providerConfigLoadFailed"));
   }
 
   const jsonData: ProviderCreateInfo[] = await response.json();
@@ -447,7 +450,7 @@ export const getAgentCreateMetadata = async (): Promise<AgentCreateInfo[]> => {
   if (!response.ok) {
     const errorText = await response.text();
     console.error("Failed to fetch agent create metadata:", response.status, errorText);
-    throw new Error("Failed to load agent configuration");
+    throw new Error(i18n.t("networking:errors.agentConfigLoadFailed"));
   }
 
   const jsonData: AgentCreateInfo[] = await response.json();
@@ -919,7 +922,7 @@ export const keyCreateForAgentCall = async (
   if (!response.ok) {
     const errorData = await response.text();
     handleError(errorData);
-    throw new Error("Failed to create key for agent");
+    throw new Error(i18n.t("networking:errors.agentKeyCreateFailed"));
   }
 
   return response.json();
@@ -1790,7 +1793,7 @@ export const modelInfoCall = async (
         }, 10000);
       }
 
-      throw new Error("Network response was not ok");
+      throw new Error(i18n.t("networking:errors.networkResponseNotOk"));
     }
 
     const data = await response.json();
@@ -2336,10 +2339,10 @@ export const keyInfoCall = async (accessToken: string, keys: string[]) => {
     if (!response.ok) {
       const errorData = await response.text();
       if (errorData.includes("Invalid proxy server token passed")) {
-        throw new Error("Invalid proxy server token passed");
+        throw new Error(i18n.t("networking:errors.invalidProxyToken"));
       }
       handleError(errorData);
-      throw new Error("Network response was not ok");
+      throw new Error(i18n.t("networking:errors.networkResponseNotOk"));
     }
 
     const data = await response.json();
@@ -2931,7 +2934,7 @@ export const modelPatchUpdateCall = async (
       const errorData = await response.text();
       handleError(errorData);
       console.error("Error update from the server:", errorData);
-      throw new Error("Network response was not ok");
+      throw new Error(i18n.t("networking:errors.networkResponseNotOk"));
     }
     const data = await response.json();
     return data;
@@ -3267,7 +3270,7 @@ export const userBulkUpdateUserCall = async (
         users: users,
       };
     } else {
-      throw new Error("Must provide either userIds or set allUsers=true");
+      throw new Error(i18n.t("networking:errors.bulkUpdateTargetRequired"));
     }
 
     const data = (await apiClient.post(`/user/bulk_update`, { accessToken, body: request_body })) as {
@@ -3542,7 +3545,7 @@ export const updateConfigFieldSetting = async (accessToken: string, fieldName: s
       config_type: "general_settings",
     };
     const data = await apiClient.post(`/config/field/update`, { accessToken, body: formData });
-    toast.success("Successfully updated value!");
+    toast.success(i18n.t("networking:toast.configFieldUpdated"));
     return data;
     // Handle success - you might want to update some state or UI based on the created key
   } catch (error) {
@@ -3558,7 +3561,7 @@ export const deleteConfigFieldSetting = async (accessToken: string, fieldName: s
       config_type: "general_settings",
     };
     const data = await apiClient.post(`/config/field/delete`, { accessToken, body: formData });
-    toast.success("Field reset on proxy");
+    toast.success(i18n.t("networking:toast.configFieldReset"));
     return data;
     // Handle success - you might want to update some state or UI based on the created key
   } catch (error) {
@@ -4086,7 +4089,7 @@ export const testPoliciesAndGuardrails = async (
 
     if (!response.ok) {
       const errorData = await response.text();
-      let errorMessage = "Failed to test policies and guardrails";
+      let errorMessage = i18n.t("networking:errors.policyTestFailed");
       try {
         const errorJson = JSON.parse(errorData);
         if (errorJson.detail)
@@ -4235,7 +4238,7 @@ export const enrichPolicyTemplateStream = async (
   }
 
   const reader = response.body?.getReader();
-  if (!reader) throw new Error("No response body");
+  if (!reader) throw new Error(i18n.t("networking:errors.noResponseBody"));
 
   const decoder = new TextDecoder();
   let buffer = "";
@@ -4308,7 +4311,7 @@ export const usageAiChatStream = async (
   }
 
   const reader = response.body?.getReader();
-  if (!reader) throw new Error("No response body");
+  if (!reader) throw new Error(i18n.t("networking:errors.noResponseBody"));
 
   const decoder = new TextDecoder();
   let buffer = "";
@@ -5360,7 +5363,7 @@ export const callMCPTool = async (
     });
 
     if (!response.ok) {
-      let errorMessage = "Network response was not ok";
+      let errorMessage = i18n.t("networking:errors.networkResponseNotOk");
       let errorDetails = null;
 
       // First, try to get the response as text to see what we're dealing with
@@ -5886,7 +5889,7 @@ export const getEmailEventSettings = async (accessToken: string): Promise<EmailE
     if (!response.ok) {
       const errorData = await response.text();
       handleError(errorData);
-      throw new Error("Failed to get email event settings");
+      throw new Error(i18n.t("networking:errors.emailEventSettingsLoadFailed"));
     }
 
     const data = await response.json();
@@ -5913,7 +5916,7 @@ export const updateEmailEventSettings = async (accessToken: string, settings: Em
     if (!response.ok) {
       const errorData = await response.text();
       handleError(errorData);
-      throw new Error("Failed to update email event settings");
+      throw new Error(i18n.t("networking:errors.emailEventSettingsUpdateFailed"));
     }
 
     const data = await response.json();
@@ -5939,7 +5942,7 @@ export const resetEmailEventSettings = async (accessToken: string) => {
     if (!response.ok) {
       const errorData = await response.text();
       handleError(errorData);
-      throw new Error("Failed to reset email event settings");
+      throw new Error(i18n.t("networking:errors.emailEventSettingsResetFailed"));
     }
 
     const data = await response.json();
@@ -6079,7 +6082,7 @@ export const getGuardrailUISettings = async (accessToken: string) => {
     if (!response.ok) {
       const errorData = await response.text();
       handleError(errorData);
-      throw new Error("Failed to get guardrail UI settings");
+      throw new Error(i18n.t("networking:errors.guardrailUiSettingsLoadFailed"));
     }
 
     const data = await response.json();
@@ -6107,7 +6110,7 @@ export const getGuardrailProviderSpecificParams = async (accessToken: string) =>
     if (!response.ok) {
       const errorData = await response.text();
       handleError(errorData);
-      throw new Error("Failed to get guardrail provider specific parameters");
+      throw new Error(i18n.t("networking:errors.guardrailProviderParamsLoadFailed"));
     }
 
     const data = await response.json();
@@ -6192,7 +6195,7 @@ export const getAgentsList = async (accessToken: string, healthCheck: boolean = 
     if (!response.ok) {
       const errorData = await response.text();
       handleError(errorData);
-      throw new Error("Failed to get agents list");
+      throw new Error(i18n.t("networking:errors.agentsListLoadFailed"));
     }
 
     const data = await response.json();
@@ -6218,7 +6221,7 @@ export const getAgentInfo = async (accessToken: string, agentId: string) => {
     if (!response.ok) {
       const errorData = await response.text();
       handleError(errorData);
-      throw new Error("Failed to get agent info");
+      throw new Error(i18n.t("networking:errors.agentInfoLoadFailed"));
     }
 
     const data = await response.json();
@@ -6244,7 +6247,7 @@ export const getGuardrailInfo = async (accessToken: string, guardrailId: string)
     if (!response.ok) {
       const errorData = await response.text();
       handleError(errorData);
-      throw new Error("Failed to get guardrail info");
+      throw new Error(i18n.t("networking:errors.guardrailInfoLoadFailed"));
     }
 
     const data = await response.json();
@@ -6284,7 +6287,7 @@ export const patchAgentCall = async (
     if (!response.ok) {
       const errorData = await response.text();
       handleError(errorData);
-      throw new Error("Failed to patch agent");
+      throw new Error(i18n.t("networking:errors.agentPatchFailed"));
     }
 
     const data = await response.json();
@@ -6320,7 +6323,7 @@ export const updateGuardrailCall = async (
     if (!response.ok) {
       const errorData = await response.text();
       handleError(errorData);
-      throw new Error("Failed to update guardrail");
+      throw new Error(i18n.t("networking:errors.guardrailUpdateFailed"));
     }
 
     const data = await response.json();
@@ -6370,7 +6373,7 @@ export const applyGuardrail = async (
 
     if (!response.ok) {
       const errorData = await response.text();
-      let errorMessage = "Failed to apply guardrail";
+      let errorMessage = i18n.t("networking:errors.guardrailApplyFailed");
 
       try {
         const errorJson = JSON.parse(errorData);
@@ -6450,7 +6453,7 @@ export const testCustomCodeGuardrail = async (
 
     if (!response.ok) {
       const errorData = await response.text();
-      let errorMessage = "Failed to test custom code guardrail";
+      let errorMessage = i18n.t("networking:errors.customCodeGuardrailTestFailed");
 
       try {
         const errorJson = JSON.parse(errorData);
@@ -6495,7 +6498,7 @@ export const validateBlockedWordsFile = async (accessToken: string, fileContent:
     if (!response.ok) {
       const errorData = await response.text();
       handleError(errorData);
-      throw new Error("Failed to validate blocked words file");
+      throw new Error(i18n.t("networking:errors.blockedWordsValidationFailed"));
     }
 
     const data = await response.json();
@@ -6648,7 +6651,7 @@ export const getRemainingUsers = async (
       }
       const errorData = await response.text();
       handleError(errorData);
-      throw new Error("Network response was not ok");
+      throw new Error(i18n.t("networking:errors.networkResponseNotOk"));
     }
 
     const data = await response.json();
@@ -6688,7 +6691,7 @@ export const getLicenseInfo = async (accessToken: string): Promise<LicenseInfo |
       }
       const errorData = await response.text();
       handleError(errorData);
-      throw new Error("Network response was not ok");
+      throw new Error(i18n.t("networking:errors.networkResponseNotOk"));
     }
 
     const data = await response.json();
@@ -6726,7 +6729,7 @@ export const updatePassThroughEndpoint = async (
     }
 
     const data = await response.json();
-    toast.success("Pass through endpoint updated successfully");
+    toast.success(i18n.t("networking:toast.passThroughUpdated"));
     return data;
   } catch (error) {
     console.error("Failed to update pass through endpoint:", error);

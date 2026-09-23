@@ -17,6 +17,7 @@ import enMemory from "./locales/en/memory.json";
 import enModelHub from "./locales/en/modelHub.json";
 import enModels from "./locales/en/models.json";
 import enNav from "./locales/en/nav.json";
+import enNetworking from "./locales/en/networking.json";
 import enOldUsage from "./locales/en/oldUsage.json";
 import enOrganizations from "./locales/en/organizations.json";
 import enPlayground from "./locales/en/playground.json";
@@ -55,6 +56,7 @@ import zhMemory from "./locales/zh/memory.json";
 import zhModelHub from "./locales/zh/modelHub.json";
 import zhModels from "./locales/zh/models.json";
 import zhNav from "./locales/zh/nav.json";
+import zhNetworking from "./locales/zh/networking.json";
 import zhOldUsage from "./locales/zh/oldUsage.json";
 import zhOrganizations from "./locales/zh/organizations.json";
 import zhPlayground from "./locales/zh/playground.json";
@@ -96,6 +98,7 @@ export const resources = {
     memory: enMemory,
     modelHub: enModelHub,
     models: enModels,
+    networking: enNetworking,
     oldUsage: enOldUsage,
     teams: enTeams,
     users: enUsers,
@@ -136,6 +139,7 @@ export const resources = {
     memory: zhMemory,
     modelHub: zhModelHub,
     models: zhModels,
+    networking: zhNetworking,
     oldUsage: zhOldUsage,
     teams: zhTeams,
     users: zhUsers,

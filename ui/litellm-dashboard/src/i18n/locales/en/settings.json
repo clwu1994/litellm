@@ -516,5 +516,14 @@
     "tabMsTeamsAlerts": "MS Teams Alerts",
     "testAlerts": "Test Alerts",
     "alertTestTriggered": "Alert test triggered. Test request to slack made - check logs/alerts on slack to verify"
+  },
+  "msTeams": {
+    "title": "Microsoft Teams Alerting Settings",
+    "description": "Send LiteLLM alerts to a Microsoft Teams channel via an incoming webhook. Create one from <docs>Microsoft Docs: incoming webhooks</docs>",
+    "webhookUrlHelp": "Incoming webhook URL for your Teams channel (Workflows or incoming webhook connector)",
+    "required": " Required * ",
+    "testAlerts": "Test MS Teams Alerts",
+    "settingsUpdated": "MS Teams settings updated successfully",
+    "testTriggered": "MS Teams test alert triggered. Check your Teams channel."
   }
 }

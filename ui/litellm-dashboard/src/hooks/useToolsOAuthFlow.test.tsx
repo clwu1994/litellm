@@ -1,6 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as networking from "@/components/networking";
+import i18n from "@/i18n/bootstrapI18n";
 import { useToolsOAuthFlow } from "./useToolsOAuthFlow";
 
 vi.mock("@/components/networking", () => ({
@@ -20,6 +21,7 @@ function renderFlow(options: { gatewayMintsClient?: boolean }) {
   return renderHook(() =>
     useToolsOAuthFlow({
       accessToken: "user-token",
+      t: i18n.getFixedT(null, "auth"),
       serverId: "server-1",
       serverAlias: "server one",
       userId: "user-1",

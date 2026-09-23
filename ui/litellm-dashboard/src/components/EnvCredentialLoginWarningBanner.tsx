@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { Trans, useTranslation } from "react-i18next";
 import { TriangleAlert, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useHealthReadinessDetails } from "@/app/(dashboard)/hooks/healthReadiness/useHealthReadinessDetails";
@@ -10,6 +11,7 @@ import { isAdminRole } from "@/utils/roles";
 const DISMISS_STORAGE_KEY = "litellm:envCredentialLoginWarningDismissed";
 
 export const EnvCredentialLoginWarningBanner: React.FC<{ accessToken: string | null }> = ({ accessToken }) => {
+  const { t } = useTranslation("networking");
   const { userRole } = useAuth();
   const { data: healthData } = useHealthReadinessDetails(accessToken);
   const [dismissed, setDismissed] = useState(
@@ -32,16 +34,22 @@ export const EnvCredentialLoginWarningBanner: React.FC<{ accessToken: string | n
     >
       <TriangleAlert className="mt-0.5 size-5 shrink-0" aria-hidden="true" />
       <div className="min-w-0 flex-1">
-        <p className="font-semibold">Environment-credential login is enabled</p>
+        <p className="font-semibold">{t("banners.envCredential.title")}</p>
         <p>
-          Anyone with <code className="font-mono">UI_USERNAME</code>/<code className="font-mono">UI_PASSWORD</code> (or
-          the master key, when <code className="font-mono">UI_PASSWORD</code> is unset) can sign in as a proxy admin
-          with a shared static secret. First create a regular admin account with its own password, then set{" "}
-          <code className="font-mono">general_settings.disable_env_credential_login: true</code> to turn this login path
-          off.
+          <Trans
+            ns="networking"
+            i18nKey="banners.envCredential.body"
+            components={{ code: <code className="font-mono" /> }}
+          />
         </p>
       </div>
-      <Button variant="ghost" size="icon-sm" className="shrink-0" aria-label="Dismiss banner" onClick={handleDismiss}>
+      <Button
+        variant="ghost"
+        size="icon-sm"
+        className="shrink-0"
+        aria-label={t("banners.envCredential.dismiss")}
+        onClick={handleDismiss}
+      >
         <X />
       </Button>
     </div>

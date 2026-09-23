@@ -42,9 +42,11 @@ export const OAuth2ConnectButton: React.FC<OAuth2ConnectButtonProps> = ({
   autoStartKey = null,
 }) => {
   const { t } = useTranslation("chat");
+  const { t: tAuth } = useTranslation("auth");
   const name = server.server_name ?? server.alias ?? server.server_id;
   const { startOAuthFlow, status } = useUserMcpOAuthFlow({
     accessToken,
+    t: tAuth,
     serverId: server.server_id,
     serverAlias: name,
     onSuccess: useCallback(() => onConnect(server.server_id), [onConnect, server.server_id]),

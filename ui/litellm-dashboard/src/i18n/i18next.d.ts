@@ -17,6 +17,7 @@ import type zhMemory from "./locales/zh/memory.json";
 import type zhModelHub from "./locales/zh/modelHub.json";
 import type zhModels from "./locales/zh/models.json";
 import type zhNav from "./locales/zh/nav.json";
+import type zhNetworking from "./locales/zh/networking.json";
 import type zhOldUsage from "./locales/zh/oldUsage.json";
 import type zhOrganizations from "./locales/zh/organizations.json";
 import type zhPlayground from "./locales/zh/playground.json";
@@ -60,6 +61,7 @@ declare module "i18next" {
       memory: typeof zhMemory;
       modelHub: typeof zhModelHub;
       models: typeof zhModels;
+      networking: typeof zhNetworking;
       oldUsage: typeof zhOldUsage;
       teams: typeof zhTeams;
       users: typeof zhUsers;

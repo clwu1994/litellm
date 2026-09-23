@@ -1,0 +1,46 @@
+{
+  "toast": {
+    "sessionExpired": "UI 会话已过期，正在退出登录。",
+    "configFieldUpdated": "值更新成功！",
+    "configFieldReset": "字段已在代理上重置",
+    "passThroughUpdated": "透传 Endpoint 更新成功"
+  },
+  "errors": {
+    "providerConfigLoadFailed": "加载提供商配置失败",
+    "agentConfigLoadFailed": "加载 Agent 配置失败",
+    "agentKeyCreateFailed": "为 Agent 创建密钥失败",
+    "networkResponseNotOk": "网络响应异常",
+    "invalidProxyToken": "传入的代理服务器 Token 无效",
+    "bulkUpdateTargetRequired": "必须提供 userIds 或将 allUsers 设为 true",
+    "noResponseBody": "响应体为空",
+    "emailEventSettingsLoadFailed": "获取邮件事件设置失败",
+    "emailEventSettingsUpdateFailed": "更新邮件事件设置失败",
+    "emailEventSettingsResetFailed": "重置邮件事件设置失败",
+    "guardrailUiSettingsLoadFailed": "获取 Guardrail UI 设置失败",
+    "guardrailProviderParamsLoadFailed": "获取 Guardrail 提供商特定参数失败",
+    "agentsListLoadFailed": "获取 Agent 列表失败",
+    "agentInfoLoadFailed": "获取 Agent 信息失败",
+    "guardrailInfoLoadFailed": "获取 Guardrail 信息失败",
+    "agentPatchFailed": "更新 Agent 失败",
+    "guardrailUpdateFailed": "更新 Guardrail 失败",
+    "policyTestFailed": "测试策略和 Guardrails 失败",
+    "guardrailApplyFailed": "应用 Guardrail 失败",
+    "customCodeGuardrailTestFailed": "测试自定义代码 Guardrail 失败",
+    "blockedWordsValidationFailed": "校验屏蔽词文件失败"
+  },
+  "banners": {
+    "envCredential": {
+      "title": "已启用环境变量凭据登录",
+      "body": "任何拥有 <code>UI_USERNAME</code>/<code>UI_PASSWORD</code>（或在未设置 <code>UI_PASSWORD</code> 时持有 master key）的人，都可以使用共享的静态密钥以代理管理员身份登录。请先创建一个拥有独立密码的普通管理员账号，然后设置 <code>general_settings.disable_env_credential_login: true</code> 来关闭此登录方式。",
+      "dismiss": "关闭横幅"
+    },
+    "noRedis": {
+      "title": "未配置 Redis。强烈建议使用 Redis",
+      "body": "此代理运行了多个 worker（或无法确认 worker 数量）。没有 Redis 时，速率限制、预算、路由器状态和缓存失效都是按 worker 独立的，因此限制会对每个 worker 分别生效，消费可能超出预期。<redisLink>查看没有 Redis 时无法工作的全部功能</redisLink>。设置 <code>LITELLM_DISABLE_NO_REDIS_WARNING=true</code> 仍可隐藏此横幅。"
+    },
+    "debug": {
+      "title": "性能警告：详细调试模式已启用",
+      "body": "详细调试日志（<code>LITELLM_LOG=DEBUG</code>）当前已启用。此模式会记录大量诊断信息，并会显著降低性能。它应仅用于故障排查，在生产环境中请关闭。"
+    }
+  }
+}
