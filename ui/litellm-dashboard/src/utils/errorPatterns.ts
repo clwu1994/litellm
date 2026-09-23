@@ -8,12 +8,9 @@ export interface ErrorPattern {
 
 // Centralised list of common error patterns.
 // Add new patterns here without touching component files.
-//
-// Only the first three entries can be reached: extractMeaningfulError resolves any
-// "<name>Error" token or 4xx/5xx status code before it walks this list, so the HTTP
-// status and litellm.* entries below are shadowed by earlier branches. They keep
-// their English replacement and carry no key, because no catalog entry could ever
-// reach the DOM.
+// The HTTP-status and litellm.* entries are shadowed: extractMeaningfulError resolves any
+// "<name>Error" token or 4xx/5xx status before it walks this list, so they keep their English
+// replacement and carry no key.
 export const errorPatterns: ErrorPattern[] = [
   // Generic missing API key (covers OpenAI, Anthropic, etc.)
   {

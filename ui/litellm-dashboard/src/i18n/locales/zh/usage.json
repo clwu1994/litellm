@@ -359,7 +359,8 @@
       "keyAlias": "密钥别名：",
       "keyId": "密钥 ID：",
       "spend": "支出："
-    }
+    },
+    "closeAria": "关闭"
   },
   "keyActivity": {
     "searchAria": "搜索密钥",

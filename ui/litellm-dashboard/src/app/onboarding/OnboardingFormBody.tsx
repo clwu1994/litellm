@@ -31,7 +31,8 @@ type OnboardingFormValues = z.infer<ReturnType<typeof buildOnboardingSchema>>;
 
 export function OnboardingFormBody({ variant, userEmail, isPending, claimError, onSubmit }: OnboardingFormBodyProps) {
   const { t } = useTranslation("onboarding");
-  const form = useZodForm(buildOnboardingSchema(t), { defaultValues: { password: "" } });
+  const onboardingSchema = React.useMemo(() => buildOnboardingSchema(t), [t]);
+  const form = useZodForm(onboardingSchema, { defaultValues: { password: "" } });
   const emailFieldId = React.useId();
   const isResetPassword = variant === "reset_password";
   const actionLabel = isResetPassword ? t("form.resetPassword") : t("form.signUp");

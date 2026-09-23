@@ -56,7 +56,7 @@ describe("responses_api Chinese copy", () => {
 
     expect(toast.fromError).toHaveBeenCalledWith("生成模型响应时出错。请重试。错误：Error: boom");
     expect(toast.fromError).not.toHaveBeenCalledWith(
-      expect.stringContaining("Error occurred while generating model response"),
+      "Error occurred while generating model response. Please try again. Error: Error: boom",
     );
   });
 });

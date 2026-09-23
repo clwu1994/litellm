@@ -181,7 +181,7 @@ const job = (overrides: Partial<ShadowEvalJob> = {}): ShadowEvalJob => ({
     unjudgeable_count: 10,
     shed_count: 2,
   },
-  created_at: "2026-08-07T00:00:00Z",
+  created_at: new Date(2026, 7, 7, 12).toISOString(),
   ends_at: "2026-09-07T00:00:00Z",
   last_error: null,
   ...overrides,

@@ -12,7 +12,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { UiLoadingSpinner } from "@/components/ui/ui-loading-spinner";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { FormField } from "@/components/shared/form/FormField";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { hasCapability } from "../../utils/capabilities";
 import { isProxyAdminRole, rolesWithWriteAccess } from "../../utils/roles";
@@ -93,7 +93,8 @@ export function KeyEditView({
   const canViewPrompts = hasCapability(userRole, "viewPrompts");
   const canEditEstimates = userRole != null && isProxyAdminRole(userRole);
   const estimateTooltip = estimateTooltips(tCommon, canEditEstimates);
-  const form = useZodForm<KeyEditFormValues, KeyEditFormValues>(buildKeyEditFormSchema(tCommon), {
+  const keyEditSchema = useMemo(() => buildKeyEditFormSchema(tCommon), [tCommon]);
+  const form = useZodForm<KeyEditFormValues, KeyEditFormValues>(keyEditSchema, {
     defaultValues: toKeyEditFormValues(keyData),
   });
   const [promptsList, setPromptsList] = useState<string[]>([]);

@@ -359,7 +359,8 @@
       "keyAlias": "Key Alias:",
       "keyId": "Key ID:",
       "spend": "Spend:"
-    }
+    },
+    "closeAria": "Close"
   },
   "keyActivity": {
     "searchAria": "Search keys",

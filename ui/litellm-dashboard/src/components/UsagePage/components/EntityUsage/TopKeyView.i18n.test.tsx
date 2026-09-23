@@ -30,6 +30,18 @@ vi.mock("@/components/shared/charts", () => ({
   }) => (customTooltip ? <div>{customTooltip({ payload: [{ payload: data?.[0] }] })}</div> : null),
 }));
 
+vi.mock("../../../networking", () => ({
+  keyInfoV1Call: vi.fn().mockResolvedValue({}),
+}));
+
+vi.mock("../../../key_team_helpers/transform_key_info", () => ({
+  transformKeyInfo: vi.fn().mockReturnValue({}),
+}));
+
+vi.mock("../../../templates/key_info_view", () => ({
+  default: ({ keyId }: { keyId: string }) => <div data-testid="key-info-view">{keyId}</div>,
+}));
+
 const topKeys = [
   {
     api_key: "sk-abc",
@@ -95,5 +107,16 @@ describe("TopKeyView Chinese copy", () => {
     await user.click(screen.getByTitle("显示全部标签"));
     expect(screen.getByTitle("收起标签")).toBeInTheDocument();
     expect(screen.queryByTitle("Show fewer tags")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese modal close label and hides the English", async () => {
+    const user = userEvent.setup();
+    renderView();
+
+    await user.click(screen.getByRole("button", { name: "sk-abc" }));
+    await screen.findByTestId("key-info-view");
+
+    expect(screen.getByRole("button", { name: "关闭" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Close" })).not.toBeInTheDocument();
   });
 });

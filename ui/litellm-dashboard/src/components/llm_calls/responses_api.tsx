@@ -1,4 +1,7 @@
 import openai from "openai";
+// responses_api is a data-access module called with a fixed positional signature, so its three
+// messages resolve from the i18n instance at call time instead of taking a `t`; they are produced
+// in guards and catch blocks, never during render.
 import i18n from "@/i18n/bootstrapI18n";
 import { MessageType } from "../chat_ui/types";
 import { TokenUsage } from "../chat_ui/ResponseMetrics";
