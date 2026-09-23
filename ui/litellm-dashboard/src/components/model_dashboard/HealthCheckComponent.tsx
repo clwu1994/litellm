@@ -1,4 +1,5 @@
 import { OnChangeFn, PaginationState, RowSelectionState } from "@tanstack/react-table";
+import type { TFunction } from "i18next";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -63,7 +64,7 @@ const KEYWORD_ERRORS: ReadonlyArray<{ pattern: RegExp; label: string }> = [
 const truncate = (value: string): string => (value.length > 100 ? `${value.substring(0, 97)}...` : value);
 
 // Helper function to extract meaningful error information
-const extractMeaningfulError = (error: unknown): string => {
+const extractMeaningfulError = (error: unknown, t: TFunction<"common">): string => {
   if (!error) return "Health check failed";
 
   const errorStr = typeof error === "string" ? error : JSON.stringify(error);
@@ -101,9 +102,9 @@ const extractMeaningfulError = (error: unknown): string => {
   }
 
   // Check for specific error patterns from errorPatterns
-  for (const { pattern, replacement } of errorPatterns) {
+  for (const { pattern, replacement, replacementKey } of errorPatterns) {
     if (pattern.test(errorStr)) {
-      return replacement;
+      return replacementKey ? t(replacementKey) : replacement;
     }
   }
 
@@ -169,6 +170,7 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
   rowCount,
 }) => {
   const { t } = useTranslation("models");
+  const { t: tCommon } = useTranslation();
   const [modelHealthStatuses, setModelHealthStatuses] = useState<{ [key: string]: HealthStatus }>({});
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [errorModalVisible, setErrorModalVisible] = useState(false);
@@ -230,7 +232,7 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
               lastCheck: toCheckedAtLabel(checkData.checked_at, "None"),
               lastSuccess: toLastSuccessLabel(checkData, "None"),
               loading: false,
-              error: fullError ? extractMeaningfulError(fullError) : undefined,
+              error: fullError ? extractMeaningfulError(fullError, tCommon) : undefined,
               fullError: fullError,
               successResponse: checkData.status === "healthy" ? checkData : undefined,
             };
@@ -244,7 +246,7 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
     };
 
     initializeHealthStatuses();
-  }, [accessToken, modelData]);
+  }, [accessToken, modelData, tCommon]);
 
   const runIndividualHealthCheck = useCallback(
     async (modelId: string) => {
@@ -265,7 +267,7 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
 
         if (response.unhealthy_count > 0 && response.unhealthy_endpoints && response.unhealthy_endpoints.length > 0) {
           const rawError = response.unhealthy_endpoints[0]?.error || t("health.checkFailed");
-          const errorMessage = extractMeaningfulError(rawError);
+          const errorMessage = extractMeaningfulError(rawError, tCommon);
           setModelHealthStatuses((prev) => ({
             ...prev,
             [modelId]: {
@@ -303,7 +305,7 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
                 lastCheck: toCheckedAtLabel(checkData.checked_at, prev[modelId]?.lastCheck || "None"),
                 lastSuccess: toLastSuccessLabel(checkData, prev[modelId]?.lastSuccess || "None"),
                 loading: false,
-                error: fullError ? extractMeaningfulError(fullError) : prev[modelId]?.error,
+                error: fullError ? extractMeaningfulError(fullError, tCommon) : prev[modelId]?.error,
                 fullError: fullError || prev[modelId]?.fullError,
                 successResponse: checkData.status === "healthy" ? checkData : prev[modelId]?.successResponse,
               },
@@ -313,7 +315,7 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
       } catch (error) {
         const currentTime = new Date().toLocaleString();
         const rawError = error instanceof Error ? error.message : String(error);
-        const errorMessage = extractMeaningfulError(rawError);
+        const errorMessage = extractMeaningfulError(rawError, tCommon);
         setModelHealthStatuses((prev) => ({
           ...prev,
           [modelId]: {
@@ -327,7 +329,7 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
         }));
       }
     },
-    [accessToken, t],
+    [accessToken, t, tCommon],
   );
 
   const selectedModelIds = useMemo(
@@ -361,7 +363,7 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
         const currentTime = new Date().toLocaleString();
         if (response.unhealthy_count > 0 && response.unhealthy_endpoints && response.unhealthy_endpoints.length > 0) {
           const rawError = response.unhealthy_endpoints[0]?.error || "Health check failed";
-          const errorMessage = extractMeaningfulError(rawError);
+          const errorMessage = extractMeaningfulError(rawError, tCommon);
           setModelHealthStatuses((prev) => ({
             ...prev,
             [modelId]: {
@@ -389,7 +391,7 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
         console.error(`Health check failed for model id ${modelId}:`, error);
         const currentTime = new Date().toLocaleString();
         const rawError = error instanceof Error ? error.message : String(error);
-        const errorMessage = extractMeaningfulError(rawError);
+        const errorMessage = extractMeaningfulError(rawError, tCommon);
         setModelHealthStatuses((prev) => ({
           ...prev,
           [modelId]: {
@@ -425,7 +427,7 @@ const HealthCheckComponent: React.FC<HealthCheckComponentProps> = ({
                 lastCheck: toCheckedAtLabel(checkData.checked_at, currentStatus?.lastCheck || "None"),
                 lastSuccess: toLastSuccessLabel(checkData, currentStatus?.lastSuccess || "None"),
                 loading: false,
-                error: fullError ? extractMeaningfulError(fullError) : currentStatus?.error,
+                error: fullError ? extractMeaningfulError(fullError, tCommon) : currentStatus?.error,
                 fullError: fullError || currentStatus?.fullError,
                 successResponse: checkData.status === "healthy" ? checkData : currentStatus?.successResponse,
               },

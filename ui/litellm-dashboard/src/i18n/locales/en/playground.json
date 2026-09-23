@@ -587,5 +587,27 @@
       "unknownA2AError": "Unknown A2A error",
       "imageEditFallback": "Failed to edit image(s)"
     }
+  },
+  "mcpToolArgs": {
+    "inputLabel": "Input",
+    "enterInput": "Enter input for this tool",
+    "inputRequired": "Please enter input for this tool",
+    "noParameters": "No parameters required for this tool.",
+    "selectField": "Select {{field}}",
+    "enterField": "Enter {{field}}",
+    "enterJsonObject": "Enter JSON object for {{field}}",
+    "enterJsonArray": "Enter JSON array for {{field}}",
+    "emptyString": "Empty string",
+    "trueLabel": "True",
+    "falseLabel": "False",
+    "fieldRequired": "Please enter {{field}}",
+    "enterJsonObjectError": "Please enter a JSON object",
+    "enterJsonArrayError": "Please enter a JSON array",
+    "invalidJson": "Invalid JSON"
+  },
+  "responsesApi": {
+    "virtualKeyRequired": "Virtual Key is required",
+    "modelRequired": "Model is required. Please select a model before sending a request.",
+    "generationFailed": "Error occurred while generating model response. Please try again. Error: {{error}}"
   }
 }

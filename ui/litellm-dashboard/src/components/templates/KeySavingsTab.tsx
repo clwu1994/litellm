@@ -39,6 +39,7 @@ interface KeySavingsTabProps {
 
 const KeySavingsTab: React.FC<KeySavingsTabProps> = ({ accessToken, keyToken, userId, userRole, activity }) => {
   const { t } = useTranslation("templates");
+  const { t: tCommon } = useTranslation();
   // Proxy admins read the whole key. For anyone else the endpoint applies the caller's own user_id
   // alongside the key filter, so the figures cover only that viewer's requests on this key -- said
   // plainly in the scope note below rather than left to be misread as the key's total.
@@ -53,16 +54,16 @@ const KeySavingsTab: React.FC<KeySavingsTabProps> = ({ accessToken, keyToken, us
 
   const [accumulation, setAccumulation] = useState<SavingsAccumulation>("cumulative");
 
-  const perInterval = useMemo<SavingsPoint[]>(() => savingsSeriesOf(results), [results]);
+  const perInterval = useMemo<SavingsPoint[]>(() => savingsSeriesOf(results, tCommon), [results, tCommon]);
 
   const overTime = useMemo(() => {
     if (accumulation !== "cumulative") return perInterval;
-    const startLabel = startTime ? shortDate(localIsoDay(startTime)) : "";
+    const startLabel = startTime ? shortDate(localIsoDay(startTime), tCommon) : "";
     return withStartAnchor(toCumulative(perInterval), startLabel);
-  }, [accumulation, perInterval, startTime]);
+  }, [accumulation, perInterval, startTime, tCommon]);
 
   const intervalLabel = t("savings.perDay");
-  const rangeLabel = formatRangeLabel(startTime ?? undefined, endTime ?? undefined);
+  const rangeLabel = formatRangeLabel(startTime ?? undefined, endTime ?? undefined, tCommon);
   const savingsSubtitle = [
     accumulation === "cumulative" ? t("savings.runningTotal") : t("savings.savedPerDay"),
     rangeLabel && t("savings.rangeWithUtc", { range: rangeLabel }),

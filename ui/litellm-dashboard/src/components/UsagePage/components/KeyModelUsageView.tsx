@@ -4,7 +4,9 @@ import { MoneyCell } from "@/components/shared/table_cells";
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatNumberWithCommas } from "@/utils/dataUtils";
 import type { ColumnDef } from "@tanstack/react-table";
+import type { TFunction } from "i18next";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { TopModelData } from "../types";
 
 interface KeyModelUsageViewProps {
@@ -15,32 +17,32 @@ const VISIBLE_ROWS = 5;
 const COMPACT_TABLE_HEADER_HEIGHT = 33;
 const COMPACT_TABLE_ROW_HEIGHT = 32;
 
-const columns: ColumnDef<TopModelData>[] = [
+const buildColumns = (t: TFunction<"usage">): ColumnDef<TopModelData>[] => [
   {
-    header: "Model",
+    header: t("entity.topModels.table.model"),
     accessorKey: "model",
     cell: ({ row }) => row.original.model || "-",
   },
   {
-    header: "Spend (USD)",
+    header: t("entity.topModels.table.spendUsd"),
     accessorKey: "spend",
     meta: { numeric: true },
     cell: ({ row }) => <MoneyCell value={row.original.spend} decimals={2} />,
   },
   {
-    header: "Successful",
+    header: t("entity.topModels.table.successful"),
     accessorKey: "successful_requests",
     meta: { numeric: true },
     cell: ({ row }) => <span className="text-success">{row.original.successful_requests?.toLocaleString() || 0}</span>,
   },
   {
-    header: "Failed",
+    header: t("entity.topModels.table.failed"),
     accessorKey: "failed_requests",
     meta: { numeric: true },
     cell: ({ row }) => <span className="text-destructive">{row.original.failed_requests?.toLocaleString() || 0}</span>,
   },
   {
-    header: "Tokens",
+    header: t("entity.topModels.table.tokens"),
     accessorKey: "tokens",
     meta: { numeric: true },
     cell: ({ row }) => row.original.tokens?.toLocaleString() || 0,
@@ -48,29 +50,32 @@ const columns: ColumnDef<TopModelData>[] = [
 ];
 
 const KeyModelUsageView: React.FC<KeyModelUsageViewProps> = ({ topModels }) => {
+  const { t } = useTranslation("usage");
   const [viewMode, setViewMode] = useState<"chart" | "table">("table");
 
   if (topModels.length === 0) {
     return null;
   }
 
+  const columns = buildColumns(t);
+
   return (
     <Card className="mt-4">
       <CardHeader>
-        <CardTitle className="text-base font-semibold">Model Usage</CardTitle>
+        <CardTitle className="text-base font-semibold">{t("keyModel.title")}</CardTitle>
         <CardAction>
           <div className="flex space-x-2">
             <button
               onClick={() => setViewMode("table")}
               className={`px-3 py-1 text-sm rounded-md ${viewMode === "table" ? "bg-info/15 text-info" : "bg-muted text-foreground"}`}
             >
-              Table
+              {t("keyModel.table")}
             </button>
             <button
               onClick={() => setViewMode("chart")}
               className={`px-3 py-1 text-sm rounded-md ${viewMode === "chart" ? "bg-info/15 text-info" : "bg-muted text-foreground"}`}
             >
-              Chart
+              {t("keyModel.chart")}
             </button>
           </div>
         </CardAction>

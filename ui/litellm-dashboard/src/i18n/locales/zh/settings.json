@@ -469,7 +469,9 @@
     "showCredential": "显示凭据",
     "saveChanges": "保存更改",
     "testEmailAlerts": "测试邮件告警",
-    "testTriggered": "邮件测试已触发。请检查已配置的邮箱收件箱/日志。"
+    "testTriggered": "邮件测试已触发。请检查已配置的邮箱收件箱/日志。",
+    "requiredMarker": " 必填 * ",
+    "updated": "邮件设置更新成功"
   },
   "settingsPage": {
     "callback": "回调",

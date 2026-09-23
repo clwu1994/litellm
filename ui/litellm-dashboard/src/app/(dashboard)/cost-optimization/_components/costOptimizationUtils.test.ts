@@ -21,6 +21,8 @@ import {
   withStartAnchor,
 } from "./costOptimizationUtils";
 
+const t = i18n.getFixedT("en", "common");
+
 const metrics = (overrides: Partial<SpendMetrics>): SpendMetrics => ({
   spend: 0,
   prompt_tokens: 0,
@@ -84,7 +86,7 @@ describe("savingsSeriesOf", () => {
       metrics: metrics({ ...sharedSavings, gateway_injected_caching_savings_spend: i === 0 ? 0.2 : 0.3 }),
     }));
 
-    const series = savingsSeriesOf(newestFirst);
+    const series = savingsSeriesOf(newestFirst, t);
 
     expect(series.map((p) => p.date)).toEqual(["Jul 1", "Jul 2"]);
     expect(series[0]).toMatchObject({ Compression: 0.1, "Prompt caching": 0.3, "Auto-router": 0.05 });
@@ -375,16 +377,16 @@ describe("withStartAnchor", () => {
 
 describe("formatRangeLabel", () => {
   it("reads as a range across days", () => {
-    expect(formatRangeLabel(new Date(2026, 6, 16), new Date(2026, 6, 23))).toBe("Jul 16 \u2013 Jul 23");
+    expect(formatRangeLabel(new Date(2026, 6, 16), new Date(2026, 6, 23), t)).toBe("Jul 16 \u2013 Jul 23");
   });
 
   it("collapses to one date when both ends are the same day", () => {
-    expect(formatRangeLabel(new Date(2026, 6, 23), new Date(2026, 6, 23))).toBe("Jul 23");
+    expect(formatRangeLabel(new Date(2026, 6, 23), new Date(2026, 6, 23), t)).toBe("Jul 23");
   });
 
   it("is empty until both ends are picked", () => {
-    expect(formatRangeLabel(undefined, new Date(2026, 6, 23))).toBe("");
-    expect(formatRangeLabel(new Date(2026, 6, 23), undefined)).toBe("");
+    expect(formatRangeLabel(undefined, new Date(2026, 6, 23), t)).toBe("");
+    expect(formatRangeLabel(new Date(2026, 6, 23), undefined, t)).toBe("");
   });
 });
 

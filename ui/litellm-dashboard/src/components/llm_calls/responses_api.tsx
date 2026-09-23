@@ -1,4 +1,5 @@
 import openai from "openai";
+import i18n from "@/i18n/bootstrapI18n";
 import { MessageType } from "../chat_ui/types";
 import { TokenUsage } from "../chat_ui/ResponseMetrics";
 import { getProxyBaseUrl } from "@/components/networking";
@@ -88,11 +89,11 @@ export async function makeOpenAIResponsesRequest(
   onTotalLatency?: (latency: number) => void,
 ) {
   if (!accessToken) {
-    throw new Error("Virtual Key is required");
+    throw new Error(i18n.t("playground:responsesApi.virtualKeyRequired"));
   }
 
   if (!selectedModel || selectedModel.trim() === "") {
-    throw new Error("Model is required. Please select a model before sending a request.");
+    throw new Error(i18n.t("playground:responsesApi.modelRequired"));
   }
 
   // Base URL should be the current base_url
@@ -333,7 +334,7 @@ export async function makeOpenAIResponsesRequest(
   } catch (error) {
     if (signal?.aborted) {
     } else {
-      toast.fromError(`Error occurred while generating model response. Please try again. Error: ${error}`);
+      toast.fromError(i18n.t("playground:responsesApi.generationFailed", { error: String(error) }));
     }
     throw error; // Re-throw to allow the caller to handle the error
   }

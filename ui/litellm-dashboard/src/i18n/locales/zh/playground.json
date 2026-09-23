@@ -587,5 +587,27 @@
       "unknownA2AError": "未知的 A2A 错误",
       "imageEditFallback": "编辑图片失败"
     }
+  },
+  "mcpToolArgs": {
+    "inputLabel": "输入",
+    "enterInput": "输入此工具的内容",
+    "inputRequired": "请输入此工具的内容",
+    "noParameters": "此工具无需参数。",
+    "selectField": "选择 {{field}}",
+    "enterField": "输入 {{field}}",
+    "enterJsonObject": "输入 {{field}} 的 JSON 对象",
+    "enterJsonArray": "输入 {{field}} 的 JSON 数组",
+    "emptyString": "空字符串",
+    "trueLabel": "True",
+    "falseLabel": "False",
+    "fieldRequired": "请输入 {{field}}",
+    "enterJsonObjectError": "请输入 JSON 对象",
+    "enterJsonArrayError": "请输入 JSON 数组",
+    "invalidJson": "JSON 无效"
+  },
+  "responsesApi": {
+    "virtualKeyRequired": "需要 Virtual Key",
+    "modelRequired": "需要模型。发送请求前请先选择一个模型。",
+    "generationFailed": "生成模型响应时出错。请重试。错误：{{error}}"
   }
 }

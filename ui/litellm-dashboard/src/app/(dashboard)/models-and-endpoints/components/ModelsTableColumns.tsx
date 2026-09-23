@@ -35,12 +35,12 @@ const COLUMN_ID_TO_SERVER_SORT_FIELD: Record<string, string> = {
 
 export const toServerSortField = (columnId: string): string => COLUMN_ID_TO_SERVER_SORT_FIELD[columnId] ?? columnId;
 
-const formatShortDate = (value: string | null | undefined): string | null => {
+const formatShortDate = (value: string | null | undefined, t: TFunction<"common">): string | null => {
   if (!value) {
     return null;
   }
   const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? null : formatCellDate(date, "date");
+  return Number.isNaN(date.getTime()) ? null : formatCellDate(date, "date", t);
 };
 
 function ModelInformationCell({ model, displayName }: { model: ModelData; displayName: string }) {
@@ -170,8 +170,9 @@ function CredentialsCell({ credentialName }: { credentialName: string | undefine
 
 function CreatedByCell({ model }: { model: ModelData }) {
   const { t } = useTranslation("models");
+  const { t: tCommon } = useTranslation();
   const isConfigModel = !model.model_info?.db_model;
-  const createdAt = formatShortDate(model.model_info.created_at);
+  const createdAt = formatShortDate(model.model_info.created_at, tCommon);
   const primary = isConfigModel ? t("table.definedInConfig") : model.model_info.created_by || t("table.unknown");
   const secondaryForDbModel = createdAt ?? t("table.unknownDate");
 

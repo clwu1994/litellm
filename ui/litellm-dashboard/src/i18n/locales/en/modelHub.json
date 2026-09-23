@@ -382,5 +382,6 @@
     "success": "Successfully made {{count}} MCP server(s) public!",
     "failed": "Failed to make MCP servers public. Please try again.",
     "warningBody": "Once you make these MCP servers public, anyone who can go to the <code>/ui/model_hub_table</code> will be able to know they exist on the proxy."
-  }
+  },
+  "loading": "Loading..."
 }

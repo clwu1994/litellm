@@ -457,7 +457,7 @@ describe("UsageTab", () => {
       expect(screen.getByText("节省")).toBeInTheDocument();
       expect(screen.getByRole("tab", { name: "累计" })).toBeInTheDocument();
       expect(screen.getByRole("tab", { name: "按天" })).toBeInTheDocument();
-      expect(screen.getByText("累计节省总额 · Jul 1 – Jul 14（UTC）")).toBeInTheDocument();
+      expect(screen.getByText("累计节省总额 · 7月1日 – 7月14日（UTC）")).toBeInTheDocument();
       expect(screen.getByText("按来源统计节省")).toBeInTheDocument();
 
       expect(screen.queryByText("Spend is bucketed by UTC day")).not.toBeInTheDocument();
@@ -468,7 +468,7 @@ describe("UsageTab", () => {
       expect(screen.queryByText("Savings by driver")).not.toBeInTheDocument();
 
       await userEvent.click(screen.getByRole("tab", { name: "按天" }));
-      expect(screen.getByText("每日节省 · Jul 1 – Jul 14（UTC）")).toBeInTheDocument();
+      expect(screen.getByText("每日节省 · 7月1日 – 7月14日（UTC）")).toBeInTheDocument();
       expect(screen.queryByText("Saved per day · Jul 1 – Jul 14 (UTC)")).not.toBeInTheDocument();
     });
 

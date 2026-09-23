@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { formatCellDate } from "@/components/shared/table_cells";
 import { Tag } from "@/components/tag_management/types";
+import i18n from "@/i18n/bootstrapI18n";
 
 import TagTable from "./TagTable";
 
@@ -79,7 +80,7 @@ describe("TagTable", () => {
 
   it("should display formatted created date", () => {
     render(<TagTable {...defaultProps} data={[mockTag]} />);
-    const formattedDate = formatCellDate(new Date(mockTag.created_at), "date");
+    const formattedDate = formatCellDate(new Date(mockTag.created_at), "date", i18n.getFixedT("en", "common"));
     expect(screen.getByText(formattedDate)).toBeInTheDocument();
   });
 

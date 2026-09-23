@@ -453,5 +453,40 @@
     "appUser": "App User",
     "undefinedRole": "Undefined Role",
     "unknownRole": "Unknown Role"
+  },
+  "dates": {
+    "months": {
+      "jan": "Jan",
+      "feb": "Feb",
+      "mar": "Mar",
+      "apr": "Apr",
+      "may": "May",
+      "jun": "Jun",
+      "jul": "Jul",
+      "aug": "Aug",
+      "sep": "Sep",
+      "oct": "Oct",
+      "nov": "Nov",
+      "dec": "Dec"
+    },
+    "monthDay": "{{month}} {{day}}",
+    "monthDayYear": "{{month}} {{day}}, {{year}}",
+    "monthDayTime": "{{month}} {{day}}, {{hour}}:{{minute}}:{{second}}",
+    "fullTimestamp": "{{date}}, {{time}} ({{timeZone}})",
+    "numeric": "{{month}}/{{day}}/{{year}}"
+  },
+  "estimatedOutputTokens": {
+    "adminOnly": "Only a proxy admin can change this. It sets how many output tokens the rate limiter reserves for a request that omits max_tokens, which is charged against the team and organization TPM windows.",
+    "estimateKey": "Expected output tokens reserved for TPM limiting when a request omits max_tokens. Overrides the built-in estimate for this key.",
+    "estimateTeam": "Expected output tokens reserved for TPM limiting when a request omits max_tokens. Overrides the built-in estimate for this team.",
+    "perModelKey": "Per-model expected output tokens reserved for TPM limiting when a request omits max_tokens. Takes precedence over the key-wide estimate.",
+    "perModelTeam": "Per-model expected output tokens reserved for TPM limiting when a request omits max_tokens. Takes precedence over the team-wide estimate.",
+    "invalidPerModel": "Enter a JSON object of positive integers, e.g. {\"gpt-4\": 4096}",
+    "positiveInteger": "Enter a positive integer"
+  },
+  "errorPatterns": {
+    "missingApiKey": "Missing API Key",
+    "connectionTimeout": "Connection timeout",
+    "networkConnectionFailed": "Network connection failed"
   }
 }

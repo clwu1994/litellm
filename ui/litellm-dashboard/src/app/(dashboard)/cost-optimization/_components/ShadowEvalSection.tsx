@@ -15,6 +15,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ApiError } from "@/lib/http/client";
 
 import { usd } from "./costOptimizationUtils";
+import { formatNumericDate } from "@/i18n/formatDate";
 import { SHADOW_EVAL_STATUS_KEYS, SHADOW_EVAL_TARGET_TYPE_KEYS } from "./shadowEvalLabels";
 import { StartForm } from "./ShadowEvalStartForm";
 import {
@@ -486,6 +487,7 @@ const previousSummary = (job: ShadowEvalJob, t: TFunction<"costTracking">): stri
 
 const PreviousJob: React.FC<{ job: ShadowEvalJob }> = ({ job }) => {
   const { t } = useTranslation("costTracking");
+  const { t: tCommon } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const { data: detail, isError } = useShadowEvalJob(expanded ? job.job_id : null);
   const shown = detail ?? job;
@@ -504,7 +506,7 @@ const PreviousJob: React.FC<{ job: ShadowEvalJob }> = ({ job }) => {
             <p className="text-xs text-muted-foreground">
               {shown.judged_count != null &&
                 `${t("shadowEval.judged", { value: shown.judged_count.toLocaleString() })} · ${t("shadowEval.errored", { value: (shown.error_count ?? 0).toLocaleString() })} · ${t("shadowEval.evalSpend", { spend: usd(totalSpend(shown)) })} · `}
-              {new Date(shown.created_at).toLocaleDateString()}
+              {formatNumericDate(new Date(shown.created_at), tCommon)}
             </p>
           </div>
         </div>

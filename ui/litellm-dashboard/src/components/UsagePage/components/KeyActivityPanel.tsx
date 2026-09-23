@@ -1,5 +1,6 @@
 import { Search, X } from "lucide-react";
 import React, { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { ActivityMetrics } from "@/components/activity_metrics";
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "@/components/ui/input-group";
@@ -13,6 +14,7 @@ interface KeyActivityPanelProps {
 }
 
 const KeyActivityPanel: React.FC<KeyActivityPanelProps> = ({ keyMetrics, hidePromptCachingMetrics = false }) => {
+  const { t } = useTranslation("usage");
   const [query, setQuery] = useState("");
   const filtered = useMemo(() => filterKeyActivity(keyMetrics, query), [keyMetrics, query]);
   const totalKeys = Object.keys(keyMetrics).length;
@@ -27,26 +29,26 @@ const KeyActivityPanel: React.FC<KeyActivityPanelProps> = ({ keyMetrics, hidePro
             <Search className="size-4 text-muted-foreground" />
           </InputGroupAddon>
           <InputGroupInput
-            aria-label="Search keys"
-            placeholder="Search by key alias, key hash, user ID, or email"
+            aria-label={t("keyActivity.searchAria")}
+            placeholder={t("keyActivity.searchPlaceholder")}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
           {isFiltering && (
             <InputGroupAddon align="inline-end">
-              <InputGroupButton size="icon-xs" aria-label="Clear key search" onClick={() => setQuery("")}>
+              <InputGroupButton size="icon-xs" aria-label={t("keyActivity.clearAria")} onClick={() => setQuery("")}>
                 <X />
               </InputGroupButton>
             </InputGroupAddon>
           )}
         </InputGroup>
         <span className="text-sm text-muted-foreground">
-          Showing {shownKeys.toLocaleString()} of {totalKeys.toLocaleString()} keys
+          {t("keyActivity.showing", { shown: shownKeys.toLocaleString(), total: totalKeys.toLocaleString() })}
         </span>
       </div>
       {isFiltering && totalKeys > 0 && shownKeys === 0 ? (
         <p className="rounded-lg border p-6 text-center text-sm text-muted-foreground">
-          No keys match &quot;{query.trim()}&quot; in this date range
+          {t("keyActivity.noMatch", { query: query.trim() })}
         </p>
       ) : (
         <ActivityMetrics modelMetrics={filtered} hidePromptCachingMetrics={hidePromptCachingMetrics} />

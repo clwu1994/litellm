@@ -341,5 +341,41 @@
     "mauTitle": "月活跃用户 - 过去 7 个月",
     "tabActiveUsers": "日/周/月活跃用户",
     "tabPerUserUsage": "每用户用量（过去 30 天）"
+  },
+  "topKeys": {
+    "table": {
+      "keyId": "密钥 ID",
+      "keyAlias": "密钥别名",
+      "tags": "标签"
+    },
+    "tagTooltip": {
+      "name": "标签名称：",
+      "spend": "支出："
+    },
+    "showFewerTags": "收起标签",
+    "showAllTags": "显示全部标签",
+    "limitAria": "要显示的 Top 密钥数量",
+    "chartTooltip": {
+      "keyAlias": "密钥别名：",
+      "keyId": "密钥 ID：",
+      "spend": "支出："
+    }
+  },
+  "keyActivity": {
+    "searchAria": "搜索密钥",
+    "searchPlaceholder": "按密钥别名、密钥哈希、用户 ID 或邮箱搜索",
+    "clearAria": "清除密钥搜索",
+    "showing": "显示 {{total}} 个密钥中的 {{shown}} 个",
+    "noMatch": "此日期范围内没有匹配 \"{{query}}\" 的密钥"
+  },
+  "keyModel": {
+    "title": "模型用量",
+    "table": "表格",
+    "chart": "图表"
+  },
+  "spendCard": {
+    "maxBudget": "最大预算",
+    "noLimit": "无限制",
+    "limit": "{{amount}} 限额"
   }
 }

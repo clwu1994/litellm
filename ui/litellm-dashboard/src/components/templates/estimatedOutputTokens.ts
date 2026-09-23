@@ -1,11 +1,11 @@
+import type { TFunction } from "i18next";
+
 type Metadata = Record<string, unknown> | null | undefined;
 
 type FormValues = Record<string, unknown>;
 
 const ESTIMATE_FIELD = "default_estimated_output_tokens";
 const PER_MODEL_FIELD = "default_estimated_output_tokens_per_model";
-
-const INVALID_PER_MODEL_MESSAGE = 'Enter a JSON object of positive integers, e.g. {"gpt-4": 4096}';
 
 const perModelEstimateToText = (value: unknown): string =>
   value != null && typeof value === "object" ? JSON.stringify(value) : "";
@@ -31,39 +31,38 @@ export const estimateFields = (metadata: Metadata) => ({
   [PER_MODEL_FIELD]: perModelEstimateToText(metadata?.[PER_MODEL_FIELD]),
 });
 
-const ADMIN_ONLY_TOOLTIP =
-  "Only a proxy admin can change this. It sets how many output tokens the rate limiter reserves for a request " +
-  "that omits max_tokens, which is charged against the team and organization TPM windows.";
-
-export const estimateTooltips = (canEdit: boolean, entity: "key" | "team" = "key") => ({
+export const estimateTooltips = (t: TFunction<"common">, canEdit: boolean, entity: "key" | "team" = "key") => ({
   estimate: canEdit
-    ? `Expected output tokens reserved for TPM limiting when a request omits max_tokens. Overrides the built-in estimate for this ${entity}.`
-    : ADMIN_ONLY_TOOLTIP,
+    ? t(entity === "team" ? "estimatedOutputTokens.estimateTeam" : "estimatedOutputTokens.estimateKey")
+    : t("estimatedOutputTokens.adminOnly"),
   perModel: canEdit
-    ? `Per-model expected output tokens reserved for TPM limiting when a request omits max_tokens. Takes precedence over the ${entity}-wide estimate.`
-    : ADMIN_ONLY_TOOLTIP,
+    ? t(entity === "team" ? "estimatedOutputTokens.perModelTeam" : "estimatedOutputTokens.perModelKey")
+    : t("estimatedOutputTokens.adminOnly"),
 });
 
-export const estimateChecks = {
+export const estimateChecks = (t: TFunction<"common">) => ({
   perModel: {
     isValid: (value: unknown): boolean =>
       typeof value !== "string" || value.trim() === "" ? true : parsePerModelEstimates(value) !== null,
-    message: INVALID_PER_MODEL_MESSAGE,
+    message: t("estimatedOutputTokens.invalidPerModel"),
   },
   positive: {
     isValid: (value: unknown): boolean =>
       value === "" || value === null || value === undefined ? true : isPositiveInteger(Number(value)),
-    message: "Enter a positive integer",
+    message: t("estimatedOutputTokens.positiveInteger"),
   },
-};
+});
 
 const asValidatorRule = ({ isValid, message }: { isValid: (value: unknown) => boolean; message: string }) => ({
   validator: (_: unknown, value: unknown) => (isValid(value) ? Promise.resolve() : Promise.reject(new Error(message))),
 });
 
-export const estimateRules = {
-  perModel: asValidatorRule(estimateChecks.perModel),
-  positive: asValidatorRule(estimateChecks.positive),
+export const estimateRules = (t: TFunction<"common">) => {
+  const checks = estimateChecks(t);
+  return {
+    perModel: asValidatorRule(checks.perModel),
+    positive: asValidatorRule(checks.positive),
+  };
 };
 
 export const withNormalizedEstimates = <T extends FormValues>(values: T): FormValues => {

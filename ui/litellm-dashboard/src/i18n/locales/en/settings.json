@@ -469,7 +469,9 @@
     "showCredential": "Show credential",
     "saveChanges": "Save Changes",
     "testEmailAlerts": "Test Email Alerts",
-    "testTriggered": "Email test triggered. Check your configured email inbox/logs."
+    "testTriggered": "Email test triggered. Check your configured email inbox/logs.",
+    "requiredMarker": " Required * ",
+    "updated": "Email settings updated successfully"
   },
   "settingsPage": {
     "callback": "Callback",

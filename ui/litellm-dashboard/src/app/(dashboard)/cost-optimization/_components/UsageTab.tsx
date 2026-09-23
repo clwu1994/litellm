@@ -46,6 +46,7 @@ const isoDay = (d: Date): string => d.toISOString().slice(0, 10);
 
 const UsageTab: React.FC<UsageTabProps> = ({ accessToken, activity }) => {
   const { t } = useTranslation("costTracking");
+  const { t: tCommon } = useTranslation();
   const { dateValue, onDateChange, results, loading, isFetchingMore } = activity;
 
   const startTime = dateValue.from ?? null;
@@ -76,18 +77,18 @@ const UsageTab: React.FC<UsageTabProps> = ({ accessToken, activity }) => {
 
   const [accumulation, setAccumulation] = useState<SavingsAccumulation>("cumulative");
 
-  const perInterval = useMemo<SavingsPoint[]>(() => savingsSeriesOf(results), [results]);
+  const perInterval = useMemo<SavingsPoint[]>(() => savingsSeriesOf(results, tCommon), [results, tCommon]);
 
   // Cumulative anchors on a synthetic $0 point at the range start so a short
   // range (down to a single day) rises from zero instead of floating as one dot.
   const overTime = useMemo(() => {
     if (accumulation !== "cumulative") return perInterval;
-    const startLabel = startTime ? shortDate(localIsoDay(startTime)) : "";
+    const startLabel = startTime ? shortDate(localIsoDay(startTime), tCommon) : "";
     return withStartAnchor(toCumulative(perInterval), startLabel);
-  }, [accumulation, perInterval, startTime]);
+  }, [accumulation, perInterval, startTime, tCommon]);
 
   const intervalLabel = t("usage.perDay");
-  const rangeLabel = formatRangeLabel(startTime ?? undefined, endTime ?? undefined);
+  const rangeLabel = formatRangeLabel(startTime ?? undefined, endTime ?? undefined, tCommon);
   const savingsSubtitle = [
     accumulation === "cumulative" ? t("usage.runningTotalSaved") : t("usage.savedPerDay"),
     rangeLabel && t("usage.rangeUtc", { range: rangeLabel }),
@@ -119,9 +120,9 @@ const UsageTab: React.FC<UsageTabProps> = ({ accessToken, activity }) => {
     () =>
       buildDailyToolSeries(toolSpend?.daily ?? [], topToolNames).map((point) => ({
         ...point,
-        date: shortDate(String(point.date)),
+        date: shortDate(String(point.date), tCommon),
       })),
-    [toolSpend, topToolNames],
+    [toolSpend, topToolNames, tCommon],
   );
   const toolColors = useMemo(() => SEQUENTIAL_COLOR_RAMP.slice(0, Math.max(topToolNames.length, 1)), [topToolNames]);
 

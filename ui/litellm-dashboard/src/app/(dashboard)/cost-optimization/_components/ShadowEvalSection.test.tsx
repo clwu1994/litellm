@@ -1628,4 +1628,16 @@ describe("ShadowEvalSection Chinese copy", () => {
     if (groupsImpl) vi.mocked(usePlainModelGroups).mockImplementation(groupsImpl);
     if (chatGroupsImpl) vi.mocked(usePlainChatModelGroups).mockImplementation(chatGroupsImpl);
   });
+
+  it("renders the Chinese numeric date in the previous-job header and hides the English", async () => {
+    const user = userEvent.setup();
+    mockHooks({ jobs: [job({ job_id: "job-1", status: "completed" }), job({ job_id: "job-2", status: "completed" })] });
+    render(<ShadowEvalSection />);
+
+    await user.click(screen.getByRole("button", { name: /历史评估/ }));
+
+    const header = screen.getByText((content) => content.endsWith("2026/8/7"));
+    expect(header).toBeInTheDocument();
+    expect(header).not.toHaveTextContent("8/7/2026");
+  });
 });

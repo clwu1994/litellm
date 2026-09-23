@@ -482,7 +482,7 @@ describe("AutoRouterBenchmarksTab Chinese copy", () => {
     renderTab();
 
     expect(screen.getByRole("heading", { name: "自动路由用量" })).toBeInTheDocument();
-    expect(screen.getByText("Jul 6 – Aug 5（UTC）")).toBeInTheDocument();
+    expect(screen.getByText("7月6日 – 8月5日（UTC）")).toBeInTheDocument();
     expect(screen.getByText("全部自动路由")).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "用量" })).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "影子评估" })).toBeInTheDocument();

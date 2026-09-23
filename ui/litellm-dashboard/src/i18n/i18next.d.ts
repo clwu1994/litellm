@@ -19,6 +19,7 @@ import type zhModels from "./locales/zh/models.json";
 import type zhNav from "./locales/zh/nav.json";
 import type zhNetworking from "./locales/zh/networking.json";
 import type zhOldUsage from "./locales/zh/oldUsage.json";
+import type zhOnboarding from "./locales/zh/onboarding.json";
 import type zhOrganizations from "./locales/zh/organizations.json";
 import type zhPlayground from "./locales/zh/playground.json";
 import type zhPolicies from "./locales/zh/policies.json";
@@ -63,6 +64,7 @@ declare module "i18next" {
       models: typeof zhModels;
       networking: typeof zhNetworking;
       oldUsage: typeof zhOldUsage;
+      onboarding: typeof zhOnboarding;
       teams: typeof zhTeams;
       users: typeof zhUsers;
       organizations: typeof zhOrganizations;

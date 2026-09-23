@@ -34,8 +34,8 @@ import {
 } from "./keyEditFieldNormalizers";
 import { KeyAgentAndSkillFields, KeyBudgetNumberField, KeyTypeSelect, labelWithHint } from "./KeyEditViewControls";
 import {
+  buildKeyEditFormSchema,
   KeyEditFormValues,
-  keyEditFormSchema,
   McpServersAndGroups,
   toKeyEditFormValues,
   toSubmittedValues,
@@ -87,12 +87,13 @@ export function KeyEditView({
   premiumUser = false,
 }: KeyEditViewProps) {
   const { t } = useTranslation("templates");
+  const { t: tCommon } = useTranslation();
   const canEditGuardrails = premiumUser || (userRole != null && rolesWithWriteAccess.includes(userRole));
   const canViewPolicies = hasCapability(userRole, "viewPolicies");
   const canViewPrompts = hasCapability(userRole, "viewPrompts");
   const canEditEstimates = userRole != null && isProxyAdminRole(userRole);
-  const estimateTooltip = estimateTooltips(canEditEstimates);
-  const form = useZodForm<KeyEditFormValues, KeyEditFormValues>(keyEditFormSchema, {
+  const estimateTooltip = estimateTooltips(tCommon, canEditEstimates);
+  const form = useZodForm<KeyEditFormValues, KeyEditFormValues>(buildKeyEditFormSchema(tCommon), {
     defaultValues: toKeyEditFormValues(keyData),
   });
   const [promptsList, setPromptsList] = useState<string[]>([]);

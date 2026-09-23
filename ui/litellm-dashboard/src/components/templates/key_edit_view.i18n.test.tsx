@@ -1,4 +1,5 @@
-import { screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { cleanup, renderWithProviders } from "@/../tests/test-utils";
@@ -473,5 +474,53 @@ describe("KeyEditView Chinese copy", () => {
     expect(screen.queryByPlaceholderText("Select or enter prompts")).not.toBeInTheDocument();
     expect(screen.getByPlaceholderText("选择或输入允许的直通路由")).toBeInTheDocument();
     expect(screen.queryByPlaceholderText("Select or enter allowed pass through routes")).not.toBeInTheDocument();
+  });
+
+  it("renders the Chinese estimate tooltips and hides the English originals", async () => {
+    renderEdit();
+
+    await screen.findByText("密钥别名");
+    expectLocalized(
+      "当请求省略 max_tokens 时，为 TPM 限制预留的预计输出 Token 数。会覆盖此密钥的内置预估。",
+      "Expected output tokens reserved for TPM limiting when a request omits max_tokens. Overrides the built-in estimate for this key.",
+    );
+    expectLocalized(
+      "当请求省略 max_tokens 时，为 TPM 限制预留的按模型预计输出 Token 数。优先于此密钥级别的预估。",
+      "Per-model expected output tokens reserved for TPM limiting when a request omits max_tokens. Takes precedence over the key-wide estimate.",
+    );
+  });
+
+  it("renders the Chinese admin-only estimate tooltip for a non-admin and hides the English", async () => {
+    renderWithProviders(
+      <KeyEditView
+        keyData={MOCK_KEY_DATA}
+        onCancel={() => {}}
+        onSubmit={async () => {}}
+        accessToken="test-token"
+        userID="test-user"
+        userRole="user"
+        premiumUser={true}
+      />,
+    );
+
+    await screen.findByText("密钥别名");
+    expectLocalized(
+      "只有 Proxy 管理员可以修改此项。它设置当请求省略 max_tokens 时，速率限制器为该请求预留的输出 Token 数，该数量会计入团队和组织的 TPM 窗口。",
+      "Only a proxy admin can change this. It sets how many output tokens the rate limiter reserves for a request that omits max_tokens, which is charged against the team and organization TPM windows.",
+    );
+  });
+
+  it("renders the Chinese estimate validation message and hides the English", async () => {
+    const user = userEvent.setup();
+    renderEdit();
+
+    await screen.findByText("密钥别名");
+    fireEvent.change(screen.getByPlaceholderText('{"gpt-4": 4096}'), { target: { value: "not json" } });
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
+
+    expect(await screen.findByText('输入由正整数组成的 JSON 对象，例如 {"gpt-4": 4096}')).toBeInTheDocument();
+    expect(
+      screen.queryByText('Enter a JSON object of positive integers, e.g. {"gpt-4": 4096}'),
+    ).not.toBeInTheDocument();
   });
 });

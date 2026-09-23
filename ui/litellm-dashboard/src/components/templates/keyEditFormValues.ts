@@ -1,3 +1,4 @@
+import type { TFunction } from "i18next";
 import { z } from "zod/v4";
 
 import { KeyResponse } from "../key_team_helpers/key_list";
@@ -119,51 +120,54 @@ export const toKeyEditFormValues = (keyData: KeyResponse): KeyEditFormValues => 
   rotation_interval: keyData.rotation_interval,
 });
 
-export const keyEditFormSchema = z.object({
-  key_alias: z.custom<string | undefined>(),
-  models: z.custom<string[] | undefined>(),
-  allowed_routes: z.custom<string | undefined>(),
-  max_budget: z.custom<number | string | null | undefined>(),
-  soft_budget: z.custom<number | string | null | undefined>(),
-  budget_duration: z.custom<string | null | undefined>(),
-  tpm_limit: z.custom<number | string | null | undefined>(),
-  tpm_limit_type: z.custom<string | null | undefined>(),
-  rpm_limit: z.custom<number | string | null | undefined>(),
-  rpm_limit_type: z.custom<string | null | undefined>(),
-  throttle_on_budget_exceeded: z.custom<boolean | undefined>(),
-  enable_prompt_caching: z.custom<boolean | undefined>(),
-  max_parallel_requests: z.custom<number | string | null | undefined>(),
-  model_tpm_limit: z.custom<string | undefined>(),
-  model_rpm_limit: z.custom<string | undefined>(),
-  default_estimated_output_tokens: z
-    .custom<number | string | null | undefined>()
-    .refine(estimateChecks.positive.isValid, estimateChecks.positive.message),
-  default_estimated_output_tokens_per_model: z
-    .custom<string | undefined>()
-    .refine(estimateChecks.perModel.isValid, estimateChecks.perModel.message),
-  guardrails: z.custom<string[] | undefined>(),
-  disable_global_guardrails: z.custom<boolean | undefined>(),
-  policies: z.custom<string[] | undefined>(),
-  tags: z.custom<string[] | undefined>(),
-  prompts: z.custom<string[] | undefined>(),
-  access_group_ids: z.custom<string[] | undefined>(),
-  allowed_passthrough_routes: z.custom<string[] | undefined>(),
-  vector_stores: z.custom<string[] | undefined>(),
-  mcp_servers_and_groups: z.custom<McpServersAndGroups | undefined>(),
-  mcp_tool_permissions: z.custom<Record<string, string[]> | undefined>(),
-  agents_and_groups: z.custom<AgentsAndGroups | undefined>(),
-  skills: z.custom<string[] | undefined>(),
-  organization_id: z.custom<string | null | undefined>(),
-  team_id: z.custom<string | null | undefined>(),
-  project_id: z.string().nullable().optional(),
-  logging_settings: z.custom<unknown[] | undefined>(),
-  metadata: z.custom<string | undefined>(),
-  duration: z.custom<string | null | undefined>(),
-  token: z.custom<string | undefined>(),
-  disabled_callbacks: z.custom<string[] | undefined>(),
-  auto_rotate: z.custom<boolean | undefined>(),
-  rotation_interval: z.custom<string | undefined>(),
-});
+export const buildKeyEditFormSchema = (t: TFunction<"common">) => {
+  const estimateChecksForForm = estimateChecks(t);
+  return z.object({
+    key_alias: z.custom<string | undefined>(),
+    models: z.custom<string[] | undefined>(),
+    allowed_routes: z.custom<string | undefined>(),
+    max_budget: z.custom<number | string | null | undefined>(),
+    soft_budget: z.custom<number | string | null | undefined>(),
+    budget_duration: z.custom<string | null | undefined>(),
+    tpm_limit: z.custom<number | string | null | undefined>(),
+    tpm_limit_type: z.custom<string | null | undefined>(),
+    rpm_limit: z.custom<number | string | null | undefined>(),
+    rpm_limit_type: z.custom<string | null | undefined>(),
+    throttle_on_budget_exceeded: z.custom<boolean | undefined>(),
+    enable_prompt_caching: z.custom<boolean | undefined>(),
+    max_parallel_requests: z.custom<number | string | null | undefined>(),
+    model_tpm_limit: z.custom<string | undefined>(),
+    model_rpm_limit: z.custom<string | undefined>(),
+    default_estimated_output_tokens: z
+      .custom<number | string | null | undefined>()
+      .refine(estimateChecksForForm.positive.isValid, estimateChecksForForm.positive.message),
+    default_estimated_output_tokens_per_model: z
+      .custom<string | undefined>()
+      .refine(estimateChecksForForm.perModel.isValid, estimateChecksForForm.perModel.message),
+    guardrails: z.custom<string[] | undefined>(),
+    disable_global_guardrails: z.custom<boolean | undefined>(),
+    policies: z.custom<string[] | undefined>(),
+    tags: z.custom<string[] | undefined>(),
+    prompts: z.custom<string[] | undefined>(),
+    access_group_ids: z.custom<string[] | undefined>(),
+    allowed_passthrough_routes: z.custom<string[] | undefined>(),
+    vector_stores: z.custom<string[] | undefined>(),
+    mcp_servers_and_groups: z.custom<McpServersAndGroups | undefined>(),
+    mcp_tool_permissions: z.custom<Record<string, string[]> | undefined>(),
+    agents_and_groups: z.custom<AgentsAndGroups | undefined>(),
+    skills: z.custom<string[] | undefined>(),
+    organization_id: z.custom<string | null | undefined>(),
+    team_id: z.custom<string | null | undefined>(),
+    project_id: z.string().nullable().optional(),
+    logging_settings: z.custom<unknown[] | undefined>(),
+    metadata: z.custom<string | undefined>(),
+    duration: z.custom<string | null | undefined>(),
+    token: z.custom<string | undefined>(),
+    disabled_callbacks: z.custom<string[] | undefined>(),
+    auto_rotate: z.custom<boolean | undefined>(),
+    rotation_interval: z.custom<string | undefined>(),
+  });
+};
 
 export interface MountedFieldGates {
   canViewPolicies: boolean;

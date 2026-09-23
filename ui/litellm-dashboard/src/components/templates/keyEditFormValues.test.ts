@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { keyEditFormSchema } from "./keyEditFormValues";
+import i18n from "@/i18n/bootstrapI18n";
+import { buildKeyEditFormSchema } from "./keyEditFormValues";
 
-const parse = (values: Record<string, unknown>) => keyEditFormSchema.safeParse(values);
+const t = i18n.getFixedT("en", "common");
+const parse = (values: Record<string, unknown>) => buildKeyEditFormSchema(t).safeParse(values);
 
 describe("keyEditFormSchema", () => {
   it("accepts an empty form", () => {

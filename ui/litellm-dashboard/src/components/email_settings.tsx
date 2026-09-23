@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,7 +15,9 @@ interface EmailSettingsProps {
   alerts: any[];
 }
 
-const REQUIRED_MARKER = <span className="text-destructive"> Required * </span>;
+const requiredMarker = (t: TFunction<"settings">) => (
+  <span className="text-destructive">{t("emailSettings.requiredMarker")}</span>
+);
 
 const REQUIRED_FIELD_HELP_KEYS = {
   SMTP_HOST: "emailSettings.helpSmtpHost",
@@ -38,11 +41,11 @@ const EmailSettings: React.FC<EmailSettingsProps> = ({ accessToken, premiumUser,
       return (
         <>
           {t(requiredKey)}
-          {REQUIRED_MARKER}
+          {requiredMarker(t)}
         </>
       );
     }
-    if (key === "SMTP_PASSWORD") return REQUIRED_MARKER;
+    if (key === "SMTP_PASSWORD") return requiredMarker(t);
     if (key === "EMAIL_LOGO_URL") return t("emailSettings.helpEmailLogoUrl");
     if (key === "EMAIL_SUPPORT_CONTACT") return t("emailSettings.helpEmailSupportContact");
     return null;
@@ -91,7 +94,7 @@ const EmailSettings: React.FC<EmailSettingsProps> = ({ accessToken, premiumUser,
     };
     try {
       await setCallbacksCall(accessToken, payload);
-      toast.success("Email settings updated successfully");
+      toast.success(t("emailSettings.updated"));
     } catch (error) {
       toast.fromError(error);
     }

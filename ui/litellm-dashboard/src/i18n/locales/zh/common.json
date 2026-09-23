@@ -453,5 +453,40 @@
     "appUser": "应用用户",
     "undefinedRole": "未定义角色",
     "unknownRole": "未知角色"
+  },
+  "dates": {
+    "months": {
+      "jan": "1月",
+      "feb": "2月",
+      "mar": "3月",
+      "apr": "4月",
+      "may": "5月",
+      "jun": "6月",
+      "jul": "7月",
+      "aug": "8月",
+      "sep": "9月",
+      "oct": "10月",
+      "nov": "11月",
+      "dec": "12月"
+    },
+    "monthDay": "{{month}}{{day}}日",
+    "monthDayYear": "{{year}}年{{month}}{{day}}日",
+    "monthDayTime": "{{month}}{{day}}日 {{hour}}:{{minute}}:{{second}}",
+    "fullTimestamp": "{{date}} {{time}}（{{timeZone}}）",
+    "numeric": "{{year}}/{{month}}/{{day}}"
+  },
+  "estimatedOutputTokens": {
+    "adminOnly": "只有 Proxy 管理员可以修改此项。它设置当请求省略 max_tokens 时，速率限制器为该请求预留的输出 Token 数，该数量会计入团队和组织的 TPM 窗口。",
+    "estimateKey": "当请求省略 max_tokens 时，为 TPM 限制预留的预计输出 Token 数。会覆盖此密钥的内置预估。",
+    "estimateTeam": "当请求省略 max_tokens 时，为 TPM 限制预留的预计输出 Token 数。会覆盖此团队的内置预估。",
+    "perModelKey": "当请求省略 max_tokens 时，为 TPM 限制预留的按模型预计输出 Token 数。优先于此密钥级别的预估。",
+    "perModelTeam": "当请求省略 max_tokens 时，为 TPM 限制预留的按模型预计输出 Token 数。优先于此团队级别的预估。",
+    "invalidPerModel": "输入由正整数组成的 JSON 对象，例如 {\"gpt-4\": 4096}",
+    "positiveInteger": "输入一个正整数"
+  },
+  "errorPatterns": {
+    "missingApiKey": "缺少 API Key",
+    "connectionTimeout": "连接超时",
+    "networkConnectionFailed": "网络连接失败"
   }
 }

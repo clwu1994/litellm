@@ -382,5 +382,6 @@
     "success": "已成功将 {{count}} 个 MCP 服务器设为公开！",
     "failed": "将 MCP 服务器设为公开失败。请重试。",
     "warningBody": "一旦你将这些 MCP 服务器设为公开，任何能访问 <code>/ui/model_hub_table</code> 的人都能知道它们存在于该代理上。"
-  }
+  },
+  "loading": "加载中..."
 }

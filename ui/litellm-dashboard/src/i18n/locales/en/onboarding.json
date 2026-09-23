@@ -1,0 +1,26 @@
+{
+  "error": {
+    "title": "Failed to load invitation",
+    "description": "The invitation link may be invalid or expired.",
+    "backToLogin": "Back to Login"
+  },
+  "form": {
+    "signUp": "Sign Up",
+    "resetPassword": "Reset Password",
+    "resetIntro": "Reset your password to access Admin UI.",
+    "claimIntro": "Claim your user account to login to Admin UI.",
+    "ssoTitle": "SSO",
+    "ssoEnterprise": "SSO is under the Enterprise Tier.",
+    "getFreeTrial": "Get Free Trial",
+    "emailAddress": "Email Address",
+    "password": "Password",
+    "newPasswordHint": "Enter your new password",
+    "createPasswordHint": "Create a password for your account",
+    "passwordRequired": "password required to sign up",
+    "loadingAria": "loading",
+    "sessionStartFailed": "Failed to start session. Please try again.",
+    "submitFailed": "Failed to submit. Please try again."
+  },
+  "loadingInvitationAria": "Loading invitation",
+  "loading": "Loading..."
+}

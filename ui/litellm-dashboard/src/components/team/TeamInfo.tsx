@@ -323,8 +323,9 @@ const SUPPRESSED_BY_DESCRIPTION = "";
 
 const numericInputSchema = z.union([z.string(), z.number()]).nullish();
 
-const buildTeamUpdateFieldsSchema = (t: TFunction<"teams">) =>
-  z.object({
+const buildTeamUpdateFieldsSchema = (t: TFunction<"teams">, tCommon: TFunction<"common">) => {
+  const estimateChecksForForm = estimateChecks(tCommon);
+  return z.object({
     team_alias: z.string().min(1, t("validation.teamNameRequired")),
     models: z.array(z.string()).optional(),
     max_budget: numericInputSchema,
@@ -361,13 +362,13 @@ const buildTeamUpdateFieldsSchema = (t: TFunction<"teams">) =>
         });
       }),
     default_estimated_output_tokens: numericInputSchema.refine(
-      estimateChecks.positive.isValid,
-      estimateChecks.positive.message,
+      estimateChecksForForm.positive.isValid,
+      estimateChecksForForm.positive.message,
     ),
     default_estimated_output_tokens_per_model: z
       .string()
       .optional()
-      .refine(estimateChecks.perModel.isValid, estimateChecks.perModel.message),
+      .refine(estimateChecksForForm.perModel.isValid, estimateChecksForForm.perModel.message),
     guardrails: z.array(z.string()).optional(),
     disable_global_guardrails: z.boolean().optional(),
     policies: z.array(z.string()).optional(),
@@ -390,6 +391,7 @@ const buildTeamUpdateFieldsSchema = (t: TFunction<"teams">) =>
     secret_manager_settings: z.string().optional(),
     metadata: metadataPairsSchema.optional(),
   });
+};
 
 type TeamUpdateFormValues = z.infer<ReturnType<typeof buildTeamUpdateFieldsSchema>>;
 
@@ -534,14 +536,15 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
   onUpdate,
 }) => {
   const { t } = useTranslation("teams");
+  const { t: tCommon } = useTranslation();
   const teamUpdateSchema = useMemo(
     () =>
-      buildTeamUpdateFieldsSchema(t).superRefine((values, ctx) => {
+      buildTeamUpdateFieldsSchema(t, tCommon).superRefine((values, ctx) => {
         if (!isParsableJson(values.secret_manager_settings)) {
           ctx.addIssue({ code: "custom", message: SUPPRESSED_BY_DESCRIPTION, path: ["secret_manager_settings"] });
         }
       }),
-    [t],
+    [t, tCommon],
   );
   const [teamData, setTeamData] = useState<TeamData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -576,7 +579,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
   const { data: allMcpToolsets = [], isError: mcpToolsetsFailed, isLoading: mcpToolsetsLoading } = useMCPToolsets();
   const { data: allAccessGroups = [], isError: accessGroupsFailed, isLoading: accessGroupsLoading } = useAccessGroups();
   const canEditTeamEstimates = isProxyAdminRole(userRole);
-  const teamEstimateTooltip = estimateTooltips(canEditTeamEstimates, "team");
+  const teamEstimateTooltip = estimateTooltips(tCommon, canEditTeamEstimates, "team");
   const { data: userOrganizations = [] } = useOrganizations();
   const { data: teamMetadataSchemaFields = [], isLoading: isTeamMetadataSchemaLoading } = useTeamMetadataSchema();
   const queryClient = useQueryClient();

@@ -1,0 +1,26 @@
+{
+  "error": {
+    "title": "加载邀请失败",
+    "description": "邀请链接可能无效或已过期。",
+    "backToLogin": "返回登录"
+  },
+  "form": {
+    "signUp": "注册",
+    "resetPassword": "重置密码",
+    "resetIntro": "重置密码以访问 Admin UI。",
+    "claimIntro": "认领你的用户账号以登录 Admin UI。",
+    "ssoTitle": "SSO",
+    "ssoEnterprise": "SSO 属于企业版功能。",
+    "getFreeTrial": "获取免费试用",
+    "emailAddress": "邮箱地址",
+    "password": "密码",
+    "newPasswordHint": "输入你的新密码",
+    "createPasswordHint": "为你的账号创建密码",
+    "passwordRequired": "注册需要密码",
+    "loadingAria": "加载中",
+    "sessionStartFailed": "启动会话失败，请重试。",
+    "submitFailed": "提交失败，请重试。"
+  },
+  "loadingInvitationAria": "正在加载邀请",
+  "loading": "加载中..."
+}

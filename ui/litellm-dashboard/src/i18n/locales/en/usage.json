@@ -341,5 +341,41 @@
     "mauTitle": "Monthly Active Users - Last 7 Months",
     "tabActiveUsers": "DAU/WAU/MAU",
     "tabPerUserUsage": "Per User Usage (Last 30 Days)"
+  },
+  "topKeys": {
+    "table": {
+      "keyId": "Key ID",
+      "keyAlias": "Key Alias",
+      "tags": "Tags"
+    },
+    "tagTooltip": {
+      "name": "Tag Name:",
+      "spend": "Spend:"
+    },
+    "showFewerTags": "Show fewer tags",
+    "showAllTags": "Show all tags",
+    "limitAria": "Number of top keys to show",
+    "chartTooltip": {
+      "keyAlias": "Key Alias:",
+      "keyId": "Key ID:",
+      "spend": "Spend:"
+    }
+  },
+  "keyActivity": {
+    "searchAria": "Search keys",
+    "searchPlaceholder": "Search by key alias, key hash, user ID, or email",
+    "clearAria": "Clear key search",
+    "showing": "Showing {{shown}} of {{total}} keys",
+    "noMatch": "No keys match \"{{query}}\" in this date range"
+  },
+  "keyModel": {
+    "title": "Model Usage",
+    "table": "Table",
+    "chart": "Chart"
+  },
+  "spendCard": {
+    "maxBudget": "Max Budget",
+    "noLimit": "No limit",
+    "limit": "{{amount}} limit"
   }
 }

@@ -329,6 +329,7 @@ interface AutoRouterBenchmarksTabProps {
 
 export const AutoRouterUsageView: React.FC<AutoRouterBenchmarksTabProps> = ({ accessToken, activity, apiKey }) => {
   const { t } = useTranslation("costTracking");
+  const { t: tCommon } = useTranslation();
   const { dateValue, onDateChange } = activity;
   const { data, isPending, error } = useAutoRouterBenchmarks(accessToken, dateValue, apiKey);
   const [selectedKey, setSelectedKey] = useState<string>(ALL_ROUTERS);
@@ -336,7 +337,7 @@ export const AutoRouterUsageView: React.FC<AutoRouterBenchmarksTabProps> = ({ ac
 
   const groups = data?.groups ?? [];
   const selectedLabel = data ? viewLabel(viewFor(data, selectedKey), t) : t("benchmarks.allRouters");
-  const rangeLabel = formatRangeLabel(dateValue.from, dateValue.to);
+  const rangeLabel = formatRangeLabel(dateValue.from, dateValue.to, tCommon);
 
   return (
     <div className="w-full space-y-6">
