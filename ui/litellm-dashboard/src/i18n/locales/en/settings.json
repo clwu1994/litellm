@@ -432,7 +432,7 @@
   },
   "loggingView": {
     "integrations": "Logging Integrations",
-    "parametersConfigured": "{{count}} parameters configured",
+    "parametersConfigured": "{{parameters}} parameters configured",
     "noIntegrations": "No logging integrations configured",
     "disabledCallbacks": "Disabled Callbacks",
     "disabledForKey": "Disabled for this key",
@@ -507,8 +507,6 @@
     "deleteCallbackTitle": "Delete Callback",
     "deleteCallbackMessage": "Are you sure you want to delete this callback? This action cannot be undone.",
     "callbackInformation": "Callback Information",
-    "callbackName": "Callback Name",
-    "mode": "Mode",
     "waitForProxy": "Wait 10s for proxy to update.",
     "tabLoggingCallbacks": "Logging Callbacks",
     "tabCloudZeroCostTracking": "CloudZero Cost Tracking",

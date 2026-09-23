@@ -156,6 +156,27 @@ describe("CloudZeroExportModal Chinese copy", () => {
     expect(toast.fromError).not.toHaveBeenCalledWith("Failed to load existing settings: boom");
   });
 
+  it("renders the unknown-error fallback in Chinese when the load error has no message", async () => {
+    fetchMock.mockImplementation(async (url: string) => {
+      if (url === "/cloudzero/settings") return jsonResponse(500, {});
+      return jsonResponse(500, {});
+    });
+    open();
+
+    await waitFor(() => expect(toast.fromError).toHaveBeenCalledWith("加载现有设置失败：未知错误"));
+    expect(toast.fromError).not.toHaveBeenCalledWith("Failed to load existing settings: Unknown error");
+  });
+
+  it("renders the plain load-failure fallback in Chinese when the request throws", async () => {
+    fetchMock.mockImplementation(async () => {
+      throw new Error("network");
+    });
+    open();
+
+    await waitFor(() => expect(toast.fromError).toHaveBeenCalledWith("加载现有设置失败"));
+    expect(toast.fromError).not.toHaveBeenCalledWith("Failed to load existing settings");
+  });
+
   it("reports a missing access token in Chinese", async () => {
     const user = userEvent.setup();
     open(null);

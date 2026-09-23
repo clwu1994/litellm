@@ -175,7 +175,6 @@ describe("Usage components Chinese copy", () => {
     expect(screen.getAllByText("总成功请求数").length).toBeGreaterThan(0);
     expect(screen.queryByText("Total Successful Requests")).not.toBeInTheDocument();
     expect(screen.getAllByText("总 Token 数").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("总 Token 数").length).toBeGreaterThan(0);
     expect(screen.getAllByText("总消费").length).toBeGreaterThan(0);
     expect(screen.queryByText("Total Spend")).not.toBeInTheDocument();
     expect(screen.getByText("每日消费")).toBeInTheDocument();

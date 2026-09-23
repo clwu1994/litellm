@@ -169,6 +169,17 @@ describe("Settings views Chinese copy", () => {
     expect(screen.queryByText("No callbacks disabled")).not.toBeInTheDocument();
   });
 
+  it("renders the combined success-and-failure event label in Chinese", () => {
+    renderWithProviders(
+      <LoggingSettingsView
+        loggingConfigs={[{ callback_name: "langfuse", callback_type: "success_and_failure", callback_vars: {} }]}
+      />,
+    );
+
+    expect(screen.getByText("成功与失败")).toBeInTheDocument();
+    expect(screen.queryByText("Success & Failure")).not.toBeInTheDocument();
+  });
+
   it("renders the failure event label in Chinese", () => {
     renderWithProviders(
       <LoggingSettingsView
@@ -229,6 +240,7 @@ describe("Settings views Chinese copy", () => {
     expect(screen.getByText("（可选）自定义邮件中显示的 Logo，传入你的 Logo URL")).toBeInTheDocument();
     expect(screen.getByText("（可选）自定义邮件中显示的支持邮箱地址。默认为 support@berri.ai")).toBeInTheDocument();
     expect(screen.queryByText(/Customize the support email address/)).not.toBeInTheDocument();
+    expect(screen.getAllByText("Required *")).toHaveLength(6);
     expect(screen.getByRole("button", { name: "显示凭据" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Show credential" })).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "显示凭据" }));

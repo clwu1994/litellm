@@ -262,7 +262,7 @@ describe("ToolPolicies Chinese copy", () => {
       vi.advanceTimersByTime(1_000);
     });
 
-    expect(await screen.findByRole("alert")).toHaveTextContent("加载工具失败");
+    expect(await screen.findByRole("alert")).toHaveTextContent(/^加载工具失败$/);
     expect(screen.queryByText("Failed to load tools")).not.toBeInTheDocument();
   });
 });

@@ -42,6 +42,7 @@ const EmailSettings: React.FC<EmailSettingsProps> = ({ accessToken, premiumUser,
         </>
       );
     }
+    if (key === "SMTP_PASSWORD") return REQUIRED_MARKER;
     if (key === "EMAIL_LOGO_URL") return t("emailSettings.helpEmailLogoUrl");
     if (key === "EMAIL_SUPPORT_CONTACT") return t("emailSettings.helpEmailSupportContact");
     return null;

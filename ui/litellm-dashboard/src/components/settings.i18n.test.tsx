@@ -69,6 +69,7 @@ describe("Settings page Chinese copy", () => {
     vi.clearAllMocks();
     vi.mocked(getCallbacksCall).mockResolvedValue({ callbacks: [], available_callbacks: [], alerts: [] });
     vi.mocked(getCallbackConfigsCall).mockResolvedValue([]);
+    vi.mocked(setCallbacksCall).mockResolvedValue({});
     await i18n.changeLanguage("zh");
   });
 
@@ -144,6 +145,10 @@ describe("Settings page Chinese copy", () => {
     expect(screen.queryByRole("button", { name: "Cancel" })).not.toBeInTheDocument();
     expect(screen.getAllByRole("button", { name: "添加回调" }).length).toBeGreaterThanOrEqual(1);
     expect(screen.queryAllByRole("button", { name: "Add Callback" })).toHaveLength(0);
+
+    await user.click(screen.getByRole("combobox"));
+    expect(await screen.findByText("无结果")).toBeInTheDocument();
+    expect(screen.queryByText("No results")).not.toBeInTheDocument();
   });
 
   it("renders the callback field placeholders in Chinese and reports a created callback", async () => {
@@ -225,6 +230,43 @@ describe("Settings page Chinese copy", () => {
     ).not.toBeInTheDocument();
     expect(screen.getByText("回调信息")).toBeInTheDocument();
     expect(screen.queryByText("Callback Information")).not.toBeInTheDocument();
+    expect(screen.getAllByText("回调名称").length).toBeGreaterThan(0);
+    expect(screen.queryByText("Callback Name")).not.toBeInTheDocument();
+    expect(screen.getAllByText("模式").length).toBeGreaterThan(0);
+    expect(screen.queryByText("Mode")).not.toBeInTheDocument();
+  });
+
+  it("renders the edit-callback pending label in Chinese", async () => {
+    vi.mocked(getCallbacksCall).mockResolvedValue({
+      callbacks: [{ name: "langfuse", variables: { LANGFUSE_PUBLIC_KEY: "k" }, mode: "success" }],
+      available_callbacks: {
+        langfuse: {
+          litellm_callback_name: "langfuse",
+          litellm_callback_params: ["LANGFUSE_PUBLIC_KEY"],
+          ui_callback_name: "Langfuse",
+        },
+      },
+      alerts: [],
+    });
+    vi.mocked(getCallbackConfigsCall).mockResolvedValue([
+      {
+        id: "langfuse",
+        displayName: "Langfuse",
+        dynamic_params: { LANGFUSE_PUBLIC_KEY: { type: "text", ui_name: "Public Key" } },
+      },
+    ]);
+    vi.mocked(setCallbacksCall).mockReturnValue(new Promise(() => {}));
+    const user = userEvent.setup();
+    renderSettings();
+
+    await screen.findByText("Langfuse");
+    await user.click(screen.getByTestId("callback-actions-langfuse-success"));
+    await user.click(await screen.findByTestId("callback-action-edit"));
+    await screen.findByText("编辑回调设置");
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
+
+    expect(await screen.findByRole("button", { name: "正在保存..." })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Saving..." })).not.toBeInTheDocument();
   });
 
   it("reports an alerts update, an alert test and a health check in Chinese", async () => {

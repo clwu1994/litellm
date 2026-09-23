@@ -432,7 +432,7 @@
   },
   "loggingView": {
     "integrations": "日志集成",
-    "parametersConfigured": "已配置 {{count}} 个参数",
+    "parametersConfigured": "已配置 {{parameters}} 个参数",
     "noIntegrations": "未配置日志集成",
     "disabledCallbacks": "已禁用的回调",
     "disabledForKey": "此密钥已禁用",
@@ -507,8 +507,6 @@
     "deleteCallbackTitle": "删除回调",
     "deleteCallbackMessage": "确定要删除此回调吗？此操作无法撤销。",
     "callbackInformation": "回调信息",
-    "callbackName": "回调名称",
-    "mode": "模式",
     "waitForProxy": "请等待 10 秒以便代理更新。",
     "tabLoggingCallbacks": "日志回调",
     "tabCloudZeroCostTracking": "CloudZero 成本跟踪",

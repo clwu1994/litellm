@@ -755,8 +755,8 @@ const Settings: React.FC<SettingsPageProps> = ({ accessToken, userRole, userID, 
         message={t("settingsPage.deleteCallbackMessage")}
         resourceInformationTitle={t("settingsPage.callbackInformation")}
         resourceInformation={[
-          { label: t("settingsPage.callbackName"), value: callbackToDelete?.name },
-          { label: t("settingsPage.mode"), value: callbackToDelete?.mode || "success" },
+          { label: t("loggingCallbacks.callbackName"), value: callbackToDelete?.name },
+          { label: t("loggingCallbacks.mode"), value: callbackToDelete?.mode || "success" },
         ]}
         onCancel={() => {
           setShowDeleteConfirmModal(false);

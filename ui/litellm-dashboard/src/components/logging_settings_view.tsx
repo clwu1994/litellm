@@ -86,7 +86,9 @@ export function LoggingSettingsView({
                     <div>
                       <span className="block font-medium text-info">{displayName}</span>
                       <span className="block text-xs text-info">
-                        {t("loggingView.parametersConfigured", { count: Object.keys(config.callback_vars).length })}
+                        {t("loggingView.parametersConfigured", {
+                          parameters: Object.keys(config.callback_vars).length,
+                        })}
                       </span>
                     </div>
                   </div>
