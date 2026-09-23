@@ -1,3 +1,4 @@
+import type { ParseKeys } from "i18next";
 import { getProviderLogoAndName, Providers, providerLogoMap } from "@/components/provider_info_helpers";
 import milvusLogo from "../../public/assets/logos/milvus.svg";
 import mongodbLogo from "../../public/assets/logos/mongodb.svg";
@@ -44,11 +45,8 @@ export const vectorStoreProviderLogoMap: Record<string, string> = {
   [VectorStoreProviders.Valkey]: valkeyLogo.src,
 };
 
-// Define field types for provider-specific configurations
-export interface VectorStoreFieldConfig {
+interface VectorStoreFieldConfigBase {
   name: string;
-  label: string;
-  tooltip: string;
   placeholder?: string;
   required: boolean;
   type?: "text" | "password" | "select";
@@ -56,22 +54,35 @@ export interface VectorStoreFieldConfig {
   initialValue?: string;
 }
 
+/** A field label is either a literal (mock-only or data) or a catalog key, never neither. */
+export type VectorStoreFieldLabel =
+  | { label: string; labelKey?: never }
+  | { label?: never; labelKey: ParseKeys<"vectorStores"> };
+
+/** A field tooltip is either a literal (mock-only or data) or a catalog key, never neither. */
+export type VectorStoreFieldTooltip =
+  | { tooltip: string; tooltipKey?: never }
+  | { tooltip?: never; tooltipKey: ParseKeys<"vectorStores"> };
+
+// Define field types for provider-specific configurations
+export type VectorStoreFieldConfig = VectorStoreFieldConfigBase & VectorStoreFieldLabel & VectorStoreFieldTooltip;
+
 // Provider-specific field configurations
 export const vectorStoreProviderFields: Record<string, VectorStoreFieldConfig[]> = {
   bedrock: [],
   pg_vector: [
     {
       name: "api_base",
-      label: "API Base",
-      tooltip: "Enter the base URL of your deployed litellm-pgvector server (e.g., http://your-server:8000)",
+      labelKey: "form.providerFields.pgVector.apiBase.label",
+      tooltipKey: "form.providerFields.pgVector.apiBase.tooltip",
       placeholder: "http://your-deployed-server:8000",
       required: true,
       type: "text",
     },
     {
       name: "api_key",
-      label: "API Key",
-      tooltip: "Enter the API key from your deployed litellm-pgvector server",
+      labelKey: "form.providerFields.pgVector.apiKey.label",
+      tooltipKey: "form.providerFields.pgVector.apiKey.tooltip",
       placeholder: "your-deployed-api-key",
       required: true,
       type: "password",
@@ -81,16 +92,16 @@ export const vectorStoreProviderFields: Record<string, VectorStoreFieldConfig[]>
   "vertex_ai/search_api": [
     {
       name: "vertex_project",
-      label: "Vertex Project",
-      tooltip: "Google Cloud project ID that hosts the Vertex AI Search data store.",
+      labelKey: "form.providerFields.vertexSearch.vertexProject.label",
+      tooltipKey: "form.providerFields.vertexSearch.vertexProject.tooltip",
       placeholder: "my-gcp-project-id",
       required: true,
       type: "text",
     },
     {
       name: "vertex_location",
-      label: "Vertex Location",
-      tooltip: "Vertex AI Search data store location. Must be one of global, us, or eu.",
+      labelKey: "form.providerFields.vertexSearch.vertexLocation.label",
+      tooltipKey: "form.providerFields.vertexSearch.vertexLocation.tooltip",
       required: true,
       type: "select",
       options: [
@@ -102,17 +113,16 @@ export const vectorStoreProviderFields: Record<string, VectorStoreFieldConfig[]>
     },
     {
       name: "vertex_collection_id",
-      label: "Collection ID (optional)",
-      tooltip: "Discovery Engine collection ID. Leave blank to use the default collection.",
+      labelKey: "form.providerFields.vertexSearch.vertexCollectionId.label",
+      tooltipKey: "form.providerFields.vertexSearch.vertexCollectionId.tooltip",
       placeholder: "e.g. my-custom-collection",
       required: false,
       type: "text",
     },
     {
       name: "vertex_engine_id",
-      label: "Engine ID (optional)",
-      tooltip:
-        "Search app (engine) ID. Required for website, healthcare, and connector-based data stores (Workspace, Slack, Jira, etc.) because these sources route search through an engine. Leave blank to query the data store directly.",
+      labelKey: "form.providerFields.vertexSearch.vertexEngineId.label",
+      tooltipKey: "form.providerFields.vertexSearch.vertexEngineId.tooltip",
       placeholder: "e.g. my-search-app_1234567890",
       required: false,
       type: "text",
@@ -121,8 +131,8 @@ export const vectorStoreProviderFields: Record<string, VectorStoreFieldConfig[]>
   openai: [
     {
       name: "api_key",
-      label: "API Key",
-      tooltip: "Enter your OpenAI API key",
+      labelKey: "form.providerFields.openai.apiKey.label",
+      tooltipKey: "form.providerFields.openai.apiKey.tooltip",
       placeholder: "sk-...",
       required: true,
       type: "password",
@@ -131,16 +141,16 @@ export const vectorStoreProviderFields: Record<string, VectorStoreFieldConfig[]>
   azure: [
     {
       name: "api_key",
-      label: "API Key",
-      tooltip: "Enter your Azure OpenAI API key",
+      labelKey: "form.providerFields.azure.apiKey.label",
+      tooltipKey: "form.providerFields.azure.apiKey.tooltip",
       placeholder: "your-azure-api-key",
       required: true,
       type: "password",
     },
     {
       name: "api_base",
-      label: "API Base",
-      tooltip: "Enter your Azure OpenAI endpoint (e.g., https://your-resource.openai.azure.com/)",
+      labelKey: "form.providerFields.azure.apiBase.label",
+      tooltipKey: "form.providerFields.azure.apiBase.tooltip",
       placeholder: "https://your-resource.openai.azure.com/",
       required: true,
       type: "text",
@@ -149,25 +159,24 @@ export const vectorStoreProviderFields: Record<string, VectorStoreFieldConfig[]>
   milvus: [
     {
       name: "api_key",
-      label: "API Key",
-      tooltip:
-        "To obtain a token, you should use a colon (:) to concatenate the username and password that you use to access your Milvus instance (e.g., username:password)",
+      labelKey: "form.providerFields.milvus.apiKey.label",
+      tooltipKey: "form.providerFields.milvus.apiKey.tooltip",
       placeholder: "username:password or api key",
       required: true,
       type: "password",
     },
     {
       name: "api_base",
-      label: "API Base",
-      tooltip: "Enter your Milvus endpoint (e.g., https://your-milvus-endpoint.com/)",
+      labelKey: "form.providerFields.milvus.apiBase.label",
+      tooltipKey: "form.providerFields.milvus.apiBase.tooltip",
       placeholder: "https://your-milvus-endpoint.com/",
       required: true,
       type: "text",
     },
     {
       name: "embedding_model",
-      label: "Embedding Model",
-      tooltip: "Select the embedding model to use",
+      labelKey: "form.providerFields.milvus.embeddingModel.label",
+      tooltipKey: "form.providerFields.milvus.embeddingModel.tooltip",
       placeholder: "text-embedding-3-small",
       required: true,
       type: "select",
@@ -176,50 +185,48 @@ export const vectorStoreProviderFields: Record<string, VectorStoreFieldConfig[]>
   mongodb: [
     {
       name: "api_base",
-      label: "Sidecar URL",
-      tooltip: "Use HTTPS for a remote sidecar, or HTTP with a loopback IP for a sidecar on the same host or Pod",
+      labelKey: "form.providerFields.mongodb.apiBase.label",
+      tooltipKey: "form.providerFields.mongodb.apiBase.tooltip",
       placeholder: "http://127.0.0.1:8080",
       required: true,
       type: "text",
     },
     {
       name: "api_key",
-      label: "Sidecar API Key",
-      tooltip: "The MONGODB_SIDECAR_API_KEY configured in your MongoDB sidecar",
+      labelKey: "form.providerFields.mongodb.apiKey.label",
+      tooltipKey: "form.providerFields.mongodb.apiKey.tooltip",
       placeholder: "Enter sidecar API key",
       required: true,
       type: "password",
     },
     {
       name: "mongodb_database",
-      label: "Database",
-      tooltip: "The MongoDB database holding the collection you want to search",
+      labelKey: "form.providerFields.mongodb.mongodbDatabase.label",
+      tooltipKey: "form.providerFields.mongodb.mongodbDatabase.tooltip",
       placeholder: "sample_mflix",
       required: true,
       type: "text",
     },
     {
       name: "mongodb_collection",
-      label: "Collection",
-      tooltip: "The collection your MongoDB Vector Search index was built on",
+      labelKey: "form.providerFields.mongodb.mongodbCollection.label",
+      tooltipKey: "form.providerFields.mongodb.mongodbCollection.tooltip",
       placeholder: "embedded_movies",
       required: true,
       type: "text",
     },
     {
       name: "embedding_model",
-      label: "Embedding Model",
-      tooltip:
-        "The embedding model on this proxy that created the vectors already stored in your collection. LiteLLM embeds every search query with it, so it must be the same model. A different model of the same size will not error, it will just return wrong results. Add it under Models first if it is not listed",
+      labelKey: "form.providerFields.mongodb.embeddingModel.label",
+      tooltipKey: "form.providerFields.mongodb.embeddingModel.tooltip",
       placeholder: "text-embedding-3-small",
       required: true,
       type: "select",
     },
     {
       name: "mongodb_embedding_field",
-      label: "Vector Field Name",
-      tooltip:
-        "The field in each document that holds its embedding. It must match the path your MongoDB Vector Search index was created on (default: embedding)",
+      labelKey: "form.providerFields.mongodb.mongodbEmbeddingField.label",
+      tooltipKey: "form.providerFields.mongodb.mongodbEmbeddingField.tooltip",
       placeholder: "embedding",
       required: false,
       type: "text",
@@ -227,9 +234,8 @@ export const vectorStoreProviderFields: Record<string, VectorStoreFieldConfig[]>
     },
     {
       name: "mongodb_text_field",
-      label: "Text Field",
-      tooltip:
-        "The field in each document that holds its readable text. LiteLLM returns this text in search results, and it accepts a dotted path such as metadata.body (default: text)",
+      labelKey: "form.providerFields.mongodb.mongodbTextField.label",
+      tooltipKey: "form.providerFields.mongodb.mongodbTextField.tooltip",
       placeholder: "text",
       required: false,
       type: "text",
@@ -237,9 +243,8 @@ export const vectorStoreProviderFields: Record<string, VectorStoreFieldConfig[]>
     },
     {
       name: "mongodb_num_candidates",
-      label: "Candidates Considered",
-      tooltip:
-        "How many nearest neighbours MongoDB examines before returning the top results. Higher is more accurate and slower. Leave blank to let LiteLLM scale it with the requested result count",
+      labelKey: "form.providerFields.mongodb.mongodbNumCandidates.label",
+      tooltipKey: "form.providerFields.mongodb.mongodbNumCandidates.tooltip",
       placeholder: "100",
       required: false,
       type: "text",
@@ -248,16 +253,16 @@ export const vectorStoreProviderFields: Record<string, VectorStoreFieldConfig[]>
   valkey: [
     {
       name: "valkey_host",
-      label: "Valkey Host",
-      tooltip: "Hostname or IP of your Valkey server, without redis:// or a port (e.g. my-valkey.example.com)",
+      labelKey: "form.providerFields.valkey.valkeyHost.label",
+      tooltipKey: "form.providerFields.valkey.valkeyHost.tooltip",
       placeholder: "my-valkey.example.com",
       required: true,
       type: "text",
     },
     {
       name: "valkey_port",
-      label: "Valkey Port",
-      tooltip: "Port your Valkey server listens on. Leave as 6379 unless you changed it",
+      labelKey: "form.providerFields.valkey.valkeyPort.label",
+      tooltipKey: "form.providerFields.valkey.valkeyPort.tooltip",
       placeholder: "6379",
       required: false,
       type: "text",
@@ -265,16 +270,15 @@ export const vectorStoreProviderFields: Record<string, VectorStoreFieldConfig[]>
     },
     {
       name: "valkey_password",
-      label: "Valkey Password",
-      tooltip: "Password used to log in to your Valkey server. Leave blank if it has no password",
+      labelKey: "form.providerFields.valkey.valkeyPassword.label",
+      tooltipKey: "form.providerFields.valkey.valkeyPassword.tooltip",
       required: false,
       type: "password",
     },
     {
       name: "valkey_ssl",
-      label: "Use TLS",
-      tooltip:
-        "Set to true if your Valkey server requires an encrypted (TLS) connection, for example AWS ElastiCache with in-transit encryption turned on",
+      labelKey: "form.providerFields.valkey.valkeySsl.label",
+      tooltipKey: "form.providerFields.valkey.valkeySsl.tooltip",
       required: false,
       type: "select",
       options: [
@@ -285,18 +289,16 @@ export const vectorStoreProviderFields: Record<string, VectorStoreFieldConfig[]>
     },
     {
       name: "embedding_model",
-      label: "Embedding Model",
-      tooltip:
-        "The embedding model on this proxy that was used to create the embeddings already stored in your Valkey index. LiteLLM uses it to embed each search query, so it must be the same model or results will be wrong. Add it under Models first if it is not listed",
+      labelKey: "form.providerFields.valkey.embeddingModel.label",
+      tooltipKey: "form.providerFields.valkey.embeddingModel.tooltip",
       placeholder: "text-embedding-3-small",
       required: true,
       type: "select",
     },
     {
       name: "valkey_text_field",
-      label: "Text Field",
-      tooltip:
-        "The field in each stored document that holds its readable text. LiteLLM returns this text in search results. Must match how your documents were stored (default: text)",
+      labelKey: "form.providerFields.valkey.valkeyTextField.label",
+      tooltipKey: "form.providerFields.valkey.valkeyTextField.tooltip",
       placeholder: "text",
       required: false,
       type: "text",
@@ -304,9 +306,8 @@ export const vectorStoreProviderFields: Record<string, VectorStoreFieldConfig[]>
     },
     {
       name: "valkey_embedding_field",
-      label: "Vector Field Name",
-      tooltip:
-        "The field in each stored document that holds its embedding. LiteLLM searches against this field, so it must match the field your index was created on (default: embedding)",
+      labelKey: "form.providerFields.valkey.valkeyEmbeddingField.label",
+      tooltipKey: "form.providerFields.valkey.valkeyEmbeddingField.tooltip",
       placeholder: "embedding",
       required: false,
       type: "text",
@@ -316,32 +317,32 @@ export const vectorStoreProviderFields: Record<string, VectorStoreFieldConfig[]>
   s3_vectors: [
     {
       name: "vector_bucket_name",
-      label: "Vector Bucket Name",
-      tooltip: "S3 bucket name for vector storage (will be auto-created if it doesn't exist)",
+      labelKey: "form.providerFields.s3Vectors.vectorBucketName.label",
+      tooltipKey: "form.providerFields.s3Vectors.vectorBucketName.tooltip",
       placeholder: "my-vector-bucket",
       required: true,
       type: "text",
     },
     {
       name: "index_name",
-      label: "Index Name",
-      tooltip: "Name for the vector index (optional, will be auto-generated if not provided)",
+      labelKey: "form.providerFields.s3Vectors.indexName.label",
+      tooltipKey: "form.providerFields.s3Vectors.indexName.tooltip",
       placeholder: "my-vector-index",
       required: false,
       type: "text",
     },
     {
       name: "aws_region_name",
-      label: "AWS Region",
-      tooltip: "AWS region where the S3 bucket is located (e.g., us-west-2)",
+      labelKey: "form.providerFields.s3Vectors.awsRegionName.label",
+      tooltipKey: "form.providerFields.s3Vectors.awsRegionName.tooltip",
       placeholder: "us-west-2",
       required: true,
       type: "text",
     },
     {
       name: "embedding_model",
-      label: "Embedding Model",
-      tooltip: "Select the embedding model to use for vector generation",
+      labelKey: "form.providerFields.s3Vectors.embeddingModel.label",
+      tooltipKey: "form.providerFields.s3Vectors.embeddingModel.tooltip",
       placeholder: "text-embedding-3-small",
       required: true,
       type: "select",

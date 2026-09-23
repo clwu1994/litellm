@@ -125,16 +125,17 @@ const buildVectorStoreSchema = (t: TFunction<"vectorStores">) =>
   z.object(buildVectorStoreShape(t)).superRefine((values, ctx) => {
     getProviderSpecificFields(values.custom_llm_provider)
       .filter((field) => field.required && isProviderFieldName(field.name) && !values[field.name])
-      .forEach((field) =>
+      .forEach((field) => {
+        const fieldLabel = field.labelKey ? t(field.labelKey) : field.label;
         ctx.addIssue({
           code: "custom",
           path: [field.name],
           message:
             field.type === "select"
-              ? t("form.validation.selectProviderField", { field: field.label.toLowerCase() })
-              : t("form.validation.inputProviderField", { field: field.label.toLowerCase() }),
-        }),
-      );
+              ? t("form.validation.selectProviderField", { field: fieldLabel.toLowerCase() })
+              : t("form.validation.inputProviderField", { field: fieldLabel.toLowerCase() }),
+        });
+      });
   });
 
 type VectorStoreFormValues = z.output<ReturnType<typeof buildVectorStoreSchema>>;
@@ -547,7 +548,10 @@ interface ProviderFieldProps {
 
 const ProviderField: React.FC<ProviderFieldProps> = ({ field, control, modelInfo }) => {
   const { t } = useTranslation("vectorStores");
-  const label = labelWithHint(field.label, field.tooltip);
+  const label = labelWithHint(
+    field.labelKey ? t(field.labelKey) : field.label,
+    field.tooltipKey ? t(field.tooltipKey) : field.tooltip,
+  );
 
   if (field.type === "select") {
     const selectOptions =

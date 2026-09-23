@@ -237,7 +237,7 @@ describe("VectorStoreForm Chinese copy", () => {
     await user.type(screen.getByPlaceholderText("https://your-milvus-endpoint.com/"), "https://milvus.example.com");
     await user.click(screen.getByRole("button", { name: "创建" }));
 
-    expect(await screen.findByText("请选择 embedding model")).toBeInTheDocument();
+    expect(await screen.findByText("请选择 embedding 模型")).toBeInTheDocument();
     expect(screen.queryByText("Please select the embedding model")).not.toBeInTheDocument();
   });
 

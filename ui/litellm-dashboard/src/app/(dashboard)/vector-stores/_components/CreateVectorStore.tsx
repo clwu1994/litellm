@@ -1,4 +1,5 @@
 import React, { useId, useState } from "react";
+import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 import { toast } from "@/lib/toast";
 import { CircleCheck, CircleHelp, Inbox, X } from "lucide-react";
@@ -47,6 +48,12 @@ const providerItems = Object.entries(VectorStoreProviders)
   }));
 
 const asText = (value: unknown): string => (typeof value === "string" ? value : "");
+
+const providerFieldLabel = (field: VectorStoreFieldConfig, t: TFunction<"vectorStores">): string =>
+  field.labelKey ? t(field.labelKey) : field.label;
+
+const providerFieldTooltip = (field: VectorStoreFieldConfig, t: TFunction<"vectorStores">): string =>
+  field.tooltipKey ? t(field.tooltipKey) : field.tooltip;
 
 const IngestSuccessAlert: React.FC<{ ingestResults: RAGIngestResponse[] }> = ({ ingestResults }) => {
   const { t } = useTranslation("vectorStores");
@@ -151,7 +158,7 @@ const CreateVectorStore: React.FC<CreateVectorStoreProps> = ({ accessToken, onSu
     const requiredFields = getProviderSpecificFields(selectedProvider).filter((field) => field.required);
     for (const field of requiredFields) {
       if (!providerParams[field.name]) {
-        toast.warning(t("form.validation.providerFieldRequired", { field: field.label }));
+        toast.warning(t("form.validation.providerFieldRequired", { field: providerFieldLabel(field, t) }));
         return;
       }
     }
@@ -365,7 +372,7 @@ const CreateVectorStore: React.FC<CreateVectorStoreProps> = ({ accessToken, onSu
                 getProviderSpecificFields(selectedProvider).map((field: VectorStoreFieldConfig) => (
                   <Field key={field.name}>
                     <FieldLabel htmlFor={`vector-store-${field.name}`}>
-                      {labelWithHint(field.label, field.tooltip)}
+                      {labelWithHint(providerFieldLabel(field, t), providerFieldTooltip(field, t))}
                     </FieldLabel>
                     <Input
                       id={`vector-store-${field.name}`}

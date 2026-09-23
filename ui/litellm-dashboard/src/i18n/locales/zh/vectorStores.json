@@ -118,6 +118,148 @@
     "vectorStoreNameHint": "你为此向量存储自定义的名称，该名称将显示在 LiteLLM UI 中",
     "credentialsHint": "可选：为此向量存储选择 API 提供方凭证，例如 Bedrock API Key",
     "metadataHint": "向量存储的 JSON 元数据（可选）",
+    "providerFields": {
+      "pgVector": {
+        "apiBase": {
+          "label": "API Base",
+          "tooltip": "输入你部署的 litellm-pgvector 服务器的 Base URL（例如 http://your-server:8000）"
+        },
+        "apiKey": {
+          "label": "API Key",
+          "tooltip": "输入你部署的 litellm-pgvector 服务器的 API Key"
+        }
+      },
+      "vertexSearch": {
+        "vertexProject": {
+          "label": "Vertex 项目",
+          "tooltip": "托管 Vertex AI Search 数据存储的 Google Cloud 项目 ID。"
+        },
+        "vertexLocation": {
+          "label": "Vertex 位置",
+          "tooltip": "Vertex AI Search 数据存储位置。必须是 global、us 或 eu 之一。"
+        },
+        "vertexCollectionId": {
+          "label": "Collection ID（可选）",
+          "tooltip": "Discovery Engine Collection ID。留空以使用默认 Collection。"
+        },
+        "vertexEngineId": {
+          "label": "Engine ID（可选）",
+          "tooltip": "搜索应用（Engine）ID。网站、医疗和基于连接器的数据存储（Workspace、Slack、Jira 等）必须填写，因为这些数据源通过 Engine 路由搜索。留空则直接查询数据存储。"
+        }
+      },
+      "openai": {
+        "apiKey": {
+          "label": "API Key",
+          "tooltip": "输入你的 OpenAI API Key"
+        }
+      },
+      "azure": {
+        "apiKey": {
+          "label": "API Key",
+          "tooltip": "输入你的 Azure OpenAI API Key"
+        },
+        "apiBase": {
+          "label": "API Base",
+          "tooltip": "输入你的 Azure OpenAI Endpoint（例如 https://your-resource.openai.azure.com/）"
+        }
+      },
+      "milvus": {
+        "apiKey": {
+          "label": "API Key",
+          "tooltip": "要获取 Token，请用冒号（:）连接你访问 Milvus 实例所用的用户名和密码（例如 username:password）"
+        },
+        "apiBase": {
+          "label": "API Base",
+          "tooltip": "输入你的 Milvus Endpoint（例如 https://your-milvus-endpoint.com/）"
+        },
+        "embeddingModel": {
+          "label": "Embedding 模型",
+          "tooltip": "选择要使用的 Embedding 模型"
+        }
+      },
+      "mongodb": {
+        "apiBase": {
+          "label": "Sidecar URL",
+          "tooltip": "远程 Sidecar 使用 HTTPS，同一主机或 Pod 上的 Sidecar 使用带回环 IP 的 HTTP"
+        },
+        "apiKey": {
+          "label": "Sidecar API Key",
+          "tooltip": "在你的 MongoDB Sidecar 中配置的 MONGODB_SIDECAR_API_KEY"
+        },
+        "mongodbDatabase": {
+          "label": "数据库",
+          "tooltip": "包含你要搜索的 Collection 的 MongoDB 数据库"
+        },
+        "mongodbCollection": {
+          "label": "Collection",
+          "tooltip": "你的 MongoDB Vector Search 索引所基于的 Collection"
+        },
+        "embeddingModel": {
+          "label": "Embedding 模型",
+          "tooltip": "此代理上创建了你 Collection 中已存储向量的 Embedding 模型。LiteLLM 会用它为每个搜索查询生成 Embedding，因此必须是同一个模型。相同尺寸的不同模型不会报错，只会返回错误的结果。如果列表中没有，请先在 Models 下添加"
+        },
+        "mongodbEmbeddingField": {
+          "label": "向量字段名",
+          "tooltip": "每个文档中存储其 Embedding 的字段。它必须与创建 MongoDB Vector Search 索引时使用的路径一致（默认：embedding）"
+        },
+        "mongodbTextField": {
+          "label": "文本字段",
+          "tooltip": "每个文档中存储其可读文本的字段。LiteLLM 会在搜索结果中返回此文本，它支持 metadata.body 这样的点分路径（默认：text）"
+        },
+        "mongodbNumCandidates": {
+          "label": "候选数量",
+          "tooltip": "MongoDB 在返回最佳结果之前检查的最近邻数量。值越大越准确，但速度越慢。留空则由 LiteLLM 根据请求的结果数量自动调整"
+        }
+      },
+      "valkey": {
+        "valkeyHost": {
+          "label": "Valkey 主机",
+          "tooltip": "你的 Valkey 服务器的主机名或 IP，不含 redis:// 或端口（例如 my-valkey.example.com）"
+        },
+        "valkeyPort": {
+          "label": "Valkey 端口",
+          "tooltip": "你的 Valkey 服务器监听的端口。除非你改过，否则保持 6379"
+        },
+        "valkeyPassword": {
+          "label": "Valkey 密码",
+          "tooltip": "用于登录你的 Valkey 服务器的密码。如果没有密码，请留空"
+        },
+        "valkeySsl": {
+          "label": "使用 TLS",
+          "tooltip": "如果你的 Valkey 服务器需要加密（TLS）连接，请设为 true，例如开启了传输中加密的 AWS ElastiCache"
+        },
+        "embeddingModel": {
+          "label": "Embedding 模型",
+          "tooltip": "此代理上用于创建你 Valkey 索引中已存储 Embedding 的 Embedding 模型。LiteLLM 会用它为每个搜索查询生成 Embedding，因此必须是同一个模型，否则结果会出错。如果列表中没有，请先在 Models 下添加"
+        },
+        "valkeyTextField": {
+          "label": "文本字段",
+          "tooltip": "每个已存储文档中保存其可读文本的字段。LiteLLM 会在搜索结果中返回此文本。必须与文档的存储方式一致（默认：text）"
+        },
+        "valkeyEmbeddingField": {
+          "label": "向量字段名",
+          "tooltip": "每个已存储文档中保存其 Embedding 的字段。LiteLLM 会针对此字段进行搜索，因此必须与创建索引时使用的字段一致（默认：embedding）"
+        }
+      },
+      "s3Vectors": {
+        "vectorBucketName": {
+          "label": "向量存储桶名称",
+          "tooltip": "用于向量存储的 S3 存储桶名称（如果不存在将自动创建）"
+        },
+        "indexName": {
+          "label": "索引名称",
+          "tooltip": "向量索引的名称（可选，未提供时将自动生成）"
+        },
+        "awsRegionName": {
+          "label": "AWS 区域",
+          "tooltip": "S3 存储桶所在的 AWS 区域（例如 us-west-2）"
+        },
+        "embeddingModel": {
+          "label": "Embedding 模型",
+          "tooltip": "选择用于生成向量的 Embedding 模型"
+        }
+      }
+    },
     "vectorStoreIdPlaceholder": {
       "default": "输入你的提供方提供的向量存储 ID",
       "vertexSearchApi": "my-datastore_1234567890（来自 Vertex AI / “Agent Search” 控制台的数据存储 ID）",

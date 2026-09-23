@@ -123,6 +123,23 @@ describe("CreateVectorStore Chinese copy", () => {
     expect(screen.queryByText("Select the provider for embedding and vector store operations")).not.toBeInTheDocument();
   });
 
+  it("renders a provider field's Chinese label and hint from the provider table", async () => {
+    const user = setupUser();
+    renderCreate();
+    await chooseProvider(user, "Milvus");
+
+    const label = screen.getByText("Embedding 模型");
+    expect(label).toBeInTheDocument();
+    expect(screen.queryByText("Embedding Model")).not.toBeInTheDocument();
+
+    const trigger = label.querySelector("svg");
+    if (!trigger) throw new Error("no hint trigger for Embedding 模型");
+    await user.hover(trigger);
+
+    expect(await screen.findByText("选择要使用的 Embedding 模型")).toBeInTheDocument();
+    expect(screen.queryByText("Select the embedding model to use")).not.toBeInTheDocument();
+  });
+
   it("renders the Chinese name and description placeholders with the English originals absent", () => {
     renderCreate();
 
