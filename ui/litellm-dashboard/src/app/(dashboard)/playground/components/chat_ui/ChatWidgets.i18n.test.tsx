@@ -149,7 +149,7 @@ describe("chat widgets Chinese copy", () => {
     expect(screen.queryByText("Show sources (2)")).not.toBeInTheDocument();
   });
 
-  it("renders the English singular result count, the zh-unreachable results_one leaf", async () => {
+  it("renders the English singular result count under the locale that selects it", async () => {
     await i18n.changeLanguage("en");
     const results: VectorStoreSearchResponse[] = [
       {
@@ -162,6 +162,24 @@ describe("chat widgets Chinese copy", () => {
 
     expect(screen.getByText("1 result")).toBeInTheDocument();
     expect(screen.queryByText("1 results")).not.toBeInTheDocument();
+  });
+
+  it("renders the English plural result count under the locale that selects it", async () => {
+    await i18n.changeLanguage("en");
+    const results: VectorStoreSearchResponse[] = [
+      {
+        object: "search",
+        search_query: "pricing",
+        data: [
+          { score: 0.5, content: [{ text: "first", type: "text" }] },
+          { score: 0.4, content: [{ text: "second", type: "text" }] },
+        ],
+      },
+    ];
+    render(<SearchResultsDisplay searchResults={results} />);
+
+    expect(screen.getByText("2 results")).toBeInTheDocument();
+    expect(screen.queryByText("2 result")).not.toBeInTheDocument();
   });
 
   it("aliases the message role and renders the Chinese generated image alt", () => {

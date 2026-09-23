@@ -301,7 +301,7 @@ describe("AgentBuilderView Chinese copy", () => {
     expect(await screen.findByText("已保存 2 个 MCP 服务器。", { exact: false })).toBeInTheDocument();
   });
 
-  it("renders the English singular MCP server summary, the zh-unreachable mcpSaved_one leaf", async () => {
+  it("renders the English singular MCP server summary under the locale that selects it", async () => {
     await i18n.changeLanguage("en");
     const user = userEvent.setup({ delay: null });
     fetchMCPServers.mockResolvedValue([{ server_id: "srv-1", alias: "github", server_name: "github-mcp" }]);
@@ -316,6 +316,29 @@ describe("AgentBuilderView Chinese copy", () => {
 
     expect(await screen.findByText("1 MCP server saved.", { exact: false })).toBeInTheDocument();
     expect(screen.queryByText("1 MCP servers saved.", { exact: false })).not.toBeInTheDocument();
+  });
+
+  it("renders the English plural MCP server summary under the locale that selects it", async () => {
+    await i18n.changeLanguage("en");
+    const user = userEvent.setup({ delay: null });
+    fetchMCPServers.mockResolvedValue([
+      { server_id: "srv-1", alias: "github", server_name: "github-mcp" },
+      { server_id: "srv-2", alias: "slack", server_name: "slack-mcp" },
+    ]);
+    renderView();
+    await waitForRoster();
+    await screen.findByDisplayValue("support-agent");
+
+    const control = screen.getByPlaceholderText("Select MCP servers to attach (same format as chat completions API)");
+    await user.click(control);
+    await user.click((await screen.findAllByText("github"))[0]);
+    await user.keyboard("{Escape}");
+    await user.click(control);
+    await user.click((await screen.findAllByText("slack"))[0]);
+    await user.keyboard("{Escape}");
+
+    expect(await screen.findByText("2 MCP servers saved.", { exact: false })).toBeInTheDocument();
+    expect(screen.queryByText("2 MCP server saved.", { exact: false })).not.toBeInTheDocument();
   });
 
   it("reports the Chinese agent toasts", async () => {

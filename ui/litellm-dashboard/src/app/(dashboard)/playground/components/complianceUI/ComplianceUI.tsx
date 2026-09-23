@@ -745,8 +745,20 @@ export default function ComplianceUI({
   const hasAnyConfig = selectedPolicies.length > 0 || selectedGuardrails.length > 0;
   const testButtonLabel = (() => {
     const parts: string[] = [];
-    if (selectedPolicies.length > 0) parts.push(t("compliance.policyCount", { count: selectedPolicies.length }));
-    if (selectedGuardrails.length > 0) parts.push(t("compliance.guardrailCount", { count: selectedGuardrails.length }));
+    if (selectedPolicies.length > 0) {
+      parts.push(
+        selectedPolicies.length === 1
+          ? t("compliance.policyCountOne", { policies: selectedPolicies.length })
+          : t("compliance.policyCountOther", { policies: selectedPolicies.length }),
+      );
+    }
+    if (selectedGuardrails.length > 0) {
+      parts.push(
+        selectedGuardrails.length === 1
+          ? t("compliance.guardrailCountOne", { guardrails: selectedGuardrails.length })
+          : t("compliance.guardrailCountOther", { guardrails: selectedGuardrails.length }),
+      );
+    }
     if (parts.length === 0) return t("compliance.test");
     return t("compliance.testWith", { parts: parts.join(" & ") });
   })();

@@ -56,7 +56,9 @@ export function SearchResultsDisplay({ searchResults }: SearchResultsDisplayProp
                     <span className="italic">&quot;{resultPage.search_query}&quot;</span>
                     <span className="text-muted-foreground">•</span>
                     <span className="text-muted-foreground">
-                      {t("chat.sources.results", { count: resultPage.data.length })}
+                      {t(resultPage.data.length === 1 ? "chat.sources.resultsOne" : "chat.sources.resultsOther", {
+                        total: resultPage.data.length,
+                      })}
                     </span>
                   </div>
 

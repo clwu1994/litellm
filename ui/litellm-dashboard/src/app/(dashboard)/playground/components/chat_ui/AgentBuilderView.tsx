@@ -668,8 +668,10 @@ export default function AgentBuilderView({
                             <p className="mt-1 text-xs text-muted-foreground">
                               <Trans
                                 ns="playground"
-                                i18nKey="agentBuilder.mcpSaved"
-                                count={draftTools.length}
+                                i18nKey={
+                                  draftTools.length === 1 ? "agentBuilder.mcpSavedOne" : "agentBuilder.mcpSavedOther"
+                                }
+                                values={{ servers: draftTools.length }}
                                 components={{ code: <code className="rounded-sm bg-muted px-1" /> }}
                               />
                             </p>
