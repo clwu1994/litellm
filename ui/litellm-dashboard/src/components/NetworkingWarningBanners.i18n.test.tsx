@@ -127,8 +127,7 @@ describe("shell warning banner English copy stays byte-identical", () => {
     renderWithProviders(<EnvCredentialLoginWarningBanner accessToken="token" />);
 
     const alert = screen.getByRole("alert");
-    expect(alert).toHaveTextContent(ENV_TITLE_EN);
-    expect(alert).toHaveTextContent(ENV_BODY_EN);
+    expect(alert).toHaveTextContent(`${ENV_TITLE_EN}${ENV_BODY_EN}`, { normalizeWhitespace: false });
     expect(screen.getByRole("button", { name: "Dismiss banner" })).toBeInTheDocument();
   });
 
@@ -138,8 +137,7 @@ describe("shell warning banner English copy stays byte-identical", () => {
     renderWithProviders(<NoRedisWarningBanner accessToken="token" />);
 
     const alert = screen.getByRole("alert");
-    expect(alert).toHaveTextContent(REDIS_TITLE_EN);
-    expect(alert).toHaveTextContent(REDIS_BODY_EN);
+    expect(alert).toHaveTextContent(`${REDIS_TITLE_EN}${REDIS_BODY_EN}`, { normalizeWhitespace: false });
     expect(screen.getByRole("link", { name: REDIS_LINK_EN })).toBeInTheDocument();
   });
 
@@ -149,7 +147,6 @@ describe("shell warning banner English copy stays byte-identical", () => {
     renderWithProviders(<DebugWarningBanner accessToken="token" />);
 
     const alert = screen.getByRole("alert");
-    expect(alert).toHaveTextContent(DEBUG_TITLE_EN);
-    expect(alert).toHaveTextContent(DEBUG_BODY_EN);
+    expect(alert).toHaveTextContent(`${DEBUG_TITLE_EN}${DEBUG_BODY_EN}`, { normalizeWhitespace: false });
   });
 });

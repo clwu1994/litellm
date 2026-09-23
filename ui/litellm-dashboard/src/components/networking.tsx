@@ -87,8 +87,10 @@ export const getAutoRouterAssembledPromptCall = async (
  * Helper file for calls being made to proxy
  */
 import { toast } from "@/lib/toast";
-// networking.tsx is a data-access module: its thrown messages reach the user as toast text from
-// catch handlers that have no `t`, so the key is resolved from the i18n instance at throw time.
+// networking.tsx is a data-access module whose error paths are reached from hundreds of callers, so
+// threading a `t` through every exported signature is impractical. The messages are resolved from
+// the i18n instance at throw time instead, never during render, so a language switch applies to the
+// next throw.
 import i18n from "@/i18n/bootstrapI18n";
 import { clearTokenCookies, getCookie, storeLoginToken } from "@/utils/cookieUtils";
 import { decodeToken } from "@/utils/jwtUtils";

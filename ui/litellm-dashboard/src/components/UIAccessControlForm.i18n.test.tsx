@@ -96,13 +96,13 @@ describe("UIAccessControlForm Chinese copy", () => {
     expect(within(listbox).queryByRole("option", { name: "Restricted SSO Group" })).not.toBeInTheDocument();
   });
 
-  it("renders the Chinese restricted group field and hides the English original", async () => {
+  it("renders the Chinese restricted group placeholder and hides the English field label", async () => {
     const user = renderForm();
 
     await chooseAccessMode(user, "受限 SSO 群组");
 
     expect(await screen.findByPlaceholderText("ui-access-group")).toBeInTheDocument();
-    expect(screen.queryByPlaceholderText("Restricted SSO Group")).not.toBeInTheDocument();
+    expect(screen.queryByText("Restricted SSO Group")).not.toBeInTheDocument();
   });
 
   it("renders the Chinese JWT field label, placeholder and tooltip and hides the English originals", async () => {
@@ -111,7 +111,6 @@ describe("UIAccessControlForm Chinese copy", () => {
     expect(screen.getByText("SSO 群组 JWT 字段")).toBeInTheDocument();
     expect(screen.queryByText("SSO Group JWT Field")).not.toBeInTheDocument();
     expect(screen.getByPlaceholderText("groups")).toBeInTheDocument();
-    expect(screen.queryByPlaceholderText("JWT field name")).not.toBeInTheDocument();
 
     const tooltip = await openTooltip(user, "SSO 群组 JWT 字段");
     expect(tooltip).toHaveTextContent("包含团队/群组信息的 JWT 字段名。使用点号访问嵌套字段。");

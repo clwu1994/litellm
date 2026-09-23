@@ -10,6 +10,7 @@ import { getSecureItem, setSecureItem } from "@/utils/secureStorage";
 
 import { useMcpOAuthFlow } from "./useMcpOAuthFlow";
 import { useToolsOAuthFlow } from "./useToolsOAuthFlow";
+import { useUserMcpOAuthFlow } from "./useUserMcpOAuthFlow";
 
 vi.mock("@/components/networking", () => ({
   exchangeMcpOAuthToken: vi.fn(),
@@ -48,6 +49,8 @@ const MCP_FLOW_STATE_KEY = "litellm-mcp-oauth-flow-state";
 const MCP_RESULT_KEY = "litellm-mcp-oauth-result";
 const TOOLS_FLOW_STATE_KEY = "litellm-tools-mcp-oauth-flow-state";
 const TOOLS_RESULT_KEY = "litellm-tools-mcp-oauth-result";
+const USER_FLOW_STATE_KEY = "litellm-user-mcp-oauth-flow-state";
+const USER_RESULT_KEY = "litellm-user-mcp-oauth-result";
 
 let storedItems: Record<string, string> = {};
 
@@ -98,6 +101,19 @@ const renderToolsFlow = () =>
       onSuccess: vi.fn(),
     };
     return useToolsOAuthFlow(options);
+  });
+
+const renderUserFlow = () =>
+  renderHook(() => {
+    const { t } = useTranslation("auth");
+    const options = {
+      accessToken: "user-token",
+      t,
+      serverId: "server-1",
+      serverAlias: "server one",
+      onSuccess: vi.fn(),
+    };
+    return useUserMcpOAuthFlow(options);
   });
 
 const expectErrorPair = (message: string | null, zh: string, en: string) => {
@@ -296,6 +312,62 @@ describe("OAuth flow Chinese copy", () => {
     });
 
     const { result } = renderToolsFlow();
+
+    await waitFor(() => expect(result.current.status).toBe("success"));
+    expect(toast.success).toHaveBeenCalledWith("连接成功");
+    expect(toast.success).not.toHaveBeenCalledWith("Connected successfully");
+  });
+
+  it("reports the Chinese lost-session error for the user flow and hides the English original", async () => {
+    seedStoredItems({
+      [USER_RESULT_KEY]: JSON.stringify({ state: "state-1", code: "code-1" }),
+      [USER_FLOW_STATE_KEY]: JSON.stringify({}),
+    });
+
+    const { result } = renderUserFlow();
+
+    await waitFor(() =>
+      expectErrorPair(
+        result.current.error,
+        "OAuth 会话状态已丢失。请重试。",
+        "OAuth session state was lost. Please retry.",
+      ),
+    );
+  });
+
+  it("reports the Chinese state-mismatch error for the user flow and hides the English original", async () => {
+    seedStoredItems({
+      [USER_RESULT_KEY]: JSON.stringify({ state: "other-state", code: "code-1" }),
+      [USER_FLOW_STATE_KEY]: JSON.stringify(toolsFlowState),
+    });
+
+    const { result } = renderUserFlow();
+
+    await waitFor(() =>
+      expectErrorPair(result.current.error, "OAuth 状态不匹配。请重试。", "OAuth state mismatch. Please retry."),
+    );
+  });
+
+  it("reports the Chinese missing-authorization-code error for the user flow and hides the English original", async () => {
+    seedStoredItems({
+      [USER_RESULT_KEY]: JSON.stringify({ state: "state-1" }),
+      [USER_FLOW_STATE_KEY]: JSON.stringify(toolsFlowState),
+    });
+
+    const { result } = renderUserFlow();
+
+    await waitFor(() =>
+      expectErrorPair(result.current.error, "回调中缺少授权码。", "Authorization code missing in callback."),
+    );
+  });
+
+  it("reports the Chinese connected toast for the user flow and hides the English original", async () => {
+    seedStoredItems({
+      [USER_RESULT_KEY]: JSON.stringify({ state: "state-1", code: "code-1" }),
+      [USER_FLOW_STATE_KEY]: JSON.stringify(toolsFlowState),
+    });
+
+    const { result } = renderUserFlow();
 
     await waitFor(() => expect(result.current.status).toBe("success"));
     expect(toast.success).toHaveBeenCalledWith("连接成功");
