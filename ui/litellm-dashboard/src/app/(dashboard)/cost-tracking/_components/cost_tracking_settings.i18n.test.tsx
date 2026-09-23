@@ -105,7 +105,9 @@ describe("CostTrackingSettings Chinese copy", () => {
       ),
     ).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: /Docs/ }));
+    expect(screen.getByRole("button", { name: "文档" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Docs" })).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "文档" }));
 
     expect(screen.getByRole("link", { name: "模型自定义定价" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "支出跟踪" })).toBeInTheDocument();
