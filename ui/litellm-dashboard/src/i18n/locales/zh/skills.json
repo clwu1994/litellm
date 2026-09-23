@@ -150,5 +150,11 @@
     "setupTitle": "一次性 marketplace 设置",
     "setupRunCommand": "在 Claude Code 中运行此命令以注册 marketplace：",
     "setupSettingsPrefix": "或将此项添加到 <code>{{file}}</code> 以实现持久配置："
+  },
+  "selector": {
+    "placeholder": "选择技能（可选）",
+    "clearAll": "清除所有技能",
+    "private": "私有",
+    "privateAria": "{{name}}（私有）"
   }
 }

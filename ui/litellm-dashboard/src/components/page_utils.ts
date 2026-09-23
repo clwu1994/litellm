@@ -49,6 +49,7 @@ export const getAvailablePages = (t: TFunction<"nav">): PageMetadata[] => {
           page: item.page,
           label: label,
           group: t(group.groupKey),
+          groupKey: group.groupKey,
           description: pageDescriptions[item.page] || "No description available",
         });
       }
@@ -64,6 +65,8 @@ export const getAvailablePages = (t: TFunction<"nav">): PageMetadata[] => {
               page: child.page,
               label: childLabel,
               group: `${t(group.groupKey)} > ${parentLabel}`,
+              groupKey: group.groupKey,
+              parentKey: item.label,
               description: pageDescriptions[child.page] || "No description available",
             });
           }

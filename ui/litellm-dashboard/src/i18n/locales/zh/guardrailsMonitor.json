@@ -148,5 +148,18 @@
   "chart": {
     "title": "请求结果随时间变化",
     "noData": "该时间段无图表数据"
+  },
+  "logViewer": {
+    "title": "请求日志",
+    "titleWithName": "日志 — {{name}}",
+    "loading": "加载中…",
+    "showing": "显示 {{total}} 条中的 {{shown}} 条",
+    "emptyPeriod": "此时间段没有日志。请选择 Guardrail 和日期范围。",
+    "sample": "样本：",
+    "emptyDisplay": "没有可显示的日志。请调整筛选条件或日期范围。",
+    "all": "全部",
+    "blocked": "已拦截",
+    "passed": "已放行",
+    "flagged": "已标记"
   }
 }

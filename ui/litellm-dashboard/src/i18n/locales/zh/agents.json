@@ -321,5 +321,11 @@
     },
     "enterBaseUrl": "请先输入 Agent 的 Base URL",
     "failedToDiscover": "发现 Agent 卡片失败"
+  },
+  "selector": {
+    "placeholder": "选择 Agent",
+    "empty": "未找到 Agent",
+    "accessGroup": "访问组",
+    "agent": "Agent"
   }
 }

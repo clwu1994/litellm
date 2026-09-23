@@ -1,7 +1,8 @@
 import React from "react";
-import { describe, it, expect } from "vitest";
-import { screen } from "@testing-library/react";
+import { afterEach, beforeEach, describe, it, expect } from "vitest";
+import { cleanup, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import i18n from "@/i18n/bootstrapI18n";
 import { renderWithProviders } from "../../tests/test-utils";
 import { HelpLink, HelpIcon, DocsMenu } from "./HelpLink";
 
@@ -143,5 +144,25 @@ describe("DocsMenu", () => {
     expect(screen.getByText("Custom pricing")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: /outside/i }));
     expect(screen.queryByText("Custom pricing")).not.toBeInTheDocument();
+  });
+});
+
+describe("DocsMenu Chinese copy", () => {
+  const items = [{ label: "自定义定价", href: "https://docs.example.com/pricing" }];
+
+  beforeEach(async () => {
+    await i18n.changeLanguage("zh");
+  });
+
+  afterEach(async () => {
+    cleanup();
+    await i18n.changeLanguage("en");
+  });
+
+  it("renders the Chinese default trigger and hides the English original", () => {
+    renderWithProviders(<DocsMenu items={items} />);
+
+    expect(screen.getByRole("button", { name: "文档" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Docs" })).not.toBeInTheDocument();
   });
 });

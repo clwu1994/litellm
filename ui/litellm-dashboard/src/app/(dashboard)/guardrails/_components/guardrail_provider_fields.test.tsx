@@ -1,5 +1,5 @@
 import React from "react";
-import { cleanup, fireEvent, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, fireEvent, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useForm } from "react-hook-form";
 import { renderWithProviders } from "@/../tests/test-utils";
@@ -180,6 +180,19 @@ describe("GuardrailProviderFields Chinese copy", () => {
     fireEvent.blur(textarea);
     expect(toast.error).toHaveBeenCalledWith("请输入有效的 JSON 对象作为此配置");
     expect(toast.error).not.toHaveBeenCalledWith("Enter a valid JSON object for this configuration");
+  });
+
+  it("re-renders a stored load-failure in the new language", async () => {
+    mockGetProviderParams.mockRejectedValue(new Error("nope"));
+    renderWithProviders(<ZhHarness accessToken="test-token" />);
+    expect(await screen.findByText("加载提供商参数失败")).toBeInTheDocument();
+
+    await act(async () => {
+      await i18n.changeLanguage("en");
+    });
+
+    expect(screen.getByText("Failed to load provider parameters")).toBeInTheDocument();
+    expect(screen.queryByText("加载提供商参数失败")).not.toBeInTheDocument();
   });
 
   it("renders the Chinese loading, load-failure and empty-provider states", async () => {

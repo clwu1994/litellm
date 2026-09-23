@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { CircleAlert, Info, TriangleAlert, X } from "lucide-react";
@@ -37,6 +38,7 @@ interface UserBannerProps {
 
 export const UserBanner: React.FC<UserBannerProps> = ({ accessToken }) => {
   const { data: banner } = useUserBanner(accessToken);
+  const { t } = useTranslation("common");
   const [dismissedSignature, setDismissedSignature] = useState<string | null>(() =>
     typeof window === "undefined" ? null : localStorage.getItem(DISMISS_STORAGE_KEY),
   );
@@ -62,7 +64,7 @@ export const UserBanner: React.FC<UserBannerProps> = ({ accessToken }) => {
         <UserBannerMarkdown message={banner.message} />
       </AlertDescription>
       <AlertAction>
-        <Button variant="ghost" size="icon-sm" aria-label="Dismiss banner" onClick={handleDismiss}>
+        <Button variant="ghost" size="icon-sm" aria-label={t("dismissBanner")} onClick={handleDismiss}>
           <X />
         </Button>
       </AlertAction>

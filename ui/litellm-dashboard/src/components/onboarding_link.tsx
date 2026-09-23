@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { toast } from "@/lib/toast";
@@ -58,6 +59,7 @@ export default function OnboardingModal({
   invitationLinkData,
   modalType = "invitation",
 }: OnboardingProps) {
+  const { t } = useTranslation("users");
   const handleInvitationCancel = () => {
     setIsInvitationLinkModalVisible(false);
   };
@@ -74,24 +76,30 @@ export default function OnboardingModal({
     <Dialog open={isInvitationLinkModalVisible} onOpenChange={(open) => !open && handleInvitationCancel()}>
       <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[800px]">
         <DialogHeader>
-          <DialogTitle>{modalType === "invitation" ? "Invitation Link" : "Reset Password Link"}</DialogTitle>
+          <DialogTitle>
+            {modalType === "invitation" ? t("onboarding.invitationTitle") : t("onboarding.resetPasswordTitle")}
+          </DialogTitle>
         </DialogHeader>
         <p className="text-sm text-foreground">
           {modalType === "invitation"
-            ? "Copy and send the generated link to onboard this user to the proxy."
-            : "Copy and send the generated link to the user to reset their password."}
+            ? t("onboarding.invitationDescription")
+            : t("onboarding.resetPasswordDescription")}
         </p>
         <div className="flex justify-between pt-5 pb-2">
-          <p className="text-base">User ID</p>
+          <p className="text-base">{t("onboarding.userId")}</p>
           <p className="text-sm">{invitationLinkData?.user_id}</p>
         </div>
         <div className="flex justify-between pt-5 pb-2">
-          <p className="text-sm">{modalType === "invitation" ? "Invitation Link" : "Reset Password Link"}</p>
+          <p className="text-sm">
+            {modalType === "invitation" ? t("onboarding.invitationTitle") : t("onboarding.resetPasswordTitle")}
+          </p>
           <p className="text-sm">{getInvitationUrl()}</p>
         </div>
         <div className="flex justify-end mt-5">
-          <CopyToClipboard text={getInvitationUrl()} onCopy={() => toast.success("Copied!")}>
-            <Button>{modalType === "invitation" ? "Copy invitation link" : "Copy password reset link"}</Button>
+          <CopyToClipboard text={getInvitationUrl()} onCopy={() => toast.success(t("onboarding.copied"))}>
+            <Button>
+              {modalType === "invitation" ? t("onboarding.copyInvitationLink") : t("onboarding.copyPasswordResetLink")}
+            </Button>
           </CopyToClipboard>
         </div>
       </DialogContent>

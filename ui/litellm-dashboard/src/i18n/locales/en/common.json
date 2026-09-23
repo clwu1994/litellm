@@ -488,5 +488,16 @@
     "missingApiKey": "Missing API Key",
     "connectionTimeout": "Connection timeout",
     "networkConnectionFailed": "Network connection failed"
+  },
+  "beta": "Beta",
+  "copyCode": "Copy code",
+  "dismissBanner": "Dismiss banner",
+  "breadcrumb": "breadcrumb",
+  "helpLink": {
+    "docs": "Docs"
+  },
+  "plugin": {
+    "title": "Plugin",
+    "configure": "Configure the plugin URL in settings"
   }
 }

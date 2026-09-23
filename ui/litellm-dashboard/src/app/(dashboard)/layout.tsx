@@ -1,6 +1,7 @@
 "use client";
 
 import React, { Suspense, useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import Navbar from "@/components/navbar";
 import LoadingScreen from "@/components/common_components/LoadingScreen";
@@ -29,6 +30,7 @@ function PluginModeProviderWithAuth({ children }: { children: React.ReactNode })
 
 export function AgentControlPlaneView() {
   const { activePlugin } = usePluginMode();
+  const { t } = useTranslation("common");
   const activePluginName = activePlugin?.name;
   const agentPlatformUrl = activePlugin?.url ?? "";
   const { accessToken } = useAuth();
@@ -72,8 +74,8 @@ export function AgentControlPlaneView() {
     return (
       <div className="flex flex-1 items-center justify-center text-muted-foreground">
         <div className="text-center">
-          <p className="text-lg font-medium mb-2">Plugin</p>
-          <p className="text-sm">Configure the plugin URL in settings</p>
+          <p className="text-lg font-medium mb-2">{t("plugin.title")}</p>
+          <p className="text-sm">{t("plugin.configure")}</p>
         </div>
       </div>
     );
@@ -91,7 +93,7 @@ export function AgentControlPlaneView() {
         flex: 1,
         minHeight: "calc(100vh - 56px)",
       }}
-      title={activePlugin?.display_name ?? "Plugin"}
+      title={activePlugin?.display_name ?? t("plugin.title")}
       allow="clipboard-write"
     />
   );

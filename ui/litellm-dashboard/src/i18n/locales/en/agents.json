@@ -321,5 +321,11 @@
     },
     "enterBaseUrl": "Enter the agent's base URL first",
     "failedToDiscover": "Failed to discover agent card"
+  },
+  "selector": {
+    "placeholder": "Select agents",
+    "empty": "No agents found",
+    "accessGroup": "Access Group",
+    "agent": "Agent"
   }
 }

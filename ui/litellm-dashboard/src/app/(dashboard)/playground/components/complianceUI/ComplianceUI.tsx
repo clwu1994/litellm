@@ -91,6 +91,9 @@ interface TestResult {
   status: "pending" | "running" | "complete";
 }
 
+type CsvMessage = { key: ParseKeys<"playground">; params?: Record<string, string | number> } | { text: string };
+type CsvError = { messages: CsvMessage[]; remaining: number };
+
 interface QuickTestMessage {
   id: string;
   type: "user" | "system";
@@ -331,7 +334,7 @@ export default function ComplianceUI({
   };
 
   const [showCsvUpload, setShowCsvUpload] = useState(false);
-  const [csvError, setCsvError] = useState<string | null>(null);
+  const [csvError, setCsvError] = useState<CsvError | null>(null);
   const csvInputRef = useRef<HTMLInputElement>(null);
 
   const EXPECTED_CSV_COLUMNS = ["prompt", "expected_result"] as const;
@@ -364,11 +367,11 @@ export default function ComplianceUI({
     setCsvError(null);
 
     if (!file.name.endsWith(".csv") && file.type !== "text/csv") {
-      setCsvError(t("compliance.csv.errorNotCsv"));
+      setCsvError({ messages: [{ key: "compliance.csv.errorNotCsv" }], remaining: 0 });
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
-      setCsvError(t("compliance.csv.errorTooLarge"));
+      setCsvError({ messages: [{ key: "compliance.csv.errorTooLarge" }], remaining: 0 });
       return;
     }
 
@@ -377,18 +380,21 @@ export default function ComplianceUI({
       skipEmptyLines: true,
       complete: (results) => {
         if (!results.data || results.data.length === 0) {
-          setCsvError(t("compliance.csv.errorEmpty"));
+          setCsvError({ messages: [{ key: "compliance.csv.errorEmpty" }], remaining: 0 });
           return;
         }
 
         const headers = results.meta.fields ?? [];
         const missing = EXPECTED_CSV_COLUMNS.filter((col) => !headers.includes(col));
         if (missing.length > 0) {
-          setCsvError(t("compliance.csv.errorMissingColumns", { columns: missing.join(", ") }));
+          setCsvError({
+            messages: [{ key: "compliance.csv.errorMissingColumns", params: { columns: missing.join(", ") } }],
+            remaining: 0,
+          });
           return;
         }
 
-        const errors: string[] = [];
+        const errors: CsvMessage[] = [];
         const newPrompts: CompliancePrompt[] = [];
 
         (results.data as Record<string, string>[]).forEach((row, idx) => {
@@ -397,11 +403,14 @@ export default function ComplianceUI({
           const expected = row.expected_result?.trim().toLowerCase();
 
           if (!prompt) {
-            errors.push(t("compliance.csv.errorRowMissingPrompt", { row: rowNum }));
+            errors.push({ key: "compliance.csv.errorRowMissingPrompt", params: { row: rowNum } });
             return;
           }
           if (expected !== "fail" && expected !== "pass") {
-            errors.push(t("compliance.csv.errorRowBadExpected", { row: rowNum, value: row.expected_result ?? "" }));
+            errors.push({
+              key: "compliance.csv.errorRowBadExpected",
+              params: { row: rowNum, value: row.expected_result ?? "" },
+            });
             return;
           }
 
@@ -420,15 +429,12 @@ export default function ComplianceUI({
         });
 
         if (errors.length > 0) {
-          setCsvError(
-            errors.slice(0, 5).join("\n") +
-              (errors.length > 5 ? `\n${t("compliance.csv.errorMoreErrors", { remaining: errors.length - 5 })}` : ""),
-          );
+          setCsvError({ messages: errors.slice(0, 5), remaining: Math.max(errors.length - 5, 0) });
           return;
         }
 
         if (newPrompts.length === 0) {
-          setCsvError("No valid prompts found in CSV.");
+          setCsvError({ messages: [{ text: "No valid prompts found in CSV." }], remaining: 0 });
           return;
         }
 
@@ -451,7 +457,7 @@ export default function ComplianceUI({
         setCsvError(null);
       },
       error: () => {
-        setCsvError(t("compliance.csv.errorParseFailed"));
+        setCsvError({ messages: [{ key: "compliance.csv.errorParseFailed" }], remaining: 0 });
       },
     });
 
@@ -1057,7 +1063,12 @@ export default function ComplianceUI({
 
                   {csvError && (
                     <div className="mt-2 p-2 bg-destructive/10 border border-destructive/20 rounded-sm text-[10px] text-destructive whitespace-pre-line">
-                      {csvError}
+                      {csvError.messages
+                        .map((message) => ("key" in message ? t(message.key, message.params) : message.text))
+                        .join("\n")}
+                      {csvError.remaining > 0
+                        ? `\n${t("compliance.csv.errorMoreErrors", { remaining: csvError.remaining })}`
+                        : ""}
                     </div>
                   )}
 

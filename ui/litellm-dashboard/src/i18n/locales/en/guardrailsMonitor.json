@@ -148,5 +148,18 @@
   "chart": {
     "title": "Request Outcomes Over Time",
     "noData": "No chart data for this period"
+  },
+  "logViewer": {
+    "title": "Request Logs",
+    "titleWithName": "Logs — {{name}}",
+    "loading": "Loading…",
+    "showing": "Showing {{shown}} of {{total}} entries",
+    "emptyPeriod": "No logs for this period. Select a guardrail and date range.",
+    "sample": "Sample:",
+    "emptyDisplay": "No logs to display. Adjust filters or date range.",
+    "all": "All",
+    "blocked": "Blocked",
+    "passed": "Passed",
+    "flagged": "Flagged"
   }
 }

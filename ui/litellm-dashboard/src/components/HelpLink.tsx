@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { ExternalLink, ChevronDown } from "lucide-react";
 
 interface HelpLinkProps {
@@ -144,7 +145,8 @@ export const HelpIcon: React.FC<HelpIconProps> = ({ content, learnMoreHref, lear
  *   Docs
  * </DocsMenu>
  */
-export const DocsMenu: React.FC<DocsMenuProps> = ({ items, children = "Docs", className = "" }) => {
+export const DocsMenu: React.FC<DocsMenuProps> = ({ items, children, className = "" }) => {
+  const { t } = useTranslation("common");
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -173,7 +175,7 @@ export const DocsMenu: React.FC<DocsMenuProps> = ({ items, children = "Docs", cl
         aria-expanded={isOpen}
         aria-haspopup="true"
       >
-        <span>{children}</span>
+        <span>{children ?? t("helpLink.docs")}</span>
         <ChevronDown className={`h-3 w-3 transition-transform ${isOpen ? "rotate-180" : ""}`} aria-hidden="true" />
       </button>
 

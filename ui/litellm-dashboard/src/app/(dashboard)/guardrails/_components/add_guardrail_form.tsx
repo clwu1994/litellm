@@ -652,7 +652,7 @@ const AddGuardrailForm: React.FC<AddGuardrailFormProps> = ({ visible, onClose, a
       }
 
       if (!accessToken) {
-        throw new Error("No access token available");
+        throw new Error(t("form.toast.noAccessToken"));
       }
 
       await createGuardrailCall(accessToken, guardrailData);

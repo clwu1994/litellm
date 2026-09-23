@@ -85,6 +85,8 @@ export default function ChatConversationPage() {
   const [prevConversationIdForSessionReset, setPrevConversationIdForSessionReset] = useState(activeConversationId);
   const [isStreaming, setIsStreaming] = useState(false);
   const [inputText, setInputText] = useState("");
+  const [suggestionKey, setSuggestionKey] = useState<(typeof SUGGESTIONS)[number]["labelKey"] | null>(null);
+  const inputValue = suggestionKey ? `${t(suggestionKey)}: ` : inputText;
   const [mcpPopoverOpen, setMcpPopoverOpen] = useState(false);
   const [storageBannerDismissed, setStorageBannerDismissed] = useState(false);
 
@@ -143,6 +145,7 @@ export default function ChatConversationPage() {
       if (!trimmed || !selectedModel || isStreaming) return;
       const model = selectedModel;
       setInputText("");
+      setSuggestionKey(null);
 
       let convId = activeConversationId;
       if (!convId) {
@@ -293,7 +296,7 @@ export default function ChatConversationPage() {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      handleSend(inputText);
+      handleSend(inputValue);
     }
   };
 
@@ -303,7 +306,7 @@ export default function ChatConversationPage() {
     if (!ta) return;
     ta.style.height = "auto";
     ta.style.height = `${Math.min(ta.scrollHeight, 180)}px`;
-  }, [inputText]);
+  }, [inputValue]);
 
   // Track scroll position to show/hide scroll-to-bottom button
   useEffect(() => {
@@ -459,8 +462,11 @@ export default function ChatConversationPage() {
     <div className="bg-background rounded-xl border shadow-[0_1px_6px_rgba(0,0,0,0.06)] overflow-hidden">
       <textarea
         ref={textareaRef}
-        value={inputText}
-        onChange={(e) => setInputText(e.target.value)}
+        value={inputValue}
+        onChange={(e) => {
+          setSuggestionKey(null);
+          setInputText(e.target.value);
+        }}
         onKeyDown={handleKeyDown}
         placeholder={inConversation ? t("page.placeholderConversation") : t("page.placeholderNew")}
         className="w-full border-none outline-none resize-none text-[15px] text-foreground bg-transparent font-[inherit] box-border"
@@ -511,8 +517,8 @@ export default function ChatConversationPage() {
           ) : (
             <Button
               size="sm"
-              onClick={() => handleSend(inputText)}
-              disabled={!inputText.trim() || isLoadingModels || !selectedModel}
+              onClick={() => handleSend(inputValue)}
+              disabled={!inputValue.trim() || isLoadingModels || !selectedModel}
             >
               {t("page.send")}
             </Button>
@@ -564,7 +570,10 @@ export default function ChatConversationPage() {
                   key={s.id}
                   variant="outline"
                   size="sm"
-                  onClick={() => setInputText(t(s.labelKey) + ": ")}
+                  onClick={() => {
+                    setSuggestionKey(s.labelKey);
+                    setInputText("");
+                  }}
                   className="rounded-full px-4 text-muted-foreground"
                 >
                   {t(s.labelKey)}

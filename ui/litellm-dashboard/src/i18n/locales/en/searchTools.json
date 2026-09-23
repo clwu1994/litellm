@@ -145,5 +145,11 @@
     "toast": {
       "success": "Connection test successful!"
     }
+  },
+  "selector": {
+    "placeholder": "Select search tools (optional)",
+    "clearAll": "Clear all search tools",
+    "loading": "Loading search tools…",
+    "empty": "No search tools found"
   }
 }

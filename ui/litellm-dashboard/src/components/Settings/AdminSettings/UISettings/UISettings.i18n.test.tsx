@@ -22,14 +22,27 @@ vi.mock("@/app/(dashboard)/hooks/uiSettings/useUpdateUISettings", () => ({
 
 vi.mock("@/components/page_utils", () => ({
   getAvailablePages: (t: (key: string) => string) => [
-    { page: "usage", label: t("items.usage"), description: "View usage stats", group: t("section.observability") },
+    {
+      page: "usage",
+      label: t("items.usage"),
+      description: "View usage stats",
+      group: t("section.observability"),
+      groupKey: "section.observability",
+    },
     {
       page: "models",
       label: t("items.modelsAndEndpoints"),
       description: "Manage models",
       group: t("section.observability"),
+      groupKey: "section.observability",
     },
-    { page: "keys", label: t("items.keys"), description: "Manage API keys", group: t("section.accessControl") },
+    {
+      page: "keys",
+      label: t("items.keys"),
+      description: "Manage API keys",
+      group: t("section.accessControl"),
+      groupKey: "section.accessControl",
+    },
   ],
 }));
 

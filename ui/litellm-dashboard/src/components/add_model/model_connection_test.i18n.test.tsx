@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { act, cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -122,5 +122,19 @@ describe("ModelConnectionTest Chinese copy", () => {
 
     expect(await screen.findByText("准备模型数据失败。请检查表单输入。")).toBeInTheDocument();
     expect(screen.queryByText("Failed to prepare model data. Please check your form inputs.")).not.toBeInTheDocument();
+  });
+
+  it("re-renders a stored connection error in the new language", async () => {
+    mockTestConnectionRequest.mockResolvedValue({ status: "error" });
+    renderTest("gpt-4");
+
+    expect(await screen.findByText("未知错误")).toBeInTheDocument();
+
+    await act(async () => {
+      await i18n.changeLanguage("en");
+    });
+
+    expect(screen.getByText("Unknown error")).toBeInTheDocument();
+    expect(screen.queryByText("未知错误")).not.toBeInTheDocument();
   });
 });

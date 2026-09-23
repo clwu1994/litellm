@@ -1,4 +1,4 @@
-import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -402,6 +402,36 @@ describe("BulkCreateUsersButton Chinese copy", () => {
     expect(
       screen.queryByText("No valid data rows found in the CSV file. Please check your file format."),
     ).not.toBeInTheDocument();
+  });
+
+  it("re-renders a stored file error in the new language", async () => {
+    await open();
+
+    upload(new File(["nope"], "notes.txt", { type: "text/plain" }));
+    expect(await screen.findByText("文件类型无效：notes.txt。请上传 CSV 文件（.csv 扩展名）。")).toBeInTheDocument();
+
+    await act(async () => {
+      await i18n.changeLanguage("en");
+    });
+
+    expect(
+      screen.getByText("Invalid file type: notes.txt. Please upload a CSV file (.csv extension)."),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("文件类型无效：notes.txt。请上传 CSV 文件（.csv 扩展名）。")).not.toBeInTheDocument();
+  });
+
+  it("re-renders a stored row error in the new language", async () => {
+    await open();
+
+    upload(csv("user_email,user_role\nnotanemail,\n"));
+    expect(await screen.findByText(/邮箱格式无效（必须包含 @ 和域名）/)).toBeInTheDocument();
+
+    await act(async () => {
+      await i18n.changeLanguage("en");
+    });
+
+    expect(screen.getByText(/Invalid email format \(must contain @ and domain\)/)).toBeInTheDocument();
+    expect(screen.queryByText(/邮箱格式无效/)).not.toBeInTheDocument();
   });
 
   it("renders the invitation-failure copy in the downloaded results in Chinese and hides the English original", async () => {

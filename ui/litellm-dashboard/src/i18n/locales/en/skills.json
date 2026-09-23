@@ -150,5 +150,11 @@
     "setupTitle": "One-time marketplace setup",
     "setupRunCommand": "Run this command in Claude Code to register the marketplace:",
     "setupSettingsPrefix": "Or add this to <code>{{file}}</code> for a persistent configuration:"
+  },
+  "selector": {
+    "placeholder": "Select skills (optional)",
+    "clearAll": "Clear all skills",
+    "private": "private",
+    "privateAria": "{{name}} (private)"
   }
 }

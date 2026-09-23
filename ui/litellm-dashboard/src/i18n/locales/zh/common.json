@@ -488,5 +488,16 @@
     "missingApiKey": "缺少 API Key",
     "connectionTimeout": "连接超时",
     "networkConnectionFailed": "网络连接失败"
+  },
+  "beta": "测试版",
+  "copyCode": "复制代码",
+  "dismissBanner": "关闭横幅",
+  "breadcrumb": "面包屑导航",
+  "helpLink": {
+    "docs": "文档"
+  },
+  "plugin": {
+    "title": "插件",
+    "configure": "在设置中配置插件 URL"
   }
 }

@@ -272,5 +272,15 @@
       "teamRequired": "请选择团队",
       "teamDuplicate": "该团队已列出"
     }
+  },
+  "onboarding": {
+    "invitationTitle": "邀请链接",
+    "resetPasswordTitle": "重置密码链接",
+    "invitationDescription": "复制生成的链接并发送给此用户，以将其加入 Proxy。",
+    "resetPasswordDescription": "复制生成的链接并发送给用户以重置其密码。",
+    "userId": "用户 ID",
+    "copied": "已复制！",
+    "copyInvitationLink": "复制邀请链接",
+    "copyPasswordResetLink": "复制重置密码链接"
   }
 }

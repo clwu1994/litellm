@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Combobox,
   ComboboxChip,
@@ -45,10 +46,12 @@ const SkillSelector: React.FC<SkillSelectorProps> = ({
   value,
   className,
   accessToken,
-  placeholder = "Select skills (optional)",
+  placeholder,
   disabled = false,
 }) => {
   const anchor = useComboboxAnchor();
+  const { t } = useTranslation("skills");
+  const resolvedPlaceholder = placeholder ?? t("selector.placeholder");
   const [options, setOptions] = useState<SkillOption[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -85,18 +88,22 @@ const SkillSelector: React.FC<SkillSelectorProps> = ({
             ))
           }
         </ComboboxValue>
-        <ComboboxChipsInput placeholder={placeholder} aria-label={placeholder} disabled={disabled} />
-        {value && value.length > 0 && <ComboboxClear aria-label="Clear all skills" disabled={disabled} />}
+        <ComboboxChipsInput placeholder={resolvedPlaceholder} aria-label={resolvedPlaceholder} disabled={disabled} />
+        {value && value.length > 0 && <ComboboxClear aria-label={t("selector.clearAll")} disabled={disabled} />}
       </ComboboxChips>
       <ComboboxContent anchor={anchor}>
-        <ComboboxEmpty>{loading ? "Loading skills…" : "No skills found"}</ComboboxEmpty>
+        <ComboboxEmpty>{loading ? t("table.loading") : t("table.empty.title")}</ComboboxEmpty>
         <ComboboxList>
           {(skill: string) => {
             const isPrivate = options.some((option) => option.name === skill && !option.enabled);
             return (
-              <ComboboxItem key={skill} value={skill} aria-label={isPrivate ? `${skill} (private)` : skill}>
+              <ComboboxItem
+                key={skill}
+                value={skill}
+                aria-label={isPrivate ? t("selector.privateAria", { name: skill }) : skill}
+              >
                 {skill}
-                {isPrivate && <span className="ml-2 text-xs text-muted-foreground">private</span>}
+                {isPrivate && <span className="ml-2 text-xs text-muted-foreground">{t("selector.private")}</span>}
               </ComboboxItem>
             );
           }}

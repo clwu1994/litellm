@@ -1,5 +1,5 @@
 import React from "react";
-import { cleanup, fireEvent, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, fireEvent, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -204,6 +204,24 @@ describe("chat page Chinese copy", () => {
 
     expect(await screen.findByText("2 个工具已连接")).toBeInTheDocument();
     expect(screen.queryByText("2 tools connected")).not.toBeInTheDocument();
+  });
+
+  it("relabels a suggestion-filled composer when the language changes", async () => {
+    const user = userEvent.setup({ delay: null });
+    renderPage();
+    await waitForModel();
+
+    await user.click(screen.getByRole("button", { name: "写作" }));
+
+    const composer = screen.getByPlaceholderText("今天我能帮你做什么？");
+    expect(composer).toHaveValue("写作: ");
+
+    await act(async () => {
+      await i18n.changeLanguage("en");
+    });
+
+    expect(composer).toHaveValue("Write: ");
+    expect(composer).not.toHaveValue("写作: ");
   });
 
   it("resolves the singular and plural connected-tool branches under English", async () => {

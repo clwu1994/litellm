@@ -102,5 +102,8 @@
     "fetchDetailsFailed": "Error fetching tag details: {{error}}",
     "updateSuccess": "Tag updated successfully",
     "updateFailed": "Error updating tag: {{error}}"
+  },
+  "selector": {
+    "placeholder": "Select or create tags"
   }
 }

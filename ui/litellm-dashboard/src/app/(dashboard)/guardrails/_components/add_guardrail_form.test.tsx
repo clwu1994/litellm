@@ -421,6 +421,23 @@ describe("AddGuardrailForm Chinese copy", () => {
     expect(toast.fromError).not.toHaveBeenCalledWith("Failed to create guardrail: boom");
   });
 
+  it("renders the Chinese missing-token create failure and hides the English one", async () => {
+    const user = userEvent.setup({ delay: null });
+    renderWithProviders(
+      <AddGuardrailForm visible onClose={vi.fn()} accessToken={null} onSuccess={vi.fn()} preset={undefined} />,
+    );
+
+    await user.type(await screen.findByLabelText("Guardrail 名称"), "my-bedrock");
+    await pickZhProvider(user, "Bedrock Guardrail");
+    await user.click(screen.getByText("下一步"));
+    await user.click(await screen.findByRole("button", { name: "创建 Guardrail" }));
+
+    await vi.waitFor(() =>
+      expect(toast.fromError).toHaveBeenCalledWith("创建 Guardrail 失败：没有可用的 access token"),
+    );
+    expect(toast.fromError).not.toHaveBeenCalledWith("Failed to create guardrail: No access token available");
+  });
+
   it("renders the Chinese configuration load-failure toast and hides the English one", async () => {
     vi.mocked(networking.getGuardrailUISettings).mockRejectedValue(new Error("nope"));
     renderZhForm();

@@ -182,7 +182,8 @@
     "toast": {
       "loadConfigFailed": "加载 Guardrail 配置失败",
       "created": "Guardrail 创建成功",
-      "createFailed": "创建 Guardrail 失败：{{message}}"
+      "createFailed": "创建 Guardrail 失败：{{message}}",
+      "noAccessToken": "没有可用的 access token"
     }
   },
   "providerFields": {

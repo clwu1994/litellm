@@ -18,6 +18,10 @@ interface ModelConnectionTestProps {
   onTestComplete?: () => void;
 }
 
+type ConnectionTestError =
+  | { kind: "key"; key: "addModel.connectionTest.prepareFailed" | "addModel.connectionTest.unknownError" }
+  | { kind: "message"; message: string };
+
 const ModelConnectionTest: React.FC<ModelConnectionTestProps> = ({
   formValues,
   accessToken,
@@ -28,7 +32,7 @@ const ModelConnectionTest: React.FC<ModelConnectionTestProps> = ({
 }) => {
   const { t } = useTranslation("models");
   const displayModelName = modelName ?? t("addModel.connectionTest.thisModel");
-  const [error, setError] = React.useState<Error | string | null>(null);
+  const [error, setError] = React.useState<ConnectionTestError | null>(null);
   const [rawResponse, setRawResponse] = React.useState<any>(null);
   const [isLoading, setIsLoading] = React.useState(true);
   const [isSuccess, setIsSuccess] = React.useState(false);
@@ -47,7 +51,7 @@ const ModelConnectionTest: React.FC<ModelConnectionTestProps> = ({
       const result = await prepareModelAddRequest(formValues, accessToken, null, t);
 
       if (!result) {
-        setError(t("addModel.connectionTest.prepareFailed"));
+        setError({ kind: "key", key: "addModel.connectionTest.prepareFailed" });
         setIsSuccess(false);
         setIsLoading(false);
         return;
@@ -61,14 +65,21 @@ const ModelConnectionTest: React.FC<ModelConnectionTestProps> = ({
         setError(null);
         setIsSuccess(true);
       } else {
-        const errorMessage = response.result?.error || response.message || t("addModel.connectionTest.unknownError");
-        setError(errorMessage);
+        const errorMessage = response.result?.error || response.message;
+        setError(
+          errorMessage
+            ? { kind: "message", message: errorMessage }
+            : { kind: "key", key: "addModel.connectionTest.unknownError" },
+        );
         setRawResponse(response.result?.raw_request_typed_dict);
         setIsSuccess(false);
       }
     } catch (connectionError) {
       console.error("Test connection error:", connectionError);
-      setError(connectionError instanceof Error ? connectionError.message : String(connectionError));
+      setError({
+        kind: "message",
+        message: connectionError instanceof Error ? connectionError.message : String(connectionError),
+      });
       setIsSuccess(false);
     } finally {
       setIsLoading(false);
@@ -94,11 +105,17 @@ const ModelConnectionTest: React.FC<ModelConnectionTestProps> = ({
   };
 
   const errorMessage =
-    typeof error === "string"
-      ? getCleanErrorMessage(error)
-      : error?.message
-        ? getCleanErrorMessage(error.message)
-        : t("addModel.connectionTest.unknownError");
+    error === null
+      ? t("addModel.connectionTest.unknownError")
+      : error.kind === "key"
+        ? t(error.key)
+        : getCleanErrorMessage(error.message);
+
+  const errorDetail = (value: ConnectionTestError | null): string => {
+    if (value === null) return "";
+    if (value.kind === "key") return t(value.key);
+    return value.message;
+  };
 
   const formatCurlCommand = (
     apiBase: string,
@@ -178,7 +195,7 @@ ${formattedBody}
             <div className="mb-5">
               <p className="mb-2 text-sm font-medium">{t("addModel.connectionTest.troubleshooting")}</p>
               <pre className="max-h-52 overflow-auto rounded-lg border bg-muted/50 p-4 text-xs leading-relaxed">
-                {typeof error === "string" ? error : JSON.stringify(error, null, 2)}
+                {errorDetail(error)}
               </pre>
             </div>
           )}

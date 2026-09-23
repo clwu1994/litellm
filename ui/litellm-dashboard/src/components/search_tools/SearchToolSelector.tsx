@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Combobox,
   ComboboxChip,
@@ -29,10 +30,12 @@ const SearchToolSelector: React.FC<SearchToolSelectorProps> = ({
   value,
   className,
   accessToken,
-  placeholder = "Select search tools (optional)",
+  placeholder,
   disabled = false,
 }) => {
   const anchor = useComboboxAnchor();
+  const { t } = useTranslation("searchTools");
+  const resolvedPlaceholder = placeholder ?? t("selector.placeholder");
   const [options, setOptions] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -79,11 +82,11 @@ const SearchToolSelector: React.FC<SearchToolSelectorProps> = ({
             ))
           }
         </ComboboxValue>
-        <ComboboxChipsInput placeholder={placeholder} aria-label={placeholder} disabled={disabled} />
-        {value && value.length > 0 && <ComboboxClear aria-label="Clear all search tools" disabled={disabled} />}
+        <ComboboxChipsInput placeholder={resolvedPlaceholder} aria-label={resolvedPlaceholder} disabled={disabled} />
+        {value && value.length > 0 && <ComboboxClear aria-label={t("selector.clearAll")} disabled={disabled} />}
       </ComboboxChips>
       <ComboboxContent anchor={anchor}>
-        <ComboboxEmpty>{loading ? "Loading search tools…" : "No search tools found"}</ComboboxEmpty>
+        <ComboboxEmpty>{loading ? t("selector.loading") : t("selector.empty")}</ComboboxEmpty>
         <ComboboxList>
           {(tool: string) => (
             <ComboboxItem key={tool} value={tool}>

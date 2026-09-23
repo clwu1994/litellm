@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import type { ParseKeys } from "i18next";
 import { Trans, useTranslation } from "react-i18next";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -26,7 +27,7 @@ interface UserData {
   budget_duration?: string;
   models?: string | string[];
   status?: string;
-  error?: string;
+  error?: BulkMessage[];
   rowNumber?: number;
   isValid?: boolean;
   key?: string;
@@ -34,6 +35,16 @@ interface UserData {
 }
 
 const PREVIEW_PAGE_SIZE = 5;
+
+type BulkMessage =
+  | { kind: "key"; key: ParseKeys<"templates">; params?: Record<string, string | number> }
+  | { kind: "raw"; text: string };
+
+const keyMessage = (key: ParseKeys<"templates">, params?: Record<string, string | number>): BulkMessage => ({
+  kind: "key",
+  key,
+  params,
+});
 
 // Define an interface for the UI settings
 interface UISettings {
@@ -53,15 +64,19 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [parsedData, setParsedData] = useState<UserData[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [parseError, setParseError] = useState<string | null>(null);
-  const [csvStructureError, setCsvStructureError] = useState<string | null>(null);
-  const [fileError, setFileError] = useState<string | null>(null);
+  const [parseError, setParseError] = useState<BulkMessage | null>(null);
+  const [csvStructureError, setCsvStructureError] = useState<BulkMessage | null>(null);
+  const [fileError, setFileError] = useState<BulkMessage | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uiSettings, setUISettings] = useState<UISettings | null>(null);
   const [baseUrl, setBaseUrl] = useState("http://localhost:4000");
   const [isDraggingOver, setIsDraggingOver] = useState(false);
   const [pageIndex, setPageIndex] = useState(0);
   const csvInputId = React.useId();
+  const messageText = (message: BulkMessage | null): string =>
+    message?.kind === "key" ? t(message.key, message.params) : message?.text ?? "";
+  const errorText = (messages: BulkMessage[] | undefined): string =>
+    (messages ?? []).map((message) => messageText(message)).join(", ");
 
   useEffect(() => {
     // Get UI settings
@@ -92,14 +107,14 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
 
     // Check file type
     if (file.type !== "text/csv" && !file.name.endsWith(".csv")) {
-      setFileError(t("bulkUsers.invalidFileType", { fileName: file.name }));
+      setFileError({ kind: "key", key: "bulkUsers.invalidFileType", params: { fileName: file.name } });
       toast.fromError(t("bulkUsers.invalidFileTypeToast"));
       return;
     }
 
     // Check file size (limit to 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      setFileError(t("bulkUsers.fileTooLarge", { size: (file.size / (1024 * 1024)).toFixed(1) }));
+      setFileError(keyMessage("bulkUsers.fileTooLarge", { size: (file.size / (1024 * 1024)).toFixed(1) }));
       return;
     }
 
@@ -107,14 +122,14 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
       complete: (results) => {
         // Check if file is empty
         if (!results.data || results.data.length === 0) {
-          setCsvStructureError(t("bulkUsers.csvEmpty"));
+          setCsvStructureError({ kind: "key", key: "bulkUsers.csvEmpty" });
           setParsedData([]);
           return;
         }
 
         // Check if there's only header row
         if (results.data.length === 1) {
-          setCsvStructureError(t("bulkUsers.csvHeadersOnly"));
+          setCsvStructureError({ kind: "key", key: "bulkUsers.csvHeadersOnly" });
           setParsedData([]);
           return;
         }
@@ -123,7 +138,7 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
 
         // Check if headers exist
         if (headers.length === 0 || (headers.length === 1 && headers[0] === "")) {
-          setCsvStructureError(t("bulkUsers.csvNoHeaders"));
+          setCsvStructureError({ kind: "key", key: "bulkUsers.csvNoHeaders" });
           setParsedData([]);
           return;
         }
@@ -133,7 +148,7 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
         // Check if all required columns are present
         const missingColumns = requiredColumns.filter((col) => !headers.includes(col));
         if (missingColumns.length > 0) {
-          setCsvStructureError(t("bulkUsers.csvMissingColumns", { columns: missingColumns.join(", ") }));
+          setCsvStructureError(keyMessage("bulkUsers.csvMissingColumns", { columns: missingColumns.join(", ") }));
           setParsedData([]);
           return;
         }
@@ -152,7 +167,7 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
                 return {
                   rowNumber: index + 2,
                   isValid: false,
-                  error: t("bulkUsers.rowFewerColumns", { row: index + 2 }),
+                  error: [{ kind: "key", key: "bulkUsers.rowFewerColumns", params: { row: index + 2 } }],
                   user_email: "",
                   user_role: "",
                 } as UserData;
@@ -167,42 +182,44 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
                 models: row[headers.indexOf("models")]?.trim(),
                 rowNumber: index + 2,
                 isValid: true,
-                error: "",
+                error: [],
               };
 
               // Validate the row
-              const errors: string[] = [];
+              const errors: BulkMessage[] = [];
 
               // Email validation
               if (!user.user_email) {
-                errors.push(t("bulkUsers.emailRequired"));
+                errors.push({ kind: "key", key: "bulkUsers.emailRequired" });
               } else if (!user.user_email.includes("@") || !user.user_email.includes(".")) {
-                errors.push(t("bulkUsers.invalidEmail"));
+                errors.push({ kind: "key", key: "bulkUsers.invalidEmail" });
               }
 
               // Role validation
               if (!user.user_role) {
-                errors.push(t("bulkUsers.roleRequired"));
+                errors.push({ kind: "key", key: "bulkUsers.roleRequired" });
               } else {
                 // Validate user role
                 const validRoles = ["proxy_admin", "proxy_admin_viewer", "internal_user", "internal_user_viewer"];
                 if (!validRoles.includes(user.user_role)) {
-                  errors.push(t("bulkUsers.invalidRole", { role: user.user_role, roles: validRoles.join(", ") }));
+                  errors.push(
+                    keyMessage("bulkUsers.invalidRole", { role: user.user_role, roles: validRoles.join(", ") }),
+                  );
                 }
               }
 
               // Budget validation
               if (user.max_budget && user.max_budget.toString().trim() !== "") {
                 if (isNaN(parseFloat(user.max_budget.toString()))) {
-                  errors.push(t("bulkUsers.maxBudgetNumber", { budget: user.max_budget }));
+                  errors.push({ kind: "key", key: "bulkUsers.maxBudgetNumber", params: { budget: user.max_budget } });
                 } else if (parseFloat(user.max_budget.toString()) <= 0) {
-                  errors.push(t("bulkUsers.maxBudgetPositive"));
+                  errors.push({ kind: "key", key: "bulkUsers.maxBudgetPositive" });
                 }
               }
 
               // Budget duration validation
               if (user.budget_duration && !user.budget_duration.match(/^\d+[dhmwy]$|^\d+mo$/)) {
-                errors.push(t("bulkUsers.invalidBudgetDuration", { duration: user.budget_duration }));
+                errors.push(keyMessage("bulkUsers.invalidBudgetDuration", { duration: user.budget_duration }));
               }
 
               // Teams validation
@@ -213,14 +230,14 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
                   const userTeams = user.teams.split(",").map((t) => t.trim());
                   const invalidTeams = userTeams.filter((t) => !teamIds.includes(t));
                   if (invalidTeams.length > 0) {
-                    errors.push(t("bulkUsers.unknownTeams", { teams: invalidTeams.join(", ") }));
+                    errors.push(keyMessage("bulkUsers.unknownTeams", { teams: invalidTeams.join(", ") }));
                   }
                 }
               }
 
               if (errors.length > 0) {
                 user.isValid = false;
-                user.error = errors.join(", ");
+                user.error = errors;
               }
 
               return user;
@@ -231,12 +248,12 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
           setParsedData(userData);
 
           if (userData.length === 0) {
-            setCsvStructureError(t("bulkUsers.noValidDataRows"));
+            setCsvStructureError({ kind: "key", key: "bulkUsers.noValidDataRows" });
           } else if (validData.length === 0) {
-            setParseError(t("bulkUsers.noValidUsers"));
+            setParseError({ kind: "key", key: "bulkUsers.noValidUsers" });
           } else if (validData.length < userData.length) {
             setParseError(
-              t("bulkUsers.rowsWithErrors", {
+              keyMessage("bulkUsers.rowsWithErrors", {
                 errorCount: userData.length - validData.length,
                 total: userData.length,
               }),
@@ -246,12 +263,12 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
           }
         } catch (error: unknown) {
           const errorMessage = error instanceof Error ? error.message : "Unknown error";
-          setParseError(`Error parsing CSV: ${errorMessage}`);
+          setParseError({ kind: "raw", text: `Error parsing CSV: ${errorMessage}` });
           setParsedData([]);
         }
       },
       error: (error) => {
-        setParseError(`Failed to parse CSV file: ${error.message}`);
+        setParseError({ kind: "raw", text: `Failed to parse CSV file: ${error.message}` });
         setParsedData([]);
       },
       header: false,
@@ -403,23 +420,27 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
                       ...u,
                       status: "success",
                       key: response.key || response.user_id,
-                      error: t("bulkUsers.userCreatedInviteFailed"),
+                      error: [{ kind: "key", key: "bulkUsers.userCreatedInviteFailed" }],
                     }
                   : u,
               ),
             );
           }
         } else {
-          const errorMessage = response?.error || t("bulkUsers.failedToCreateUser");
+          const errorMessages: BulkMessage[] = response?.error
+            ? [{ kind: "raw", text: response.error }]
+            : [{ kind: "key", key: "bulkUsers.failedToCreateUser" }];
           setParsedData((current) =>
-            current.map((u, i) => (i === index ? { ...u, status: "failed", error: errorMessage } : u)),
+            current.map((u, i) => (i === index ? { ...u, status: "failed", error: errorMessages } : u)),
           );
         }
       } catch (error) {
         console.error("Caught error:", error);
         const errorMessage = (error as any)?.response?.data?.error || (error as Error)?.message || String(error);
         setParsedData((current) =>
-          current.map((u, i) => (i === index ? { ...u, status: "failed", error: errorMessage } : u)),
+          current.map((u, i) =>
+            i === index ? { ...u, status: "failed", error: [{ kind: "raw", text: errorMessage }] } : u,
+          ),
         );
       }
     }
@@ -439,7 +460,7 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
       status: user.status,
       key: user.key || "",
       invitation_link: user.invitation_link || "",
-      error: user.error || "",
+      error: errorText(user.error),
     }));
 
     const csv = Papa.unparse(results);
@@ -462,7 +483,9 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
             <XCircleIcon className="h-5 w-5 text-destructive mr-2" />
             <span className="text-destructive">{t("bulkUsers.invalid")}</span>
           </div>
-          {record.error && <span className="text-sm text-destructive ml-7">{record.error}</span>}
+          {record.error && record.error.length > 0 && (
+            <span className="text-sm text-destructive ml-7">{errorText(record.error)}</span>
+          )}
         </div>
       );
     }
@@ -498,7 +521,9 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
           <XCircleIcon className="h-5 w-5 text-destructive mr-2" />
           <span className="text-destructive">{t("bulkUsers.failed")}</span>
         </div>
-        {record.error && <span className="text-sm text-destructive ml-7">{JSON.stringify(record.error)}</span>}
+        {record.error && record.error.length > 0 && (
+          <span className="text-sm text-destructive ml-7">{JSON.stringify(errorText(record.error))}</span>
+        )}
       </div>
     );
   };
@@ -629,7 +654,7 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
                       {fileError ? (
                         <div className="mt-3 text-destructive text-sm flex items-start">
                           <TriangleAlert className="size-3.5 shrink-0 mr-2 mt-0.5" />
-                          <span className="min-w-0 break-words">{fileError}</span>
+                          <span className="min-w-0 break-words">{messageText(fileError)}</span>
                         </div>
                       ) : (
                         !csvStructureError && (
@@ -677,7 +702,7 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
                         <ExclamationIcon className="h-5 w-5 shrink-0 text-warning mr-2 mt-0.5" />
                         <div className="min-w-0">
                           <strong className="text-warning">{t("bulkUsers.csvStructureError")}</strong>
-                          <p className="text-warning mt-1 mb-0 break-words">{csvStructureError}</p>
+                          <p className="text-warning mt-1 mb-0 break-words">{messageText(csvStructureError)}</p>
                           <p className="text-warning mt-2 mb-0">{t("bulkUsers.downloadTemplateNote")}</p>
                         </div>
                       </div>
@@ -703,7 +728,7 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
                     <div className="flex items-start">
                       <TriangleAlert className="size-4 shrink-0 text-destructive mr-2 mt-1" />
                       <div className="min-w-0">
-                        <p className="text-destructive font-medium break-words">{parseError}</p>
+                        <p className="text-destructive font-medium break-words">{messageText(parseError)}</p>
                         {parsedData.some((user) => !user.isValid) && (
                           <ul className="mt-2 list-disc list-inside text-destructive text-sm">
                             <li>{t("bulkUsers.checkTable")}</li>

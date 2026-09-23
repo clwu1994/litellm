@@ -3,6 +3,11 @@
  * This file contains descriptions and metadata for all navigation pages
  */
 
+import type zhNav from "@/i18n/locales/zh/nav.json";
+
+export type PageGroupKey = `section.${keyof typeof zhNav.section}`;
+export type PageParentKey = `items.${keyof typeof zhNav.items}`;
+
 // Page descriptions for UI Settings configuration
 export const pageDescriptions: Record<string, string> = {
   "api-keys": "Manage virtual keys for API access and authentication",
@@ -48,5 +53,7 @@ export interface PageMetadata {
   page: string;
   label: string;
   group: string;
+  groupKey: PageGroupKey;
+  parentKey?: PageParentKey;
   description: string;
 }

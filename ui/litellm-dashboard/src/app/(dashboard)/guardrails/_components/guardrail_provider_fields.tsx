@@ -264,7 +264,7 @@ const GuardrailProviderFields: React.FC<GuardrailProviderFieldsProps> = ({
   const { t } = useTranslation("guardrails");
   const [loading, setLoading] = useState(false);
   const [providerParams, setProviderParams] = useState<ProviderParamsResponse | null>(providerParamsProp);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<"providerFields.loadFailed" | null>(null);
 
   // Fetch provider-specific parameters when component mounts
   useEffect(() => {
@@ -289,7 +289,7 @@ const GuardrailProviderFields: React.FC<GuardrailProviderFieldsProps> = ({
         populateGuardrailProviderMap(data);
       } catch (error) {
         console.error("Error fetching provider params:", error);
-        setError(t("providerFields.loadFailed"));
+        setError("providerFields.loadFailed");
       } finally {
         setLoading(false);
       }
@@ -299,7 +299,7 @@ const GuardrailProviderFields: React.FC<GuardrailProviderFieldsProps> = ({
     if (!providerParamsProp) {
       fetchProviderParams();
     }
-  }, [accessToken, providerParamsProp, t]);
+  }, [accessToken, providerParamsProp]);
 
   // If no provider is selected, don't render anything
   if (!selectedProvider) {
@@ -318,7 +318,7 @@ const GuardrailProviderFields: React.FC<GuardrailProviderFieldsProps> = ({
 
   // Show error state
   if (error) {
-    return <div className="text-destructive">{error}</div>;
+    return <div className="text-destructive">{t(error)}</div>;
   }
 
   // Get the provider key matching the selected provider in the guardrail_provider_map

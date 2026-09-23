@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
+import type { ParseKeys } from "i18next";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
@@ -27,7 +28,7 @@ const PLACEHOLDER = `{
 const ImportMCPServers: React.FC<ImportMCPServersProps> = ({ accessToken, open, onClose, onImported }) => {
   const { t } = useTranslation("mcpServers");
   const [configText, setConfigText] = useState("");
-  const [parseError, setParseError] = useState<string | null>(null);
+  const [parseError, setParseError] = useState<ParseKeys<"mcpServers"> | null>(null);
   const [isImporting, setIsImporting] = useState(false);
   const [result, setResult] = useState<MCPConnectorImportResponse | null>(null);
 
@@ -39,9 +40,9 @@ const ImportMCPServers: React.FC<ImportMCPServersProps> = ({ accessToken, open, 
   };
 
   const handleImport = async () => {
-    const parsed = parseConnectorConfig(configText, t);
+    const parsed = parseConnectorConfig(configText);
     if (!parsed.ok) {
-      setParseError(parsed.error);
+      setParseError(parsed.errorKey);
       return;
     }
     setParseError(null);
@@ -59,7 +60,7 @@ const ImportMCPServers: React.FC<ImportMCPServersProps> = ({ accessToken, open, 
       }
     } catch (error) {
       console.error("Failed to import MCP servers:", error);
-      setParseError(t("import.requestFailed"));
+      setParseError("import.requestFailed");
     } finally {
       setIsImporting(false);
     }
@@ -85,7 +86,7 @@ const ImportMCPServers: React.FC<ImportMCPServersProps> = ({ accessToken, open, 
           />
           {parseError && (
             <Alert variant="destructive">
-              <AlertTitle>{parseError}</AlertTitle>
+              <AlertTitle>{t(parseError)}</AlertTitle>
             </Alert>
           )}
           {result && (

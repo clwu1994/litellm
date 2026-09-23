@@ -1,4 +1,5 @@
 import React from "react";
+import { act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -119,6 +120,21 @@ describe("AgentCardDiscovery Chinese copy", () => {
     expect(await screen.findByText("请先输入 Agent 的 Base URL")).toBeInTheDocument();
     expect(screen.queryByText("Enter the agent's base URL first")).not.toBeInTheDocument();
     expect(mockDiscover).not.toHaveBeenCalled();
+  });
+
+  it("re-renders a stored discovery error in the new language", async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    renderWithProviders(<AgentCardDiscovery accessToken="tok" onApply={vi.fn()} />);
+
+    await user.click(screen.getByRole("button", { name: "发现" }));
+    expect(await screen.findByText("请先输入 Agent 的 Base URL")).toBeInTheDocument();
+
+    await act(async () => {
+      await i18n.changeLanguage("en");
+    });
+
+    expect(screen.getByText("Enter the agent's base URL first")).toBeInTheDocument();
+    expect(screen.queryByText("请先输入 Agent 的 Base URL")).not.toBeInTheDocument();
   });
 
   it("renders the Chinese no-token error and hides the English original", async () => {

@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
+import type { ParseKeys } from "i18next";
 import { ChevronDown, CircleAlert, CircleCheck, Info, Link as LinkIcon, RotateCw, Search, X } from "lucide-react";
 
 import { useDebouncedCallback } from "@tanstack/react-pacer/debouncer";
@@ -25,6 +26,8 @@ import {
 } from "./agent_discovery_utils";
 
 const DISCOVERY_DEBOUNCE_WAIT_MS = 400;
+
+type DiscoveryError = { kind: "key"; key: ParseKeys<"agents"> } | { kind: "message"; message: string };
 
 export interface DiscoveredAgentCardSelection {
   /** Full upstream card the proxy fetched, unmodified. */
@@ -71,7 +74,7 @@ const AgentCardDiscovery: React.FC<AgentCardDiscoveryProps> = ({
   // supplied a plan, the admin types into this field manually.
   const [manualUrl, setManualUrl] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<DiscoveryError | null>(null);
   const [card, setCard] = useState<DiscoveredAgentCard | null>(null);
 
   const isParentDriven = discoveryRequest !== undefined;
@@ -120,13 +123,17 @@ const AgentCardDiscovery: React.FC<AgentCardDiscoveryProps> = ({
 
   const handleDiscover = useCallback(async () => {
     if (!accessToken) {
-      setError(t("form.toast.noAccessToken"));
+      setError({ kind: "key", key: "form.toast.noAccessToken" });
       onApplyRef.current(null);
       return;
     }
     const trimmed = effectiveUrl.trim();
     if (!trimmed) {
-      setError(isParentDriven ? "Fill in the agent's connection details above first" : t("discovery.enterBaseUrl"));
+      setError(
+        isParentDriven
+          ? { kind: "message", message: "Fill in the agent's connection details above first" }
+          : { kind: "key", key: "discovery.enterBaseUrl" },
+      );
       setCard(null);
       onApplyRef.current(null);
       return;
@@ -153,7 +160,11 @@ const AgentCardDiscovery: React.FC<AgentCardDiscoveryProps> = ({
       resetSelections(response.agent_card);
     } catch (e: any) {
       if (requestId !== discoverRequestIdRef.current) return;
-      setError(e?.message ? String(e.message) : t("discovery.failedToDiscover"));
+      setError(
+        e?.message
+          ? { kind: "message", message: String(e.message) }
+          : { kind: "key", key: "discovery.failedToDiscover" },
+      );
       setCard(null);
       lastSyncedSelectionRef.current = null;
       onApplyRef.current(null);
@@ -172,7 +183,7 @@ const AgentCardDiscovery: React.FC<AgentCardDiscoveryProps> = ({
     // during editing), which would re-fire the auto-discover effect and
     // wipe in-progress user selections.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accessToken, effectiveUrl, isParentDriven, discoveryMode, discoveryParamsKey, t]);
+  }, [accessToken, effectiveUrl, isParentDriven, discoveryMode, discoveryParamsKey]);
 
   const debouncedDiscover = useDebouncedCallback(
     () => {
@@ -315,7 +326,7 @@ const AgentCardDiscovery: React.FC<AgentCardDiscoveryProps> = ({
         <Alert variant="destructive" className="mt-3">
           <CircleAlert />
           <AlertTitle>{t("discovery.failed")}</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
+          <AlertDescription>{error.kind === "key" ? t(error.key) : error.message}</AlertDescription>
           <AlertAction>
             <Button
               variant="ghost"

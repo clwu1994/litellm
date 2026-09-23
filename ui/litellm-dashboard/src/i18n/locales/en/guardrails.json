@@ -182,7 +182,8 @@
     "toast": {
       "loadConfigFailed": "Failed to load guardrail configuration",
       "created": "Guardrail created successfully",
-      "createFailed": "Failed to create guardrail: {{message}}"
+      "createFailed": "Failed to create guardrail: {{message}}",
+      "noAccessToken": "No access token available"
     }
   },
   "providerFields": {

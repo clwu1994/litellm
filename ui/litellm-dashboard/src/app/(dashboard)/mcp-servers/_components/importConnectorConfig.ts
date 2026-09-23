@@ -1,4 +1,4 @@
-import type { TFunction } from "i18next";
+import type { ParseKeys } from "i18next";
 
 export interface MCPConnectorImportResult {
   name: string;
@@ -24,43 +24,43 @@ export interface MCPConnectorImportResponse {
 
 export type ParsedConnectorConfig =
   | { ok: true; payload: Record<string, unknown>; connectorCount: number }
-  | { ok: false; error: string };
+  | { ok: false; errorKey: ParseKeys<"mcpServers"> };
 
-export const parseConnectorConfig = (text: string, t: TFunction<"mcpServers">): ParsedConnectorConfig => {
+export const parseConnectorConfig = (text: string): ParsedConnectorConfig => {
   const trimmed = text.trim();
   if (!trimmed) {
-    return { ok: false, error: t("importParse.emptyInput") };
+    return { ok: false, errorKey: "importParse.emptyInput" };
   }
   let parsed: unknown;
   try {
     parsed = JSON.parse(trimmed);
   } catch {
-    return { ok: false, error: t("importParse.invalidJson") };
+    return { ok: false, errorKey: "importParse.invalidJson" };
   }
   if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
-    return { ok: false, error: t("importParse.expectedKey") };
+    return { ok: false, errorKey: "importParse.expectedKey" };
   }
   const record = parsed as Record<string, unknown>;
   const mapping = record.mcpServers;
   if (mapping !== undefined) {
     if (typeof mapping !== "object" || mapping === null || Array.isArray(mapping)) {
-      return { ok: false, error: t("importParse.mcpServersMustBeObject") };
+      return { ok: false, errorKey: "importParse.mcpServersMustBeObject" };
     }
     const connectorCount = Object.keys(mapping).length;
     if (connectorCount === 0) {
-      return { ok: false, error: t("importParse.mcpServersEmpty") };
+      return { ok: false, errorKey: "importParse.mcpServersEmpty" };
     }
     return { ok: true, payload: { mcpServers: mapping }, connectorCount };
   }
   const list = record.mcp_servers;
   if (list !== undefined) {
     if (!Array.isArray(list)) {
-      return { ok: false, error: t("importParse.mcpServersMustBeArray") };
+      return { ok: false, errorKey: "importParse.mcpServersMustBeArray" };
     }
     if (list.length === 0) {
-      return { ok: false, error: t("importParse.mcpServersArrayEmpty") };
+      return { ok: false, errorKey: "importParse.mcpServersArrayEmpty" };
     }
     return { ok: true, payload: { mcp_servers: list }, connectorCount: list.length };
   }
-  return { ok: false, error: t("importParse.expectedKey") };
+  return { ok: false, errorKey: "importParse.expectedKey" };
 };

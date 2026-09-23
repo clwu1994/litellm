@@ -145,5 +145,11 @@
     "toast": {
       "success": "连接测试成功！"
     }
+  },
+  "selector": {
+    "placeholder": "选择搜索工具（可选）",
+    "clearAll": "清除所有搜索工具",
+    "loading": "正在加载搜索工具…",
+    "empty": "未找到搜索工具"
   }
 }

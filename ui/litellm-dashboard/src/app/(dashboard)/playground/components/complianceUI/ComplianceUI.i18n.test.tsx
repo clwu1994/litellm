@@ -410,6 +410,22 @@ describe("ComplianceUI Chinese copy", () => {
     expect(screen.queryByText("Failed to parse CSV file.")).not.toBeInTheDocument();
   });
 
+  it("re-renders a stored CSV error in the new language", async () => {
+    const user = userEvent.setup({ delay: null });
+    const { container } = await renderCompliance();
+    await openCsvPanel(user);
+
+    fireEvent.change(csvInput(container), { target: { files: [new File(["x"], "data.txt", { type: "text/plain" })] } });
+    expect(await screen.findByText("请上传 .csv 文件。")).toBeInTheDocument();
+
+    await act(async () => {
+      await i18n.changeLanguage("en");
+    });
+
+    expect(screen.getByText("Please upload a .csv file.")).toBeInTheDocument();
+    expect(screen.queryByText("请上传 .csv 文件。")).not.toBeInTheDocument();
+  });
+
   it("renders the English CSV-uploaded library copy under en", async () => {
     await i18n.changeLanguage("en");
     const user = userEvent.setup({ delay: null });

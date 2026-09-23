@@ -1,4 +1,4 @@
-import { fireEvent, waitFor } from "@testing-library/react";
+import { act, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -41,10 +41,10 @@ describe("ImportMCPServers Chinese copy", () => {
     expect(screen.queryByText("Import MCP Connectors")).not.toBeInTheDocument();
     expect(screen.getByLabelText("连接器 JSON")).toBeInTheDocument();
     expect(screen.queryByLabelText("Connector JSON")).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "关闭" })).toBeInTheDocument();
-    // The shared DialogContent renders an English sr-only "Close"; it belongs to the
-    // components (root) increment, so the only remaining English Close must be that one.
-    expect(screen.queryByRole("button", { name: "Close" })).toHaveAttribute("data-slot", "dialog-close");
+    // Both the dialog's own close control and the shared DialogContent's sr-only close
+    // render "关闭" now, so assert both are localized and no English "Close" survives.
+    expect(screen.getAllByRole("button", { name: "关闭" })).toHaveLength(2);
+    expect(screen.queryByRole("button", { name: "Close" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "导入" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Import" })).not.toBeInTheDocument();
   });
@@ -87,6 +87,58 @@ describe("ImportMCPServers Chinese copy", () => {
 
     expect(await screen.findByText("导入请求失败。请查看 Proxy 日志了解详情。")).toBeInTheDocument();
     expect(screen.queryByText("Import request failed. Check the proxy logs for details.")).not.toBeInTheDocument();
+  });
+
+  it("re-renders a stored parse error in the new language", async () => {
+    const user = userEvent.setup();
+    renderImport();
+
+    fireEvent.change(screen.getByLabelText("连接器 JSON"), { target: { value: "{ not json" } });
+    await user.click(screen.getByRole("button", { name: "导入" }));
+
+    expect(await screen.findByText("JSON 无效。请检查缺失的引号、逗号或括号。")).toBeInTheDocument();
+
+    await act(async () => {
+      await i18n.changeLanguage("en");
+    });
+
+    expect(screen.getByText("Invalid JSON. Check for missing quotes, commas, or brackets.")).toBeInTheDocument();
+    expect(screen.queryByText("JSON 无效。请检查缺失的引号、逗号或括号。")).not.toBeInTheDocument();
+  });
+
+  it.each([
+    ["   ", "导入前请先粘贴连接器 JSON。", "Paste your connector JSON before importing."],
+    [
+      "{ not json",
+      "JSON 无效。请检查缺失的引号、逗号或括号。",
+      "Invalid JSON. Check for missing quotes, commas, or brackets.",
+    ],
+    [
+      JSON.stringify({ servers: {} }),
+      "需要一个包含 mcpServers 或 mcp_servers 键的 JSON 对象。",
+      "Expected a JSON object with an mcpServers or mcp_servers key.",
+    ],
+    [
+      JSON.stringify({ mcpServers: [] }),
+      "mcpServers 必须是连接器名称到定义的映射对象。",
+      "mcpServers must be an object mapping connector names to definitions.",
+    ],
+    [JSON.stringify({ mcpServers: {} }), "mcpServers 不包含任何连接器。", "mcpServers contains no connectors."],
+    [
+      JSON.stringify({ mcp_servers: { a: 1 } }),
+      "mcp_servers 必须是连接器定义数组。",
+      "mcp_servers must be an array of connector definitions.",
+    ],
+    [JSON.stringify({ mcp_servers: [] }), "mcp_servers 不包含任何连接器。", "mcp_servers contains no connectors."],
+  ])("renders the Chinese parse error for %s and hides the English original", async (input, zh, en) => {
+    const user = userEvent.setup();
+    renderImport();
+
+    fireEvent.change(screen.getByLabelText("连接器 JSON"), { target: { value: input } });
+    await user.click(screen.getByRole("button", { name: "导入" }));
+
+    expect(await screen.findByText(zh)).toBeInTheDocument();
+    expect(screen.queryByText(en)).not.toBeInTheDocument();
   });
 
   it("renders the Chinese imported, skipped and failed result labels and hides the English originals", async () => {
@@ -139,6 +191,17 @@ describe("ImportMCPServers Chinese copy", () => {
 
     await waitFor(() => expect(toast.success).toHaveBeenCalledWith("已导入 2 个 MCP 服务器"));
     expect(toast.success).not.toHaveBeenCalledWith("Imported 2 MCP servers");
+  });
+
+  it("keeps the English parse error byte-identical", async () => {
+    await i18n.changeLanguage("en");
+    const user = userEvent.setup();
+    renderImport();
+
+    fireEvent.change(screen.getByLabelText("Connector JSON"), { target: { value: "{ not json" } });
+    await user.click(screen.getByRole("button", { name: "Import" }));
+
+    expect(await screen.findByText("Invalid JSON. Check for missing quotes, commas, or brackets.")).toBeInTheDocument();
   });
 
   it("selects the singular English toast key for a single imported server", async () => {

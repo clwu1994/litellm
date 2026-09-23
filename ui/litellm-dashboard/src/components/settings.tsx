@@ -604,7 +604,7 @@ const Settings: React.FC<SettingsPageProps> = ({ accessToken, userRole, userID, 
                           ) : (
                             <Button className="flex items-center justify-center">
                               <a href="https://forms.gle/W3U4PZpJGFHWtHyA9" target="_blank">
-                                ✨ Enterprise Feature
+                                {t("alertingForm.enterpriseFeature")}
                               </a>
                             </Button>
                           )

@@ -30,10 +30,11 @@ export default function PageVisibilitySettings({
   const pagesByGroup = useMemo(() => {
     const grouped: Record<string, typeof availablePages> = {};
     availablePages.forEach((page) => {
-      if (!grouped[page.group]) {
-        grouped[page.group] = [];
+      const key = page.parentKey ? `${page.groupKey} > ${page.parentKey}` : page.groupKey;
+      if (!grouped[key]) {
+        grouped[key] = [];
       }
-      grouped[page.group].push(page);
+      grouped[key].push(page);
     });
     return grouped;
   }, [availablePages]);
@@ -84,10 +85,12 @@ export default function PageVisibilitySettings({
         </CollapsibleTrigger>
         <CollapsibleContent className="border-t border-border p-4">
           <div className="space-y-4">
-            {Object.entries(pagesByGroup).map(([groupName, pages]) => (
-              <fieldset key={groupName} className="space-y-2">
+            {Object.entries(pagesByGroup).map(([groupKey, pages]) => (
+              <fieldset key={groupKey} className="space-y-2">
                 <legend className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                  {groupName}
+                  {pages[0].parentKey
+                    ? `${tNav(pages[0].groupKey)} > ${tNav(pages[0].parentKey)}`
+                    : tNav(pages[0].groupKey)}
                 </legend>
                 <div className="ml-4 space-y-2">
                   {pages.map((page) => {

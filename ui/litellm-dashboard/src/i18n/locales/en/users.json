@@ -272,5 +272,15 @@
       "teamRequired": "Select a team",
       "teamDuplicate": "This team is already listed"
     }
+  },
+  "onboarding": {
+    "invitationTitle": "Invitation Link",
+    "resetPasswordTitle": "Reset Password Link",
+    "invitationDescription": "Copy and send the generated link to onboard this user to the proxy.",
+    "resetPasswordDescription": "Copy and send the generated link to the user to reset their password.",
+    "userId": "User ID",
+    "copied": "Copied!",
+    "copyInvitationLink": "Copy invitation link",
+    "copyPasswordResetLink": "Copy password reset link"
   }
 }

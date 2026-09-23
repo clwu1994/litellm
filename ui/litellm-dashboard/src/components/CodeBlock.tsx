@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { CheckIcon, ClipboardIcon } from "lucide-react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneLight } from "react-syntax-highlighter/dist/esm/styles/prism";
@@ -12,6 +13,7 @@ interface CodeBlockProps {
 
 const CodeBlock = ({ code, language }: CodeBlockProps) => {
   const syntaxTheme = useSyntaxTheme(oneLight);
+  const { t } = useTranslation("common");
   const [copied, setCopied] = useState(false);
   const copyToClipboard = () => {
     navigator.clipboard.writeText(code);
@@ -24,7 +26,7 @@ const CodeBlock = ({ code, language }: CodeBlockProps) => {
       <button
         onClick={copyToClipboard}
         className="absolute top-3 right-3 p-2 rounded-md border border-border bg-background text-muted-foreground hover:bg-accent hover:text-foreground z-raised"
-        aria-label="Copy code"
+        aria-label={t("copyCode")}
       >
         {copied ? <CheckIcon size={16} /> : <ClipboardIcon size={16} />}
       </button>
